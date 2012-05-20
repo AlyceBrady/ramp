@@ -1,0 +1,49 @@
+<?php 
+
+// Set page and window titles
+$table = $this->tableInfo;              // Set in controller
+$action = "Delete Entry";
+$tableTitle = $table->getTitle();
+$pageTitle = $tableTitle . ": " . $action;
+$headTitle = $action . " from " . $tableTitle;
+$this->headTitle($headTitle);
+
+// Get values from set table for title area and data area.
+$seqSetting = $this->seqSetting;        // Set in controller
+
+// Determine instructions and messages specific to this page.
+$footnote = "";
+$instructions = "";
+$msgs = $this->msgs;                    // Set in controller
+$msgs[] = "Are you sure that you want to delete the entry specified below?";
+$errormsgs = $this->errMsgs;            // Set in controller
+?>
+
+<form id="delete-confirmation-form" enctype="application/x-www-form-urlencoded"
+    action="" method="post">
+
+<!-- Display title bar -->
+<div id="titlebar-area">
+
+<!-- Display buttons in sidebar -->
+<?php echo $this->partial("table/_buttonList.phtml",
+            array('buttonList' => $this->buttonList)); ?>
+
+<!-- Display title and messages -->
+<div id="left-column" class="column">  <!-- Contains title block and msgs -->
+<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+            array('title'=>$pageTitle, 'description' => "",
+                  'footnote'=>$footnote, 'instructions'=>$instructions,
+                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs)); ?>
+</div>  <!-- End of "left-column" -->
+
+</div>  <!-- End of "titlebar-area" -->
+
+
+<!-- Display data entry fields -->
+<div id='record-block' class='delete'>
+<?php echo $this->partial("table/_tableEntryForm.phtml",
+        array('table' => $table, 'form' => $this->dataEntryForm)); ?>
+</div>
+
+</form>

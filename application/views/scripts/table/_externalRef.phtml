@@ -1,0 +1,26 @@
+<?php
+
+/* This helper script expects an external table name, an external table 
+ * reference object, and a Zend_Form object containing field elements.
+ *
+ */
+
+// Establish status codes.
+$statusCodes = array(
+        Application_Model_SetTable::UNKNOWN => '?',
+        Application_Model_SetTable::BLANK => ' ',
+        Application_Model_SetTable::PARTIAL => '/',
+        Application_Model_SetTable::GOOD => 'X',
+    );
+
+// Get the objects passed to this partial helper.
+$table = $this->table;
+$status = $this->status;
+
+// Create a status indicator for whether all recommended fields have 
+// been set for this record in the external table.
+$statusCode = $statusCodes[$status];
+echo "<input type='text' name='$table' id='$table' value='$statusCode'
+    class='statusCode readOnly' readOnly='readOnly'>\n";
+
+?>

@@ -1,0 +1,51 @@
+<?php
+$table = $this->tableInfo;
+
+// Set page and window title.
+$this->headTitle($this->title);
+$tableTitle = $table->getTitle();
+// $pageTitle = $tableTitle . ": Edit";
+$pageTitle = "Edit Mode";
+$headTitle = "Edit " . $tableTitle;
+$this->headTitle($headTitle);
+
+// Get values from set table for title area and data area.
+$seqSetting = $this->seqSetting;        // Set in controller
+
+// Determine instructions and messages specific to this page.
+$instructions = "";
+$msgs = $this->msgs;                    // Set in controller
+$errormsgs = $this->errMsgs;            // Set in controller
+
+?>
+
+<form id="edit-page-form" enctype="application/x-www-form-urlencoded"
+    action="" method="post">
+
+<!-- Display title bar -->
+<div id="titlebar-area">
+
+<!-- Display buttons in sidebar -->
+<?php echo $this->partial("table/_buttonList.phtml",
+            array('buttonList' => $this->buttonList)); ?>
+
+<!-- Display title and messages -->
+<div id="left-column" class="column">  <!-- Contains title block and msgs -->
+<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+            array('title'=>$pageTitle, 'description' => "",
+                  'footnote'=>"", 'instructions'=>"",
+                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs,
+                  'footnoteAsTooltip'=>true)); ?>
+</div>  <!-- End of "left-column" of title and messages -->
+
+</div>  <!-- End of "titlebar-area" -->
+
+
+
+<!-- Display data entry fields -->
+<div id='record-block' class='edit'>
+<?php echo $this->partial("table/_tableEntryForm.phtml",
+        array('table' => $table, 'form' => $this->dataEntryForm)); ?>
+</div>
+
+</form>

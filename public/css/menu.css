@@ -1,0 +1,63 @@
+/* menu bar */
+
+#menu-bar {
+    border-top:1px solid #fff;  /* #DFAE6F */
+    padding:0;
+    margin:0;
+    background-color: #00C;
+    width: 100%;
+    height: 18px;
+            /* blue, #006, #009, #FA9300, #c92f25, Pantone(293) */
+            /* RoyalBlue may be closest to actual flag color */
+    color: #fff;
+    font-size: 10px;    /* or 11px? */
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    float: left;
+}
+
+#menu-login, #main-menu {
+    padding:0;
+    margin:0;
+}
+
+#menu-login {
+    white-space: nowrap;
+}
+
+#main-menu {
+    float:left;
+    width: 70%;
+    position: relative;
+}
+
+#menu-login {
+    float:right;
+    text-align: right;
+}
+
+#menu-bar li {
+    float:left;
+    list-style:none;
+}
+
+#menu-login, #menu-login a, #main-menu a {
+    text-decoration:none;
+    color:#fff;
+    padding:0.2em 1em 0.2em 1em;
+}
+
+#menu-login a, #main-menu a {
+    font-weight:bold;
+}
+
+#main-menu li {
+    padding-top: 3px;               /* somehow extends vertical line lower */
+    padding-bottom: 1px;            /* somehow extends vertical line lower */
+    border-right:1px solid #fff;
+}
+
+#menu-login a:hover, #main-menu a:hover, #main-menu a:focus {
+    text-decoration:underline;
+    font-weight:bold;
+    color:#fff;
+}

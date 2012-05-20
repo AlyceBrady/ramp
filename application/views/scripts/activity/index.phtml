@@ -1,0 +1,48 @@
+<?php
+/*
+echo "<p>Debugging info is:</p>";
+echo "<pre>\n"; print_r($this->activityList); echo "\n</pre>";
+echo "<p>activity key: "; print_r($this->activityKey); echo "</p>";
+echo "<p>activity type: "; print_r($this->activityType); echo "</p>";
+echo "<p>activity: "; print_r($this->activity); echo "</p>";
+ */
+
+$userSpecifiedHeading = $this->activityTitle;   // set in controller
+$heading = $userSpecifiedHeading ? : "Which activity do you wish to perform?";
+?>
+<div id='activityPage'>
+<h1><?php echo $heading ?></h1>
+
+<?php /* echo $this->form; */ ?>
+
+<form id='activityList' action='' method='post'>
+<dl>
+
+<?php
+foreach ( $this->activityList as $key => $activity )
+{
+    switch ($activity->getType())
+    {
+        case Application_ModeL_ActivitySpec::COMMENT_TYPE:
+                echo "<dt class='comment'>" .  $activity->getComment() .
+                     "</dt><dd></dd>";
+                break;
+        case Application_ModeL_ActivitySpec::SEPARATOR_TYPE:
+                echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>";
+                break;
+        default:        // SETTING and ACTIVITY_LIST types
+                echo "<dt>";
+                echo "<input type='submit'  name='$key' id='$key' " .
+                    "class='button' " .
+                    "value='" . $activity->getTitle() . "'>";
+                echo "</dt>";
+                echo "<dd>" . $activity->getDescription() . "</dd>";
+    }
+}
+
+?>
+
+</dl>
+</form>
+
+</div>

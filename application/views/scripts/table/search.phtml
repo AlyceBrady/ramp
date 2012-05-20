@@ -1,0 +1,44 @@
+<?php 
+
+// Set page and window titles
+$table = $this->tableInfo;              // Set in controller
+$action = "Search";
+$tableTitle = $table->getTitle();
+$pageTitle = $tableTitle . ": " . $action;
+$headTitle = $action . " in " . $tableTitle;
+$this->headTitle($headTitle);
+
+// Get values from set table for title area and data area.
+$tableFootnote = $table->getTableFootnote();
+
+// Determine instructions and messages specific to this page.
+$instructions = "";
+$msgs = $this->msgs;                    // Set in controller
+$errormsgs = $this->errMsgs;            // Set in controller
+?>
+
+<form id="search-form" enctype="application/x-www-form-urlencoded"
+    action="" method="post">
+
+<!-- Display title bar -->
+<div id="titlebar-area">
+
+<!-- Display title and messages -->
+<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+            array('title'=>$pageTitle, 'description' => "",
+                  'footnote'=>$tableFootnote, 'instructions'=>"",
+                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs,
+                  'footnoteAsTooltip'=>true)); ?>
+
+</div>  <!-- End of "titlebar-area" -->
+
+<!-- Display buttons in sidebar -->
+<?php echo $this->partial("table/_buttonList.phtml",
+            array('buttonList' => $this->buttonList)); ?>
+
+<div id='record-block' class='search'>
+<?php echo $this->partial("table/_tableEntryForm.phtml",
+        array('table' => $table, 'form' => $this->dataEntryForm)); ?>
+</div>
+
+</form>

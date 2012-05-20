@@ -1,0 +1,13 @@
+<?php
+  /* This helper script expects an array with the following:
+   *    - a string ('value')
+   *    - the keyword for an HTML tag, e.g., 'p' or 'li' ('tag')
+   */
+
+$tag = $this->escape($this->tag);
+?>
+
+<?php if ( strlen($this->value) > 0 ) : ?>
+    <<?php echo $tag; ?>><?php echo $this->escape($this->value); ?>
+    </<?php echo $tag; ?>>
+<?php endif; ?>

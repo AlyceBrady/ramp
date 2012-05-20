@@ -1,0 +1,58 @@
+; Testing Activity configuration files
+
+; This file provides links to the testing activities in each RAMP
+; subdirectory.
+
+activity[] = runStudentDemo
+
+activity[] = horizRule
+
+activity[] = runPlacesDemo
+
+activity[] = horizRule
+
+activity[] = activityListTests
+activity[] = formTests
+activity[] = settingTests
+
+
+[horizRule]
+
+type = "separator"
+
+[runStudentDemo]
+
+type = activityList
+source = Smart/index.act
+title = "View Smart Tables"
+description = "View the tables used by Smart"
+
+[runPlacesDemo]
+
+type = sequence
+source = demo/demo1
+title = "Run Demo"
+description = "Run draft demo of Ramp program"
+
+[settingTests]
+
+type = activityList
+source = settingTesting/settingTests.act
+title = "Setting Config Tests"
+description = "Series of tests related to sequence/setting configuration
+files"
+
+[activityListTests]
+
+type = activityList
+source = activityTesting/activityListTest.act
+title = "Activity Tests"
+description = "Series of tests related to activity list configuration files"
+
+[formTests]
+
+type = activityList
+source = formTesting/formTests.act
+title = "Form Tests"
+description = "Series of tests related to displaying tables, incl.
+hidden, required, recommended fields, etc"

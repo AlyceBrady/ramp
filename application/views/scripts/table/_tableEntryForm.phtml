@@ -1,0 +1,30 @@
+<?php
+
+/* This helper script expects an array containing the set table
+ * object and a Zend_Form object containing field elements.
+ *
+ * Attribution: the structure of rendering label, element, and errors 
+ * separately, to allow the insertion of href links, came from:
+ * http://monzee.wordpress.com/2009/02/23/decorators-are-hard-lets-go-shopping/
+ */
+
+$fields = $this->table->getFields();
+$form = $this->form;
+?>
+
+<?php /* echo $this->form->renderForm(false); */ ?>
+<dl>
+<?php foreach ( $form->getElements() as $name => $elt ) :
+    echo "<dt id=\"$name-label\">";
+    echo $this->partial("table/_fieldLabel.phtml",
+            array('formType'=>$form->getFormType(), 'fields'=>$fields,
+                  'fieldName' => $name, 'elt'=>$elt));
+    echo "</dt>\n";
+    echo "<dd id=\"$name-element\">\n";
+    echo $elt->renderElem() . "\n";
+    echo $elt->renderErrors();
+    echo "</dd>";
+endforeach; ?>
+</dl>
+<!-- </form> -->
+

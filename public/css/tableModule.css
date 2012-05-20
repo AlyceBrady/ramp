@@ -1,0 +1,474 @@
+
+
+/* Generic styles used throughout display pages. */
+#scrn-read {
+	display:none;
+}
+
+body,html {
+	min-width: 770px;
+	padding:0;
+	margin:0;
+        /* background: #fdfdfd; */
+}
+
+td,div,body {
+	font-family:Verdana,Arial,Helvetica,sans-serif
+}
+
+th, td {
+    vertical-align: top;
+}
+
+.fieldFootnote {    /* is this used? */
+        font-size:      x-small;
+        font-weight:    normal;
+        font-style:     italic;
+}
+
+p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
+    /* is this used? */
+        background-color:   Lavender;
+}
+
+button, input.button, input.submit {        /* Not working! */
+        font-size:  80%;
+}
+
+.hidden {
+    display:    none;
+}
+
+
+
+/* Styles used in header (banner area with application name) and footer. */
+div#header {
+        height: 45px;
+	padding: 0;
+	margin-left: 1em;
+	background: #fff url(../img/ramp-logo.gif) no-repeat;
+        text-align: left;
+}
+
+div#header .appName {
+	font-size: 35px;
+	font-family: /* Georgia, */ "Times New Roman", Times, serif;
+	font-weight: bold;
+	font-style: oblique;
+	color:	#0C0; /* #3C6, #3F9, f00, #c03, #009; */
+            /* LimeGreen or #0C3 may be quite close to actual flag color */
+}
+
+div#header .appDesc {
+	font-family: /* Georgia, */ "Times New Roman", Times, serif;
+	font-size: 10px;
+	font-style: italic;
+	font-weight: normal;
+	color:	#0C0;
+}
+
+#footer {
+	clear: both;
+	padding: 0.3em ;
+	margin-top: 2em;
+        margin-left: 1em;
+	background: #fff;
+	color: #888;
+	font-size: 0.8em;
+}
+
+
+
+/* Styles used to create columns */
+.sidebar {                      /* sets attributes common to all sidebars */
+        /* min-width: 130px; */
+	padding: 0 0;
+        float: right;
+	margin-right: 50px;
+        font-size:      80%;
+        background-color:   #DFD;  /* alts: Blue: #EEF,  Green:  #EFE */
+        vertical-align: top;
+}
+
+div#left-column .column {   /* used to put any other div in a left column */
+	min-width: 620px;
+	position: relative;
+        width: 80%;
+	float: left;
+}
+
+
+
+
+/* Styles used by page content below menu bar.  (Some not used.) */
+div#content {
+	margin-top: 2em;
+	margin-left: 1em;
+	width: 100%;
+}
+
+div#content h1 {
+	color: #0C0;
+        text-align: center;
+            /* LimeGreen may be quite close to actual flag color */
+}
+
+div#content h2, div#content h3, div#content h4, div#content h5 {
+        padding-top: 15px;
+	color: #039;
+	font-weight: normal;
+}
+
+div#content h1, div#content h2, div#content h3 {
+        font-weight: bold;
+}
+
+div#content p {
+	font-size: 1em;
+}
+
+div#content a,  div#content a:visited,  div#content a:active {
+	color: #00c;
+	text-decoration: underline;
+}
+
+div#content a:hover {
+	color: #009;
+	text-decoration: underline;
+}
+
+
+
+/* Styles used by activity list pages */
+div#activityPage {
+        background-color:   #fdfdfd;
+        color: #006;
+        font-size: medium;
+}
+
+div#activityPage h1 {
+    padding-top: 15px;
+    text-align: left;
+    color: #039;
+    color: #0C0;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size:   18px;
+    font-weight: bold;
+}
+
+div#activityPage dl {
+    width:      100%;
+    overflow:   hidden;
+}
+
+div#activityPage dt, div#activityPage dd {
+    display:    block;
+    float:      left;
+    margin-top: 10px;
+}
+
+div#activityPage dt {
+    margin-left:     10px;
+    width:      20%;
+    text-align: right;
+    clear:      both;
+}
+
+div#activityPage dd {
+    width:      60%;
+}
+
+div#activityPage dt.comment {
+    margin-top: 0;
+    width:      50%;
+    margin-left:     0;
+    text-align: left;
+    font-style: oblique;
+}
+
+div#activityPage dt.wide {
+    margin-top, margin-bottom: 20px;
+    width:      30%;
+    margin-left:     0;
+}
+
+div#activityPage .button {
+    color:            #006;
+    background-color: lavender;
+}
+
+
+
+/* Styles used by title bars on most table-viewing/modifying pages */
+div#titlebar-area {
+        margin: 0 auto;
+        width:  100%;
+}
+
+div#titlebar-area .sidebar {
+        min-width: 130px;
+}
+
+div#table-notes p {
+        font-size:      75%;
+        font-style:     italic;
+        text-align:     center;
+}
+
+div#info-messages ul, div#error-messages ul {
+        padding:    0;
+        list-style:     none;
+}
+
+div#info-messages li, div#error-messages li {
+        margin:     0;
+        padding:    0;
+        font-size:      90%;
+        font-style:     italic;
+}
+
+div#error-messages li {
+        color:          red;
+}
+
+
+
+/* Styles used by action button lists */
+#title-sidebar ul {
+        padding:    0;
+        list-style:     none;
+}
+
+fieldset#button-list li {
+        margin:     0;
+        padding:    5px;
+}
+
+
+
+/* Styles used by record display/modify pages */
+div#record-block dl {
+    width:      100%;
+    overflow:   hidden;
+}
+
+div#record-block.view dl {
+    padding: 5px;
+    /* background-color:   #efe; */
+}
+
+div#record-block dt, div#record-block dd {
+    display:    block;
+    float:      left;
+    margin-top: 10px;
+}
+
+div#record-block dt {
+    width:      15%;
+    text-align: right;
+    clear:      both;
+}
+
+div#record-block dd {
+    width:      80%;
+}
+
+#record-block.edit input.discouraged, #record-block.add input.discouraged,
+#record-block.edit select.discouraged, #record-block.add select.discouraged {
+        background-color:   #DDDDDD;
+}
+
+#record-block.edit input.required, #record-block.add input.required,
+#record-block.edit select.required, #record-block.add select.required {
+        background-color:   #FF6;
+}
+
+#record-block.edit input.recommended, #record-block.add input.recommended,
+#record-block.edit select.recommended, #record-block.add select.recommended {
+        background-color:   #FFC;
+}
+
+input.readonly, select.readOnly {
+        background-color: #efe;
+}
+
+input.statusCode {
+        background-color: #efe;
+        padding: 1px;
+        width:  10px;
+}
+
+/*
+#record-block.view input.readonly, #record-block.delete input.readonly {
+        background-color: #efe;
+}
+*/
+
+#record-block.edit input.readonly {
+        background-color: #efe;
+        color: #999;
+}
+
+#external-refs li {
+        margin-left: 20px;
+        float:left;
+        list-style:none;
+}
+
+
+
+/* Styles used by pages that display data in list or table format. */
+div#record-list table, div#record-table table {
+        clear: both;
+        /* background-color:   Lavender; */
+}
+
+div#record-list table {
+    border: 15px solid #EFE;
+    background-color:   #EFE;       /* light blue: #EEF, CCF */
+}
+
+div#record-list td, div#record-list th {
+    padding:    2px;
+    /* border:     1px solid #FFF; */
+    border-bottom: 20px solid #EFE;
+    background-color:   #fff;
+}
+
+/*
+div#record-list td, div#record-list th {
+    padding:    2px;
+    border-bottom: 10px solid white;
+    background-color:   #fff;
+}
+    */
+
+div#record-table td, div#record-table th {
+    padding:    3px;
+    background-color:   #fff;
+}
+
+div#record-table td.highlighted, div#record-table th.highlighted {
+    background-color: #EFE;    /* alts: Blue: #EEF,  Green:  #DFD */
+}
+
+div#record-table th {
+    border-bottom: 1px solid;
+}
+
+
+
+/* Styles used when printing, especially the table display format. */
+@media print {
+
+    body, p, th, td, select, th input.button, button, .textfield {
+        font-size:  x-small;
+    }
+
+    .appName {
+        font-size: large;
+    }
+
+    .appDesc {
+        font-size: 9px;
+    }
+
+    h1 {
+        font-family: "Century Schoolbook", Times, serif;
+        font-size: medium;
+    }
+
+    h2 {
+        font-size: medium;
+    }
+
+    h3, h4, h5 {
+        font-size: small;
+    }
+
+    th, td {
+        vertical-align: top;
+    }
+
+    div#menu-bar, div#title-sidebar, div#body-sidebar,
+    blockquote.menu, .noprint {
+        display: none;
+    }
+}
+
+/* ======================================== */
+
+/*
+#left {
+	background: #fff;
+}
+
+#center {
+	background: #fff;
+}
+
+#right {
+	background: #fff;
+}
+
+.note, .instructions {
+        font-size:      small;
+        font-style:     italic;
+}
+
+.indentednote {
+        margin-left:    20px;
+        margin-right:   20px;
+        font-size:      small;
+        font-style:     italic;
+}
+
+span.message, span.warning {
+        color:  #f00;
+}
+
+span.button {                   /* What does this mean? *//*
+        color:          #006;
+        font-family:    Geneva, Verdana, Arial, Helvetica, sans-serif;
+        font-style:     normal;
+        font-weight:    normal;
+}
+
+.enabledButton {
+        color: #006;
+        background-color:   lavender;
+}
+
+.disabledButton {
+        color: #99f;
+        background-color:   #eee;
+}
+
+#displayTable .enabledButton {
+        color: #006;
+        background-color:   #fff;
+}
+
+#displayTable .disabledButton {
+        color: #66f;
+        background-color:   #eeeeee;
+}
+
+
+li .comment {
+        font-style: italic;
+}
+
+.tableListComment, .activityListComment {
+    font-style: italic;
+    /* font-size: small; *//*
+}
+
+.tableFootnote {
+        font-size:      80%;
+        font-weight:    bold;
+        font-style:     italic;
+        text-align:     center;
+}
+*/
+

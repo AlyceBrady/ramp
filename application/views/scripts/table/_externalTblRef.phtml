@@ -1,0 +1,32 @@
+<?php
+
+/* This helper script expects a form type, a field name, an array of Field 
+ * objects, and a Zend_Form_Element.
+ */
+
+$formType = $this->formType;
+$fields = $this->fields;
+$name = $this->fieldName;
+$elt = $this->elt;
+
+$extRefParams = array('controller' => 'table', 'action' => 'index');
+$urlParams = $extSearchParams +
+                    array(TableController::SETTING_NAME => $setting);
+
+if ( ( $formType == Application_Form_TableRecordEntry::ADD ||
+       $formType == Application_Form_TableRecordEntry::EDIT ) &&
+     $fields[$name]->isExternalTableLink() ) :
+    // $tableName = $fields[$name]->getLinkedTable();
+    $setting = urlencode($fields[$name]->getLinkedTableSetting());
+    echo "<a href=\"" . $this->url($urlParams, null, true) . "\">";
+    echo $elt->renderLabel();
+    echo "</a>";
+else :
+    echo $elt->renderLabel();
+endif;
+
+echo "<li>\n";
+echo "<a href=\"" . $this->url($urlParams, null, true) . "\">";
+echo $this->escape($
+
+?>

@@ -1,0 +1,28 @@
+<?php
+/* This helper script expects an array of button labels.
+*/
+
+// Technique for turning button labels into valid name identifiers taken
+// from Zend_Form_Element.
+$charset = '^a-zA-Z0-9_\x7f-\xff';
+?>
+
+<div id="title-sidebar">
+<ul>
+<fieldset id="button-list" class="sidebar">
+
+<?php
+foreach ( $this->buttonList as $buttonLabel ) :
+    $buttonType = ( $buttonLabel == TableController::RESET_BUTTON ) ?
+                        "reset" : "submit";
+    $buttonLabel = $this->escape($buttonLabel);
+    $buttonId = $this->escape(preg_replace('/[' . $charset . ']/', '', 
+                                    (string) $buttonLabel));
+    echo "<li><input type='$buttonType' name='submit' id='$buttonId'
+            value='$buttonLabel' /></li>\n";
+endforeach;
+?>
+
+</fieldset>
+</ul>
+</div>

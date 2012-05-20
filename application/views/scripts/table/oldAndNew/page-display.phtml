@@ -1,0 +1,78 @@
+<?php
+$table = $this->tableInfo;
+
+// Set page and window title.
+$this->headTitle($this->title);
+$tableTitle = $table->getTitle();
+$pageTitle = $tableTitle . ": Record Display";
+$headTitle = "Record Display for " . $tableTitle;
+$this->headTitle($headTitle);
+
+// Get values from set table for title area and data area.
+$seqSetting = $this->seqSetting;        // Set in controller
+$tableFootnote = $table->getTableFootnote();
+
+// Determine instructions and messages specific to this page.
+$instructions = "";
+$msgs = $this->msgs;                    // Set in controller
+$errormsgs = $this->errMsgs;            // Set in controller
+$errormsgs[] = $this->undefinedFieldsErrorMsg;
+
+// Construct core parameters to send to all actions.
+$commonParams = $this->baseParams;      // Set in controller.
+$searchParams = $commonParams + array('action'=>'search');
+$addParams = $commonParams + array('action'=>'add');
+$deleteParams = $commonParams + array('action'=>'delete');
+$cancelParams = $commonParams + array('action'=>'index');
+$resetParams = $commonParams + array('action'=>'page-display');
+$displayAllParams = $commonParams + array('action'=>'multi-display');
+
+// Reset should be go back to last page (displayAll or search) with no 
+// field-modifying parameters.
+//TODO: Set resetParams to $commonParams + $origParams + $searchParams + 
+//$sortParams
+?>
+
+<!-- Display title and messages -->
+
+<div id="titlebar-area">
+
+<!-- Display buttons in sidebar -->
+
+<div id="title-sidebar" class="sidebar"> <!-- Contains action buttons -->
+    <p><a href="<?php echo $this->url($searchParams, null, true);
+        ?>">Search</a></p>
+    <p><a href="<?php echo $this->url($addParams, null, true);
+        ?>">Add new entry</a></p>
+    <p><a href="<?php echo $this->url($deleteParams, null, true);
+        ?>">Delete</a></p>
+    <p><a href="<?php echo $this->url($cancelParams, null, true);
+        ?>">Cancel</a></p>
+    <?php /*
+    <p><a href="<?php echo $this->url($resetParams, null, true);
+        ?>">Reset (Broken?)</a></p>
+    */ ?>
+    <p><a href="<?php echo $this->url($displayAllParams, null, true);
+        ?>">Display All</a></p>
+</div>  <!-- End of "sidebar" -->
+
+<!-- Display title and messages -->
+
+<div id="left-column" class="column">  <!-- Contains title block and msgs -->
+<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+            array('title'=>$pageTitle, 'description' => "",
+                  'footnote'=>$tableFootnote, 'instructions'=>"",
+                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs,
+                  'footnoteAsTooltip'=>true)); ?>
+</div>  <!-- End of "left-column" -->
+
+</div>  <!-- End of "titlebar-area" -->
+
+
+
+<!-- Display data entry fields -->
+
+<!-- Show the form. -->
+<div id='record-block'>
+<?php echo $this->form; ?>
+</div>

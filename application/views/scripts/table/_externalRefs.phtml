@@ -1,0 +1,39 @@
+<?php
+
+/* This helper script expects an array containing the set table
+ * object and a Zend_Form object containing field elements.
+ *
+ */
+
+// Get the objects passed to this partial helper.
+$extRefs = $this->table->getExtTableReferences();
+$formData = $this->form->getValues();
+
+// Handle all external references.
+echo "<ul>";
+foreach ( $extRefs as $extTable => $refObj ) :
+
+    // Determine the connection expression that establishes the 
+    // connection with this external table reference.
+    $searchFields = $refObj->findConnectionFields($formData);
+    $externalTable = $refObj->getViewingSeq()->getReferenceSetTable();
+
+    $status = $externalTable->getStatusOfRecord($searchFields);
+    echo "<li>";
+    echo $this->partial("table/_externalRef.phtml",
+                    array('table' => $extTable, 'status' => $status));
+
+    // Create a link to the external table.
+    $setting = urlencode($refObj->getViewingSeqName());
+    $urlParams = array('controller' => 'table', 'action' => 'search') +
+                 array(TableController::SETTING_NAME => $setting) +
+                 $searchFields;
+
+    echo "<a href=\"" . $this->url($urlParams, null, true) . "\">";
+    echo $refObj->getTitle();
+    echo "</a>";
+    echo "</li>";
+endforeach;
+echo "</ul>";
+
+?>

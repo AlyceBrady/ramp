@@ -1,0 +1,50 @@
+; List of Staff-Related Smart tables.
+
+activityListHeading = "Choose a table:"
+
+activity[] = "Staff Table"
+activity[] = "Staff Contracts"
+activity[] = "Advising"
+activity[] = "Module Assignments"
+activity[] = "Teaching History"
+
+
+[horizRule]
+
+type = "separator"
+
+[Staff Table]
+
+type = "setting"
+source = "Smart/Staff/Staff"
+title = "Staff Table"
+description = "Core Staff Information"
+
+[Staff Contracts]
+
+type = "setting"
+source = "Smart/Staff/StaffContract"
+title = "Staff Contracts Table"
+description = "Staff Contract History"
+
+[Advising]
+
+type = "setting"
+source = "Smart/Student/Advising"
+title = "Advising Relationships"
+description = "Advisor-Advisee Relationship Histories"
+
+[Module Assignments]
+
+type = "setting"
+source = "Smart/Curriculum/ModuleAssignments"
+title = "Module Assignments"
+description = "Staff, Room, and Time assignments for module offerings"
+
+[Teaching History]
+
+type = "setting"
+source = "Smart/Staff/ModuleEnrollment"
+title = "Module Enrollments"
+description = "Read-only: For class lists, specify a combination of
+term, module, section, and/or instructor"

@@ -1,0 +1,51 @@
+<?php
+  /* This helper script expects an array with the following:
+   *    - the title         ('title')
+   *    - the description   ('description')
+   *    - the footnote      ('footnote')
+   *    - instructions relevant to this page    ('instructions')
+   *    - information messages      ('msgs')
+   *    - error messages            ('errormsgs')
+   *    - whether to show footnote as tooltip rather than explicitly
+   *            ('footnoteAsTooltip': optional, defaults to false)
+   */
+
+$subtleFootnote = isset($this->footnoteAsTooltip) ?
+                     $this->footnoteAsTooltip : false;
+
+?>
+
+<div id="title-block">  <!-- Contains title, footnotes, and instructions -->
+<?php if ( $subtleFootnote )
+        { echo "<h1 title='" . $this->escape($this->footnote) . "'>"; }
+    else
+        { echo "<h1>"; }
+?>
+<?php echo $this->escape($this->title); ?></h1>
+<div id="table-notes">
+<?php if ( ! $subtleFootnote ) : ?>
+    <?php echo $this->partial("table/_stringInTag.phtml",
+                              array('tag'=>'p', 'value'=>$this->footnote)); ?>
+<?php endif; ?>
+<?php echo $this->partial("table/_stringInTag.phtml",
+                          array('tag'=>'p', 'value'=>$this->instructions)); ?>
+</div>
+</div>  <!-- End of "title-block" -->
+
+<div id="info-messages">
+<ul>
+<?php foreach ( $this->msgs as $msg ) : ?>
+    <?php echo $this->partial("table/_stringInTag.phtml",
+            array('tag'=>'li', 'value'=>$msg)); ?>
+<?php endforeach; ?>
+</ul>
+</div>
+
+<div id="error-messages">
+<ul>
+<?php foreach ( $this->errormsgs as $msg ) : ?>
+    <?php echo $this->partial("table/_stringInTag.phtml",
+            array('tag'=>'li', 'value'=>$msg)); ?>
+<?php endforeach; ?>
+</ul>
+</div>
