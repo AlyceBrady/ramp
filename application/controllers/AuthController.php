@@ -1,23 +1,21 @@
 <?php
 
 /**
- * RAMP: General Records and Activity Management Infrastructure
+ * RAMP: Records and Activity Management Program
  *
  * LICENSE
  *
- * This source file is subject to the new BSD license that is bundled
+ * This source file is subject to the BSD-2-Clause license that is bundled
  * with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
  *
  * @category   Ramp
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Config.php 23775 2011-03-01 17:25:24Z ralph $
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ * @version    $Id: AuthController.php 1 2012-07-12 alyce $
+ *
  */
 class AuthController extends Zend_Controller_Action
 {
