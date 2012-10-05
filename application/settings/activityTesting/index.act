@@ -57,7 +57,7 @@ description = "Test a file with one 'unattached' activity specification but no l
 [settingTests]
 
 type = activityList
-source = settingTesting/settingTests.act
+source = settingTesting/index.act
 title = "Unnamed activities"
 description = "Test a file with unnamed, deferred activities, including
 separators, comments, and settings (real activity list for testing
@@ -103,7 +103,7 @@ comment = "Examples of invalid activity list files"
 [activityListTest]
 
 type = activityList
-source = activityTesting/activityListTest.act
+source = activityTesting/index.act
 title = "Valid Activity List"
 description = "Test a valid list of separators, comments, and activity lists
 (loops back to this activity)"

@@ -41,10 +41,12 @@ class IndexController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        /*
         if ( null === Zend_Auth::getInstance()->getIdentity() )
         {
             $this->_helper->redirector('login', 'auth');
         }
+         */
 
         // $this->_forward('choose-table');
         $this->_forward('choose-activity-list');
