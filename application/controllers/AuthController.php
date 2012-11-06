@@ -139,5 +139,4 @@ $password = $formData['password'];
 
 }
 
-?>
 
