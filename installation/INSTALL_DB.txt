@@ -80,7 +80,10 @@ Creating the Accounts and Databases in MySQL:
 
     * To set up a Smart development database, make a copy of
       smart_demo.sql and change the "smart_demo" references to
-      "smart_dev".
+=>    "smart_dev".  Do the same with ramp_demo, since the testing
+=>    associated with both smart_dev and smart_test uses the tables
+=>    from both the ramp-demo and smart_demo databases.
+=> Fix this?
 
     * [Under Development...]  Need to provide schema for Smart
       production database, although with no data ... 

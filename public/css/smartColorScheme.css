@@ -1,0 +1,143 @@
+
+p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
+    /* is this used? */
+        background-color:   Lavender;
+}
+
+
+/* Styles used in header (banner area with application name) and footer. */
+div#header {
+	/* background: #fff url(../img/ramp-logo.gif) no-repeat; */
+}
+
+div#header .appName, div#header .appDesc {
+	color:	#0C0; /* #3C6, #3F9, f00, #c03, #009; */
+            /* LimeGreen or #0C3 may be quite close to actual flag color */
+}
+
+#footer {
+	background: #fff;
+	color: #888;
+}
+
+
+/* Styles used by menu bar. */
+
+#menu-bar {
+    border-top:1px solid #fff;  /* #DFAE6F */
+    background-color: #00C;
+            /* blue, #006, #009, #FA9300, #c92f25, Pantone(293) */
+            /* RoyalBlue may be closest to actual flag color */
+    color: #fff;
+}
+
+#menu-login, #menu-login a, #main-menu a {
+    color:#fff;
+}
+
+#main-menu li {
+    border-right:1px solid #fff;
+}
+
+#menu-login a:hover, #main-menu a:hover, #main-menu a:focus {
+    color:#fff;
+}
+
+
+
+/* Styles used to create columns */
+.sidebar {                      /* sets attributes common to all sidebars */
+        background-color:   #DFD;  /* alts: Blue: #EEF,  Green:  #EFE */
+}
+
+
+/* Styles used by page content below menu bar.  (Some not used.) */
+
+div#content h1 {
+	color: #0C0;
+            /* LimeGreen may be quite close to actual flag color */
+}
+
+div#content h2, div#content h3, div#content h4, div#content h5 {
+	color: #039;
+}
+
+div#content a,  div#content a:visited,  div#content a:active {
+	color: #00C;
+}
+
+div#content a:hover {
+	color: #009;
+}
+
+
+/* Styles used by activity list pages */
+div#activityPage {
+        background-color:   #fdfdfd;
+        color: #006;
+}
+
+div#activityPage h1 {
+    color: #0C0;    /* alt: #039 */
+}
+
+div#activityPage .button {
+    color:            #006;
+    background-color: lavender;
+}
+
+
+/* Styles used by title bars on most table-viewing/modifying pages */
+
+div#error-messages li {
+        color:          red;
+}
+
+
+/* Styles used by record display/modify pages */
+
+#record-block.edit input.discouraged, #record-block.add input.discouraged,
+#record-block.edit select.discouraged, #record-block.add select.discouraged {
+        background-color:   #DDDDDD;
+}
+
+#record-block.edit input.required, #record-block.add input.required,
+#record-block.edit select.required, #record-block.add select.required {
+        background-color:   #FF6;
+}
+
+#record-block.edit input.recommended, #record-block.add input.recommended,
+#record-block.edit select.recommended, #record-block.add select.recommended {
+        background-color:   #FFC;
+}
+
+input.readonly, select.readOnly,
+input.statusCode {
+        background-color: #efe;
+}
+
+#record-block.edit input.readonly {
+        background-color: #efe;
+        color: #999;
+}
+
+
+/* Styles used by pages that display data in list or table format. */
+
+div#record-list table {
+    border: 15px solid #EFE;
+    background-color:   #EFE;       /* light blue: #EEF, CCF */
+}
+
+div#record-table td.highlighted, div#record-table th.highlighted {
+    background-color: #EFE;    /* alts: Blue: #EEF,  Green:  #DFD */
+}
+
+div#record-list td, div#record-list th,
+div#record-table td, div#record-table th {
+    background-color:   #fff;
+}
+
+div#record-list td, div#record-list th {
+    border-bottom: 20px solid #EFE;
+}

@@ -22,6 +22,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $configOptions = $this->getOptions();
         if ( isset($configOptions['ramp']) )
         {
+
             // Register the directory that stores the application menu.
             $rampConfigSettings = $configOptions['ramp'];
             $path = $rampConfigSettings['menuFilename'];
@@ -31,12 +32,30 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
 
             // Register the directory that stores table settings.
-            $rampConfigSettings = $configOptions['ramp'];
             $path = $rampConfigSettings['settingsDirectory'];
             if ( ! empty($path) )
             {
                 Zend_Registry::set('rampSettingsDirectory', $path);
             }
+
+            // Set the initial View placeholders...
+            $this->bootstrap('View');
+            $view = $this->getResource('View');
+
+            // Set the initial title and separator.
+            $appl = $rampConfigSettings['applicationShortName'];
+            if ( ! empty($appl) )
+            {
+                $view->headTitle($appl)->setSeparator(' - ');
+            }
+
+            // Register the umbrella cascading style sheet.
+            $stylesheet = $rampConfigSettings['css'];
+            if ( ! empty($stylesheet) )
+            {
+                $view->headlink()->prependStylesheet($stylesheet);
+            }
+
         }
 
 	// Register the (currently empty) associated array of

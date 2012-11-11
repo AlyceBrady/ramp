@@ -9,7 +9,6 @@ body,html {
 	min-width: 770px;
 	padding:0;
 	margin:0;
-        /* background: #fdfdfd; */
 }
 
 td,div,body {
@@ -24,11 +23,6 @@ th, td {
         font-size:      x-small;
         font-weight:    normal;
         font-style:     italic;
-}
-
-p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
-    /* is this used? */
-        background-color:   Lavender;
 }
 
 button, input.button, input.submit {        /* Not working! */
@@ -46,7 +40,6 @@ div#header {
         height: 45px;
 	padding: 0;
 	margin-left: 1em;
-	background: #fff url(../img/ramp-logo.gif) no-repeat;
         text-align: left;
 }
 
@@ -55,8 +48,6 @@ div#header .appName {
 	font-family: /* Georgia, */ "Times New Roman", Times, serif;
 	font-weight: bold;
 	font-style: oblique;
-	color:	#0C0; /* #3C6, #3F9, f00, #c03, #009; */
-            /* LimeGreen or #0C3 may be quite close to actual flag color */
 }
 
 div#header .appDesc {
@@ -64,7 +55,6 @@ div#header .appDesc {
 	font-size: 10px;
 	font-style: italic;
 	font-weight: normal;
-	color:	#0C0;
 }
 
 #footer {
@@ -72,8 +62,6 @@ div#header .appDesc {
 	padding: 0.3em ;
 	margin-top: 2em;
         margin-left: 1em;
-	background: #fff;
-	color: #888;
 	font-size: 0.8em;
 }
 
@@ -86,7 +74,6 @@ div#header .appDesc {
         float: right;
 	margin-right: 50px;
         font-size:      80%;
-        background-color:   #DFD;  /* alts: Blue: #EEF,  Green:  #EFE */
         vertical-align: top;
 }
 
@@ -108,14 +95,11 @@ div#content {
 }
 
 div#content h1 {
-	color: #0C0;
         text-align: center;
-            /* LimeGreen may be quite close to actual flag color */
 }
 
 div#content h2, div#content h3, div#content h4, div#content h5 {
         padding-top: 15px;
-	color: #039;
 	font-weight: normal;
 }
 
@@ -128,12 +112,10 @@ div#content p {
 }
 
 div#content a,  div#content a:visited,  div#content a:active {
-	color: #00c;
 	text-decoration: underline;
 }
 
 div#content a:hover {
-	color: #009;
 	text-decoration: underline;
 }
 
@@ -141,16 +123,12 @@ div#content a:hover {
 
 /* Styles used by activity list pages */
 div#activityPage {
-        background-color:   #fdfdfd;
-        color: #006;
         font-size: medium;
 }
 
 div#activityPage h1 {
     padding-top: 15px;
     text-align: left;
-    color: #039;
-    color: #0C0;
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size:   18px;
     font-weight: bold;
@@ -192,11 +170,6 @@ div#activityPage dt.wide {
     margin-left:     0;
 }
 
-div#activityPage .button {
-    color:            #006;
-    background-color: lavender;
-}
-
 
 
 /* Styles used by title bars on most table-viewing/modifying pages */
@@ -227,10 +200,6 @@ div#info-messages li, div#error-messages li {
         font-style:     italic;
 }
 
-div#error-messages li {
-        color:          red;
-}
-
 
 
 /* Styles used by action button lists */
@@ -254,7 +223,6 @@ div#record-block dl {
 
 div#record-block.view dl {
     padding: 5px;
-    /* background-color:   #efe; */
 }
 
 div#record-block dt, div#record-block dd {
@@ -273,40 +241,9 @@ div#record-block dd {
     width:      80%;
 }
 
-#record-block.edit input.discouraged, #record-block.add input.discouraged,
-#record-block.edit select.discouraged, #record-block.add select.discouraged {
-        background-color:   #DDDDDD;
-}
-
-#record-block.edit input.required, #record-block.add input.required,
-#record-block.edit select.required, #record-block.add select.required {
-        background-color:   #FF6;
-}
-
-#record-block.edit input.recommended, #record-block.add input.recommended,
-#record-block.edit select.recommended, #record-block.add select.recommended {
-        background-color:   #FFC;
-}
-
-input.readonly, select.readOnly {
-        background-color: #efe;
-}
-
 input.statusCode {
-        background-color: #efe;
         padding: 1px;
         width:  10px;
-}
-
-/*
-#record-block.view input.readonly, #record-block.delete input.readonly {
-        background-color: #efe;
-}
-*/
-
-#record-block.edit input.readonly {
-        background-color: #efe;
-        color: #999;
 }
 
 #external-refs li {
@@ -320,36 +257,17 @@ input.statusCode {
 /* Styles used by pages that display data in list or table format. */
 div#record-list table, div#record-table table {
         clear: both;
-        /* background-color:   Lavender; */
-}
-
-div#record-list table {
-    border: 15px solid #EFE;
-    background-color:   #EFE;       /* light blue: #EEF, CCF */
 }
 
 div#record-list td, div#record-list th {
     padding:    2px;
-    /* border:     1px solid #FFF; */
-    border-bottom: 20px solid #EFE;
-    background-color:   #fff;
 }
-
-/*
-div#record-list td, div#record-list th {
-    padding:    2px;
-    border-bottom: 10px solid white;
-    background-color:   #fff;
-}
-    */
 
 div#record-table td, div#record-table th {
     padding:    3px;
-    background-color:   #fff;
 }
 
 div#record-table td.highlighted, div#record-table th.highlighted {
-    background-color: #EFE;    /* alts: Blue: #EEF,  Green:  #DFD */
 }
 
 div#record-table th {
@@ -395,80 +313,3 @@ div#record-table th {
         display: none;
     }
 }
-
-/* ======================================== */
-
-/*
-#left {
-	background: #fff;
-}
-
-#center {
-	background: #fff;
-}
-
-#right {
-	background: #fff;
-}
-
-.note, .instructions {
-        font-size:      small;
-        font-style:     italic;
-}
-
-.indentednote {
-        margin-left:    20px;
-        margin-right:   20px;
-        font-size:      small;
-        font-style:     italic;
-}
-
-span.message, span.warning {
-        color:  #f00;
-}
-
-span.button {                   /* What does this mean? *//*
-        color:          #006;
-        font-family:    Geneva, Verdana, Arial, Helvetica, sans-serif;
-        font-style:     normal;
-        font-weight:    normal;
-}
-
-.enabledButton {
-        color: #006;
-        background-color:   lavender;
-}
-
-.disabledButton {
-        color: #99f;
-        background-color:   #eee;
-}
-
-#displayTable .enabledButton {
-        color: #006;
-        background-color:   #fff;
-}
-
-#displayTable .disabledButton {
-        color: #66f;
-        background-color:   #eeeeee;
-}
-
-
-li .comment {
-        font-style: italic;
-}
-
-.tableListComment, .activityListComment {
-    font-style: italic;
-    /* font-size: small; *//*
-}
-
-.tableFootnote {
-        font-size:      80%;
-        font-weight:    bold;
-        font-style:     italic;
-        text-align:     center;
-}
-*/
-

@@ -38,10 +38,9 @@ SMART
     categories:
 
      - Curriculum records dealing with courses of study (e.g.,
-     undergraduate
-       mathematics), courses or modules (e.g., Calculus I), and
-       their individual offerings (e.g., the Spring 2012 offering
-       of Calculus I)
+       undergraduate mathematics), courses or modules (e.g., Calculus
+       I), and their individual offerings (e.g., the Spring 2012
+       offering of Calculus I)
 
      - Instructor records (e.g., contract start/end dates, courses or
        modules taught)
@@ -56,7 +55,7 @@ general-purpose activities supported by Ramp).
 
 
 RELEASE INFORMATION
----------------
+-------------------
 RAMP/SMART Release 0.0.0.1.
 Released on July 12, 2012.
 
@@ -64,21 +63,54 @@ SYSTEM REQUIREMENTS
 -------------------
 
 RAMP (Record and Activity Management Program) was developed using
-PHP 5.3 and Zend Framework 1.11.
+Apache 2, MySQL 5.5, PHP 5.3 and Zend Framework 1.11.11.  It has
+been tested (and seems to work) with MySQL 5.1.44, PHP 5.2.15, and
+Zend Framework 1.11.10, as well as later versions up to MySQL 5.5.24,
+PHP 5.3.15, and Zend Framework 1.12.  It has not been tested with
+earlier versions of MySQL or PHP.  It did not appear to work with
+one installation of Zend Framework 1.11.4, nor does it work yet
+with Zend 2, which is a completely redesigned version of the Zend
+Framework.
 
 INSTALLATION
 ------------
 
-Please see INSTALL.txt.  (To be provided...)
+Please see INSTALL.txt.  (Under construction...)
 
 LICENSE
 -------
 
-The files in this archive are released under a BSD 2-Clause license.
+The source files for Ramp/Smart are released under a BSD 2-Clause license.
 You can find a copy of this license in LICENSE.txt.
 
 ACKNOWLEDGEMENTS
 ----------------
 
 The RAMP team would like to thank all the contributors to the RAMP project
-and Kalamazoo College.
+and the institutional supporters who have provided time, expertise, and
+money.
+
+Institutional supporters include:
+    Kalamazoo College, Kalamazoo, Michigan, USA
+    Njala University, Sierra Leone
+    The Arcus Center for Socal Justice Leadership, Kalamazoo, Michigan, USA
+Individual contributors include:
+    Keaton Adams
+    Giancarlo Anemone
+    Alyce Brady
+    Christopher Cain
+    Katrina Carlsen
+    Chris Clerville
+    Ryan Davis
+    Ashton Galloway
+    Guilherme Guedes
+    Simon Haile
+    Tristan Kiel
+    Justin Leatherwood
+    Tendai Mudyiwa
+    William Reichle
+    Renjie Song
+    Kyle Sunden
+    Jiakan Wang
+    Riley Wetzel
+

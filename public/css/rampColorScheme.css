@@ -1,0 +1,139 @@
+
+p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
+    /* is this used? */
+        background-color:   Lavender;
+}
+
+
+/* Styles used in header (banner area with application name) and footer. */
+div#header {
+	/* background: #fff url(../img/ramp-logo.gif) no-repeat; */
+}
+
+div#header .appName, div#header .appDesc {
+	color:	#66C;
+}
+
+#footer {
+	background: #fff;
+	color: #888;
+}
+
+
+/* Styles used by menu bar. */
+
+#menu-bar {
+    border-top:1px solid #fff;
+    background-color: #CCF;
+    color: #000;
+}
+
+#menu-login, #menu-login a, #main-menu a {
+    color:#fff;
+}
+
+#main-menu li {
+    border-right:1px solid #fff;
+}
+
+#menu-login a:hover, #main-menu a:hover, #main-menu a:focus {
+    color:#fff;
+}
+
+
+
+/* Styles used to create columns */
+.sidebar {                      /* sets attributes common to all sidebars */
+        background-color:   #CCF;
+}
+
+
+/* Styles used by page content below menu bar.  (Some not used.) */
+
+div#content h1 {
+	color: #66C;
+}
+
+div#content h2, div#content h3, div#content h4, div#content h5 {
+	color: #039;
+}
+
+div#content a,  div#content a:visited,  div#content a:active {
+	color: #00C;
+}
+
+div#content a:hover {
+	color: #009;
+}
+
+
+/* Styles used by activity list pages */
+div#activityPage {
+        background-color:   #fdfdfd;
+        color: #00C;
+}
+
+div#activityPage h1 {
+    color: #66C;    /* alt: #039 */
+}
+
+div#activityPage .button {
+    color:            #006;
+    background-color: lavender;
+}
+
+
+/* Styles used by title bars on most table-viewing/modifying pages */
+
+div#error-messages li {
+        color:          red;
+}
+
+
+/* Styles used by record display/modify pages */
+
+#record-block.edit input.discouraged, #record-block.add input.discouraged,
+#record-block.edit select.discouraged, #record-block.add select.discouraged {
+        background-color:   #DDDDDD;
+}
+
+#record-block.edit input.required, #record-block.add input.required,
+#record-block.edit select.required, #record-block.add select.required {
+        background-color:   #FF6;
+}
+
+#record-block.edit input.recommended, #record-block.add input.recommended,
+#record-block.edit select.recommended, #record-block.add select.recommended {
+        background-color:   #FFC;
+}
+
+input.readonly, select.readOnly,
+input.statusCode {
+        background-color: #eef;
+}
+
+#record-block.edit input.readonly {
+        background-color: #eef;
+        color: #999;
+}
+
+
+/* Styles used by pages that display data in list or table format. */
+
+div#record-list table {
+    border: 15px solid #EEF;
+    background-color:   #EEF;
+}
+
+div#record-table td.highlighted, div#record-table th.highlighted {
+    background-color: #EEF;
+}
+
+div#record-list td, div#record-list th,
+div#record-table td, div#record-table th {
+    background-color:   #fff;
+}
+
+div#record-list td, div#record-list th {
+    border-bottom: 20px solid #EEF;
+}

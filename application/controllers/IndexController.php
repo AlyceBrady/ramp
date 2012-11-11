@@ -120,45 +120,9 @@ class IndexController extends Zend_Controller_Action
     public function menuAction()
     {
         // TODO: Convert this to use Zend_Navigation
-        // Determine the name of the menu file.
-        // $mainMenu = $this->_readMenu();
-
-        // In the meantime, ...
-        $mainMenu = array(
-            array('title'=>'Home', 'url'=>$this->view->url(
-                array(), null, true))
-            ,
-            array('title'=>'About', 'url'=>$this->view->url(
-                array('controller'=>'about'), null, true))
-            ,
-            array('title'=>'Tests', 'url'=>$this->view->url(
-                array('controller'=>'activity', 'action'=>'index',
-                      self::AL_NAME => 'tests.act'),
-                null, true))
-            ,
-            array('title'=>'Demo', 'url'=>$this->view->url(
-                array('controller'=>'activity', 'action'=>'index',
-                      self::AL_NAME => urlencode('demo/index.act')),
-                null, true))
-            ,
-            array('title'=>'Smart', 'url'=>$this->view->url(
-                array('controller'=>'activity', 'action'=>'index',
-                      self::AL_NAME => urlencode('Smart/index.act')),
-                null, true))
-            ,
-            array('title'=>'Curriculum', 'url'=>$this->view->url(
-                array('controller'=>'activity', 'action'=>'index',
-                      self::AL_NAME => urlencode('Smart/Curriculum/index.act')),
-                null, true))
-            ,
-            array('title'=>'People', 'url'=>$this->view->url(
-                array('controller'=>'activity', 'action'=>'index',
-                      self::AL_NAME => urlencode('Smart/people.act')),
-                null, true))
-            );
 
         // Assigns the menu to the view & changes the response placeholder.
-        $this->view->menu = $mainMenu;
+        $this->view->menu = $this->_readMenu();
         $this->_helper->viewRenderer->setResponseSegment('menu');
     }
 
