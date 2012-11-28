@@ -75,8 +75,8 @@ class ActivityController extends Zend_Controller_Action
     /**
      * Returns true if the current request represents the initial 
      * display for the current action.  A return of false, therefore, 
-     * indicates that the current request represents the callback with 
-     * fields to add, modify, or search filled in.
+     * indicates that the current request represents the callback
+     * specifying an activity to follow.
      *
      */
     protected function _thisIsInitialDisplay()

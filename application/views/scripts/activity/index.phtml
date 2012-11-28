@@ -7,11 +7,19 @@ echo "<p>activity type: "; print_r($this->activityType); echo "</p>";
 echo "<p>activity: "; print_r($this->activity); echo "</p>";
  */
 
+// Heading may be specified with the activity or may be one of two 
+// defaults: "Choose an activity" or nothing at all (if there is just 
+// one activity which is to print HTML text as-is).
 $userSpecifiedHeading = $this->activityTitle;   // set in controller
-$heading = $userSpecifiedHeading ? : "Which activity do you wish to perform?";
+$firstEltType = reset($this->activityList)->getType();
+$htmlType = Application_Model_ActivitySpec::HTML_TYPE;
+$default = ( count($this->activityList) == 1 && $firstEltType == $htmlType ) ? 
+                "" : "Choose an activity:";
+$heading = $userSpecifiedHeading ? : $default;
 ?>
 <div id='activityPage'>
-<h1><?php echo $heading ?></h1>
+
+<?php if ( $heading != "" ) echo "<h1>$heading</h1>" ?>
 
 <?php /* echo $this->form; */ ?>
 
@@ -23,11 +31,14 @@ foreach ( $this->activityList as $key => $activity )
 {
     switch ($activity->getType())
     {
-        case Application_ModeL_ActivitySpec::COMMENT_TYPE:
+        case Application_Model_ActivitySpec::HTML_TYPE:
+                echo $activity->getHTML();
+                break;
+        case Application_Model_ActivitySpec::COMMENT_TYPE:
                 echo "<dt class='comment'>" .  $activity->getComment() .
                      "</dt><dd></dd>";
                 break;
-        case Application_ModeL_ActivitySpec::SEPARATOR_TYPE:
+        case Application_Model_ActivitySpec::SEPARATOR_TYPE:
                 echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>";
                 break;
         default:        // SETTING and ACTIVITY_LIST types

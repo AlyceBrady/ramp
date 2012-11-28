@@ -1,8 +1,8 @@
-activity.about.type = "comment"
-activity.about.comment = "
-    <h1>
-    RAMP: Record and Activity Management Program
-    </h1>
+activity.about.type = "html"
+activity.about.html = "
+<h1>
+RAMP: Record and Activity Management Program
+</h1>
 
 <p>
 Ramp is a program that supports the easy creation of simple

@@ -28,12 +28,14 @@ class Application_Model_ActivitySpec
 
     // Valid properties
     const TYPE          = "type";
+    const HTML          = "html";
     const COMMENT       = "comment";
     const SOURCE        = "source";
     const TITLE         = "title";
     const DESCRIPTION   = "description";
 
     // Valid specification types
+    const HTML_TYPE             = "html";
     const COMMENT_TYPE          = "comment";
     const SEPARATOR_TYPE        = "separator";
     const SETTING_TYPE          = "setting";
@@ -54,8 +56,8 @@ class Application_Model_ActivitySpec
                                 // a comment "activity")
 
     protected $_validSpecTypes = array(
-        self::COMMENT_TYPE, self::SEPARATOR_TYPE, self::SETTING_TYPE,
-        self::SEQUENCE_TYPE, self::ACTIVITY_LIST_TYPE);
+        self::HTML_TYPE, self::COMMENT_TYPE, self::SEPARATOR_TYPE,
+        self::SETTING_TYPE, self::SEQUENCE_TYPE, self::ACTIVITY_LIST_TYPE);
 
     /**
      * Constructs an ActivitySpec object using the information provided 
@@ -86,8 +88,8 @@ class Application_Model_ActivitySpec
         {
                 throw new Exception("Error: " . $this->_type . " is an " .
                     "invalid specification type; valid types are " .
-                    self::COMMENT_TYPE . ", " . self::SEPARATOR_TYPE . ", " .
-                    self::SETTING_TYPE . ", " .
+                    self::HTML_TYPE . ", " . self::COMMENT_TYPE . ", " .
+                    self::SEPARATOR_TYPE . ", " . self::SETTING_TYPE . ", " .
                     self::SEQUENCE_TYPE . ", " . self::ACTIVITY_LIST_TYPE);
         }
 
@@ -111,6 +113,10 @@ class Application_Model_ActivitySpec
             case self::COMMENT_TYPE:
                 $this->_description =
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
+                break;
+            case self::HTML_TYPE:
+                $this->_description =
+                    $this->_confirmProperty(self::HTML, $specAsArray);
                 break;
             default:
                 // ignore extraneous properties
@@ -163,6 +169,15 @@ class Application_Model_ActivitySpec
     public function isActivityList()
     {
         return $this->_type == self::ACTIVITY_LIST_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is actually HTML text.
+     *
+     */
+    public function isHTML()
+    {
+        return $this->_type == self::HTML_TYPE;
     }
 
     /**
@@ -231,6 +246,16 @@ class Application_Model_ActivitySpec
      *
      */
     public function getDescription()
+    {
+        return $this->_description;
+    }
+
+    /**
+     * Gets the value specified with the html property.  Returns an 
+     * empty string if no value was specified for this property.
+     *
+     */
+    public function getHTML()
     {
         return $this->_description;
     }

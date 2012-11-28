@@ -30,6 +30,9 @@
         <controllerFile controllerName="Activity">
           <actionMethod actionName="index"/>
         </controllerFile>
+        <controllerFile controllerName="Document">
+          <actionMethod actionName="index"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="TableChoice"/>
@@ -93,6 +96,9 @@
             <viewScriptFile forActionName="search"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Activity">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Document">
             <viewScriptFile forActionName="index"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
