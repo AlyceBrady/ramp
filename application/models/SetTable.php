@@ -37,7 +37,7 @@ class Application_Model_SetTable
     const EXTERNAL_TBL          = 'externalTableRef';
 
     // Constant representing an unspecified enum value for a search
-    const ANY_VAL               = '__any_search_value__';
+    const ANY_VAL               = TableController::ANY_VAL;
 
     // Constants representing search types
     const ANY                   = 'any';

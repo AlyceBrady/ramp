@@ -8,7 +8,7 @@ $formType = $this->formType;
 $fields = $this->fields;
 $name = $this->fieldName;
 $elt = $this->elt;
-$extSearchParams = array('controller' => 'table', 'action' => 'search');
+$extSearchParams = array('controller' => 'table', 'action' => 'list-view');
 
 if ( ( $formType == Application_Form_TableRecordEntry::ADD ||
        $formType == Application_Form_TableRecordEntry::EDIT ) &&
@@ -17,7 +17,8 @@ if ( ( $formType == Application_Form_TableRecordEntry::ADD ||
     $setting = urlencode($fields[$name]->getLinkedTableSetting());
     $urlParams = $extSearchParams +
                     array(TableController::SETTING_NAME => $setting);
-    echo "<a href=\"" . $this->url($urlParams, null, true) . "\">";
+    echo "<a href=\"" . $this->url($urlParams, null, true) .
+            "\" target=\"_blank\">";
     echo $elt->renderLabel();
     echo "</a>";
 else :

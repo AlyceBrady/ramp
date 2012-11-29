@@ -25,8 +25,13 @@ class Application_Form_TableRecordEntry extends Zend_Form
     const EDIT   = TableController::EDIT;
     const SEARCH = TableController::SEARCH;
     const DEL    = TableController::DEL_BUTTON;
-    const ANY_VAL = Application_Model_SetTable::ANY_VAL;
+    const ANY_VAL = TableController::ANY_VAL;
     const ANY_VAL_LABEL = "ANY VALUE";
+    const AUTO_INCR_EXPL = "Auto-incremented by default";
+    const REQUIRED_EXPL = "Required field";
+    const RECOMMENDED_EXPL = "Recommended field";
+    const REFERENCE_EXPL = "Reference to field in ";
+    const EXTERNAL_REF_EXPL = "From %s table";
 
     protected $_setTable;
     protected $_formSuffix;
@@ -83,16 +88,16 @@ class Application_Form_TableRecordEntry extends Zend_Form
                 // Determine label and class/required/read-only attributes.
                 $label = $this->_getLabel($field, $reqRecDecs);
                 $class = $this->_getClass($field, $reqRecDecs);
-                $required = $this->_fieldIsRequired($field);
+                $required = $this->_isRequired($class);
                 $readOnly = $this->_fieldIsReadOnly($field);
 
                 if ( $field->isEnum() && ! $readOnly )
                 {
                     // If this is a search, add ability to search for any value
                     $options = ( $this->_formType == self::SEARCH ) ?
-                                array(self::ANY_VAL => self::ANY_VAL_LABEL) +
-                                    $field->getEnumValues() :
-                                $field->getEnumValues();
+                                  array(self::ANY_VAL => self::ANY_VAL_LABEL) +
+                                        $field->getEnumValues() :
+                                  $field->getEnumValues();
                     $fieldElement = new Zend_Form_Element_Select($name);
                     $fieldElement->setLabel($label)
                                  ->setMultiOptions($options)
@@ -175,19 +180,6 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Returns true if the given field is required.
-     */
-    protected function _fieldIsRequired($field)
-    {
-        // "Required" fields do not have to be marked as required on 
-        // search forms, nor on modifying forms if the field should be 
-        // initialized by data from another field.
-        return $this->_formType != self::SEARCH &&
-               $field->isRequired() &&
-               ! $field->initFromAnotherTable();
-    }
-
-    /**
      * Gets appropriate label prefixes and class and title notations for 
      * the given $field if it is an identity (auto-incremented field)
      * or a required or recommended fields.
@@ -209,19 +201,19 @@ class Application_Form_TableRecordEntry extends Zend_Form
         if ( $field->isAutoIncremented() )
         {
             $reqRecDecs['class'] = "discouraged";
-            $reqRecDecs['title'] = "Auto-incremented by default";
+            $reqRecDecs['title'] = self::AUTO_INCR_EXPL;
         }
-        elseif ( $this->_fieldIsRequired($field) )
+        elseif ( $this->_fieldShouldBeRequired($field) )
         {
             // $reqRecDecs['label'] .= "**";
             $reqRecDecs['class'] = "required";
-            $reqRecDecs['title'] = "Required field";
+            $reqRecDecs['title'] = self::REQUIRED_EXPL;
         }
         elseif ( $field->isRecommended() )
         {
             // $reqRecDecs['label'] .= ">";
             $reqRecDecs['class'] = "recommended";
-            $reqRecDecs['title'] = "Recommended field";
+            $reqRecDecs['title'] = self::RECOMMENDED_EXPL;
         }
 
         if ( $field->isDiscouraged() )
@@ -230,6 +222,29 @@ class Application_Form_TableRecordEntry extends Zend_Form
         }
 
         return $reqRecDecs;
+    }
+
+    /**
+     * Returns true if the given field should be required.
+     */
+    protected function _fieldShouldBeRequired($field)
+    {
+        // "Required" fields do not have to be marked as required on 
+        // search forms, nor on modifying forms if a default is being 
+	// provided or if the field should be initialized by data from
+	// another table.
+        return $this->_formType != self::SEARCH &&
+               $field->isRequired() &&
+               $field->getDefault() == null && 
+               ! $field->initFromAnotherTable();
+    }
+
+    /**
+     * Returns true if the given field is required.
+     */
+    protected function _isRequired($class)
+    {
+        return $class == "required";
     }
 
     /**
@@ -254,7 +269,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
         if ( $field->isExternalTableLink() )
         {
             $table = $field->getLinkedTable();
-            $title = "Reference to field in $table";
+            $title = self::REFERENCE_EXPL . "$table";
         }
         $footnote = $field->getFieldFootnote();
         if ( $footnote != "" )
@@ -265,7 +280,8 @@ class Application_Form_TableRecordEntry extends Zend_Form
         }
         if ( $field->isImported() )
         {
-            $title = "From " . $field->getImportTable() . " table";
+            $title = sprintf(self::EXTERNAL_REF_EXPL,
+                             $field->getImportTable());
         }
 
         // Add tooltip title to decorators.
@@ -323,7 +339,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
      *       Need to test Time and Year.
      * (Don't need anything for enum, because handled with pull-down
      * selections.)
-     * TODO: May want to handle locale handling to date/int check.
+     * TODO: May want to add locale handling to date/int check.
      */
     protected function _getValidators($field)
     {
@@ -350,8 +366,11 @@ class Application_Form_TableRecordEntry extends Zend_Form
                 $validators[] = array('digits');
                 break;
             case "stringType":
-                $validators[] = array('stringlength', false,
-                                        array('max' => $maxLength));
+                if ( $maxLength != 0 )
+                {
+                    $validators[] = array('stringlength', false,
+                                            array('max' => $maxLength));
+                }
                 break;
             case "date":
                 $validators[] = array('date');

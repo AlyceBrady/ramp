@@ -49,6 +49,9 @@ class TableController extends Zend_Controller_Action
     const CONFIRM               = "Confirm";
     const SAVE                  = "Save Changes";
 
+    // Constant representing an unspecified enum value for a search
+    const ANY_VAL               = '__any_search_value__';
+
     protected $_encodedSeqName;
 
     protected $_tblViewingSeq;
@@ -604,7 +607,7 @@ class TableController extends Zend_Controller_Action
         $nonNullData = array();
         foreach ( $data as $field => $value )
         {
-            if ( $value !== null && $value != "" )
+            if ( $value !== null && $value != "" && $value != self::ANY_VAL )
             {
                 $nonNullData[$field] = $value;
             }
