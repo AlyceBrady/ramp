@@ -43,21 +43,21 @@ comment = "Examples of invalid activity list files"
 [simpleTest]
 
 type = activityList
-source = activityTesting/simpleTest.act
+source = tests/activityTesting/simpleTest.act
 title = "Simple Test"
 description = "Test a list with 5 activities, all specified in place"
 
 [noList]
 
 type = activityList
-source = activityTesting/noList.act
+source = tests/activityTesting/noList.act
 title = "File with No List"
 description = "Test a file with one 'unattached' activity specification but no list"
 
 [settingTests]
 
 type = activityList
-source = settingTesting/index.act
+source = tests/settingTesting/index.act
 title = "Unnamed activities"
 description = "Test a file with unnamed, deferred activities, including
 separators, comments, and settings (real activity list for testing
@@ -66,7 +66,7 @@ the handling of setting config files)"
 [mainActListInSection]
 
 type = activityList
-source = activityTesting/mainActListInSection.act
+source = tests/activityTesting/mainActListInSection.act
 title = "Main List in Section"
 description = "Test a file with no top-level activity list, but one in a
 section with the same activity list name"
@@ -74,14 +74,14 @@ section with the same activity list name"
 [multipleLists]
 
 type = activityList
-source = activityTesting/multipleLists.act
+source = tests/activityTesting/multipleLists.act
 title = "Multiple Lists"
 description = "Test a valid file with multiple activity lists, one at top-level"
 
 [badMultipleLists]
 
 type = activityList
-source = activityTesting/badMultipleLists.act
+source = tests/activityTesting/badMultipleLists.act
 title = "No Main List"
 description = "Test a file with multiple activity lists, but none
 at the top-level or matching the expected list name"
@@ -89,7 +89,7 @@ at the top-level or matching the expected list name"
 [sharedActSpecs]
 
 type = activityList
-source = activityTesting/sharedActSpecs.act
+source = tests/activityTesting/sharedActSpecs.act
 title = "Shared Activity Specs"
 description = "Test an activity that consists of a reference to another
 activity list defined in the same file; also, both share some common
@@ -103,7 +103,7 @@ comment = "Examples of invalid activity list files"
 [activityListTest]
 
 type = activityList
-source = activityTesting/index.act
+source = tests/activityTesting/index.act
 title = "Valid Activity List"
 description = "Test a valid list of separators, comments, and activity lists
 (loops back to this activity)"

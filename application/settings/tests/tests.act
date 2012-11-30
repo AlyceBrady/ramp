@@ -37,7 +37,7 @@ description = "Run draft demos of Ramp program"
 [settingTests]
 
 type = activityList
-source = settingTesting/index.act
+source = tests/settingTesting/index.act
 title = "Setting Config Tests"
 description = "Series of tests related to sequence/setting configuration
 files"
@@ -45,14 +45,14 @@ files"
 [activityListTests]
 
 type = activityList
-source = activityTesting/index.act
+source = tests/activityTesting/index.act
 title = "Activity Tests"
 description = "Series of tests related to activity list configuration files"
 
 [formTests]
 
 type = activityList
-source = formTesting/index.act
+source = tests/formTesting/index.act
 title = "Form Tests"
 description = "Series of tests related to displaying tables, incl.
 hidden, required, recommended fields, etc"

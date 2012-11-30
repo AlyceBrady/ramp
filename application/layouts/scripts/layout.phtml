@@ -8,11 +8,14 @@ echo $this->doctype();
     <?php echo $this->headMeta(); ?>
     <?php echo $this->headTitle(); ?>
     <?php echo $this->headLink(); ?>
-    <link rel='icon' href='/images/blueSmart.ico'>
+    <?php if ( isset($this->icon) ) : ?>
+        <link rel='icon' href='<?php echo $this->icon; ?>'>
+    <?php endif; ?>
 </head>
 
 <body>
-<?php echo $this->partial("_header.phtml", array('title'=>$this->title)); ?>
+<?php echo $this->partial("_header.phtml",
+        array('title'=>$this->pageTitle, 'subtitle'=>$this->pageSubTitle)); ?>
 <?php echo $this->layout()->menu; ?>
 <div id="content">
     <?php echo $this->layout()->content; ?>

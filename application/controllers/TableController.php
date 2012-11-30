@@ -633,12 +633,11 @@ class TableController extends Zend_Controller_Action
         // Loop through fields in this table to see if any should be 
         // initialized from values in another table.
         $inputFieldNames = array_keys($data);
-        $visibleFields = $this->view->tableInfo->getVisibleFields();
-        foreach ( $visibleFields as $newFieldName => $newField )
+        $relevantFields = $this->view->tableInfo->getExternallyInitFields();
+        foreach ( $relevantFields as $newFieldName => $newField )
         {
             // Initialize from another table if data not already provided.
-            if ( $data[$newFieldName] == null &&
-                 $newField->initFromAnotherTable() )
+            if ( $data[$newFieldName] == null )
             {
                 // Determine initializing table; see if source record 
                 // has already been retrieved.

@@ -23,37 +23,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if ( isset($configOptions['ramp']) )
         {
 
-            // Register the directory that stores the application menu.
+            // Register the variables that may vary from Ramp 
+            // application to application, or even among different 
+            // environments within an application (e.g., production vs. 
+            // test vs. development environments).
             $rampConfigSettings = $configOptions['ramp'];
-            $path = $rampConfigSettings['menuFilename'];
-            if ( ! empty($path) )
-            {
-                Zend_Registry::set('rampMenuFilename', $path);
-            }
+            Zend_Registry::set('rampConfigSettings', $rampConfigSettings);
 
             // Register the directory that stores table settings.
             $path = $rampConfigSettings['settingsDirectory'];
             if ( ! empty($path) )
             {
                 Zend_Registry::set('rampSettingsDirectory', $path);
-            }
-
-            // Set the initial View placeholders...
-            $this->bootstrap('View');
-            $view = $this->getResource('View');
-
-            // Set the initial title and separator.
-            $appl = $rampConfigSettings['applicationShortName'];
-            if ( ! empty($appl) )
-            {
-                $view->headTitle($appl)->setSeparator(' - ');
-            }
-
-            // Register the umbrella cascading style sheet.
-            $stylesheet = $rampConfigSettings['css'];
-            if ( ! empty($stylesheet) )
-            {
-                $view->headlink()->prependStylesheet($stylesheet);
             }
 
         }

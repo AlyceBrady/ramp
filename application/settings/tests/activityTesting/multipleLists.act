@@ -11,7 +11,7 @@ activity.comment.comment = "This activity list is just the first of four
 in this file; the others can be reached via Activities 2, 4, and 5."
 
 activity.a.type = "setting"
-activity.a.source = "settingTesting/BasicTableSetting"
+activity.a.source = "tests/settingTesting/BasicTableSetting"
 activity.a.title = "A Table Setting"
 activity.a.description = "Activity 1: A table setting (simple table for
 displaying albums)"
@@ -23,7 +23,7 @@ activity.c.description = "Activity 2: Another activity list defined in
 this same file"
 
 activity.b.type = "setting"
-activity.b.source = "settingTesting/nonExistentSetting"
+activity.b.source = "tests/settingTesting/nonExistentSetting"
 activity.b.title = "A Non-Existent Setting"
 activity.b.description = "Activity 3: A non-existent table setting
 (produces an error message)"
@@ -55,13 +55,13 @@ activity.expl.comment = "This activity list is similar to the first,
 but with fewer activities and a different title"
 
 activity.f.type = "setting"
-activity.f.source = "settingTesting/BasicTableSetting"
+activity.f.source = "tests/settingTesting/BasicTableSetting"
 activity.f.title = "A Table Setting"
 activity.f.description = "Activity 1: A table setting (simple table for
 displaying albums)"
 
 activity.g.type = "setting"
-activity.g.source = "settingTesting/nonExistentSetting"
+activity.g.source = "tests/settingTesting/nonExistentSetting"
 activity.g.title = "A Non-Existent Setting"
 activity.g.description = "Activity 2: A non-existent table setting
 (produces an error message)"
@@ -81,13 +81,13 @@ activity.expl.comment = "This activity list is the same as the Activity
 2 activity list, except for this comment and the title"
 
 activity.m.type = "setting"
-activity.m.source = "settingTesting/BasicTableSetting"
+activity.m.source = "tests/settingTesting/BasicTableSetting"
 activity.m.title = "A Table Setting"
 activity.m.description = "Activity 1: A table setting (simple table for
 displaying albums)"
 
 activity.n.type = "setting"
-activity.n.source = "settingTesting/nonExistentSetting"
+activity.n.source = "tests/settingTesting/nonExistentSetting"
 activity.n.title = "A Non-Existent Setting"
 activity.n.description = "Activity 2: A non-existent table setting
 (produces an error message)"
@@ -107,13 +107,13 @@ activity.expl.comment = "This activity list is the same as the Activity
 2 and Activity 4 activity lists, except for this comment and the title"
 
 activity.x.type = "setting"
-activity.x.source = "settingTesting/BasicTableSetting"
+activity.x.source = "tests/settingTesting/BasicTableSetting"
 activity.x.title = "A Table Setting"
 activity.x.description = "Activity 1: A table setting (simple table for
 displaying albums)"
 
 activity.y.type = "setting"
-activity.y.source = "settingTesting/nonExistentSetting"
+activity.y.source = "tests/settingTesting/nonExistentSetting"
 activity.y.title = "A Non-Existent Setting"
 activity.y.description = "Activity 2: A non-existent table setting
 (produces an error message)"

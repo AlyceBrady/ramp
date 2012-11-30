@@ -22,6 +22,19 @@ class IndexController extends Zend_Controller_Action
 {
     const SETTING_NAME = 'setting';     // TODO: should use one in TableController!
     const AL_NAME = 'activity';     // TODO: should use one in ActivityController!
+    // Define constants that define basic configuration variables.
+    const CONFIG_SETTINGS = "rampConfigSettings";
+    const TITLE = "title";
+    const SUBTITLE = "subtitle";
+    const MENU_FILENAME = "menuFilename";
+    const INITIAL_ACTIVITY = "initialActivity";
+    const STYLE_SHEET = "css";
+    const TAB_TITLE = "applicationShortName";
+    const ICON = "icon";
+
+    // Define instance variables that hold basic configuration variables.
+    protected $_menuFilename = null;
+    protected $_initialActivity = null;
 
     public function init()
     {
@@ -37,6 +50,47 @@ class IndexController extends Zend_Controller_Action
             Zend_Loader::loadClass('TableController');
         }
          */
+
+        // Get various applications variables from Zend_Registry.
+        if ( Zend_Registry::isRegistered(self::CONFIG_SETTINGS) )
+        {
+            $configSettings = Zend_Registry::get(self::CONFIG_SETTINGS);
+
+            // Get the menu filename from Zend_Registry.
+            $this->_menuFilename = isset($configSettings[self::MENU_FILENAME]) ?
+                    $configSettings[self::MENU_FILENAME] : null;
+
+            // Get the initial activity from Zend_Registry.
+            $this->_initialActivity =
+                isset($configSettings[self::INITIAL_ACTIVITY]) ?
+                    $configSettings[self::INITIAL_ACTIVITY] : null;
+
+            // Get appropriate title, subtitle, tab title, and icon
+            // information from Zend_Registry.
+            $tabTitle = isset($configSettings[self::TAB_TITLE]) ?
+                            $configSettings[self::TAB_TITLE] : null;
+            if ( ! empty($tabTitle) )
+            {
+                $this->view->headTitle($tabTitle)->setSeparator(' - ');
+            }
+            $this->view->icon = isset($configSettings[self::ICON]) ?
+                            $configSettings[self::ICON] : null;
+            $this->view->pageTitle = isset($configSettings[self::TITLE]) ?
+                            $configSettings[self::TITLE] : null;
+            $this->view->pageSubTitle = isset($configSettings[self::SUBTITLE]) ?
+                            $configSettings[self::SUBTITLE] : null;
+
+            // Get the appropriate cascading stylesheet from Zend_Registry.
+            $stylesheet =
+                isset($configSettings[self::STYLE_SHEET]) ?
+                    $configSettings[self::STYLE_SHEET] : null;
+            if ( ! empty($stylesheet) )
+            {
+                $this->view->headLink()->prependStylesheet($stylesheet);
+            }
+
+        }
+
     }
 
     public function indexAction()
@@ -48,10 +102,30 @@ class IndexController extends Zend_Controller_Action
         }
          */
 
-        // $this->_forward('choose-table');
-        $this->_forward('choose-activity-list');
+        // Redirect to the appropriate initial activity for this 
+        // application and environment, if one has been specified
+        // (see configs/application.ini).  Otherwise ask the user to 
+        // choose an initial activity.
+        if ( $this->_initialActivity != null )
+        {
+            $this->_forward('choose-activity-list');
+            $activityListName = urlencode($this->_initialActivity);
+            $params = array(self::AL_NAME => $activityListName);
+
+            $this->_helper->redirector('index', 'activity', null, $params);
+        }
+        else
+        {
+            $this->_forward('choose-activity-list');
+        }
     }
 
+    /**
+     * Show the user a form from which they should choose a
+     * table/table setting.
+     * DEPRECATED?  Certainly no longer used as initial page, as it was 
+     * in the very first version of RAMP.
+     */
     public function chooseTableAction()
     {
         // Instantiate the form that asks the user which table setting to 
@@ -82,6 +156,10 @@ class IndexController extends Zend_Controller_Action
         }
     }
 
+    /**
+     * Show the user a form from which they should choose an
+     * activity to perform.
+     */
     public function chooseActivityListAction()
     {
         // Instantiate the form that asks the user which activity list to 
@@ -134,42 +212,8 @@ class IndexController extends Zend_Controller_Action
      */
     protected function _readMenu()
     {
-        // Get the menu filename from Zend_Registry.
-        $menuFilename = 
-            Zend_Registry::isRegistered('rampMenuFilename') ?
-                Zend_Registry::get('rampMenuFilename') :
-                null;
-
-        $menu =  new Zend_Config_Ini($menuFilename);
+        $menu =  new Zend_Config_Ini($this->_menuFilename);
         return $menu;
-    }
-
-// MIGHT WANT SOMETHING LIKE THIS TO GET FIRST ACTIVITY; default to index.act?
-
-    /**
-     * Gets a table viewing sequence for the given sequence or table 
-     * setting name.
-     *
-     * @param string $name    name of the sequence
-     * @return Application_Model_TableViewSequence
-     *
-     */
-    protected function _getViewingSequence($name)
-    {
-        // Get the sequence.
-        $allSequences = Zend_Registry::get('rampTableViewingSequences');
-        if ( isset($allSequences[$name]) )
-            { $sequence = $allSequences[$name]; }
-        else
-        {
-            // Sequence not in registry; construct and register it.
-            $sequence = new Application_Model_TableViewSequence($name);
-            $allSequences[$name] = $sequence;
-            Zend_Registry::set('rampSetTables', $allSequences);
-        }
-
-        // Return the sequence.
-        return $sequence;
     }
 
 

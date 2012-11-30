@@ -113,6 +113,10 @@ class Application_Model_SetTable
     /** @var array */
     protected $_defaults = array();         // field default values
 
+    /** @var array */
+    protected $_externalInits = array();        // fields initialized from
+                                                // external sources
+
     /** @var string */
     // protected $_singleRecordDisplayAction; // how to display single records
 
@@ -359,6 +363,8 @@ class Application_Model_SetTable
         $fieldDefault = $field->getDefault();
         if ( null !== $fieldDefault )
             { $this->_defaults[$name] = $fieldDefault; }
+        if ( $field->initFromAnotherTable() )
+            { $this->_externalInits[$name] = $field; }
 
     }
 
@@ -533,6 +539,17 @@ class Application_Model_SetTable
     public function getDefaults()
     {
         return $this->_defaults;
+    }
+
+    /**
+     * Gets an array of all fields in this table that should be 
+     * initialized from external sources.
+     *
+     * @return array
+     */
+    public function getExternallyInitFields()
+    {
+        return $this->_externalInits;
     }
 
     /**

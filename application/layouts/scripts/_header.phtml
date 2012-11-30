@@ -7,7 +7,16 @@
         Record and Activity Management Program</span></h1>
 -->
 <div id="header">
-    <h1><span class="appName">Smart:</span> <span class="appDesc">
-        Software for Managing Academic Records and Transcripts</span></h1>
+<h1>
+<?php
+if ( ! empty($this->title) ) : ?>
+    <span class="appName"><?php echo $this->title; ?></span><?php
+else : ?>
+    <span class="appName">Ramp</span><?php
+endif; ?><?php
+if ( ! empty($this->subtitle) ) :
+    ?><span class="appName">:</span>
+    <span class="appDesc"><?php echo $this->subtitle; ?></span></h1>
+<?php endif; ?>
 </div>
 

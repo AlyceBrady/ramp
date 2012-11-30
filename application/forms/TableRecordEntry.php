@@ -136,7 +136,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
                     { $fieldElement->setAttrib('title', $title); }
 
             }
-            else    // If not visible, must be a primary key to be "relevant"
+            else    // Hidden primary key.
             {
                 $fieldElement = new Zend_Form_Element_Hidden($name);
                 $fieldElement->setLabel($field->getLabel())

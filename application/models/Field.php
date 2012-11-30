@@ -511,7 +511,8 @@ class Application_Model_Field
     {
         return ( $this->isPrimaryKey() || $this->isRequired() )
                && $this->getDefault() == null
-               && ! $this->isAutoIncremented();
+               && ! $this->isAutoIncremented()
+               && ! $this->initFromAnotherTable();
     }
 
 }

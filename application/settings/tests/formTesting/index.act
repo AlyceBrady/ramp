@@ -16,14 +16,14 @@ type = "separator"
 [hiddenFieldsCannotAdd]
 
 type = "setting"
-source = "formTesting/hiddenFieldsCannotAdd"
+source = "tests/formTesting/hiddenFieldsCannotAdd"
 title = "Cannot Add"
 description = "Required fields are hidden in main setting, so cannot add"
 
 [manyNotesMarkingsColorsTooltips]
 
 type = "setting"
-source = "formTesting/manyNotesMarkingsColorsTooltips"
+source = "tests/formTesting/manyNotesMarkingsColorsTooltips"
 title = "Test Footnotes and Field Coloring"
 description = "Test variations on field display: field coloring for
 auto-incremented, required, and recommended fields (add and edit mode),
@@ -32,7 +32,7 @@ table and field footnotes, informational and error messages, etc."
 [validatingDataTypes]
 
 type = "setting"
-source = "formTesting/Student"
+source = "tests/formTesting/Student"
 title = "Validate Data Types"
 description = "Test validation of several data types, including
 INT, a relatively short VARCHAR (20), and TIMESTAMP.
@@ -44,7 +44,7 @@ a 'good' status (X) because all recommended fields have been filled in."
 [moreDataTypes]
 
 type = "setting"
-source = "formTesting/StaffContract"
+source = "tests/formTesting/StaffContract"
 title = "More Data Types"
 description = "Test validation of various data types, including
 ENUM (1 required with default value, 1 optional with implicit
@@ -56,7 +56,7 @@ multiple relevant records."
 [yetMoreDataTypes]
 
 type = "setting"
-source = "formTesting/TermStanding"
+source = "tests/formTesting/TermStanding"
 title = "Yet More Data Types"
 description = "Test validation of various data types, including
 INT, VARCHAR, DOUBLE, DECIMAL.

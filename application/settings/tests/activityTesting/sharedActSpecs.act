@@ -32,7 +32,7 @@ type = "separator"
 [simpleTest]
 
 type = activityList
-source = activityTesting/simpleTest.act
+source = tests/activityTesting/simpleTest.act
 title = "External Activity List"
 description = "Activity 1 is defined in another file (Test of a list
 with 4 activities, all specified in place)"
