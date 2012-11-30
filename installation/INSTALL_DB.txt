@@ -10,6 +10,19 @@ Academic Records and Transcripts).
 Getting Ready:
 --------------
 
+The installation instructions in this file refer to two SQL script
+files, createRampDatabases.sql (for both Ramp and Smart) and
+createSmartDatabases.sql (Smart only), to be edited and run.  To
+prevent the possibility that local customizations in these files
+might be overwritten by future software updates, the initial download
+contains files called createRampDatabasesTemplate.sql and
+createSmartDatabasesTemplate.sql instead.  For an initial installation,
+the first steps, therefore, are to:
+    * Copy createRampDatabasesTemplate.sql to createRampDatabases.sql.
+    * Copy createSmartDatabasesTemplate.sql to createSmartDatabases.sql.
+In the instructions that follow, edit the two new files, leaving the
+two original template files untouched.
+
 To protect the security of the Ramp/Smart database, the database administrator
 responsible for creating and maintaining the database must take
 several steps before creating the users and databases used by Ramp.
