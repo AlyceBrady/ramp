@@ -654,31 +654,37 @@ INSERT INTO `TestScores` VALUES (3,8,'2011-06-15','Entrance Exam',NULL,'West Afr
 UNLOCK TABLES;
 
 --
--- Table structure for table `users`
+-- Table structure for table `ramp_auth_users`
 --
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `ramp_auth_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
+CREATE TABLE `ramp_auth_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `password` varchar(40) NOT NULL,
+  `role` varchar(100) NOT NULL DEFAULT 'guest' ,
   `first_name` varchar(100) DEFAULT NULL,
   `last_name` varchar(100) DEFAULT NULL,
   `email` varchar(150) NOT NULL,
-  `role` varchar(100) DEFAULT NULL,
+  `domainID` int,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table `ramp_auth_users`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'abrady','abrady','Alyce','Brady','abrady@kzoo.edu'),(2,'cdelaney','cdelaney','Casey','Delaney','cdelaney@kzoo.edu'),(3,'lpotts','lpottslpottslp','Lanny','Potts','lpotts@kzoo.edu');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+LOCK TABLES `ramp_auth_users` WRITE;
+/*!40000 ALTER TABLE `ramp_auth_users` DISABLE KEYS */;
+INSERT INTO `ramp_auth_users`
+(first_name, last_name, username, password, email, role)
+VALUES ('Guest', 'Guest', 'guest', 'guest', '', 'guest') ,
+('Alyce', 'Brady', 'abrady', 'abrady', 'abrady@kzoo.edu', 'admin') ,
+('Casey','Delaney','cdelaney','cdelaney', 'cdelaney@kzoo.edu', 'nonadmin'),
+('Lanny','Potts','lpotts', 'lpotts','lpotts@kzoo.edu', 'guest');
+/*!40000 ALTER TABLE `ramp_auth_users` ENABLE KEYS */;
 UNLOCK TABLES;
 

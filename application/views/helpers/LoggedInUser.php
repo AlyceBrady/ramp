@@ -23,7 +23,7 @@ class Zend_View_Helper_LoggedInUser
             $logoutURL = $this->view->url(array('controller'=>'auth',
                                 'action'=>'logout'));
             $user = $auth->getIdentity();
-            $username = $this->view->escape(ucfirst($user->username));
+            $username = $this->view->escape($user->username);
 
             $string = 'Logged in as ' . $username .  ' |' .
                 '<a href=' . $logoutURL . '>Log out</a>';

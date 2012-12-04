@@ -91,24 +91,18 @@ class IndexController extends Zend_Controller_Action
 
         }
 
+// $this->_getAuthDebuggingInfo();
+
     }
 
     public function indexAction()
     {
-        /*
-        if ( null === Zend_Auth::getInstance()->getIdentity() )
-        {
-            $this->_helper->redirector('login', 'auth');
-        }
-         */
-
         // Redirect to the appropriate initial activity for this 
         // application and environment, if one has been specified
         // (see configs/application.ini).  Otherwise ask the user to 
         // choose an initial activity.
         if ( $this->_initialActivity != null )
         {
-            $this->_forward('choose-activity-list');
             $activityListName = urlencode($this->_initialActivity);
             $params = array(self::AL_NAME => $activityListName);
 
@@ -216,6 +210,16 @@ class IndexController extends Zend_Controller_Action
         return $menu;
     }
 
+
+    protected function _getAuthDebuggingInfo()
+    {
+        $roles = Zend_Registry::get('roles');
+        $resources = Zend_Registry::get('resources');
+        $rules = Zend_Registry::get('rules');
+        $this->view->authDebugging .= "<blockquote><b>Roles</b>: " . print_r($roles, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Resources</b>: " . print_r($resources, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Rules</b>: " . print_r($rules, true) . "</blockquote>";
+    }
 
 }
 

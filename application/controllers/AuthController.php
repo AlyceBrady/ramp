@@ -15,6 +15,7 @@
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
  * @version    $Id: AuthController.php 1 2012-07-12 alyce $
+ * @version    $Id: AuthController.php 1 2012-11-28 Justin, Chris Cain, Alyce $
  *
  */
 class AuthController extends Zend_Controller_Action
@@ -23,6 +24,11 @@ class AuthController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
+    }
+
+    public function indexAction()
+    {
+        $this->_forward('login');
     }
 
     /**
@@ -70,6 +76,82 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
+     * Sends unauthorized user to a "not authorized" page.
+     * Justin Leatherwood, November 2012.
+     */ 
+    public function unauthorizedAction()
+    {
+        $this->view->errorMsg =
+                'Sorry, you are not authorized for this action.';
+    }
+
+    /**
+     * Adds users to authentication table (table of usernames, etc.).
+     * Justin Leatherwood and/or Chris Cain, November 2012.
+     */ 
+    public function addUserAction()
+    {
+        $form = new Application_Form_UserEdit();
+        $this->view->form = $form;
+
+        if ($this->getRequest()->isPost())
+        {
+            $formData = $this->getRequest()->getPost();
+            if ($form->isValid($formData))
+            {
+                $username = $form->getValue('username');
+                $password = $form->getValue('password');
+                $role = $form->getValue('role');
+                $first_name = $form->getValue('first_name');
+                $last_name = $form->getValue('last_name');
+                $email = $form->getValue('email'); 
+                $user = new Application_Model_DbTable_Users();
+                $user->addUser($username, $password, $first_name,
+                               $last_name, $email, $role);
+                $this->_helper->redirector('index', 'index');
+            }
+            else
+            {
+                $form->populate($formData);
+            }
+        }
+    }
+
+    /**
+     * Validates that all roles and resources in Access Control List
+     * rules have been defined.
+     */ 
+    public function validateAclRulesAction()
+    {
+        $this->view->invalid = array();
+
+        // Get the access control list containing roles and resources.
+        $acl = new Ramp_Acl();
+
+        // Get the Access Control List containing defined roles and 
+        // resources.
+        $authInfo = new Application_Model_DbTable_Auths();
+        $accessRules = $authInfo->getAccessRules();
+
+        // Check the access rules to validate whether each role and 
+        // resource exist in the access control list.
+        foreach ( $accessRules as $ruleNumber => $rule )
+        {
+            foreach ( $rule as $role => $resource )
+            {
+                if ( ! $acl->hasRole($role) )
+                {
+                    $this->view->invalid[$ruleNumber]['role'] = $role;
+                }
+                if ( ! $acl->has($resource) )
+                {
+                    $this->view->invalid[$ruleNumber]['resource'] = $resource;
+                }
+            }
+        }
+    }
+
+    /**
      * Validates the username and password.  If valid, stores identity 
      * information (except for the password) to provide a persistent 
      * identity.
@@ -114,7 +196,7 @@ class AuthController extends Zend_Controller_Action
         $dbAdapter = Zend_Registry::get('db');
 
         $authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);
-        $authAdapter->setTableName('users')
+        $authAdapter->setTableName('ramp_auth_users')
                 ->setIdentityColumn('username')
                 ->setCredentialColumn('password')
                 ; // ->setCredentialTreatment('SHA1(?)');
@@ -138,5 +220,4 @@ $password = $formData['password'];
     }
 
 }
-
 
