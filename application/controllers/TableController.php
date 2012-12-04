@@ -50,7 +50,7 @@ class TableController extends Zend_Controller_Action
     const SAVE                  = "Save Changes";
 
     // Constant representing an unspecified enum value for a search
-    const ANY_VAL               = '__any_search_value__';
+    const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
     protected $_encodedSeqName;
 

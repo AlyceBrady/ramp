@@ -25,7 +25,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
     const EDIT   = TableController::EDIT;
     const SEARCH = TableController::SEARCH;
     const DEL    = TableController::DEL_BUTTON;
-    const ANY_VAL = TableController::ANY_VAL;
+    const ANY_VAL = Application_Model_SetTable::ANY_VAL;
     const ANY_VAL_LABEL = "ANY VALUE";
     const AUTO_INCR_EXPL = "Auto-incremented by default";
     const REQUIRED_EXPL = "Required field";

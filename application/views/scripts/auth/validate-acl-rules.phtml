@@ -1,0 +1,33 @@
+<?php
+$this->title = "ACL Validation";
+$this->headTitle($this->title);
+?>
+
+<h2>Access Control List Validation</h2>
+<?php if ( count($this->invalid) == 0 ) { ?>
+<p>All roles and resources used in the database have been defined.</p>
+<?php
+} else
+{
+    echo "<ul>\n";
+    foreach ( $this->invalid as $ruleNumber => $attributes )
+    {
+        $both = count($attributes) == 2;
+        echo "<li><strong>Rule $ruleNumber:</strong> ";
+        if ( isset($attributes['role']) )
+        {
+            echo "invalid role (" . $attributes['role'] . ") ";
+        }
+        if ( $both )
+        {
+            echo "and ";
+        }
+        if ( isset($attributes['resource']) )
+        {
+            echo "invalid resource (" . $attributes['resource'] . ") ";
+        }
+        echo "</li>\n";
+    }
+    echo "</ul>\n";
+}
+?>

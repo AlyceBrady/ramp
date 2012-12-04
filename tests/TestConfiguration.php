@@ -32,8 +32,9 @@ CREATE TABLE users (
     password VARCHAR ( 40 ) NOT NULL ,
     first_name VARCHAR ( 100 ),
     last_name VARCHAR ( 100 ),
-    email VARCHAR ( 150 ) NOT NULL
-)
+    email VARCHAR ( 150 ) NOT NULL,
+    role VARCHAR ( 100 )
+);
 EOT
         );
 
