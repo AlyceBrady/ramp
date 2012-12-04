@@ -52,10 +52,12 @@ Ramp expects to find a file called application.ini in the
 contain Ramp configuration information, some of which may have to
 be customized for your environment.  To prevent the possibility
 that local customizations in an application.ini file might be
-overwritten by future Ramp updates, the Ramp download contains a
-file called applicationTemplate.ini, not application.ini. For an
-initial installation, create a copy of the applicationTemplate.ini
-file, calling it application.ini and editing it as appropriate.
+overwritten by future Ramp updates, the Ramp download contains two
+files called smartApplicationTemplate.ini (for Smart application
+installations) and rampApplicationTemplate.ini (for any other use
+of Ramp) instead of providing application.ini.  For an initial
+installation, create a copy of whichever of the template files is
+more appropriate, call it application.ini, and edit it as appropriate.
 (Some modifications will arise in setting up the Ramp database, as
 explained in the next section.)  When installing a Ramp update, you
 will need to compare your application.ini file against the new
