@@ -2,6 +2,7 @@
 
 activity[] = "Albums Demo"
 activity[] = "Places Demo"
+activity[] = "Smart Demo"
 
 
 [horizRule]
@@ -25,10 +26,10 @@ title = "Albums Demo"
 description = "A list of Albums, providing a very simple table
 for demonstration purposes."
 
-[SmartDemo]
+[Smart Demo]
 
 type = "activityList"
-source = "Smart/index.act"
+source = "Smart/demo.act"
 title = "Smart Demo"
 description = "An initial set of tables with a minimal set of records
 showing how Ramp (Record and Activity Management Program) could provide

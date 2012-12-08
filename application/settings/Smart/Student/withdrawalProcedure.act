@@ -32,8 +32,8 @@ description = "End any advising, coaching, or other relationships."
 
 type = "setting"
 source = "Smart/Student/Student"
-title = "Withdraw from Programs""
+title = "Withdraw from Programs"
 description = "Withdraw student from all current academic programs by
 setting the end date (status should get updated automatically).  If
-some programs are sub-programs of another "parent" program, withdraw the
+some programs are sub-programs of another 'parent' program, withdraw the
 student from the sub-programs first."

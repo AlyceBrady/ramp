@@ -47,8 +47,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         $requestedResource = $this->_getResource($request, $acl);
 
         // Store Zend redirector for future use.
-        $zendRedirector =
-            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+        $zendRedirector = $this->_getRedirector();
 
         // Check if there is an authenticated user.
         $auth = Zend_Auth::getInstance();
@@ -105,22 +104,30 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         {
             if ( $request->getActionName() != "index" )
             {
-            $seqName = urldecode($request->getUserParam('_setting'));
-            $tblViewingSeq =
-                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
-            $setTable = $tblViewingSeq->getSetTableForViewing();
-            $requestedResource .= "::" . $setTable->getDbTableName();
+                $seqName = urldecode($request->getUserParam('_setting'));
+                $tblViewingSeq =
+                  Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+                $setTable = $tblViewingSeq->getSetTableForViewing();
+                $requestedResource .= "::" . $setTable->getDbTableName();
             }
         }
 
         // Check that the requested resource is a defined resource.
         if ( ! $acl->has($requestedResource) )
         {
-            throw new Exception("Error: resource $requestedResource " .
-                                "does not exist.");
+            // Accessing an undefined resource is an unauthorized access.
+            $zendRedirector = $this->_getRedirector();
+            $mysession->destination_url = $request->getPathInfo();
+            return $zendRedirector->setGotoUrl('auth/unauthorized');
         }
 
         return $requestedResource;
+    }
+
+    protected function _getRedirector()
+    {
+        return
+            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
     }
 
 }

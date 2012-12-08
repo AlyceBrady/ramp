@@ -5,9 +5,9 @@ activityListHeading = "Choose an activity:"
 activity[] = "Smart View of Users"
 activity[] = "Auths"
 activity[] = "Spacer"
-activity[] = "Add User"
+; activity[] = "Add User"
 activity[] = "Spacer"
-activity[] = "Validate"
+; activity[] = "Validate"
 
 
 [Spacer]

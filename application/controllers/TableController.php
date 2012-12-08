@@ -411,7 +411,8 @@ class TableController extends Zend_Controller_Action
 
                 // Update the database and redisplay the record.
                 $setTable->addTableEntry($nonNullData);
-                $this->_goTo('record-view', $nonNullData);
+                $this->_executeSearch($setTable, $nonNullData,
+                                      self::DISPLAY_ALL);
             }
             else
             {
