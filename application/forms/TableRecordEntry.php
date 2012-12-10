@@ -109,12 +109,24 @@ class Application_Form_TableRecordEntry extends Zend_Form
                 else
                 {
                     // Create text input.
-                    $this->addElement('text', $name, array(
-                        'class' => $class,
-                        'label' => $label,
-                        'required' => $required,
-                        'decorators' => $visibleFieldDecorators,
-                    ));
+                    if ( $this->_isBlock($field->getDataType()) )
+                    {
+                        $this->addElement('textarea', $name, array(
+                            'class' => $class,
+                            'label' => $label,
+                            'required' => $required,
+                            'decorators' => $visibleFieldDecorators,
+                        ));
+                    }
+                    else
+                    {
+                        $this->addElement('text', $name, array(
+                            'class' => $class,
+                            'label' => $label,
+                            'required' => $required,
+                            'decorators' => $visibleFieldDecorators,
+                        ));
+                    }
                     $fieldElement = $this->getElement($name);
 
                     // Add appropriate filters.
@@ -405,6 +417,16 @@ class Application_Form_TableRecordEntry extends Zend_Form
     protected function _endsIn($fullString, $endPattern)
     {
         return substr($fullString, -strlen($endPattern)) == $endPattern;
+    }
+
+    /**
+     * Checks whether the given type is a large data type (e.g., "text"
+     * rather than "varchar").
+     */
+    protected function _isBlock($type)
+    {
+        return $this->_endsIn($type, "blob") ||
+               $this->_endsIn($type, "text");
     }
 
 
