@@ -40,6 +40,7 @@ class Application_Model_ActivitySpec
     const SEPARATOR_TYPE        = "separator";
     const SETTING_TYPE          = "setting";
     const SEQUENCE_TYPE         = "sequence";
+    const REPORT_TYPE           = "report";
     const ACTIVITY_LIST_TYPE    = "activityList";
 
     protected $_name;   // activity name (used for keyword lookup and
@@ -57,7 +58,8 @@ class Application_Model_ActivitySpec
 
     protected $_validSpecTypes = array(
         self::HTML_TYPE, self::COMMENT_TYPE, self::SEPARATOR_TYPE,
-        self::SETTING_TYPE, self::SEQUENCE_TYPE, self::ACTIVITY_LIST_TYPE);
+        self::SETTING_TYPE, self::SEQUENCE_TYPE, self::REPORT_TYPE,
+        self::ACTIVITY_LIST_TYPE);
 
     /**
      * Constructs an ActivitySpec object using the information provided 
@@ -90,7 +92,8 @@ class Application_Model_ActivitySpec
                     "invalid specification type; valid types are " .
                     self::HTML_TYPE . ", " . self::COMMENT_TYPE . ", " .
                     self::SEPARATOR_TYPE . ", " . self::SETTING_TYPE . ", " .
-                    self::SEQUENCE_TYPE . ", " . self::ACTIVITY_LIST_TYPE);
+                    self::SEQUENCE_TYPE . ", " . self::REPORT_TYPE . ", " .
+                    self::ACTIVITY_LIST_TYPE);
         }
 
         // "Sequence" is a synonym for "setting" -- normalize to 1 term.
@@ -102,6 +105,7 @@ class Application_Model_ActivitySpec
         switch ( $this->_type )
         {
             case self::SETTING_TYPE:
+            case self::REPORT_TYPE:
             case self::ACTIVITY_LIST_TYPE:
                 $this->_source =
                     $this->_confirmProperty(self::SOURCE, $specAsArray);
@@ -160,6 +164,15 @@ class Application_Model_ActivitySpec
     public function isSetting()
     {
         return $this->_type == self::SETTING_TYPE;
+    }
+
+    /**
+     * Checks whether the activity is a report-generating one.
+     *
+     */
+    public function isReport()
+    {
+        return $this->_type == self::REPORT_TYPE;
     }
 
     /**

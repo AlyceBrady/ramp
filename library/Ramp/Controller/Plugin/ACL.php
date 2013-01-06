@@ -92,24 +92,22 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
     {
         // Construct the requestedResource from the controller, action,
         // and  possibly the activity or table.
-        $requestedResource = $request->getControllerName() . '::'
+        $controllerName = $request->getControllerName();
+        $requestedResource = $controllerName . '::'
                               . $request->getActionName();
 
-        if ( $request->getControllerName() == 'activity' )
+        if ( $controllerName == 'activity' )
         {
             $activityListName = urldecode($request->getUserParam('activity'));
             $requestedResource .= "::" . dirname($activityListName);
         }
-        else if ( $request->getControllerName() == 'table' )
+        else if ( $controllerName == 'table' || $controllerName == 'report' )
         {
-            if ( $request->getActionName() != "index" )
-            {
-                $seqName = urldecode($request->getUserParam('_setting'));
-                $tblViewingSeq =
-                  Application_Model_TVSFactory::getSequenceOrSetting($seqName);
-                $setTable = $tblViewingSeq->getSetTableForViewing();
-                $requestedResource .= "::" . $setTable->getDbTableName();
-            }
+            $seqName = urldecode($request->getUserParam('_setting'));
+            $tblViewingSeq =
+              Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+            $setTable = $tblViewingSeq->getSetTableForViewing();
+            $requestedResource .= "::" . $setTable->getDbTableName();
         }
 
         // Check that the requested resource is a defined resource.

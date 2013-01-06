@@ -63,6 +63,14 @@ class ActivityController extends Zend_Controller_Action
             }
 
             elseif ( $type ==
+                        Application_Model_ActivitySpec::REPORT_TYPE )
+            {
+                $source = urlencode($source);
+                $this->_helper->redirector('index', 'report', null,
+                    array(self::SETTING_KEYWORD => $source));
+            }
+
+            elseif ( $type ==
                         Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE )
             {
                 $source = urlencode($source);

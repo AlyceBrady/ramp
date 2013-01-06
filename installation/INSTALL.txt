@@ -1,6 +1,6 @@
         Ramp/Smart Installation
 
-Ramp is built on top of an AMP (Apache, MySQL, PHP) stack and the
+Ramp is built on top of an AMP stack (Apache, MySQL, PHP) and the
 Zend Framework.
 
 AMP:
@@ -17,7 +17,7 @@ and tutorials:
         Works with Mac, Windows & Linux
     MAMP: http://www.mamp.info/en/index.html
         Works with Mac
-    WAMP: http://www.wampserver.com/en/
+    WAMP: http://www.wampserver.com/
         Works with Windows
     LAMP: *****
         Works with Linux
@@ -28,7 +28,7 @@ and tutorials:
 Zend Framework:
 ---------------
 Ramp was developed using Zend Framework 1.11, but has also been
-tested under Zend Framework 1.12.  NOTE: Ramp has not yet been
+tested under Zend Framework 1.12.  NOTE: Ramp has NOT yet been
 ported to Zend Framework 2, which is a complete redesign of the
 framework.  To download Zend 1.12, see
     http://www.zend.com/community/downloads
@@ -42,10 +42,9 @@ recent version of RAMP from https://github.com/AlyceBrady/ramp.
 Since Ramp uses the Zend Framework, copy or link the Zend Framework
 library to the library subdirectory within Ramp.  For example, if
 .../ZendFrameworkLoc refers to where your ZendFramework is installed
-and .../RampLoc refers to where RAMP is installed, then do the
-following:
-    cd .../RampLoc/library
-    ln -s .../ZendFrameworkLoc/library/Zend Zend
+and .../RampLoc refers to where RAMP is installed, then
+copy or link the .../ZendFrameworkLoc/library/Zend directory or folder
+into the .../RampLoc/library directory.
 
 Ramp expects to find a file called application.ini in the
 .../RampLoc/application/configs/ directory.  This file would normally
@@ -57,11 +56,11 @@ files called smartApplicationTemplate.ini (for Smart application
 installations) and rampApplicationTemplate.ini (for any other use
 of Ramp) instead of providing application.ini.  For an initial
 installation, create a copy of whichever of the template files is
-more appropriate, call it application.ini, and edit it as appropriate.
-(Some modifications will arise in setting up the Ramp database, as
-explained in the next section.)  When installing a Ramp update, you
-will need to compare your application.ini file against the new
-applicationTemplate.ini file, incorporating new changes as appropriate.
+more appropriate, call it application.ini, and edit it as explained in
+the INSTALL_DB.txt file.  When installing a Ramp update, you will
+need to compare your application.ini file against the new
+smartApplicationTemplate.ini or rampApplicationTemplate.ini file,
+incorporating new changes as appropriate.
 
 Setting up the Ramp Database:
 -----------------------------
@@ -84,9 +83,9 @@ If the server should be accessible to a limited, pre-defined set
 of machines, edit /etc/hosts files on those machines to resolve the
 virtual hostnames to the machine servicing Ramp.  If Ramp should
 be visible beyond that, you probably need to register the server name.
-(If can’t, or don’t want to, get vhosts to work, may be able to get
-same results with .htaccess.  Uncomment the last line and specify
-the correct APPLICATION_ENV (production, development, testing,
+(If you can’t, or don’t want to, get vhosts to work, you may be able
+to get the same results with .htaccess.  Uncomment the last line and
+specify the correct APPLICATION_ENV (production, development, testing,
 rampdemo, smartdemo, etc.).  Without vhosts, though, it’s not quite
-as easy to have different environments running on one server.)
+as easy to have multiple environments running on one server.)
 

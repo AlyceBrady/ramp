@@ -52,6 +52,8 @@ class TableController extends Zend_Controller_Action
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
+    protected $_controllerName = 'table';
+
     protected $_encodedSeqName;
 
     protected $_tblViewingSeq;
@@ -87,15 +89,17 @@ class TableController extends Zend_Controller_Action
         $this->_fieldsToMatch = $this->_getFieldsToMatch();
 
         // Set the basic parameters to build on when going to other actions.
-        $this->_baseParams = array('controller'=>'table',
-                       self::SETTING_NAME=>$this->_encodedSeqName);
+        $this->_baseParams = array('controller' => $this->_controllerName,
+                       self::SETTING_NAME => $this->_encodedSeqName);
 
         // Initialize values that are passed to the view scripts.
         $this->view->seqSetting = $seqName;
         $this->view->baseParams = $this->_baseParams;
         $this->view->msgs = array();
         $this->view->errMsgs = array(
-                // ""
+                // "DEBUGGING INFO: "
+                // . " Base params are: "
+                // . print_r($this->_baseParams, true)
                 // . " Request params are: "
                 // . print_r($this->getRequest()->getParams(), true)
                 // . " Fields to match are: "
@@ -141,37 +145,10 @@ class TableController extends Zend_Controller_Action
 
             // Otherwise, nothing to do except render view (done automatically).
         }
-        elseif ( $this->_buttonAction == self::DISPLAY_ALL )
+        else
         {
-            $this->_goTo('list-view');
+            $this->_processSearchCallback($setTable, $form);
         }
-        else    // Searching or adding...
-        {
-            $formData = $this->getRequest()->getPost();
-            if ( $form->isValid($formData) )
-            {
-                $nonNullData = $this->_filledFields($form->getValues());
-
-                // Adding new entry based on failed search.
-                if ( $this->_buttonAction == self::ADD )
-                    { $this->_goTo('add', $nonNullData); }
-
-                // Searching for any or all matches. Display based on 
-                // number of results.
-                $searchType = $this->_buttonAction;
-                $this->_executeSearch($setTable, $nonNullData, $searchType);
-
-                // Will only get here if search failed.
-            }
-            else
-            {
-                // Invalid entries: show them for editing.
-                $this->view->errMsgs[] =
-                        "Invalid data values.  Please correct.";
-                $form->populate($formData);
-            }
-        }
-        
     }
 
     /**
@@ -198,8 +175,7 @@ class TableController extends Zend_Controller_Action
         elseif ( $numResults > 1 )
         {
             // Multiple matches found.
-            $params = $data +
-                        array(self::SEARCH_TYPE => $matchAbbrev);
+            $params = $data + array(self::SEARCH_TYPE => $matchAbbrev);
             $this->_goTo('list-view', $params);
         }
         else
@@ -208,6 +184,46 @@ class TableController extends Zend_Controller_Action
             $this->view->errMsgs[] = "No matching results were found.";
             $this->view->buttonList[] = self::ADD;
             $this->view->dataEntryForm->populate($data);
+        }
+    }
+
+    /**
+     * Processes search call-back after a button has been pressed.
+     *
+     * @param $setTable   table setting for the table in which to search
+     * @param $form       the form used for the search
+     */
+    protected function _processSearchCallBack($setTable, $form)
+    {
+        if ( $this->_buttonAction == self::DISPLAY_ALL )
+        {
+            $this->_goTo('list-view');
+        }
+        else    // Searching or adding...
+        {
+            $formData = $this->getRequest()->getPost();
+            if ( $form->isValid($formData) )
+            {
+                $nonNullData = $this->_filledFields($form->getValues());
+
+                // Adding new entry based on failed search?
+                if ( $this->_buttonAction == self::ADD )
+                    { $this->_goTo('add', $nonNullData); }
+
+                // Searching for any or all matches. Display based on 
+                // number of results.
+                $searchType = $this->_buttonAction;
+                $this->_executeSearch($setTable, $nonNullData, $searchType);
+
+                // Will only get here if search failed.
+            }
+            else
+            {
+                // Invalid entries: show them for editing.
+                $this->view->errMsgs[] =
+                        "Invalid data values.  Please correct.";
+                $form->populate($formData);
+            }
         }
     }
 
@@ -222,20 +238,10 @@ class TableController extends Zend_Controller_Action
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
         {
-            // Let view renderer know the table, buttons, and data form to use.
-            $this->_initViewTableInfo($setTable);
+            // Let view renderer know the table and data form to use.
             $this->view->buttonList = array(self::ADD, self::TABLE,
                                             self::SEARCH);
-            $this->view->dataToDisplay =
-                $setTable->getTableEntries($this->_fieldsToMatch,
-                                           $this->_searchType);
-            $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
-            if ( $this->view->displayingSubset )
-                { $this->view->buttonList[] = self::DISPLAY_ALL; }
-
-            // List will get filled-in status based on ADD setting.
-            $this->view->addSetting = $this->_tblViewingSeq->getSetTableForAdding();
-                            // Application_Model_TableViewSequence::ADD_SETTING);
+            $this->_multiRecordInitDisplay($setTable);
         }
         elseif ( $this->_buttonAction == self::TABLE )
         {
@@ -258,21 +264,9 @@ class TableController extends Zend_Controller_Action
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
         {
-            // Let view renderer know the table, buttons, and data form to use.
-            $this->_initViewTableInfo($setTable);
+            // Let view renderer know the table and data form to use.
             $this->view->buttonList = array(self::ADD, self::SEARCH);
-            $this->view->dataToDisplay =
-                $setTable->getTableEntries($this->_fieldsToMatch,
-                                           $this->_searchType);
-            $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
-            if ( $this->view->displayingSubset )
-            {
-                $this->view->buttonList[] = self::DISPLAY_ALL;
-            }
-
-            // List will get filled-in status based on ADD setting.
-            $this->view->addSetting = $this->_tblViewingSeq->getSetTableForAdding();
-                            // Application_Model_TableViewSequence::ADD_SETTING);
+            $this->_multiRecordInitDisplay($setTable);
         }
         elseif ( $this->_buttonAction == self::DISPLAY_ALL )
         {
@@ -537,6 +531,28 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Set up initial display (except for buttonList) for actions
+     * involving multiple records.
+     */
+    protected function _multiRecordInitDisplay($setTable)
+    {
+        // Let view renderer know the table and data form to use.
+        $this->_initViewTableInfo($setTable);
+        $this->view->dataToDisplay =
+            $setTable->getTableEntries($this->_fieldsToMatch,
+                                       $this->_searchType);
+        $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
+        if ( $this->view->displayingSubset )
+        {
+            $this->view->buttonList[] = self::DISPLAY_ALL;
+        }
+
+        // List will get filled-in status based on ADD setting.
+        $this->view->addSetting =
+            $this->_tblViewingSeq->getSetTableForAdding();
+    }
+
+    /**
      * Gets the action usually associated with the given button.
      *
      */
@@ -593,7 +609,8 @@ class TableController extends Zend_Controller_Action
         if ( $includeSearchType )
             $params[self::SEARCH_TYPE] = $this->_searchType;
 
-        $this->_helper->redirector($nextAction, 'table', null, $params);
+        $this->_helper->redirector($nextAction, $this->_controllerName,
+                                   null, $params);
     }
 
     /**

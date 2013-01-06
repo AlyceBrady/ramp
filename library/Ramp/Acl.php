@@ -27,7 +27,6 @@ class Ramp_Acl extends Zend_Acl
 
     const DELIM = '::';              // Delimiter separating resource sections
     const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
-    const TABLE_PREFIX = 'table';              // Start of Table resources
 
     const PUBLIC_ACTS_RESOURCE = 'activity::index::PublicActivities';
 
@@ -57,8 +56,10 @@ class Ramp_Acl extends Zend_Acl
 	// Since the table access rules in the database are by
 	// category rather than by individual actions, need to
         // create a "category converter" that associates categories
-        // with lists of actions.
-        $viewActions = array('search', 'list-view', 'table-view',
+        // with lists of actions.  The 'index' action is part of the
+        // VIEW category because it always forwards to either a search
+        // // or view action.
+        $viewActions = array('index', 'search', 'list-view', 'table-view',
                              'record-view');
         $addActions = array('add');
         $modifyActions = array('record-edit');
@@ -151,27 +152,11 @@ class Ramp_Acl extends Zend_Acl
         // Add other activity list directory resources defined in the database.
         $this->_addResources('', $this->_authInfo->getActivityResources());
 
-        // TABLE CONTROLLER: Resources are specific actions on 
-        // specific tables.
-
-        // The database administrator should be able to add new users 
-        // and check whether the ACL rules are valid.
-        // $this->allow('ramp_dba', 'auth::add-user');
-        $this->allow('ramp_dba', 'auth::validate-acl-rules');
+        // TABLE AND REPORT CONTROLLERS: Resources are specific actions on 
+        // specific tables (note: tables, not settings).
 
         // Add other table resources defined in the database.
         $this->_addResources('', $this->_authInfo->getTableResources());
-
-        $this->add(new Zend_Acl_Resource('table::index'));
-        $this->add(new Zend_Acl_Resource('table::search'));
-        $this->add(new Zend_Acl_Resource('table::list-view'));
-        $this->add(new Zend_Acl_Resource('table::table-view'));
-        $this->add(new Zend_Acl_Resource('table::record-view'));
-        $this->add(new Zend_Acl_Resource('table::record-edit'));
-        $this->add(new Zend_Acl_Resource('table::add'));
-        $this->add(new Zend_Acl_Resource('table::delete'));
-
-        // $this->add(new Zend_Acl_Resource('table::index::ramp_auth_auths'));
 
 
         /* ASSIGNING RESOURCES TO ROLES */ 
@@ -191,26 +176,25 @@ class Ramp_Acl extends Zend_Acl
 
         $this->allow(self::DEFAULT_ROLE, self::PUBLIC_ACTS_RESOURCE);
 
-        $this->allow(self::DEFAULT_ROLE, 'table::index');
-
-        // Allow regist_mgmt some table resources
-        $this->allow('regist_mgmt', 'table::search');
-        $this->allow('regist_mgmt', 'table::list-view');
-        $this->allow('regist_mgmt', 'table::table-view');
-        $this->allow('regist_mgmt', 'table::record-view');
-        $this->allow('regist_mgmt', 'table::add');
-
-        // Allow admin to everything else
-        $this->allow('regist_staff', 'table::record-edit');
-        $this->allow('regist_staff', 'table::delete');
-
         // Allow access to activities and tables based on authorization
         // rules in the database.
-        $actPrefix = 'activity::index';
         $this->_addRules($this->_authInfo->getActivityAccessRules());
         $this->_addRules($this->_authInfo->getTableAccessRules());
 
         // FUTURE: $this->allow(self::DEFAULT_ROLE, 'document::index::about');
+
+        // The database administrator should be able to add or edit users and ACLs,
+        // and check whether the ACL rules are valid, whether through normal
+        // RAMP channels or through special actions in the Auth controller.
+        // (Note, though, that users and rules can be added, edited, and deleted 
+        // through normal RAMP channels, i.e., using the Table controller.)
+        $this->allow('ramp_dba', 'auth::add-user');
+        $this->allow('ramp_dba', 'auth::validate-acl-rules');
+
+        // If the following two tables are not defined in the database, they 
+        // should be defined here.
+        // $this->add(new Zend_Acl_Resource('table::index::ramp_auth_users'));
+        // $this->add(new Zend_Acl_Resource('table::index::ramp_auth_auths'));
 
     }
 
@@ -224,17 +208,14 @@ class Ramp_Acl extends Zend_Acl
      */
     protected function _addRoles($roles)
     {
-$temp = array();
         foreach ( $roles as $name => $parents )
         {
             if ( ! $this->hasRole($name) )
             {
                 $parents = empty($parents) ? null : $parents;
                 $this->addRole(new Zend_Acl_Role($name), $parents);
-$temp[$name] = $parents;
             }
         }
-Zend_Registry::set('roles', $temp);
     }
 
     /**
@@ -245,7 +226,6 @@ Zend_Registry::set('roles', $temp);
      */
     protected function _addResources($prefix, $resources)
     {
-$temp = array();
         if ( ! empty($resources) )
         {
             if ( is_array($resources) )
@@ -253,7 +233,6 @@ $temp = array();
                 foreach ( $resources as $resource )
                 {
                     $this->_addResource($prefix, $resource);
-$temp[] = $prefix . $resource;
                 }
             }
             else  // $resources is actually a single resource
@@ -261,7 +240,6 @@ $temp[] = $prefix . $resource;
                 $this->_addResource($prefix, $resources);
             }
         }
-Zend_Registry::set('resources', $temp);
     }
 
     /**
@@ -286,7 +264,6 @@ Zend_Registry::set('resources', $temp);
      */
     protected function _addRules($rules)
     {
-$temp = array();
         foreach ( $rules as $key => $rule )
         {
             foreach ( $rule as $role => $resource )
@@ -294,10 +271,8 @@ $temp = array();
                 try {
                     $this->allow($role, $resource);
                 } catch (Exception $e)  {  /* Ignore */  }
-$temp[] = array($role => $resource);
             }
         }
-Zend_Registry::set('rules', $temp);
     }
 
 }

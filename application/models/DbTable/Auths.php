@@ -2,6 +2,10 @@
 
 class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 {
+    const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
+    const TABLE_RES_TYPE = 'Table';            // Table resource type
+    const REPORT_RES_TYPE = 'Report';          // Table resource type
+
     protected $_name='ramp_auth_auths';
     protected $_rowClass = 'Application_Model_DbTable_AccessRule';
 
@@ -38,7 +42,8 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
     }
 
     /**
-     * Get all Table-related Resources.
+     * Get all Table-related Resources (and Report-related Resources,
+     * which are table-related resources with different formatting).
      *
      */
     public function getTableResources()
@@ -115,8 +120,9 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
     }
 
     /**
-     * Get all Access Control List rules related to the Table resource
-     * type.
+     * Get all Access Control List rules related to accessing tables
+     * (include report-related rules, which access tables with 
+     * customized formatting).
      *
      */
     public function getTableAccessRules()
@@ -127,11 +133,29 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             return $this->_tableAccessRules;
         }
 
-        $rules = array();
-        $actionCategories = Ramp_Acl::createCategoryConverter();
+        $this->_tableAccessRules = array();
+        $actCategories = Ramp_Acl::createCategoryConverter();
 
+        // Get the Table and Report access rules from the database.
+        $this->_getTableAccessRulesFor(self::TABLE_RES_TYPE, $actCategories);
+        $this->_getTableAccessRulesFor(self::REPORT_RES_TYPE, $actCategories);
+        return $this->_tableAccessRules;
+    }
+
+    /**
+     * Get all Access Control List rules for the specified controller
+     * related to accessing tables.
+     *
+     * @param $controller capitalized name of controller, as it exists
+     *                    in Access Control Lists
+     * @param $actionCategories categories of actions that might appear
+     *                          in Access Control Lists
+     *
+     */
+    protected function _getTableAccessRulesFor($controller, $actionCategories)
+    {
         // Get the Table access rules from the database.
-        $where = array('resource_type = ?' => 'Table');
+        $where = array('resource_type = ?' => $controller);
         $rawTableAccessRules = $this->fetchAll($where);
 
         // Build the full set of access rules from the rules in the database.
@@ -151,16 +175,14 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             foreach ( $relatedActions as $action ) 
             {
                 // Build up the resource name.
-                $prefix = Ramp_Acl::TABLE_PREFIX;
+                $prefix = strtolower($controller);
                 $delim = Ramp_Acl::DELIM;
-                $rules[] = array($rule->role =>
-                                 $prefix . $delim . $action
-                                         . $delim . $rule->resource_name);
+                $this->_tableAccessRules[] =
+                            array($rule->role =>
+                                  $prefix . $delim . $action
+                                          . $delim . $rule->resource_name);
             }
         }
-
-        $this->_tableAccessRules = $rules;
-        return $rules;
     }
 
     /**
