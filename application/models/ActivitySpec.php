@@ -28,20 +28,26 @@ class Application_Model_ActivitySpec
 
     // Valid properties
     const TYPE          = "type";
-    const HTML          = "html";
     const COMMENT       = "comment";
     const SOURCE        = "source";
     const TITLE         = "title";
     const DESCRIPTION   = "description";
+    const HTML          = "html";
+    const CONTROLLER    = "controller";
+    const ACTION        = "action";
+    const PARAMETER     = "parameter";
+    const URL           = "url";
 
     // Valid specification types
-    const HTML_TYPE             = "html";
-    const COMMENT_TYPE          = "comment";
-    const SEPARATOR_TYPE        = "separator";
-    const SETTING_TYPE          = "setting";
-    const SEQUENCE_TYPE         = "sequence";
-    const REPORT_TYPE           = "report";
-    const ACTIVITY_LIST_TYPE    = "activityList";
+    const SEPARATOR_TYPE            = "separator";
+    const COMMENT_TYPE              = self::COMMENT;
+    const ACTIVITY_LIST_TYPE        = "activityList";
+    const SETTING_TYPE              = "setting";
+    const SEQUENCE_TYPE             = "sequence";
+    const REPORT_TYPE               = "report";
+    const HTML_TYPE                 = self::HTML;
+    const CONTROLLER_ACTION_TYPE    = "controllerAction";
+    const URL_TYPE                  = self::URL;
 
     protected $_name;   // activity name (used for keyword lookup and
                         // error messages)
@@ -57,9 +63,9 @@ class Application_Model_ActivitySpec
                                 // a comment "activity")
 
     protected $_validSpecTypes = array(
-        self::HTML_TYPE, self::COMMENT_TYPE, self::SEPARATOR_TYPE,
+        self::COMMENT_TYPE, self::SEPARATOR_TYPE, self::ACTIVITY_LIST_TYPE,
         self::SETTING_TYPE, self::SEQUENCE_TYPE, self::REPORT_TYPE,
-        self::ACTIVITY_LIST_TYPE);
+        self::HTML_TYPE, self::CONTROLLER_ACTION_TYPE, self::URL_TYPE);
 
     /**
      * Constructs an ActivitySpec object using the information provided 
@@ -88,12 +94,16 @@ class Application_Model_ActivitySpec
         $this->_type = $this->_confirmProperty(self::TYPE, $specAsArray);
         if ( ! in_array($this->_type, $this->_validSpecTypes) )
         {
-                throw new Exception("Error: " . $this->_type . " is an " .
-                    "invalid specification type; valid types are " .
-                    self::HTML_TYPE . ", " . self::COMMENT_TYPE . ", " .
-                    self::SEPARATOR_TYPE . ", " . self::SETTING_TYPE . ", " .
-                    self::SEQUENCE_TYPE . ", " . self::REPORT_TYPE . ", " .
-                    self::ACTIVITY_LIST_TYPE);
+            $valTypes = "";
+            $sep = "";
+            foreach ( $this->_validSpecTypes as $valType )
+            {
+                $valTypes .= $sep . $valType;
+                $sep = ", ";
+            }
+            throw new Exception("Error: " . $this->_type . " is an " .
+                                "invalid specification type; valid types are " .
+                                $valTypes);
         }
 
         // "Sequence" is a synonym for "setting" -- normalize to 1 term.
@@ -104,23 +114,38 @@ class Application_Model_ActivitySpec
         // expected for its type.
         switch ( $this->_type )
         {
-            case self::SETTING_TYPE:
-            case self::REPORT_TYPE:
-            case self::ACTIVITY_LIST_TYPE:
-                $this->_source =
-                    $this->_confirmProperty(self::SOURCE, $specAsArray);
-                $this->_title =
-                    $this->_confirmProperty(self::TITLE, $specAsArray);
-                $this->_description =
-                    $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
-                break;
             case self::COMMENT_TYPE:
                 $this->_description =
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
                 break;
             case self::HTML_TYPE:
+                $this->_description = $this->_confirmProperty(self::HTML, $specAsArray);
+                break;
+            case self::SETTING_TYPE:
+            case self::REPORT_TYPE:
+            case self::ACTIVITY_LIST_TYPE:
+                $this->_title = $this->_confirmProperty(self::TITLE, $specAsArray);
                 $this->_description =
-                    $this->_confirmProperty(self::HTML, $specAsArray);
+                    $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
+                $this->_source = $this->_confirmProperty(self::SOURCE, $specAsArray);
+                break;
+            case self::CONTROLLER_ACTION_TYPE:
+                $this->_title =
+                    $this->_confirmProperty(self::TITLE, $specAsArray);
+                $this->_description =
+                    $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
+                $this->_controller =
+                    $this->_confirmProperty(self::CONTROLLER, $specAsArray);
+                $this->_action =
+                    $this->_confirmProperty(self::ACTION, $specAsArray);
+                $this->_parameter =
+                    $this->_confirmProperty(self::PARAMETER, $specAsArray);
+                break;
+            case self::URL_TYPE:
+                $this->_title = $this->_confirmProperty(self::TITLE, $specAsArray);
+                $this->_description =
+                    $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
+                $this->_url = $this->_confirmProperty(self::URL, $specAsArray);
                 break;
             default:
                 // ignore extraneous properties
@@ -158,6 +183,35 @@ class Application_Model_ActivitySpec
     }
 
     /**
+     * Checks whether the "activity" is actually a separator in an 
+     * activity list.
+     *
+     */
+    public function isSeparator()
+    {
+        return $this->_type == self::SEPARATOR_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is actually a comment in an 
+     * activity list.
+     *
+     */
+    public function isComment()
+    {
+        return $this->_type == self::COMMENT_TYPE;
+    }
+
+    /**
+     * Checks whether the activity is a nested activity list.
+     *
+     */
+    public function isActivityList()
+    {
+        return $this->_type == self::ACTIVITY_LIST_TYPE;
+    }
+
+    /**
      * Checks whether the activity is a table-viewing/modifying one.
      *
      */
@@ -176,15 +230,6 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Checks whether the activity is a nested activity list.
-     *
-     */
-    public function isActivityList()
-    {
-        return $this->_type == self::ACTIVITY_LIST_TYPE;
-    }
-
-    /**
      * Checks whether the "activity" is actually HTML text.
      *
      */
@@ -194,32 +239,22 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Checks whether the "activity" is actually a comment in an 
-     * activity list.
-     *
-     */
-    public function isComment()
-    {
-        return $this->_type == self::COMMENT_TYPE;
-    }
-
-    /**
-     * Checks whether the "activity" is actually a separator in an 
-     * activity list.
-     *
-     */
-    public function isSeparator()
-    {
-        return $this->_type == self::SEPARATOR_TYPE;
-    }
-
-    /**
      * Gets the value specified with the type property.
      *
      */
     public function getType()
     {
         return $this->_type;
+    }
+
+    /**
+     * Gets the value specified with the comment property.  Returns an 
+     * empty string if no value was specified for this property.
+     *
+     */
+    public function getComment()
+    {
+        return $this->_description;
     }
 
     /**
@@ -274,13 +309,55 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Gets the value specified with the comment property.  Returns an 
+     * Gets the value specified with the controller property.  Returns a
+     * null if no value was specified for this property.
+     *
+     */
+    public function getController()
+    {
+        return $this->_controller == "" ? null : $this->_controller;
+    }
+
+    /**
+     * Gets the value specified with the action property.  Returns an 
      * empty string if no value was specified for this property.
      *
      */
-    public function getComment()
+    public function getAction()
     {
-        return $this->_description;
+        return $this->_action == "" ? null : $this->_action;
+    }
+
+    /**
+     * Gets the array specified with the parameter property.  Returns an 
+     * empty string if no value was specified for this property.
+     *
+     */
+    public function getParameters()
+    {
+        if ( $this->_parameter == "" )
+        {
+            return array();
+        }
+        $paramAssignments = explode('&', $this->_parameter);
+        $params = array();
+        foreach ( $paramAssignments as $paramAssignment )
+        {
+            $item = explode('=', $paramAssignment);
+            $params[$item[0]] = urlencode($item[1]);
+            // $params[$item[0]] = urldecode($item[1]);
+        } 
+        return $params;
+    }
+
+    /**
+     * Gets the value specified with the url property.  Returns an 
+     * empty string if no value was specified for this property.
+     *
+     */
+    public function getUrl()
+    {
+        return $this->_url == "" ? null : $this->_url;
     }
 
 }

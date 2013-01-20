@@ -34,3 +34,8 @@ activity.e.source = "tests/settingTesting/noVisibleFields"
 activity.e.title = "Setting Example 4"
 activity.e.description = "Setting Example #1 (A setting file with no
 visible fields)"
+
+activity.g.type = "url"
+activity.g.url = "http://www.cs.kzoo.edu/cs105/"
+activity.g.title = "URL Test"
+activity.g.description = "Goes to www.cs.kzoo.edu/cs105"

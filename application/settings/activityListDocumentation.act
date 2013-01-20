@@ -49,31 +49,44 @@
 ; a type property.  The valid types are:
 ;       -- separator
 ;       -- comment
-;       -- html
 ;       -- setting ("sequence" is a synonym)
 ;       -- report
-;       -- webPage
+;       -- html
+;       -- controllerAction
+;       -- url
 ;       -- activityList
-; The properties expected by each type are:
+; In addition to the type property, the properties expected by each
+; type are:
 ;   Separator type specifications require no other properties.
-;   Comment type specifications must also include:
+;   Comment type specifications must include:
 ;       -- comment: the comment
-;   HTML type specifications must also include:
+;   Setting (or sequence) type specifications must include:
+;       -- title: a short title (must fit on a button)
+;       -- description: a description (should not go beyond a line or two)
+;       -- source: the source (setting file name, without suffix)
+;   Report type specifications must include:
+;       -- title: a short title (must fit on a button)
+;       -- description: a description (should not go beyond a line or two)
+;       -- source: the source (setting file name, without suffix)
+;       [A report is a view with customized formatting.]
+;   HTML type specifications must include:
 ;       -- html: text documented using HTML
-;   Setting (or sequence) type specifications must also include:
-;       -- source: the source (setting file name, without suffix)
+;   Controller/Action type specifications must include:
 ;       -- title: a short title (must fit on a button)
 ;       -- description: a description (should not go beyond a line or two)
-;   Report type specifications must also include:
-;       -- source: the source (setting file name, without suffix)
+;       -- controller:
+;       -- action:
+;       -- parameter:   [key1=param1&key2=param2 format]
+;       [This type requires knowledge of the application code.]
+;   URL type specifications must include:
 ;       -- title: a short title (must fit on a button)
 ;       -- description: a description (should not go beyond a line or two)
-;   Web Page type specifications must also include:
-;       -- TODO: ???
-;   Activity List type specifications must also include:
+;       -- url:
+;       [The url must be complete, including any necessary parameters.]
+;   Activity List type specifications must include:
+;       -- title: a short title (must fit on a button)
+;       -- description: a description (should not go beyond a line or two)
 ;       -- source: the source (section name or act. list file name)
-;       -- title: a short title (must fit on a button)
-;       -- description: a description (should not go beyond a line or two)
 
 ; Note: If an activity file contains multiple activity lists, one must
 ; be at the top level (i.e., not in a section), or there must be a

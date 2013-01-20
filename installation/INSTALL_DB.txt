@@ -17,12 +17,27 @@ prevent the possibility that local customizations in these files
 might be overwritten by future software updates, the initial download
 contains files called createRampDatabasesTemplate.sql and
 createSmartDatabasesTemplate.sql in the installation directory
-instead.  For an initial installation, therefore, the first steps
-are to:
+instead.  For an initial installation, therefore:
     * Copy createRampDatabasesTemplate.sql to createRampDatabases.sql.
     * Copy createSmartDatabasesTemplate.sql to createSmartDatabases.sql.
 In the instructions that follow, edit the new files, leaving the
 original template files untouched.
+
+The installation directory also contains sample files for initializing
+the database schema(s) that will be used for different database
+environments (e.g., demonstration, development, test, and production
+environments), and for populating demonstration or test tables with some 
+initial data.  To know which sample files to use, and how to change them
+for the specific needs of the application, the first step is to decide
+which database environments are to be setup.  For example, one might
+just set up Ramp and Smart demo databases to learn more about the the
+application.  A Ramp/Smart developer, on the other hand, might create
+development and regression testing environments, while someone running
+Smart as a production system might create production, user testing,
+and regression testing environments.
+
+Addressing Security Concerns:
+-----------------------------
 
 To protect the security of the Ramp/Smart database, the database administrator
 responsible for creating and maintaining the database must take
@@ -84,24 +99,16 @@ with different privileges defined through access rules.  A separate
 mechanism associates each Ramp or Smart user with a role.  Since
 the MySQL account used by Ramp/Smart for web access to a particular
 database must accomodate all users of that database, it will have
-very wide-ranging privileges.
+very wide-ranging privileges (although not as wide-ranging as the
+rampdba database administrator account, which can add, delete, and
+re-structure tables).
 
     * Update the createRampDatabases.sql and createSmartDatabases.sql
       files, uncommenting, modifying, and copying lines as necessary,
       to create the databases and web-access MySQL accounts that you
-      want.  For a minimal, demo version of Ramp, simply uncomment the
-      SQL lines referring to rampdemo.
-
-      A developer might create the following databases and MySQL accounts:
-            smart_dev   'smartuser'@'localhost', 'smartuser'@'%'
-            smart_test  'smartuser'@'localhost', 'smartuser'@'%'
-            ramp_demo   'rampdemo'@'localhost', 'rampdemo'@'%'
-            smart_demo  'smartdemo'@'localhost', 'smartdemo'@'%'
-      while a production environment might use the following:
-            smart       'smartuser'@'localhost', 'smartuser'@'%'
-            smart_test_clone  'smartuser'@'localhost', 'smartuser'@'%'
-            smart_regr_tests  'smartuser'@'localhost', 'smartuser'@'%'
-            smart_staging     'smartuser'@'localhost', 'smartuser'@'%'
+      want.  For example, for a minimal, demo version of Ramp,
+      simply uncomment the SQL lines referring to rampdemo.  (See
+      the next bullet for more information if you are using Smart.)
 
       Appropriate permissions for the rampdba and sample user accounts
       are illustrated in createRampDatabases.sql and
@@ -119,6 +126,15 @@ very wide-ranging privileges.
       commands to create the databases, their associated Smart MySQL
       accounts, and the appropriate privileges.
 
+      For example, a developer might create the following databases
+      and MySQL accounts:
+            smart_dev   'smartuser'@'localhost', 'smartuser'@'%'
+            smart_test  'smartuser'@'localhost', 'smartuser'@'%'
+      while a production environment might use the following:
+            smart             'smartuser'@'localhost', 'smartuser'@'%'
+            smart_user_tests  'smartuser'@'localhost', 'smartuser'@'%'
+            smart_regr_tests  'smartuser'@'localhost', 'smartuser'@'%'
+
     * Update the application/configs/application.ini file to
       reflect the databases, web-access MySQL accounts, and passwords
       defined in createRampDatabases.sql and createSmartDatabases.sql.
@@ -126,17 +142,18 @@ very wide-ranging privileges.
 Setting Up Domain Users, Authentication, and Authorization:
 -----------------------------------------------------------
 
-Each Ramp or Smart user must have a user account that is associated
-with a role for authorization.  A group of users may have the same
-role within the system; it is also possible for a single user to
-play multiple roles by creating a new role that inherits privileges
-from two or more existing roles.  There is one role, 'guest', built
-into Ramp; other, more meaningful roles must be defined in Ramp's
-application/configs/application.ini file.  A special table within
-a Ramp/Smart database, ramp_auth_users, associates users
-with their roles.  A second table, ramp_auth_auths, defines role-based
-access control rules to the activities and tables the comprise the
-Ramp application.
+Each Ramp or Smart user must have a Ramp/Smart user account that
+is associated with a role for authorization.  A group of users may
+have the same role within the system; it is also possible for a
+single user to play multiple roles by creating a new role that
+inherits privileges from two or more existing roles.  There is one
+role, 'guest', built into Ramp; other, more meaningful roles must
+be defined in Ramp's application/configs/application.ini file.
+(Examples are provided in rampApplicationTemplate.ini and
+smartApplicationTemplate.ini.)  A special table within a Ramp/Smart
+database, ramp_auth_users, associates users with their roles.  A
+second table, ramp_auth_auths, defines role-based access control
+rules to the activities and tables the comprise the Ramp application.
 
 In addition to associating users with authorization roles, the
 ramp_auth_users file may be used for user authentication if an
@@ -161,33 +178,35 @@ referencing such information from another table).
       installation/createRampDatabasesTemplate.sql.  The
       smartApplicationTemplate.ini file provides more complex examples.)
 
-    * Edit or copy the rampDemoSetup.sql file in the installation
-      directory to create ramp_auth_users and ramp_auth_auths tables for
-      each Ramp or Smart database you have created.  Create files to
-      define the tables structures (and, optionally, initial data) for
-      the tables in your application.  The smartDemoSetup.sql,
-      smartDevSetup.sql, and other files in the SmartSampleSetup
-      directory provide alternate, more complex examples.
+    * Using the rampDemoSetup.sql, SmartSampleSetup/smartDemoSetup.sql,
+      and SmartSampleSetup/smartDevSetup.sql files as models,
+      create setup files for each Ramp or Smart database you have
+      created.  (The setup files may be very similar, differing
+      only in the name of the database, or in the amount of data
+      being included.)  The setup files should define the table
+      structures (and optionally the initial data) for the tables
+      in your application, and should create and populate ramp_auth_users
+      and ramp_auth_auths tables for each Ramp or Smart database
+      you have created.
 
-    * Using a MySQL account that has permission to create new
-      accounts and new databases, run MySQL from the terminal or
-      command-line and read in the createRampDatabases.sql file
-      with the source command:
-          cd ramp/installation
-          mysql -u root -p
-          Password: *******
-          mysql> source createRampDatabases.sql
-
-      If using Smart, do the same with createSmartDatabases.sql.
-
-    * To set up the Ramp or Smart demonstration databases, read
-      rampDemoSetup.sql or SmartSampleSetup/smartDemoSetup.sql
-      in to MySQL, e.g.:
-          mysql> source rampDemoSetup.sql
-
-    * To set up a Smart development database, read the
-      SmartSampleSetup/smartDevSetup.sql file in to MySQL.  To make a
+      For example, to set up a Smart development database, modify the
+      SmartSampleSetup/smartDevSetup.sql file as needed.  To make a
       second, equivalent database for testing, copy smartDevSetup.sql
       and change the name of the database.  To make a production
       database with the same table structures but no initial data,
       edit the various table setup files to remove the data insertion.
+
+    * Using a MySQL account that has permission to create new
+      accounts and new databases, run MySQL from the terminal or
+      command-line and read in your database setup files, e.g.,
+      with the source command:
+          cd ramp/installation
+          mysql -u root -p
+          Password: *******
+          mysql> source rampDemoSetup.sql
+
+    * To create the MySQL accounts for these databases, read
+      in the createRampDatabases.sql file:
+          mysql> source createRampDatabases.sql
+
+      If using Smart, do the same with createSmartDatabases.sql.

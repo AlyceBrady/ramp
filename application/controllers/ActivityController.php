@@ -53,31 +53,44 @@ class ActivityController extends Zend_Controller_Action
             $postParamNames = array_keys($this->getRequest()->getPost());
             $activity = $actList[$postParamNames[0]];
             $type = $activity->getType();
-            $source = $activity->getSource();
 
-            if ( $type == Application_Model_ActivitySpec::SETTING_TYPE )
+            switch ( $type )
             {
-                $source = urlencode($source);
-                $this->_helper->redirector('index', 'table', null,
-                    array(self::SETTING_KEYWORD => $source));
-            }
+                case Application_Model_ActivitySpec::URL_TYPE :
+                    $this->_redirect($activity->getUrl());
+                    break;
+                case Application_Model_ActivitySpec::CONTROLLER_ACTION_TYPE :
+                    $this->_helper->redirector(
+                            $activity->getAction(), $activity->getController(),
+                            null, $activity->getParameters());
+                    break;
+                case Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE :
+                    $this->_redirectToSource(null, 'index', self::AL_KEYWORD, $activity);
+                    break;
+                case Application_Model_ActivitySpec::SETTING_TYPE :
+                    $this->_redirectToSource('table', 'index',
+                                             self::SETTING_KEYWORD, $activity);
+                    break;
 
-            elseif ( $type ==
-                        Application_Model_ActivitySpec::REPORT_TYPE )
-            {
-                $source = urlencode($source);
-                $this->_helper->redirector('index', 'report', null,
-                    array(self::SETTING_KEYWORD => $source));
-            }
+                case Application_Model_ActivitySpec::REPORT_TYPE :
+                    $this->_redirectToSource('report', 'index',
+                                             self::SETTING_KEYWORD, $activity);
+                    break;
 
-            elseif ( $type ==
-                        Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE )
-            {
-                $source = urlencode($source);
-                $this->_helper->redirector('index', null, null,
-                    array(self::AL_KEYWORD => $source));
             }
         }
+    }
+
+    /**
+     * Redirects to a controller and activity based on the source provided.
+     *
+     */
+    protected function _redirectToSource($controller, $action, $keyword, $activity)
+    {
+        $source = $activity->getSource();
+        $source = urlencode($source);
+        $this->_helper->redirector($action, $controller, null,
+                                   array($keyword => $source));
     }
 
     /**

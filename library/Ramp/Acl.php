@@ -155,7 +155,7 @@ class Ramp_Acl extends Zend_Acl
         // TABLE AND REPORT CONTROLLERS: Resources are specific actions on 
         // specific tables (note: tables, not settings).
 
-        // Add other table resources defined in the database.
+        // Add table resources defined in the database.
         $this->_addResources('', $this->_authInfo->getTableResources());
 
 
