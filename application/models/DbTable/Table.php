@@ -2,9 +2,20 @@
 
 class Application_Model_DbTable_Table extends Zend_Db_Table_Abstract
 {
+    /**
+     * Simple Constructor.
+     *
+     * @param  string name table name
+     */
+    public function __construct($name)
+    {
+        $config = array();
+        $config[parent::NAME] = $name;
+        parent::__construct($config);
+    }
 
     /**
-     * Constructor.
+     * Constructor.  [currently not used, so commented out]
      *
      * Supported params for $config include:
      * - db              = user-supplied instance of database connector,
@@ -19,17 +30,16 @@ class Application_Model_DbTable_Table extends Zend_Db_Table_Abstract
      *
      * @param  string name table name
      * @param  mixed $config Array of user-specified config options, or just the Db Adapter.
-     * @return void
-     */
     public function __construct($name, $config = array())
     {
         // We want to be able to add $name to $config, but if $config is 
         // just the DB Adapter, we have to make it into an array first.  
         // (This is duplicating some code from the parent constructor,
         // but it is, unfortunately, unavoidable.)
-        /**
-         * Allow a scalar argument to be the Adapter object or Registry key.
-         */
+        //
+        // From parent constructor:
+        // Allow a scalar argument to be the Adapter object or Registry key.
+        //
         if (!is_array($config)) {
             $config = array(parent::ADAPTER => $config);
         }
@@ -37,6 +47,7 @@ class Application_Model_DbTable_Table extends Zend_Db_Table_Abstract
         $config[parent::NAME] = $name;
         parent::__construct($config);
     }
+     */
 
     /**
      * setOptions()

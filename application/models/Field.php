@@ -349,6 +349,8 @@ class Application_Model_Field
     /**
      * Get the database table to which this field is a link.
      *
+     * Precondition: $this->isExternalTableLink()
+     *
      * @return string  name of database table
      */
     public function getLinkedTable()
@@ -361,6 +363,8 @@ class Application_Model_Field
 
     /**
      * Get the database table setting to which this field is a link.
+     *
+     * Precondition: $this->isExternalTableLink()
      *
      * @return string  name of database table
      */
@@ -430,12 +434,15 @@ class Application_Model_Field
      * Returns the length of this field (only meaningful for some data 
      * types, such as varchar).
      *
+     * TODO: CHECK THIS!  The length in _metaInfo appears to be a strong 
+     * value, not an int, but forms/TableRecordEntry expects an int!
+     *
      * @return int
      */
     public function getLength()
     {
         return ( $this->_inTable && $this->_metaInfo[self::LENGTH] ) ?
-                     $this->_metaInfo[self::LENGTH] : 0;
+                     $this->_metaInfo[self::LENGTH] : NULL;
     }
 
     /**

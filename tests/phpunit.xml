@@ -1,17 +1,54 @@
-<phpunit bootstrap="./bootstrap.php">
+<phpunit bootstrap="./BootstrapZend.php" colors="true">
+    <testsuites>
+    <testsuite name="Model Test Suite">
+        <!-- Define ordered test suite. -->
+        <file>./application/models/RampIniReaderTest.php</file>
+        <file>./application/models/ActivitySpecTest.php</file>
+        <file>./application/models/DbTableTableTest.php</file>
+        <file>./application/models/FieldTest.php</file>
+            <!-- depends on DbTable_Table -->
+
+        <!-- <file>./application/models/ActivityGatewayTest.php</file> -->
+            <!-- depends on RampIniReaderTest and ActivitySpecTest -->
+        <!-- <file>./application/models/SetTableTest.php</file> -->
+            <!-- depends on DbTable_Table, ExternalTableRefTest, FieldTest -->
+        <!-- <file>./application/models/TVSGatewayTest.php</file> -->
+            <!-- depends on RampIniReaderTest -->
+        <!-- <file>./application/models/TableViewSequenceTest.php</file> -->
+            <!-- depends on TVSGatewayTest and SetTableTest -->
+        <!-- <file>./application/models/TVSFactory.php</file> -->
+            <!-- depends on TableViewSequenceTest -->
+        <!-- <file>./application/models/ExternalTableRefTest.php</file> -->
+            <!-- depends on SetTableTest, TVSFactoryTest, ??? -->
+    </testsuite>
+    <!--  Might define more complete, but unordered test suites in future.
     <testsuite name="Application Test Suite">
         <directory>./application</directory>
     </testsuite>
     <testsuite name="Library Test Suite">
         <directory>./library</directory>
     </testsuite>
+    -->
+    </testsuites>
     
     <filter>
-        <!-- If Zend Framework is inside your project's library, uncomment this filter -->
-        <!-- 
+        <!-- If Zend Framework is inside your project's library,
+             uncomment this filter.  [Has been uncommented.] -->
         <whitelist>
-            <directory suffix=".php">../../library/Zend</directory>
+            <directory suffix=".php">../library/</directory>
+            <directory suffix=".php">../application/</directory>
+            <exclude>
+                <directory suffix=".phtml">../application/</directory>
+                <!-- <file>../application/Bootstrap.php</file> [???] -->
+            </exclude>
         </whitelist>
-        -->
     </filter>
+
+    <!-- [AB: Ran out of memory trying to create coverage report]
+    <logging>
+        <log type="coverage-html" target="./log/coverage" charset="UTF-8"
+             yui="true" highlight="false" lowUpperBound="35" highLowerBound="70"/>
+     </logging>
+     -->
+
 </phpunit>

@@ -32,25 +32,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             $rampConfigSettings = $configOptions['ramp'];
 
             // Register the Access Control List roles.
-            $aclRoles = $rampConfigSettings['aclNonGuestRole'];
-            if ( ! empty($aclRoles) )
+            if ( ! empty($rampConfigSettings['aclNonGuestRole']) )
             {
+                $aclRoles = $rampConfigSettings['aclNonGuestRole'];
                 Zend_Registry::set('rampAclRoles', $aclRoles);
             }
             unset($rampConfigSettings['aclNonGuestRole']);
 
             // Register the Access Control List activity list resources.
-            $aclALDirs = $rampConfigSettings['activityListResourceDirectories'];
-            if ( ! empty($aclALDirs) )
+            if ( !
+                 empty($rampConfigSettings['activityListResourceDirectories'])
+               )
             {
-                Zend_Registry::set('rampAclActivityListDirs', $aclALDirs);
+                $dirs = $rampConfigSettings['activityListResourceDirectories'];
+                Zend_Registry::set('rampAclActivityListDirs', $dirs);
             }
             unset($rampConfigSettings['activityListResourceDirectories']);
 
             // Register the directory that stores table settings.
-            $path = $rampConfigSettings['settingsDirectory'];
-            if ( ! empty($path) )
+            if ( ! empty($rampConfigSettings['settingsDirectory']) )
             {
+                $path = $rampConfigSettings['settingsDirectory'];
                 Zend_Registry::set('rampSettingsDirectory', $path);
             }
             unset($rampConfigSettings['settingsDirectory']);

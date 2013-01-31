@@ -1,6 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/../TestConfiguration.php';
-require_once '../application/models/SetTable.php';
+require_once 'TestConfiguration.php';
 
 class models_SetTableTest extends PHPUnit_Framework_TestCase
 {
@@ -12,9 +11,9 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
 
     public function testFetchAll()
     {
-        $setTable = new SetTable();
+        $setTable = new Application_Model_SetTable();
         $places = $placesFinder->fetchAll();
 
-        $this->assertSame(3, $places->count());
+        $this->assertSame('a', 'b');
     }
 }

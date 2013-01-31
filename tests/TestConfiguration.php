@@ -6,27 +6,21 @@ class TestConfiguration
 {
     static function setup()
     {
-        $lib = realpath(dirname(__FILE__) . '/../../../library/');
-        set_include_path(get_include_path()
-            . PATH_SEPARATOR . $lib);
-
-        require_once dirname(__FILE__) . '/../application/bootstrap.php';
-        self::$bootstrap = new Bootstrap('brim_test');
     }
 
     static function setupDatabase()
     {
         $db = Zend_Registry::get('db');
 
-        // The "users" table must have that name, because used by the 
+        // The "ramp_auth_users" table must have that name, because used by the 
         // application.
         $db->query(<<<EOT
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS ramp_auth_users;
 EOT
         );
 
         $db->query(<<<EOT
-CREATE TABLE users (
+CREATE TABLE ramp_auth_users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     username VARCHAR ( 100 ) NOT NULL ,
     password VARCHAR ( 40 ) NOT NULL ,
@@ -39,12 +33,32 @@ EOT
         );
 
         $db->query(<<<EOT
-INSERT INTO users (first_name, last_name, username, password, email)
+INSERT INTO ramp_auth_users (id, first_name, last_name, username,
+                             password, email)
 VALUES
-('Alyce', 'Brady', 'abrady', 'abrady', 'abrady@kzoo.edu')
-, ('Casey', 'Delaney', 'cdelaney', 'cdelaney', 'cdelaney@kzoo.edu')
-, ('Lanny', 'Potts', 'lpotts', 'lpotts', 'lpotts@kzoo.edu')
+(1, 'Charlie', 'Brown', 'cbrown', 'cbrown', 'cbrown@univ.edu')
+, (2, 'Lucy', 'Van Pelt', 'lvanpelt', 'lvanpelt', 'lvanpelt@univ.edu')
+, (3, 'Bart', 'Simpson', 'bsimpson', 'bsimpson', 'bsimpson@univ.edu')
 ;
+EOT
+        );
+
+        $db->query(<<<EOT
+DROP TABLE IF EXISTS ramp_test_addresses;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ramp_test_addresses (
+    addr_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    userid INT NOT NULL ,
+    address1 VARCHAR ( 100 ) NULL ,
+    address2 VARCHAR ( 100 ) NULL ,
+    town VARCHAR ( 75 ) NULL DEFAULT 'London',
+    county VARCHAR ( 75 ) NULL ,
+    postcode VARCHAR ( 30 ) NULL ,
+    country VARCHAR ( 75 ) NULL DEFAULT 'UK'
+)
 EOT
         );
 
@@ -125,7 +139,22 @@ CREATE TABLE ramp_emptytabletest1 (
 EOT
         );
 
-        // continues (but not yet!)
+        $db->query(<<<EOT
+DROP TABLE IF EXISTS ramp_enumTesting;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ramp_enumTesting (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    status ENUM('Proposed', 'Active', 'Inactive') NOT NULL,
+    gender ENUM('Unknown', 'M', 'F') NOT NULL DEFAULT 'Unknown'
+)
+EOT
+        );
+
+        // still under construction
+
     }
 }
 

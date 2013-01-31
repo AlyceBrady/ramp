@@ -20,19 +20,19 @@ a non-existent table)"
 activity.c.type = "setting"
 activity.c.source = "tests/settingTesting/invalidStartAction"
 activity.c.title = "Setting Example 2"
-activity.c.description = "Setting Example #1 (A sequence with an invalid
+activity.c.description = "Setting Example #2 (A sequence with an invalid
 value for the initAction property)"
 
 activity.b.type = "setting"
 activity.b.source = "tests/settingTesting/noDbTable"
 activity.b.title = "Setting Example 3"
-activity.b.description = "Setting Example #1 (A sequence/setting file
+activity.b.description = "Setting Example #3 (A sequence/setting file
 with no database table specified)"
 
 activity.e.type = "setting"
 activity.e.source = "tests/settingTesting/noVisibleFields"
 activity.e.title = "Setting Example 4"
-activity.e.description = "Setting Example #1 (A setting file with no
+activity.e.description = "Setting Example #4 (A setting file with no
 visible fields)"
 
 activity.g.type = "url"

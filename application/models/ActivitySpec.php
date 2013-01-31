@@ -54,13 +54,19 @@ class Application_Model_ActivitySpec
 
     protected $_type;   // type of activity being specified
 
-    protected $_source; // setting, activity list, or other activity source
+    protected $_source; // setting, activity list, url, or other activity source
 
     protected $_title;  // brief title for activity
 
-    protected $_description;    // summary description of activity
-                                // (or comment body, in the case of
-                                // a comment "activity")
+    protected $_description;  // summary description of activity
+                              // (or comment/html body, in the case of
+                              // comment/html "activities")
+
+    protected $_controller;   // controller tied to controller/action activity
+
+    protected $_action;       // action tied to controller/action activity
+
+    protected $_parameter;    // parameter tied to controller/action activity
 
     protected $_validSpecTypes = array(
         self::COMMENT_TYPE, self::SEPARATOR_TYPE, self::ACTIVITY_LIST_TYPE,
@@ -119,7 +125,8 @@ class Application_Model_ActivitySpec
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
                 break;
             case self::HTML_TYPE:
-                $this->_description = $this->_confirmProperty(self::HTML, $specAsArray);
+                $this->_description =
+                    $this->_confirmProperty(self::HTML, $specAsArray);
                 break;
             case self::SETTING_TYPE:
             case self::REPORT_TYPE:
@@ -142,10 +149,12 @@ class Application_Model_ActivitySpec
                     $this->_confirmProperty(self::PARAMETER, $specAsArray);
                 break;
             case self::URL_TYPE:
-                $this->_title = $this->_confirmProperty(self::TITLE, $specAsArray);
+                $this->_title = $this->_confirmProperty(self::TITLE,
+                                                        $specAsArray);
                 $this->_description =
                     $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
-                $this->_url = $this->_confirmProperty(self::URL, $specAsArray);
+                $this->_source = $this->_confirmProperty(self::URL,
+                                                         $specAsArray);
                 break;
             default:
                 // ignore extraneous properties
@@ -236,6 +245,24 @@ class Application_Model_ActivitySpec
     public function isHTML()
     {
         return $this->_type == self::HTML_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is a URL.
+     *
+     */
+    public function isControllerAction()
+    {
+        return $this->_type == self::CONTROLLER_ACTION_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is a URL.
+     *
+     */
+    public function isUrl()
+    {
+        return $this->_type == self::URL_TYPE;
     }
 
     /**
@@ -357,7 +384,7 @@ class Application_Model_ActivitySpec
      */
     public function getUrl()
     {
-        return $this->_url == "" ? null : $this->_url;
+        return $this->_source == "" ? null : $this->_source;
     }
 
 }

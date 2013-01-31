@@ -230,8 +230,7 @@ class Application_Model_SetTable
      * In this case, the connection must be specified with the more 
      * verbose, fully-qualified format.
      *
-     * @param array $allFieldSettings information from the table setting
-     * @param array $allColMetaInfo   meta information from db for all fields
+     * @param array $allConnections connections to other tables
      * @return void
      */
     protected function _initConnections($allConnections)
