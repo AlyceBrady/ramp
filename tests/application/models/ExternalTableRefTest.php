@@ -9,12 +9,9 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         TestConfiguration::setupDatabase();
     }
 
-    public function testConstructorAndGetName()
+    public function testSuiteIsComplete()
     {
-        $testName = 'Users';
-        $table = new Application_Model_DbTable_Table($testName);
-        $name = $table->getName();
-
-        $this->assertSame('a', 'b');
+        $this->assertTrue(false);
     }
+
 }

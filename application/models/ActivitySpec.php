@@ -175,17 +175,17 @@ class Application_Model_ActivitySpec
     {
         if ( ! array_key_exists($property, $spec) )
         {
-            throw new Exception("Activity List Error: activity
-                specification " . $this->_name . " has no " .
+            throw new Exception("Activity List Error: activity " .
+                "specification " . $this->_name . " has no " .
                 $property . " property"
             );
         }
 
         if ( ! is_string($spec[$property]) )
         {
-            throw new Exception("Activity List Error: the
-                $property property value for activity
-                specification " . $this->_name . " must be a string");
+            throw new Exception("Activity List Error: the " .
+                "$property property value for activity " .
+                "specification " . $this->_name . " must be a string");
         }
 
         return $spec[$property];

@@ -58,7 +58,7 @@ class Ramp_Acl extends Zend_Acl
         // create a "category converter" that associates categories
         // with lists of actions.  The 'index' action is part of the
         // VIEW category because it always forwards to either a search
-        // // or view action.
+        // or view action.
         $viewActions = array('index', 'search', 'list-view', 'table-view',
                              'record-view');
         $addActions = array('add');

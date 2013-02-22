@@ -97,7 +97,8 @@ class Application_Model_TVSGateway
             $importedProperties = $this->_importProperties($name);
             if ( ! empty($importedProperties[self::SEQUENCE]) )
             {
-                throw new Exception("Error: too many lists of sequence properties found.");
+                throw new Exception("Error: too many lists of sequence " .
+                    "properties found.");
             }
             $this->_listOfSettings[$name] =
                                 $importedProperties[self::SETTINGS][$name];
@@ -173,8 +174,8 @@ class Application_Model_TVSGateway
         }
         if ( count($allSequenceDefs) > 1 )
         {
-            throw new Exception("Error: duplicate or conflicting sequence
-                properties found.");
+            throw new Exception("Error: duplicate or conflicting sequence " .
+                "properties found.");
         }
 
         // Return the one set of sequence definitions (at index 0).
@@ -222,9 +223,9 @@ class Application_Model_TVSGateway
             // Can't have two sets of table settings with the same name.)
             if ( isset($allSettingDefs[$name]) )
             {
-                throw new Exception("There are two sets of table settings
-                    properties associated with the name $key, one at the
-                    top level and one in a section.");
+                throw new Exception("There are two sets of table settings " .
+                    "properties associated with the name $key, one at the " .
+                    "top level and one in a section.");
             }
             $allSettingDefs[$name] = $propDefs;
         }
@@ -232,9 +233,9 @@ class Application_Model_TVSGateway
         {
             foreach ( $propDefs as $key => $value )
             {
-                throw new Exception("Section $key not recognized as a
-                    sequence (no \"sequence\" properties) nor as a
-                    setting (no database name provided).");
+                throw new Exception("Section $key not recognized as a " .
+                    "sequence (no \"sequence\" properties) nor as a " .
+                    "setting (no database table name provided).");
             }
         }
 
@@ -282,11 +283,6 @@ class Application_Model_TVSGateway
      * specification for the name of an associated database table, we just
      * look for that.
      *
-     * TODO: What if name matches a specified setting name from 
-     * sequence but it has no database?  That would be a good check that 
-     * would lead to a better error message.
-     *
-     * @param array $propDefs   array of property definitions
      * @return bool
      *
      */

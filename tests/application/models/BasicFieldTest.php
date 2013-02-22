@@ -1,10 +1,8 @@
 <?php
 require_once 'TestConfiguration.php';
 
-class models_FieldTest extends PHPUnit_Framework_TestCase
+class models_BasicFieldTest extends PHPUnit_Framework_TestCase
 {
-    protected $_field;
-
     public function setUp()
     {
         // Reset database to known state
@@ -18,11 +16,11 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $field = new Application_Model_Field($testName);
 
         // Test all methods that don't have unmet preconditions.
-        $this->assertSame($field->getDbFieldName(), $testName);
+        $this->assertSame($testName, $field->getDbFieldName());
         $this->assertFalse($field->isReadOnly());
         $this->assertFalse($field->isVisible());
-        $this->assertSame($field->getLabel(), $testName);
-        $this->assertSame($field->getFieldFootnote(), "");
+        $this->assertSame($testName, $field->getLabel());
+        $this->assertSame("", $field->getFieldFootnote());
         $this->assertFalse($field->isRecommended());
         $this->assertFalse($field->isDiscouraged());
         $this->_assertNoMetaInfo($field);
@@ -38,11 +36,11 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $field = new Application_Model_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
-        $this->assertSame($field->getDbFieldName(), $testName);
+        $this->assertSame($testName, $field->getDbFieldName());
         $this->assertFalse($field->isReadOnly());
         $this->assertTrue($field->isVisible());
-        $this->assertSame($field->getLabel(), "Label");
-        $this->assertSame($field->getFieldFootnote(), "Footnote");
+        $this->assertSame("Label", $field->getLabel());
+        $this->assertSame("Footnote", $field->getFieldFootnote());
         $this->assertFalse($field->isRecommended());
         $this->assertFalse($field->isDiscouraged());
         $this->_assertNoMetaInfo($field);
@@ -62,12 +60,12 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $field = new Application_Model_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
-        $this->assertSame($field->getDbFieldName(), $testName);
+        $this->assertSame($testName, $field->getDbFieldName());
         $this->assertFalse($field->isReadOnly());
         $this->assertTrue($field->isVisible());
-        $this->assertSame($field->getLabel(), "Label");
-        $this->assertSame($field->getFieldFootnote(), "Footnote");
-        // Recommended will not be true unless the field is in the table
+        $this->assertSame("Label", $field->getLabel());
+        $this->assertSame("Footnote", $field->getFieldFootnote());
+        // Recommended will not be true because the field is not in the table
         $this->assertFalse($field->isRecommended());
         $this->assertFalse($field->isDiscouraged());
         $this->_assertNoMetaInfo($field);
@@ -88,13 +86,13 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $field = new Application_Model_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
-        $this->assertSame($field->getDbFieldName(), $testName);
+        $this->assertSame($testName, $field->getDbFieldName());
         $this->assertTrue($field->isReadOnly());
         $this->assertFalse($field->isVisible());
-        $this->assertSame($field->getLabel(), "Label");
-        $this->assertSame($field->getFieldFootnote(), "Footnote");
+        $this->assertSame("Label", $field->getLabel());
+        $this->assertSame("Footnote", $field->getFieldFootnote());
         $this->assertFalse($field->isRecommended());
-        // Discouraged will not be true unless the field is in the table
+        // Discouraged will not be true because the field is not in the table
         $this->assertFalse($field->isDiscouraged());
         $this->_assertNoMetaInfo($field);
     }
@@ -109,27 +107,56 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
 
         $field = new Application_Model_Field($testName, $fieldSetting);
 
-        // Discouraged and Recommended will not be true unless the field
-        // is in the table
+        // Discouraged and Recommended will not be true because the field
+        // is not in the table
         $this->assertFalse($field->isRecommended());
         $this->assertFalse($field->isDiscouraged());
+        $this->_assertNoMetaInfo($field);
     }
 
     public function testWhenColsShownByDefaultAndHideNotSpecified()
     {
+        // Assumed visible because columns shown by default (even though 
+        // no label provide), and not explicitly hidden.
         $testName = 'MyField';
-        $fieldSetting = array('label' => 'Label');
 
         $showColsByDefault = 'true';
-        $field = new Application_Model_Field($testName, $fieldSetting,
+        $field = new Application_Model_Field($testName, array(),
                                              array(), $showColsByDefault);
         $this->assertTrue($field->isVisible());
-        $this->assertSame($field->getLabel(), "Label");
+        $this->assertSame("MyField", $field->getLabel());
+        $this->_assertNoMetaInfo($field);
     }
 
     public function testWhenColsShownByDefaultButHideIsTrue()
     {
-        $this->assertTrue(true);
+        // Assumed visible because columns shown by default, but
+        // explicitly hidden with 'hide' set to true.
+        $testName = 'MyField';
+        $fieldSetting = array(
+                'label' => 'Label',
+                'hide' => true);
+
+        $showColsByDefault = 'true';
+        $field = new Application_Model_Field($testName, $fieldSetting,
+                                             array(), $showColsByDefault);
+        $this->assertFalse($field->isVisible());
+        $this->assertSame("Label", $field->getLabel());
+        $this->_assertNoMetaInfo($field);
+    }
+
+    public function testAssumedHiddenButExplicitlyVisible()
+    {
+        // Assumed hidden because no label given and columns not shown 
+        // by default, but explicitly visible because 'hide' is false.
+        $testName = 'MyField';
+        $fieldSetting = array('hide' => false);
+
+        $field = new Application_Model_Field($testName, $fieldSetting);
+
+        // Test all methods that don't have unmet preconditions.
+        $this->assertTrue($field->isVisible());
+        $this->_assertNoMetaInfo($field);
     }
 
     public function testRecommendedField()
@@ -143,6 +170,8 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $field = new Application_Model_Field($whichField, $fieldSetting,
                                              $metaInfo[$whichField]);
 
+        $this->assertTrue($field->isInTable());
+        $this->assertTrue($field->isInDB());
         $this->assertFalse($field->isRequired());
         $this->assertTrue($field->isRecommended());
         $this->assertFalse($field->isDiscouraged());
@@ -152,12 +181,37 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
 
     public function testDiscouragedField()
     {
-        $this->assertTrue(true);
+        $table = new Application_Model_DbTable_Table('ramp_auth_users');
+        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
+        $whichField = 'last_name';
+        $fieldSetting = array('discouraged' => true);
+
+        $field = new Application_Model_Field($whichField, $fieldSetting,
+                                             $metaInfo[$whichField]);
+
+        $this->assertTrue($field->isInTable());
+        $this->assertTrue($field->isInDB());
+        $this->assertFalse($field->isRequired());
+        $this->assertFalse($field->isRecommended());
+        $this->assertTrue($field->isDiscouraged());
     }
 
     public function testDiscouragedAndRecommended()
     {
-        $this->assertTrue(true);
+        $table = new Application_Model_DbTable_Table('ramp_auth_users');
+        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
+        $whichField = 'last_name';
+        $fieldSetting = array(
+                'recommended' => true,
+                'discouraged' => true);
+
+        $field = new Application_Model_Field($whichField, $fieldSetting,
+                                             $metaInfo[$whichField]);
+
+        $this->assertTrue($field->isInTable());
+        $this->assertTrue($field->isInDB());
+        $this->assertTrue($field->isRecommended());
+        $this->assertTrue($field->isDiscouraged());
     }
 
     public function testFieldIsRequiredAndAutoIncremented()
@@ -184,14 +238,40 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
     {
         // 'gender' is required but not primary key; has a default
         $tableName = 'ramp_enumTesting';
-        $this->assertTrue(true);
+        $table = new Application_Model_DbTable_Table($tableName);
+        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
+        $whichField = 'gender';
+
+        $field = new Application_Model_Field($whichField, array(),
+                                             $metaInfo[$whichField]);
+        $this->assertTrue($field->isInTable());
+        $this->assertTrue($field->isInDB());
+        $this->assertTrue($field->isRequired());
+        $this->assertFalse($field->isPrimaryKey());
+        $this->assertFalse($field->isAutoIncremented());
+        $this->assertSame('Unknown', $field->getDefault());
+        // User does not have to provide this value; default will serve.
+        $this->assertFalse($field->valueNecessaryForAdd());
     }
 
     public function testFieldIsRequiredAndHasNoDefault()
     {
         // 'status' is required but has no default
         $tableName = 'ramp_enumTesting';
-        $this->assertTrue(true);
+        $table = new Application_Model_DbTable_Table($tableName);
+        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
+        $whichField = 'status';
+
+        $field = new Application_Model_Field($whichField, array(),
+                                             $metaInfo[$whichField]);
+        $this->assertTrue($field->isInTable());
+        $this->assertTrue($field->isInDB());
+        $this->assertTrue($field->isRequired());
+        $this->assertFalse($field->isPrimaryKey());
+        $this->assertFalse($field->isAutoIncremented());
+        $this->assertNull($field->getDefault());
+        // User must provide this value.
+        $this->assertTrue($field->valueNecessaryForAdd());
     }
 
     public function testEnumDataType()
@@ -208,10 +288,10 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
         $this->assertTrue($field->isEnum());
-        $this->assertSame($field->getDataType(), "enum('Unknown','M','F')");
-        $this->assertSame(array_keys($field->getEnumValues()),
-                          array('Unknown','M','F'));
-        $this->assertSame($field->getDefault(), 'Unknown');
+        $this->assertSame("enum('Unknown','M','F')", $field->getDataType());
+        $this->assertSame(array('Unknown','M','F'),
+                          array_keys($field->getEnumValues()));
+        $this->assertSame('Unknown', $field->getDefault());
         $this->_assertWholelyLocal($field);
         $this->_assertMetaInfoValues($tableName, $whichField, $field);
     }
@@ -230,8 +310,8 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
         $this->assertFalse($field->isEnum());
-        $this->assertSame($field->getDataType(), "varchar");
-        $this->assertSame($field->getLength(), "100");
+        $this->assertSame("varchar", $field->getDataType());
+        $this->assertSame("100", $field->getLength());
         $this->_assertWholelyLocal($field);
         $this->_assertMetaInfoValues($tableName, $whichField, $field);
     }
@@ -240,69 +320,20 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
     {
         // Non-enum type (int); length not specified
         $tableName = 'ramp_tabletest1';
-        $this->assertTrue(true);
-    }
-
-    public function testSimpleImportedField()
-    {
-        $tableName = 'ramp_test_addresses';
         $table = new Application_Model_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
-        $fieldName = 'first_name';
-        $fieldSetting = array(
-                'label' => 'First Name',
-                'importedFrom' => 'ramp_auth_users');
+        $whichField = 'id';
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
-                                             array());
+        $field = new Application_Model_Field($whichField, array(),
+                                             $metaInfo[$whichField]);
 
-        $this->assertFalse($field->isInTable());
+        $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
-        $this->assertTrue($field->isImported());
-        $this->assertSame($field->getImportTable(), "ramp_auth_users");
-    }
-
-    public function testImportedFieldAsDifferentName()
-    {
-        $tableName = 'ramp_test_addresses';
-        $table = new Application_Model_DbTable_Table($tableName);
-        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
-        $fieldName = 'firstName';
-        $fieldSetting = array(
-                'label' => 'First Name',
-                'importedFrom' => 'ramp_auth_users',
-                'importedField' => 'first_name');
-
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
-                                             array());
-
-        $this->assertFalse($field->isInTable());
-        $this->assertTrue($field->isInDB());
-        $this->assertTrue($field->isImported());
-        $this->assertSame($field->getImportTable(), "ramp_auth_users");
-    }
-
-    public function testImportFromNullTable()
-    {
-        $tableName = 'ramp_test_addresses';
-        $table = new Application_Model_DbTable_Table($tableName);
-        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
-        $fieldName = 'first_name';
-        $fieldSetting = array(
-                'label' => 'First Name',
-                'importedFrom' => null);
-
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
-                                             array());
-
-        $this->assertFalse($field->isInTable());
-        $this->assertFalse($field->isInDB());
-        $this->assertFalse($field->isImported());
-    }
-
-    public function testAlwaysFails()
-    {
-        $this->assertSame('a', 'b');
+        $this->assertFalse($field->isEnum());
+        $this->assertSame("int", $field->getDataType());
+        $this->assertNull($field->getLength());
+        $this->_assertWholelyLocal($field);
+        $this->_assertMetaInfoValues($tableName, $whichField, $field);
     }
 
     private function _assertNoMetaInfo($field)
@@ -311,7 +342,7 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $this->assertNull($field->getDataType());
         $this->assertFalse($field->isInTable());
         $this->assertFalse($field->isInDB());
-        $this->assertSame($field->getMetaInfo(), array());
+        $this->assertSame(array(), $field->getMetaInfo());
         $this->assertNull($field->getLength());
         $this->assertFalse($field->isRequired());
         $this->assertFalse($field->isPrimaryKey());
@@ -327,22 +358,23 @@ class models_FieldTest extends PHPUnit_Framework_TestCase
         $this->assertNull($field->getInitTableName());
         $this->assertFalse($field->isImported());
         $this->assertNull($field->getImportTable());
+        $this->assertFalse($field->validValsDefinedInExtTable());
         $this->assertFalse($field->isExternalTableLink());
     }
 
     private function _assertMetaInfoValues($tableName, $fieldName, $field)
     {
         $metaInfo = $field->getMetaInfo();
-        $this->assertSame($metaInfo['TABLE_NAME'], $tableName);
-        $this->assertSame($metaInfo['COLUMN_NAME'], $fieldName);
-        $this->assertSame($metaInfo['DATA_TYPE'], $field->getDataType());
-        $this->assertSame($metaInfo['DEFAULT'], $field->getDefault());
-        $this->assertSame($metaInfo['NULLABLE'], ! $field->isRequired());
+        $this->assertSame($tableName, $metaInfo['TABLE_NAME']);
+        $this->assertSame($fieldName, $metaInfo['COLUMN_NAME']);
+        $this->assertSame($field->getDataType(), $metaInfo['DATA_TYPE']);
+        $this->assertSame($field->getDefault(), $metaInfo['DEFAULT']);
+        $this->assertSame(! $field->isRequired(), $metaInfo['NULLABLE']);
         $lengthIsValid = $metaInfo['LENGTH'] == null ||
                          $metaInfo['LENGTH'] == $field->getLength();
         $this->assertTrue($lengthIsValid);
-        $this->assertSame($metaInfo['PRIMARY'], $field->isPrimaryKey());
-        $this->assertSame($metaInfo['IDENTITY'], $field->isAutoIncremented());
+        $this->assertSame($field->isPrimaryKey(), $metaInfo['PRIMARY']);
+        $this->assertSame($field->isAutoIncremented(), $metaInfo['IDENTITY']);
     }
 
 }

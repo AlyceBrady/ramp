@@ -37,7 +37,7 @@ description = "Run draft demos of Ramp program"
 [settingTests]
 
 type = activityList
-source = tests/settingTesting/index.act
+source = tests/settingTesting/manualTests/index.act
 title = "Setting Config Tests"
 description = "Series of tests related to sequence/setting configuration
 files"

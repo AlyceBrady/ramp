@@ -63,6 +63,16 @@ EOT
         );
 
         $db->query(<<<EOT
+INSERT INTO ramp_test_addresses (addr_id, userid, address1)
+VALUES
+(1, 1, 'Brown Boulevard')
+, (2, 2, 'Lucy Lane')
+, (3, 3, 'Simpson Street')
+;
+EOT
+        );
+
+        $db->query(<<<EOT
 DROP TABLE IF EXISTS ramp_tabletest1;
 EOT
         );
@@ -99,12 +109,12 @@ EOT
         );
 
         $db->query(<<<EOT
-DROP TABLE IF EXISTS ramp_tabletest2;
+DROP TABLE IF EXISTS albums;
 EOT
         );
 
         $db->query(<<<EOT
-CREATE TABLE ramp_tabletest2 (
+CREATE TABLE albums (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     artist VARCHAR ( 100 ) NOT NULL DEFAULT 'The Beatles',
     title VARCHAR ( 100 ) NOT NULL
@@ -113,7 +123,7 @@ EOT
         );
 
         $db->query(<<<EOT
-INSERT INTO ramp_tabletest2 (artist, title)
+INSERT INTO albums (artist, title)
 VALUES
 ('Paolo Nutine', 'Sunny Side Up')
 , ('Florence + The Machine', 'Lungs')
@@ -121,17 +131,18 @@ VALUES
 , ('Andre Rieu', 'Forever Vienna')
 , ('Sade', 'Soldier of Love')
 , ('The Beatles', 'Abbey Road')
+, ('The Beatles', 'White Album')
 ;
 EOT
         );
 
         $db->query(<<<EOT
-DROP TABLE IF EXISTS ramp_emptytabletest1;
+DROP TABLE IF EXISTS albums_variant;
 EOT
         );
 
         $db->query(<<<EOT
-CREATE TABLE ramp_emptytabletest1 (
+CREATE TABLE albums_variant (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     artist VARCHAR ( 100 ) NOT NULL DEFAULT 'The Beatles',
     title VARCHAR ( 100 ) NOT NULL
@@ -150,6 +161,53 @@ CREATE TABLE ramp_enumTesting (
     status ENUM('Proposed', 'Active', 'Inactive') NOT NULL,
     gender ENUM('Unknown', 'M', 'F') NOT NULL DEFAULT 'Unknown'
 )
+EOT
+        );
+
+        $db->query(<<<EOT
+DROP TABLE IF EXISTS ramp_initTesting;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ramp_initTesting (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    fname VARCHAR ( 100 ),
+    lname VARCHAR ( 100 ),
+    term VARCHAR ( 15 ),
+    artist VARCHAR ( 100 ) NOT NULL DEFAULT 'The Beatles'
+)
+EOT
+        );
+
+        $db->query(<<<EOT
+DROP TABLE IF EXISTS ramp_valsTableTesting;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ramp_valsTableTesting (
+    term VARCHAR ( 15 ) NOT NULL PRIMARY KEY
+)
+EOT
+        );
+
+        $db->query(<<<EOT
+INSERT INTO ramp_valsTableTesting
+VALUES
+('2008-09 Sem 1')
+, ('2008-09 Sem 2')
+, ('2009-10 Sem 1')
+, ('2009-10 Sem 2')
+, ('2010-11 Sem 1')
+, ('2010-11 Sem 2')
+, ('2011-12 Sem 1')
+, ('2011-12 Sem 2')
+, ('2012-13 Sem 1')
+, ('2012-13 Sem 2')
+, ('2013-14 Sem 1')
+, ('2013-14 Sem 2')
+;
 EOT
         );
 

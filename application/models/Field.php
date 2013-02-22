@@ -50,6 +50,7 @@ class Application_Model_Field
     const INIT_FIELD    = 'initFromField';
     const IMPORTED      = 'importedFrom';
     const ALIAS         = 'importedField';
+    const LEGAL_VALUES  = 'selectFrom';
     const LINK_TO_TBL   = 'selectUsing';
 
     // Constants representing db metadata properties.
@@ -97,6 +98,12 @@ class Application_Model_Field
     /** @var string */
     protected $_importName;     // alias name for field being imported
                                 // (name in the import table)
+
+    /** @var string */
+    protected $_legalValsSource; // table and field that contains legal values
+
+    /** @var string */
+    protected $_legalVals;       // legal values from an external table
 
     /** @var string */
     protected $_connectTbl;     // name of table to which this field is a link
@@ -179,6 +186,9 @@ class Application_Model_Field
         $this->_importName = isset($settingInfo[self::ALIAS]) ?
                             $settingInfo[self::ALIAS] :
                             $this->_name;
+        $this->_legalValsSource = isset($settingInfo[self::LEGAL_VALUES]) ?
+                            $settingInfo[self::LEGAL_VALUES] :
+                            null;
         $this->_connectTbl = isset($settingInfo[self::LINK_TO_TBL]) ?
                             $settingInfo[self::LINK_TO_TBL] :
                             null;
@@ -198,9 +208,8 @@ class Application_Model_Field
     }
 
     /**
-     * Returns the data type for this field, if the field is in the 
-     * "local" table.  If the field is imported, returns String as the
-     * best default for Text input boxes.
+     * Returns true if the field is defined as an enumerated type in the 
+     * database; false otherwise.
      *
      * @return 
      */
@@ -211,9 +220,7 @@ class Application_Model_Field
     }
 
     /**
-     * Returns the data type for this field, if the field is in the 
-     * "local" table.  If the field is imported, returns String as the
-     * best default for Text input boxes.
+     * Returns the set of valid values for this enumerated type.
      *
      * Precondition: isEnum() is true
      *
@@ -305,7 +312,7 @@ class Application_Model_Field
     /**
      * Get the database table from which this field is imported.
      *
-     * @return string  name of database table
+     * @return string  name of database table (null if !$this->isImported)
      */
     public function getImportTable()
     {
@@ -334,6 +341,43 @@ class Application_Model_Field
     public function isInDB()
     {
         return $this->_inTable || $this->_importTbl;
+    }
+
+    /**
+     * Are the valid values for this field defined in another table?
+     *
+     * @return bool
+     */
+    public function validValsDefinedInExtTable()
+    {
+        return $this->_legalValsSource !== null;
+    }
+
+    /**
+     * Returns the set of valid values for this field, obtained from
+     * an external table.
+     *
+     * Precondition: $this->validValsDefinedInExtTable()
+     *
+     * @return array   list of valid values
+     */
+    public function getValidVals()
+    {
+        if ( empty($this->_legalVals) )
+        {
+            $components = explode('.', $this->_legalValsSource);
+            if ( count($components) != 2 )
+            {
+                throw new Exception($this->_legalValsSource .
+                    " does not have the required tableName.fieldName format.");
+            }
+
+            $table = $components[0];
+            $field = $components[1];
+            $source = new Application_Model_DbTable_ValidValuesSource($table);
+            $this->_legalVals = $source->getValidValues($field);
+        }
+        return $this->_legalVals;
     }
 
     /**

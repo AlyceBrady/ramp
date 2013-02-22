@@ -168,115 +168,116 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
                           Application_Model_ActivitySpec::SETTING_TYPE,
                           Application_Model_ActivitySpec::URL_TYPE);
         $uniqueTypes = array_unique($actTypes);
-        $this->assertSame(count($actTypes), count($uniqueTypes));
+        $this->assertSame(count($uniqueTypes), count($actTypes));
     }
 
     public function testConstructorForSettingWithValidActList()
     {
         $aSpec = $this->_actSpecList['goodActList'];
         $spec = new Application_Model_ActivitySpec('validActList', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isActivityList());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
-        $this->assertSame($spec->getSource(), 'This is the source');
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
+        $this->assertSame('This is the source', $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidComment()
     {
         $aSpec = $this->_actSpecList['goodComment'];
         $spec = new Application_Model_ActivitySpec('validComment', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::COMMENT_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::COMMENT_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isComment());
 
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a comment') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidControllerAction()
     {
         $aSpec = $this->_actSpecList['goodContActionAct'];
-        $spec = new Application_Model_ActivitySpec('validControllerAction', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::CONTROLLER_ACTION_TYPE);
+        $spec = new Application_Model_ActivitySpec('validControllerAction',
+                                                   $aSpec);
+        $this->assertSame(Application_Model_ActivitySpec::CONTROLLER_ACTION_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isControllerAction());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
-        $this->assertSame($spec->getController(), 'This is the controller');
-        $this->assertSame($spec->getAction(), 'This is the action');
-        $this->assertSame(count($spec->getParameters()), 2);
+        $this->assertSame('This is the controller', $spec->getController());
+        $this->assertSame('This is the action', $spec->getAction());
+        $this->assertSame(2, count($spec->getParameters()));
     }
 
     public function testConstructorForSettingWithValidHTMLType()
     {
         $aSpec = $this->_actSpecList['goodHTML'];
         $spec = new Application_Model_ActivitySpec('validHTML', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::HTML_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::HTML_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isHTML());
 
         $this->assertTrue(strpos($spec->getDescription(),
             'This is the html') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidReport()
     {
         $aSpec = $this->_actSpecList['goodReport'];
         $spec = new Application_Model_ActivitySpec('validReport', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::REPORT_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::REPORT_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isReport());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
-        $this->assertSame($spec->getSource(), 'This is the source');
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
+        $this->assertSame('This is the source', $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidSeparator()
     {
         $aSpec = $this->_actSpecList['goodSeparator'];
         $spec = new Application_Model_ActivitySpec('validSeparator', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::SEPARATOR_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::SEPARATOR_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isSeparator());
 
         $this->assertSame('Comment' . $spec->getComment(), 'Comment');
@@ -287,87 +288,87 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidSequence()
     {
         $aSpec = $this->_actSpecList['goodSequence'];
         $spec = new Application_Model_ActivitySpec('validSequence', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::SETTING_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::SETTING_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isSetting());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
-        $this->assertSame($spec->getSource(), 'This is the source');
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
+        $this->assertSame('This is the source', $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidSetting()
     {
         $aSpec = $this->_actSpecList['goodSetting'];
         $spec = new Application_Model_ActivitySpec('validSetting', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::SETTING_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::SETTING_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isSetting());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
-        $this->assertSame($spec->getSource(), 'This is the source');
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
+        $this->assertSame('This is the source', $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorForSettingWithValidUrl()
     {
         $aSpec = $this->_actSpecList['goodUrl'];
         $spec = new Application_Model_ActivitySpec('validUrl', $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::URL_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::URL_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isUrl());
 
-        $this->assertSame($spec->getTitle(), 'This is a title');
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertTrue(strpos($spec->getSource(), 'This is the url') === 0);
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testConstructorWithNoName()
     {
         $aSpec = $this->_actSpecList['goodComment'];
         $spec = new Application_Model_ActivitySpec("", $aSpec);
-        $this->assertSame($spec->getType(),
-            Application_Model_ActivitySpec::COMMENT_TYPE);
+        $this->assertSame(Application_Model_ActivitySpec::COMMENT_TYPE,
+                          $spec->getType());
         $this->assertTrue($spec->isComment());
 
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a comment') === 0);
-        $this->assertSame($spec->getComment(), $spec->getDescription());
-        $this->assertSame($spec->getHTML(), $spec->getDescription());
+        $this->assertSame($spec->getDescription(), $spec->getComment());
+        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
-        $this->assertSame($spec->getParameters(), array());
+        $this->assertSame(array(), $spec->getParameters());
     }
 
     public function testSetSource()
@@ -389,17 +390,17 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $newSource = $source . '; new source';
 
         $spec->setSource($newSource);
-        $this->assertSame($spec->getSource(), $newSource);
-        $this->assertSame($spec->getUrl(), $spec->getSource());
+        $this->assertSame($newSource, $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
 
-        $this->assertSame($spec->getType(), $type);
-        $this->assertSame($spec->getTitle(), $title);
-        $this->assertSame($spec->getDescription(), $description);
-        $this->assertSame($spec->getComment(), $comment);
-        $this->assertSame($spec->getHTML(), $html);
-        $this->assertSame($spec->getController(), $controller);
-        $this->assertSame($spec->getAction(), $action);
-        $this->assertSame($spec->getParameters(), $params);
+        $this->assertSame($type, $spec->getType());
+        $this->assertSame($title, $spec->getTitle());
+        $this->assertSame($description, $spec->getDescription());
+        $this->assertSame($comment, $spec->getComment());
+        $this->assertSame($html, $spec->getHTML());
+        $this->assertSame($controller, $spec->getController());
+        $this->assertSame($action, $spec->getAction());
+        $this->assertSame($params, $spec->getParameters());
     }
 
     public function testCreateActSpecFromNullRawSpec()

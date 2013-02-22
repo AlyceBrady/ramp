@@ -282,8 +282,8 @@ class Application_Model_TableViewSequence
         if ( in_array($valueProvided, $validValues) )
             return $valueProvided;
 
-        throw new Exception("Error: $valueProvided is not a valid
-            value for $property.  Must be one of (" .
+        throw new Exception("Error: $valueProvided is not a valid " .
+            "value for $property.  Must be one of (" .
             implode(", ", $validValues) . ").");
     }
 

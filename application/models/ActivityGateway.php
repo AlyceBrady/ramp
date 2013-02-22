@@ -115,6 +115,21 @@ class Application_Model_ActivityGateway
         // to the actual specifications.
         $this->_resolveActivityReferences($newLists, $activitySpecs);
         $this->_expandActListRefs($newLists, $filename);
+
+        if ( ! isset($this->_listOfActivityLists[$name]) )
+        {
+            if ( $name == $filename )
+            {
+                throw new Exception("Error: File \"$name\" does not contain " .
+                    "a top-level activity or a section named \"$name\".");
+            }
+            else
+            {
+                $actListName = basename($name);
+                throw new Exception("Error: File \"$filename\" does not " .
+                    "contain a section named \"$actListName\".");
+            }
+        }
     }
 
     /**
@@ -290,9 +305,9 @@ class Application_Model_ActivityGateway
                     // Resolve reference.
                     if ( ! array_key_exists($spec, $actSpecs) )
                     {
-                        throw new Exception("Activity List Error:
-                            there is no activity specification
-                            for $spec (referenced in $listName)");
+                        throw new Exception("Activity List Error: " .
+                            "there is no activity specification " .
+                            "for $spec (referenced in $listName)");
                     }
                     $actList[$actName] = $actSpecs[$spec];
                 }

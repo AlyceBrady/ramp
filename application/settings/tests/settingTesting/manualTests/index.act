@@ -41,7 +41,7 @@ comment = "Examples of invalid sequences and settings"
 [badTableName]
 
 type = "setting"
-source = "tests/settingTesting/badTableName"
+source = "tests/settingTesting/manualTests/badTableName"
 title = "Bad Table Name"
 description = "Test a sequence/setting file for a non-existent
 table"
@@ -49,7 +49,7 @@ table"
 [invalidStartAction]
 
 type = "setting"
-source = "tests/settingTesting/invalidStartAction"
+source = "tests/settingTesting/manualTests/invalidStartAction"
 title = "Invalid Start Action"
 description = "Test a sequence with an invalid value for the
 initAction property"
@@ -57,7 +57,7 @@ initAction property"
 [noDbTable]
 
 type = "setting"
-source = "tests/settingTesting/noDbTable"
+source = "tests/settingTesting/manualTests/noDbTable"
 title = "No Db Table"
 description = "Test a sequence/setting file with no database table
 specified"
@@ -65,28 +65,28 @@ specified"
 [noVisibleFields]
 
 type = "setting"
-source = "tests/settingTesting/noVisibleFields"
+source = "tests/settingTesting/manualTests/noVisibleFields"
 title = "No Visible Fields"
 description = "Test a setting file with no visible fields"
 
 [badTableConnection]
 
 type = "setting"
-source = "tests/settingTesting/badTableConnection"
+source = "tests/settingTesting/manualTests/badTableConnection"
 title = "Bad Table Connection"
 description = "Table connection does not specify the table"
 
 [importBadTable]
 
 type = "setting"
-source = "tests/settingTesting/importBadTable"
+source = "tests/settingTesting/manualTests/importBadTable"
 title = "Bad Import"
 description = "Test of importing from a non-existent table"
 
 [importWrongTable]
 
 type = "setting"
-source = "tests/settingTesting/importWrongTable"
+source = "tests/settingTesting/manualTests/importWrongTable"
 title = "Wrong Table Import"
 description = "Test of importing from the wrong table (table exists, but
 does not have field being imported"
@@ -94,14 +94,14 @@ does not have field being imported"
 [linkNonExistentSetting]
 
 type = "setting"
-source = "tests/settingTesting/linkNonExistentSetting"
+source = "tests/settingTesting/manualTests/linkNonExistentSetting"
 title = "Link to Bad Table Setting"
 description = "Link (selectUsing link) to non-existent setting"
 
 [emptyExternalRef]
 
 type = "setting"
-source = "tests/settingTesting/emptyExternalTableRef"
+source = "tests/settingTesting/manualTests/emptyExternalTableRef"
 title = "Empty External Reference"
 description = "Setting with an externalTableRef property that has no
 sub-properties"
@@ -109,7 +109,7 @@ sub-properties"
 [badExtRefDefs]
 
 type = "setting"
-source = "tests/settingTesting/badExtRefDefs"
+source = "tests/settingTesting/manualTests/badExtRefDefs"
 title = "Bad External References"
 description = "Table has two types of external references: string and array
 (version with sub-properties)"
@@ -117,7 +117,7 @@ description = "Table has two types of external references: string and array
 [extRefNoProps]
 
 type = "setting"
-source = "tests/settingTesting/extRefNoProps"
+source = "tests/settingTesting/manualTests/extRefNoProps"
 title = "Bad External Reference 1"
 description = "Table has an external reference with no sub-properties
 defined (msg refers to no viewingSequence property)."
@@ -125,7 +125,7 @@ defined (msg refers to no viewingSequence property)."
 [extRefNoSeq]
 
 type = "setting"
-source = "tests/settingTesting/extRefNoSeq"
+source = "tests/settingTesting/manualTests/extRefNoSeq"
 title = "Bad External Reference 2"
 description = "Table has an external reference with title property
 but no viewingSequence property."
@@ -133,7 +133,7 @@ but no viewingSequence property."
 [fieldTypos]
 
 type = "setting"
-source = "tests/settingTesting/fieldTypos"
+source = "tests/settingTesting/manualTests/fieldTypos"
 title = "Field Typos"
 description = "Typo in field name (undefined field) and typo in field
 sub-property name (ignored)"
@@ -141,7 +141,7 @@ sub-property name (ignored)"
 [oneMultiPurposeSetting]
 
 type = "setting"
-source = "tests/settingTesting/StaffContract"
+source = "tests/settingTesting/manualTests/StaffContract"
 title = "Single Internal Setting"
 description = "Explicit sequence with single setting for all purposes
 defined within same file; setting is in section whose name does not
@@ -151,7 +151,7 @@ single external table reference."
 [spec2External]
 
 type = "setting"
-source = "tests/settingTesting/Student"
+source = "tests/settingTesting/manualTests/Student"
 title = "Multiple External Settings"
 description = "Sequence using externally-defined settings exclusively,
 one for view, one for add/edit.
@@ -163,7 +163,7 @@ matching fields."
 [spec2SameFile]
 
 type = "setting"
-source = "tests/settingTesting/Person"
+source = "tests/settingTesting/manualTests/Person"
 title = "Multiple Internal Settings"
 description = "Sequence using three settings: 2 internally-defined (1
 for view and 1 for add/edit) and one externally-defined (for search

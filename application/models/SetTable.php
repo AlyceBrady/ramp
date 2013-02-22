@@ -444,7 +444,7 @@ class Application_Model_SetTable
 
     /**
      * Gets field information (labels, footnotes, meta information 
-     * from the database, etc.) for all field defined in the database.
+     * from the database, etc.) for all fields defined in the database.
      * Fields with no table setting information will be marked as 
      * hidden (the isVisible method returns false) unless the table 
      * setting specifies to show all fields by default.  In that case,
@@ -553,12 +553,13 @@ class Application_Model_SetTable
 
     /**
      * Gets the initialization reference information for a particular
-     * table name.
+     * table name.  Returns null if the given table name has not been 
+     * defined as an initialization reference.
      *
      */
     public function getInitRefInfo($tableName)
     {
-        return $this->_initTblRefs[$tableName];
+        return isset($this->_initTblRefs[$tableName]) ? : null;
     }
 
     /**
@@ -701,8 +702,7 @@ class Application_Model_SetTable
     /**
      * Determines the status of the row indicated by the information 
      * provided in the parameter.  If there is no data corresponding to 
-     * the $keys parameter, or if it does not uniquely identify a single 
-     * row, then this function returns BLANK or UNKNOWN, respectively.
+     * the $keys parameter, this function returns BLANK.
      * Otherwise, it returns PARTIAL or GOOD, depending on whether or 
      * not all recommended fields have been filled in.
      *
@@ -797,11 +797,12 @@ class Application_Model_SetTable
     }
 
     /**
-     * Updates the row(s) with the primary key information provided
+     * Updates the row with the primary key information provided
      * in the parameter.
      *
      * @param array $data     Column-value pairs identifying entry to update
      * @return int            The number of rows updated.
+     * @throws Exception      If $data does not uniquely identify one row
      */
     public function updateTableEntry(array $data)
     {
@@ -818,13 +819,14 @@ class Application_Model_SetTable
     }
 
     /**
-     * Deletes the row(s) with the primary key information provided
+     * Deletes the row with the primary key information provided
      * in the parameter.  If the array passed in also contains data
      * associated  with fields that are not primary keys, that
      * information is ignored.
      *
      * @param array $data     Column-value pairs identifying entry to update
      * @return int            The number of rows deleted.
+     * @throws Exception      If $data does not uniquely identify one row
      */
     public function deleteTableEntry($data)
     {
