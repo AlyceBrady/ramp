@@ -36,6 +36,11 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
 
     public function testSettingWithNoTableName()
     {
+        $settingFileName = $this->_basic_tableSetting_name =
+                                        TestSettings::NO_TABLE_SETTINGS_FILE;
+        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $this->_basic_tableSetting =
+                    new Application_Model_SetTable($settingFileName, $gateway);
         // $table = new Application_Model_SetTable($settingName, $gateway);
     }
 

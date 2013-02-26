@@ -84,7 +84,7 @@ class models_RampIniReaderTest extends PHPUnit_Framework_TestCase
 
     public function testImportSettingsFromFile()
     {
-        $filename = 'tests/settingTesting/BasicTableSetting';
+        $filename = 'tests/settingTesting/regressionTests/BasicTableSetting';
         $importedProps =
                 $this->_iniReader->importSettings($filename)->toArray();
         $this->assertSame(5, count($importedProps));

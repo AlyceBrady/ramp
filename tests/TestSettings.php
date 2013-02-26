@@ -4,14 +4,18 @@ class TestSettings
 {
     private static $_config = null;
 
-    const BASIC_SETTINGS_FILE = 'tests/settingTesting/BasicTableSetting';
+    const BASIC_SETTINGS_FILE =
+            'tests/settingTesting/regressionTests/BasicTableSetting';
     const BASIC_2_SETTINGS_FILE =
-                            'tests/settingTesting/BasicVariantTableSetting';
-    const MULT_SETTINGS_FILE = 'tests/settingTesting/MultipleValidSettings';
-    const NO_TABLE_SETTINGS_FILE = 'tests/settingTesting/noDbTable';
+            'tests/settingTesting/regressionTests/BasicVariantTableSetting';
+    const MULT_SETTINGS_FILE =
+            'tests/settingTesting/regressionTests/MultipleValidSettings';
+    const NO_TABLE_SETTINGS_FILE =
+            'tests/settingTesting/regressionTests/noDbTable';
     const FILE_W_EXTRA_SEQUENCE =
-                            'tests/settingTesting/extSettingsWithAddSequence';
-    const FILE_W_INVAL_MULT_SEQ = 'tests/settingTesting/multSeqError';
+            'tests/settingTesting/regressionTests/extSettingsWithAddSequence';
+    const FILE_W_INVAL_MULT_SEQ =
+            'tests/settingTesting/regressionTests/multSeqError';
 
     private static $_basicTableSetting;
     private static $_variantBasicTableSetting;
