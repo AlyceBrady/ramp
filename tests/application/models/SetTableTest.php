@@ -34,6 +34,10 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
                     new Application_Model_SetTable($settingName, $gateway);
     }
 
+    /**
+     * @expectedException           Exception
+     * @expectedExceptionMessage    "no database table name provided"
+     */
     public function testSettingWithNoTableName()
     {
         $settingFileName = $this->_basic_tableSetting_name =
@@ -41,7 +45,6 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $gateway = new Application_Model_TVSGateway($settingFileName);
         $this->_basic_tableSetting =
                     new Application_Model_SetTable($settingFileName, $gateway);
-        // $table = new Application_Model_SetTable($settingName, $gateway);
     }
 
     public function testValidSettingWithTableFootnote()
