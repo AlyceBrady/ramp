@@ -3,44 +3,35 @@
     <testsuite name="Model Test Suite">
         <!-- Define ordered test suite. -->
         <file>./application/models/RampIniReaderTest.php</file>
-        <!--
-        -->
 
         <file>./application/models/ActivitySpecTest.php</file>
         <file>./application/models/ActivityGatewayTest.php</file>
-        <!--
-        -->
             <!-- depends on RampIniReader and ActivitySpec -->
 
         <file>./application/models/TVSGatewayTest.php</file>
-        <!--
-        -->
             <!-- depends on RampIniReader -->
 
         <file>./application/models/DbTableValidValuesSourceTest.php</file>
         <file>./application/models/DbTableTableTest.php</file>
-        <file>./application/models/BasicFieldTest.php</file>
-        <!--
-        -->
+        <file>./application/models/BasicFieldWithNoDBAccessTest.php</file>
+        <file>./application/models/BasicFieldWithDBAccessTest.php</file>
             <!-- depends on DbTable_Table -->
 
-        <file>./application/models/FieldWithExternalConnectionsTest.php</file>
-        <!--
-        -->
+        <file>./application/models/FieldWithExtConnTest.php</file>
+        <file>./application/models/FieldWithExtConnAndDBAccessTest.php</file>
             <!-- depends on DbTable_Table, DbTable_ValidValuesSource,
                  TVSGateway -->
 
         <file>./application/models/SetTableTest.php</file>
-        <!--
-        -->
-            <!-- depends on DbTable_Table, ExternalTableRef, Field -->
+            <!-- depends on DbTable_Table, TVSGateway, Field,
+                 and ExternalTableRef -->
 
-        <!-- <file>./application/models/TableViewSequenceTest.php</file> -->
+        <file>./application/models/TableViewSequenceTest.php</file>
             <!-- depends on TVSGateway and SetTable -->
-        <!-- <file>./application/models/TVSFactoryTest.php</file> -->
+        <file>./application/models/TVSFactoryTest.php</file>
             <!-- depends on TableViewSequence -->
-        <!-- <file>./application/models/ExternalTableRefTest.php</file> -->
-            <!-- depends on SetTable, TVSFactory, ??? -->
+        <file>./application/models/ExternalTableRefTest.php</file>
+            <!-- depends on SetTable, TVSFactory -->
     </testsuite>
     <!--  Might define more complete, but unordered test suites in future.
     <testsuite name="Application Test Suite">

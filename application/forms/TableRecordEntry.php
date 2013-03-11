@@ -106,6 +106,21 @@ class Application_Form_TableRecordEntry extends Zend_Form
                                  ->setDecorators($visibleFieldDecorators);
                     $this->addElement($fieldElement);
                 }
+                else if ( $field->validValsDefinedInExtTable() && ! $readOnly )
+                {
+                    // If this is a search, add ability to search for any value
+                    $options = ( $this->_formType == self::SEARCH ) ?
+                                  array(self::ANY_VAL => self::ANY_VAL_LABEL) +
+                                        $field->getValidVals() :
+                                  $field->getValidVals();
+                    $fieldElement = new Zend_Form_Element_Select($name);
+                    $fieldElement->setLabel($label)
+                                 ->setMultiOptions($options)
+                                 ->setAttrib('class', $class)
+                                 ->setRequired('required', $required)
+                                 ->setDecorators($visibleFieldDecorators);
+                    $this->addElement($fieldElement);
+                }
                 else
                 {
                     // Create text input.
@@ -280,7 +295,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
         $title = "";
         if ( $field->isExternalTableLink() )
         {
-            $table = $field->getLinkedTable();
+            $table = $field->getLinkedTableTitle();
             $title = self::REFERENCE_EXPL . "$table";
         }
         $footnote = $field->getFieldFootnote();

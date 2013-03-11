@@ -72,7 +72,9 @@ class Application_Model_TVSFactory
     {
         // Get the sequence (or setting).
         if ( isset($this->_tableViewingSequences[$name]) )
-            { $sequence = $this->_tableViewingSequences[$name]; }
+        {
+            $sequence = $this->_tableViewingSequences[$name];
+        }
         else
         {
             // Sequence not in registry; construct and register it.

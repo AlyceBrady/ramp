@@ -23,7 +23,7 @@ class Application_Model_SetTable
     // Constants representing field setting properties
     const SETTING_NAME          = 'settingName';
     const SCHEMA                = 'schema';
-    const TABLE_NAME            = 'tableName';
+    const TABLE_NAME            = Application_Model_TVSGateway::TBL_NAME;
     const TABLE_QUERY_CONSTRAINT= 'tableQueryConstraint';
     const TITLE                 = 'tableTitle';
     const DESCRIPTION           = 'tableDescription';
@@ -33,7 +33,7 @@ class Application_Model_SetTable
     const CONNECTED_TBL         = 'tableConnection';
     const CONNECTION            = 'connection';
     const ALIAS                 = 'aliasFor';
-    const INIT_TBL              = 'initTableRef';
+    const INIT_TBL_REF          = 'initTableRef';
     const EXTERNAL_TBL          = 'externalTableRef';
 
     // Constant representing an unspecified enum value for a search
@@ -50,22 +50,12 @@ class Application_Model_SetTable
 
     // Status codes used for communicating whether the table has all 
     // recommended fields for a particular record.
-    const UNKNOWN   = 'unknown';
     const BLANK     = 'blank';
     const PARTIAL   = 'partial';
     const GOOD      = 'sufficient';
 
     /** @var string */
     protected $_dbTableName;        // name of table in the actual database
-
-    /** @var string */
-    protected $_joinExpressions;    // join expressions to other tables
-
-    /** @var string */
-    protected $_initTblRefs;        // initialization table references
-
-    /** @var string */
-    protected $_externalTblRefs;    // external table refs that look like fields
 
     /** @var string */
     protected $_settingName;        // name of table setting
@@ -92,11 +82,14 @@ class Application_Model_SetTable
     protected $_inTable = array();  // all fields in local database table
 
     /** @var array */
-    protected $_allImportFields = array(); // fields from other table(s)
+    protected $_allImportFields = array(); // fields from other tables
 
     /** @var array */
     protected $_importAliases = array();    // aliases for fields from other
-                                            // table(s), by table
+                                            // tables, by table
+
+    /** @var string */
+    protected $_joinExpressions;    // join expressions for importing fields
 
     /** @var array */
     protected $_linkFields = array(); // fields providing links to other tables
@@ -114,11 +107,14 @@ class Application_Model_SetTable
     protected $_defaults = array();         // field default values
 
     /** @var array */
-    protected $_externalInits = array();        // fields initialized from
-                                                // external sources
+    protected $_fieldsInitFromElsewhere = array();  // fields initialized from
+                                                    // other tables
 
     /** @var string */
-    // protected $_singleRecordDisplayAction; // how to display single records
+    protected $_initTblRefs;        // initialization table references
+
+    /** @var string */
+    protected $_externalTblRefs;    // external table refs that look like fields
 
     /**
      * Class constructor
@@ -155,7 +151,7 @@ class Application_Model_SetTable
                                    $settingProps->toArray() :
                                    $settingProps;
         $this->_init($settingsAsArray,
-                    $this->_dbModel->info(Zend_Db_Table_Abstract::METADATA));
+                     $this->_dbModel->info(Zend_Db_Table_Abstract::METADATA));
 
     }
 
@@ -196,8 +192,8 @@ class Application_Model_SetTable
         $this->_initConnections($connections);
 
         // Initialize references to initialization tables.
-        $references = isset($settingInfo[self::INIT_TBL]) ?
-                            $settingInfo[self::INIT_TBL] :
+        $references = isset($settingInfo[self::INIT_TBL_REF]) ?
+                            $settingInfo[self::INIT_TBL_REF] :
                             array();
         $this->_initTblRefs = $this->_initReferences($references);
 
@@ -223,8 +219,9 @@ class Application_Model_SetTable
      * the  table setting and the database.  Connections may be in one of two 
      * formats, a fully-qualified format:
      *   tableConnection.ExtTable.connection = "LocalTbl.field = ExtTable.field"
-     * or an abbreviated format:
+     * (useful when the ExtTable is an alias) or an abbreviated format:
      *   tableConnection.ExtTable = "LocalTbl.field = ExtTable.field"
+     *
      * Users may optionally provide a table alias, as follows:
      *   tableConnection.ExtTable.aliasFor = "RealTableName"
      * In this case, the connection must be specified with the more 
@@ -235,27 +232,26 @@ class Application_Model_SetTable
      */
     protected function _initConnections($allConnections)
     {
-        // Verify that allConnections is an array.
-        if ( ! is_array($allConnections) )
+        $this->_joinExpressions = array();
+
+        // Return immediately if there are no connections to process.
+        if ( empty($allConnections) )
         {
-            throw new Exception("Table connection (" .
-                self::CONNECTED_TBL . " = \"" . $allConnections .
-                "\") does not specify table; correct format is " .
-                self::CONNECTED_TBL .
-                ".ExtTable = \"LocalTbl.field = ExtTable.field\"");
+            return;
         }
 
         // Put all connections in fully-qualified format.
-        $this->_joinExpressions = array();
         foreach ( $allConnections as $table => $connection )
         {
             if ( is_array($connection) )    // fully-qualified format
             {
                 if ( ! isset($connection[self::CONNECTION]) )
                 {
-                    throw new Exception("Cannot create table connection " .
-                        "for " . $table . " without a " .
-                        self::CONNECTION . " property.");
+                    throw new Exception("Table connection for " . $table .
+                        " does not have the required format: \n     " .
+                        self::CONNECTED_TBL . "." . $table .
+                        ".connection =" .
+                        "\"LocalTbl.localField = ExtTable.extField\"");
                 }
                 $this->_joinExpressions[$table] = $connection;
             }
@@ -268,6 +264,46 @@ class Application_Model_SetTable
     }
 
     /**
+     * UNUSED:  The formatting requirements were too restrictive;
+     * any legal conditional expression could be valid.
+     *
+     * Checks that the given expression is correctly formatted:
+     *    LocalTbl.localField = ExtTable.extField
+     * and adds the expression for the given table to the list of
+     * join expressions as an association.
+     *
+     * @throws Exception if the join expression is badly formatted
+     */
+    protected function _addJoinExpression($table, $expression)
+    {
+        $components = explode('=', $expression);
+        if ( count($components) == 2 )
+        {
+            $goodFormat = true;
+            foreach ( $components as $component )
+            {
+                $innerComponents = explode('.', trim($component));
+                if ( count($innerComponents) != 2 )
+                {
+                    $goodFormat = false;
+                }
+            }
+            if ( $goodFormat )
+            {
+                $this->_joinExpressions[$table][self::CONNECTION] = $expression;
+                return;
+            }
+        }
+
+        throw new Exception("Table connection for " . $table .
+            " does not have the required format: \n     " .
+                self::CONNECTED_TBL . "." . $table . "[.connection] =" .
+                "\"LocalTbl.localField = ExtTable.extField\"" .
+                " " . $expression
+                );
+    }
+
+    /**
      * Initializes references to an external table.
      * @see Application_Model_ExternalTableReference
      *
@@ -276,18 +312,16 @@ class Application_Model_SetTable
      */
     protected function _initReferences($referenceInfo)
     {
+
         $refObjects = array();
-        if ( ! is_array($referenceInfo) )
-        {
-            throw new Exception("Initialization or external table " .
-                "reference requires sub-properties.");
-        }
+
         foreach ( $referenceInfo as $tableName => $refInfo )
         {
             $refObjects[$tableName] =
-                new Application_Model_ExternalTableReference(
-                        $this->_dbTableName, $refInfo, $this->_settingName);
+                new Application_Model_ExternalTableReference($refInfo,
+                                                        $this->_settingName);
         }
+
         return $refObjects;
     }
 
@@ -363,7 +397,7 @@ class Application_Model_SetTable
         if ( null !== $fieldDefault )
             { $this->_defaults[$name] = $fieldDefault; }
         if ( $field->initFromAnotherTable() )
-            { $this->_externalInits[$name] = $field; }
+            { $this->_fieldsInitFromElsewhere[$name] = $field; }
 
     }
 
@@ -458,8 +492,10 @@ class Application_Model_SetTable
     }
 
     /**
-     * Gets the fields that are links to other tables, as
-     * fieldname => table pairs.
+     * Gets the local fields that are links to other tables, as
+     * fieldname => table pairs.  For example, an employee record might 
+     * include an employer id field that is a link to a table of 
+     * employer information.
      */
     public function getTableLinkFields()
     {
@@ -531,7 +567,9 @@ class Application_Model_SetTable
     }
 
     /**
-     * Gets an array of all defaults provided for this table.
+     * Gets an array of all field defaults provided for this table in
+     * fieldName => default format.  Returns an empty array if there
+     * are no fields with defaults.
      *
      * @return array
      */
@@ -542,30 +580,39 @@ class Application_Model_SetTable
 
     /**
      * Gets an array of all fields in this table that should be 
-     * initialized from external sources.
+     * initialized from external sources.  Returns an empty array if 
+     * there are no such fields.
      *
-     * @return array
+     * @return array array of Field objects
      */
     public function getExternallyInitFields()
     {
-        return $this->_externalInits;
+        return $this->_fieldsInitFromElsewhere;
     }
 
     /**
      * Gets the initialization reference information for a particular
-     * table name.  Returns null if the given table name has not been 
-     * defined as an initialization reference.
+     * table name.  Returns an ExternalTableReference object or null
+     * if the given table name has not been defined as an initialization
+     * reference.
+     *
+     * @return ExternalTableReference  object representing matching info
      *
      */
     public function getInitRefInfo($tableName)
     {
-        return isset($this->_initTblRefs[$tableName]) ? : null;
+        return isset($this->_initTblRefs[$tableName])
+                            ? $this->_initTblRefs[$tableName]
+                            : null;
     }
 
     /**
      * Gets the list of references to external tables related to this 
-     * table (tables with mapping relationships to this table).
+     * table ("See Also" type tables that provide more detail about some
+     * field in the current table).  Returns an empty array if there are 
+     * no such references.
      *
+     * @return array   list of ExternalTableReference objects
      */
     public function getExtTableReferences()
     {
@@ -620,14 +667,30 @@ class Application_Model_SetTable
         foreach ( $this->_joinExpressions as $localName => $expression )
         {
             // Joined table and/or fields might have aliases; resolve these.
-            $table = isset($expression[self::ALIAS]) ?
-                           array($localName => $expression[self::ALIAS]) :
-                           $localName;
+            // Then test that the table is in the database.
+            $realName = isset($expression[self::ALIAS])
+                              ? $expression[self::ALIAS]
+                              : $localName;
+            $table = isset($expression[self::ALIAS])
+                              ? array($localName => $realName)
+                              : $localName;
+            try
+            {
+                $tempModel =
+                    new Application_Model_DbTable_Table($realName);
+                $tempModel->info(Zend_Db_Table_Abstract::METADATA);
+            }
+            catch (Exception $e)
+            {
+                throw new Exception("Error: $realName is not a table in " .
+                    "this database.");
+            }
+
+            // Add Join information to the query.
             $fields = $this->_importAliases[$localName];
             $select->joinLeft($table, $expression[self::CONNECTION], $fields);
         }
 
-        // Construct SQL WHERE clause based on data provided.
         /* TODO: Support constraints on a query.
             if ( $this->_tableQueryConstraint != "" )
             {
@@ -635,6 +698,8 @@ class Application_Model_SetTable
                 // $select = $select->where($this->_tableQueryConstraint);
             }
          */
+
+        // Construct SQL WHERE clause based on data provided.
         $method = ($searchType == self::ANY) ? "orwhere" : "where";
         $op = ($searchType == self::EXCLUDE) ? "<>" : "=";
         // $delim =  "";
@@ -660,12 +725,23 @@ class Application_Model_SetTable
                 $delim =  $any ? " OR " : " AND ";
             */
         }
-        /* For table query constraints:  $select = $select->where($whereClause); */
+        /* For table query constraints:
+         *     $select = $select->where($whereClause);
+         */
+
+// throw new Exception("query: " . print_r($select->__toString(), true));
 
         // Execute the query.
-// throw new Exception("query: " . print_r($select->__toString(), true));
-        $rows = $db->query($select)->fetchAll();
-        return $rows;
+        try
+        {
+            $rows = $db->query($select)->fetchAll();
+            return $rows;
+        }
+        catch (Exception $e)
+        {
+            throw new Exception("Error: Invalid data request using table " .
+                                "setting " . $this->_settingName . ".");
+        }
     }
 
     /**
@@ -861,7 +937,7 @@ class Application_Model_SetTable
         foreach ( $data as $fieldName => $value )
         {
             // Identify primary keys
-            if ( in_array($fieldName, array_keys($this->_keys)) )
+            if ( array_key_exists($fieldName, $this->_keys) )
                 { $pkInfo[$fieldName] = $value; }
             else
                 { $npkInfo[$fieldName] = $value; }

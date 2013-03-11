@@ -2,14 +2,12 @@
 require_once 'TestConfiguration.php';
 require_once 'TestSettings.php';
 
-class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
+class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
 {
     protected $_settingTests;
 
     public function setUp()
     {
-        // Reset database to known state
-        TestConfiguration::setupDatabase();
         $this->_settingTests = TestSettings::getInstance();
     }
 
@@ -75,52 +73,8 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->isExternalTableLink());
     }
 
-    public function testSimpleInitField()
-    {
-        $tableName = 'ramp_initTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
-        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
-        $fieldName = 'fname';
-        $fieldSetting = array(
-                'label' => 'First Name',
-                'initFrom' => 'ramp_auth_users');
-
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
-                                             $metaInfo);
-
-        $this->assertTrue($field->isInTable());
-        $this->assertTrue($field->isInDB());
-        $this->assertFalse($field->isImported());
-        $this->assertTrue($field->initFromAnotherTable());
-        $this->assertSame("ramp_auth_users", $field->getInitTableName());
-        $this->assertSame("fname", $field->getInitField());
-        $this->assertFalse($field->validValsDefinedInExtTable());
-        $this->assertFalse($field->isExternalTableLink());
-    }
-
-    public function testInitFieldAsDifferentName()
-    {
-        $tableName = 'ramp_initTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
-        $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
-        $fieldName = 'fname';
-        $fieldSetting = array(
-                'label' => 'First Name',
-                'initFrom' => 'ramp_auth_users',
-                'initFromField' => 'first_name');
-
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
-                                             $metaInfo);
-
-        $this->assertTrue($field->isInTable());
-        $this->assertTrue($field->isInDB());
-        $this->assertFalse($field->isImported());
-        $this->assertTrue($field->initFromAnotherTable());
-        $this->assertSame("ramp_auth_users", $field->getInitTableName());
-        $this->assertSame("first_name", $field->getInitField());
-        $this->assertFalse($field->validValsDefinedInExtTable());
-        $this->assertFalse($field->isExternalTableLink());
-    }
+    // See FieldWithExtConnAndDBAccessTest.php for testSimpleInitField() 
+    // and testInitFieldAsDifferentName().
 
     public function testInitFromNullTable()
     {
@@ -165,6 +119,8 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
 
     public function testSelectFromInvalidFieldInValidTable()
     {
+        $this->setExpectedException('Exception',
+                        'should be a valid table name and field name');
         $tableName = 'ramp_initTesting';
         $fieldName = 'term';
         $fieldSetting = array(
@@ -180,13 +136,12 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertTrue($field->validValsDefinedInExtTable());
         $validVals = $field->getValidVals();
-        $this->assertSame(12, count($validVals));
-        $this->assertSame('2008-09 Sem 1', $validVals[0]);
-        $this->assertFalse($field->isExternalTableLink());
     }
 
     public function testSelectFromInvalidTableSetting()
     {
+        $this->setExpectedException('Exception',
+                        'should be a valid table name and field name');
         $tableName = 'ramp_initTesting';
         $fieldName = 'term';
         $fieldSetting = array(
@@ -202,15 +157,12 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertTrue($field->validValsDefinedInExtTable());
         $validVals = $field->getValidVals();
-        $this->assertFalse($field->isExternalTableLink());
     }
 
-    /**
-     * @expectedException           Exception
-     * @expectedExceptionMessage    "does not have the required tableName.fieldName format"
-     */
     public function testSelectFromTableFieldWithInvalidFormat()
     {
+        $this->setExpectedException('Exception',
+                    'does not have the required tableName.fieldName format');
         $tableName = 'ramp_initTesting';
         $fieldName = 'term';
         $fieldSetting = array(
@@ -268,15 +220,13 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($field->isExternalTableLink());
         $this->assertSame($settingFile, $field->getLinkedTableSetting());
         $setting = $this->_settingTests->getBasicSetting();
-        $this->assertSame($setting['tableTitle'], $field->getLinkedTable());
+        $this->assertSame($setting['tableTitle'],
+                          $field->getLinkedTableTitle());
     }
 
-    /**
-     * @expectedException           Exception
-     * @expectedExceptionMessage    "Missing settings file"
-     */
     public function testSelectUsingInvalidTableSetting()
     {
+        $this->setExpectedException('Exception', 'Missing settings file');
         $tableName = 'ramp_initTesting';
         $fieldName = 'fname';
         $fieldSetting = array(
@@ -293,7 +243,8 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->validValsDefinedInExtTable());
         $this->assertTrue($field->isExternalTableLink());
         $this->assertSame("otherTable", $field->getLinkedTableSetting());
-        $this->assertSame("otherTableTitle", $field->getLinkedTable());
+        $this->assertSame("otherTableTitle",
+                          $field->getLinkedTableTitle());
     }
 
     public function testSelectUsingNullTableSetting()
@@ -313,11 +264,6 @@ class models_FieldWithExternalConnectionsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertFalse($field->validValsDefinedInExtTable());
         $this->assertFalse($field->isExternalTableLink());
-    }
-
-    public function testCompletelyWritten()
-    {
-        $this->assertTrue(false);
     }
 
 }

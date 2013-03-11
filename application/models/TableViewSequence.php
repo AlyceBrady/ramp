@@ -38,23 +38,30 @@ class Application_Model_TableViewSequence
     const DISPLAY_ALL               = "displayAll";
     const DEFAULT_START             = self::DISPLAY_ALL;
 
-    /** @var array */
-    protected $_validSequenceProps;   // valid sequence properties
+    /** @var string */
+    protected $_tableName;           // shared table name (if any)
 
     /** @var string */
-    protected $_initialAction;        // start with a display or a search?
+    protected $_initialAction;       // start with a display or a search?
 
     /** @var array */
-    protected $_settingsArray;       // raw setting configuration info
-
-    /** @var string */
     protected $_settingNames;        // names of settings
 
     /** @var string */
     protected $_settings;            // settings for dealing with records
 
     /** @var Application_Model_TVSGateway */
-    protected $_propertyGateway;      // gateway for getting setting properties
+    protected $_propertyGateway;     // gateway for getting setting properties
+
+    /**
+     * Returns a list of the valid sequence setting properties.
+     */
+    protected static function validSequenceProps()
+    {
+        return array(self::MAIN_SETTING, self::EDIT_SETTING, self::ADD_SETTING, 
+                     self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
+                     self::REFERENCE_SETTING);
+    }
 
     /**
      * Class constructor
@@ -75,6 +82,7 @@ class Application_Model_TableViewSequence
         $this->_propertyGateway = new Application_Model_TVSGateway($name);
 
         // Get sequence and setting information from the gateway.
+        $this->_tableName = $this->_propertyGateway->getTopLevelTableName();
         $sequence = $this->_propertyGateway->getSequenceProps();
         $settingsReadIn = $this->_propertyGateway->getTableSettingNames();
         $this->_initSettingsUsedInSequence($name, $sequence, $settingsReadIn);
@@ -112,7 +120,8 @@ class Application_Model_TableViewSequence
         $searchRes = $this->_getKeyVal($sequence, self::SEARCH_RES_SETTING);
         $reference = $this->_getKeyVal($sequence, self::REFERENCE_SETTING);
 
-	// If no table settings were specified but a single
+
+	// If no sequence table settings were specified but a single
 	// table setting was defined in the property source, use
 	// that setting in all cases.
         if ( ! ( $main || $edit || $add ||
@@ -131,12 +140,13 @@ class Application_Model_TableViewSequence
 
         // We have at least one setting name now.  If we don't have 
         // all, set the missing ones from the ones that were provided.
-        $this->_settingNames[self::MAIN_SETTING] = $main ? :
-                                                   $reference ? :
-                                                   $edit ? :
-                                                   $add ? :
-                                                   $search ? :
-                                                   $searchRes;
+        $this->_settingNames = array();
+        $main = $this->_settingNames[self::MAIN_SETTING] = $main ? :
+                                                           $reference ? :
+                                                           $edit ? :
+                                                           $add ? :
+                                                           $search ? :
+                                                           $searchRes;
         $edit = $this->_settingNames[self::EDIT_SETTING] = $edit ? : $main;
         $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $main;
         $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
@@ -145,12 +155,15 @@ class Application_Model_TableViewSequence
                         $searchRes ? : $main;
         $reference = $this->_settingNames[self::REFERENCE_SETTING] =
                         $reference ? : $add;
+        $this->_settings = array();
+        /*
         $this->_settings[self::MAIN_SETTING] = 
                 $this->_settings[self::REFERENCE_SETTING] = 
                 $this->_settings[self::EDIT_SETTING] = 
                 $this->_settings[self::ADD_SETTING] = 
                 $this->_settings[self::SEARCH_SPEC_SETTING] = 
                 $this->_settings[self::SEARCH_RES_SETTING] =  null;
+         */
     }
 
     /**
@@ -173,6 +186,18 @@ class Application_Model_TableViewSequence
     }
 
     /**
+     * Gets the table name associated with this sequence, or null if 
+     * one has not been specified.
+     *
+     * @return string   name of the table associated with this sequence
+     *
+     */
+    public function getSeqLevelTableName()
+    {
+        return $this->_tableName;
+    }
+
+    /**
      * Gets the initial action associated with this sequence.
      *
      * @return string   name of the initial action to take for this sequence
@@ -187,19 +212,32 @@ class Application_Model_TableViewSequence
      * Gets the specified table setting for displaying, modifying, or 
      * searching for table records.
      *
-     * @return Application_Model_SetTable
+     * @param $property   name of desired setting property (setting, 
+     *                      addSetting, etc.)
      *
+     * @return Application_Model_SetTable
      */
-    public function getSetTable($setting)
+    public function getSetTable($property)
     {
-        if ( $this->_settings[$setting] == null )
+        if ( empty($property) )
         {
-            $name = $this->_settingNames[$setting];
-            $this->_settings[$setting] =
+            throw new Exception("Error: trying to get set table " .
+                "for empty setting property name.");
+        }
+        $validSequenceProps = self::validSequenceProps();
+        if ( ! in_array($property, $validSequenceProps) )
+        {
+            throw new Exception("Error: trying to get set table " .
+                "for unknown setting property: " . $property . ".");
+        }
+        if ( ! isset($this->_settings[$property]) )
+        {
+            $name = $this->_settingNames[$property];
+            $this->_settings[$property] =
                     new Application_Model_SetTable($name,
                                                    $this->_propertyGateway);
         }
-        return $this->_settings[$setting];
+        return $this->_settings[$property];
     }
 
     /**
@@ -289,12 +327,14 @@ class Application_Model_TableViewSequence
 
     /**
      * Gets the value in $theArray associated with $key.  Returns null 
-     * if $key is not in $theArray (or if it is, but its value is null).
+     * if $key is not in $theArray (or if it is, but its value is empty 
+     * or null).
      *
      */
     protected function _getKeyVal($theArray, $key)
     {
-        return isset($theArray[$key]) ? $theArray[$key] : null;
+        return isset($theArray[$key]) && ! empty($theArray[$key])
+                    ? $theArray[$key] : null;
     }
 
 }

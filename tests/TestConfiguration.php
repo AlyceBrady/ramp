@@ -165,6 +165,37 @@ EOT
         );
 
         $db->query(<<<EOT
+DROP TABLE IF EXISTS ramp_test_terms;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ramp_test_terms (
+    term VARCHAR( 10 ) NOT NULL PRIMARY KEY,
+    acadYear VARCHAR( 10 ),
+    startDate DATE NOT NULL,
+    censusDate DATE NOT NULL,
+    endDate DATE NOT NULL,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+)
+EOT
+        );
+
+        $db->query(<<<EOT
+INSERT INTO ramp_test_terms (acadYear, term, startDate, censusDate, endDate)
+VALUES
+('2011-12', '2011Q4', '2011-09-10', '2011-09-15', '2011-12-15')
+, ('2011-12', '2012Q1', '2012-01-01', '2012-01-05', '2012-03-20')
+, ('2011-12', '2012Q2', '2012-04-01', '2012-04-05', '2012-06-20')
+, ('2012-13', '2012Q4', '2012-09-10', '2012-09-15', '2012-12-15')
+, ('2012-13', '2013Q1', '2012-01-01', '2012-01-05', '2013-03-20')
+, ('2012-13', '2013Q2', '2012-04-01', '2012-04-05', '2013-06-20')
+;
+EOT
+        );
+
+        $db->query(<<<EOT
 DROP TABLE IF EXISTS ramp_initTesting;
 EOT
         );
@@ -172,10 +203,14 @@ EOT
         $db->query(<<<EOT
 CREATE TABLE ramp_initTesting (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    userid INT NOT NULL ,
     fname VARCHAR ( 100 ),
     lname VARCHAR ( 100 ),
     term VARCHAR ( 15 ),
-    artist VARCHAR ( 100 ) NOT NULL DEFAULT 'The Beatles'
+    acadYear VARCHAR ( 10 ),
+    album_id INT,
+    artist VARCHAR ( 100 ) NOT NULL DEFAULT 'The Beatles',
+    title VARCHAR ( 100 ) NOT NULL
 )
 EOT
         );

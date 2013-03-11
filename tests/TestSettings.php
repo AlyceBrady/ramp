@@ -4,18 +4,42 @@ class TestSettings
 {
     private static $_config = null;
 
-    const BASIC_SETTINGS_FILE =
-            'tests/settingTesting/regressionTests/BasicTableSetting';
-    const BASIC_2_SETTINGS_FILE =
-            'tests/settingTesting/regressionTests/BasicVariantTableSetting';
-    const MULT_SETTINGS_FILE =
-            'tests/settingTesting/regressionTests/MultipleValidSettings';
-    const NO_TABLE_SETTINGS_FILE =
-            'tests/settingTesting/regressionTests/noDbTable';
-    const FILE_W_EXTRA_SEQUENCE =
-            'tests/settingTesting/regressionTests/extSettingsWithAddSequence';
-    const FILE_W_INVAL_MULT_SEQ =
-            'tests/settingTesting/regressionTests/multSeqError';
+    // Files containing various test cases.
+    const NON_FILE = 'nonExistentFile';
+
+    // Activity List test cases...
+    const SIMPLE_ACT_LIST = 'actListTests/simpleTest.act';
+    const MULT_ACT_LISTS = 'actListTests/multipleLists.act';
+    const INTERNAL_ACT_LIST = 'actListTests/multipleLists.act/actList2';
+    const UNNAMED_ACT_LIST = 'actListTests/noList.act';
+    const MATCHING_ACT_LIST = 'actListTests/mainActListInSection.act';
+    const DUPL_ACT_LISTS = 'actListTests/duplLists.act';
+    const DUPLICATED_LIST = 'actListTests/duplLists.act/actList2';
+    const BAD_ACT_LISTS = 'actListTests/badMultipleLists.act';
+    const BAD_AL_IN_GOOD_ALFILE = 'actListTests/multipleLists.act/actList1';
+    const GOOD_AL_IN_BAD_ALFILE =
+                            'actListTests/badMultipleLists.act/actList2';
+
+    // Table Setting test cases...
+    const BASIC_SETTINGS_FILE = 'BasicTableSetting';
+    const BASIC_2_SETTINGS_FILE = 'BasicVariantTableSetting';
+    const MULT_SETTINGS_FILE = 'MultipleValidSettings';
+    const FILE_SHOWING_COLS_BY_DEFAULT = 'ShowColsByDefault';
+    const FILE_WITH_EXTERNAL_INIT = 'settingTests/InitTesting';
+    const EXT_REF_TARGET = 'settingTests/Users';
+    const NO_TABLE_SETTINGS_FILE = 'noDbTable';
+    const NO_TABLE_SETTINGS_FILE2 = 'noDbTableInSubSetting';
+    const FILE_W_EXTRA_SEQUENCE = 'extSettingsWithAddSequence';
+    const FILE_W_INVAL_MULT_SEQ = 'multSeqError';
+
+    // Sequence test cases...
+    const NO_SETTING = 'sequenceTests/noSeqOrSetting';
+    const MAIN_ONLY = 'sequenceTests/mainSeqOnly';
+    const ADD_AND_SEARCH_RES = 'sequenceTests/addAndSearchResSeqs';
+    const ADD_AND_EDIT = 'sequenceTests/editAndAddSeqs';
+    const SEARCH_RES_ONLY = 'sequenceTests/searchResSeqOnly';
+    const SEARCH_SPEC_ONLY = 'sequenceTests/searchSpecSeqOnly';
+    const REFERENCE_ONLY = 'sequenceTests/referenceSeqOnly';
 
     private static $_basicTableSetting;
     private static $_variantBasicTableSetting;
@@ -71,20 +95,22 @@ class TestSettings
         );
 
         self::$_multSettingsTopLevel = array(
-            'tableName' => 'ramp_test_addresses',
-            'sequence' => array()
+            'tableName' => 'ramp_test_addresses'
         );
 
         self::$_sequenceSettings = array(
             'initAction' => 'displayAll',
             'setting' => 'DetailedView',
-            'addSetting' => 'ModifyingView',
+            'addSetting' => 'AddView',
             'editSetting' => 'ModifyingView',
-            'searchResultsSetting' => self::BASIC_SETTINGS_FILE
+            'searchSpecSetting' => 'DetailedView',
+            'searchResultsSetting' => self::BASIC_SETTINGS_FILE,
+            'referenceSetting' => self::BASIC_SETTINGS_FILE
         );
 
         self::$_settingNames = array('DetailedView', 'ModifyingView',
-                                     'TableSetting3', self::MULT_SETTINGS_FILE);
+                                     'AddView', 'TableSetting3',
+                                     self::MULT_SETTINGS_FILE);
     }
 
     function getBasicSetting()

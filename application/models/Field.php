@@ -368,20 +368,29 @@ class Application_Model_Field
             $components = explode('.', $this->_legalValsSource);
             if ( count($components) != 2 )
             {
-                throw new Exception($this->_legalValsSource .
+                throw new Exception("Error: " . $this->_legalValsSource .
                     " does not have the required tableName.fieldName format.");
             }
 
             $table = $components[0];
             $field = $components[1];
             $source = new Application_Model_DbTable_ValidValuesSource($table);
-            $this->_legalVals = $source->getValidValues($field);
+            try {
+                $this->_legalVals = $source->getValidValues($field);
+            }
+            catch (Exception $e)
+            {
+                throw new Exception('Error: "' . $table . '" and "' .
+                    $field .  '" in "' . $this->_legalValsSource .
+                    '" should be a valid table name and field name.');
+            }
         }
         return $this->_legalVals;
     }
 
     /**
-     * Does this field link to information in another database table?
+     * Is this a local field that links to information in another
+     * database table?
      *
      * @return bool
      */
@@ -391,18 +400,18 @@ class Application_Model_Field
     }
 
     /**
-     * Get the database table to which this field is a link.
+     * Get the title of the database table to which this field is a link.
      *
      * Precondition: $this->isExternalTableLink()
      *
      * @return string  name of database table
      */
-    public function getLinkedTable()
+    public function getLinkedTableTitle()
     {
-        $extTable = Application_Model_TVSFactory::getSequenceOrSetting(
+        $extTableSetting = Application_Model_TVSFactory::getSequenceOrSetting(
                                     $this->_connectTbl);
         $setting = Application_Model_TableViewSequence::SEARCH_RES_SETTING;
-        return $extTable->getSetTable($setting)->getTitle();
+        return $extTableSetting->getSetTable($setting)->getTitle();
     }
 
     /**

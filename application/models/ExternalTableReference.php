@@ -49,13 +49,12 @@ class Application_Model_ExternalTableReference
      * with a table setting and (hopefully) field-matching information
      * (e.g., 'localField' => studentID, 'externalField' => id).
      *
-     * @param string $localTable  name of this "local" table in database
      * @param array $refInfo  array containing the reference information
      *                        (MUST contain viewing sequence, at minimum)
      * @param string $setting name of setting containing this external ref
      *
      */
-    public function __construct($localTable, $refInfo = array(), $setting = "")
+    public function __construct($refInfo = array(), $setting = "")
     {
         $this->_refFromSetting = $setting;
 
@@ -79,7 +78,9 @@ class Application_Model_ExternalTableReference
             unset($refInfo[self::TITLE]);
         }
         else
-            { $this->_viewingSeq; }
+        {
+            $this->_title = $this->_viewingSeq;
+        }
 
         // Look for one or more field-matching connections.
         $this->_connections = array();

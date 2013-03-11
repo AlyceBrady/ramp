@@ -25,9 +25,13 @@
  */
 class Application_Model_TVSGateway
 {
+    const TBL_NAME                  = "tableName";
     const SEQUENCE                  = "sequence";
     const SETTINGS                  = "settings";
     const RAW                       = "raw";
+
+    /** @var string */
+    protected $_tableName;  // top-level table name (optional)
 
     /** @var array */
     protected $_sequence;   // sequence properties
@@ -41,14 +45,25 @@ class Application_Model_TVSGateway
      * Creates an object that gets table sequence and table viewing 
      * properties (table settings) from an external file.
      *
-     * @param string $name     the name associated with this sequence
+     * @param string $propFileName    the name of external property file
      * @return void
      */
-    public function __construct($name)
+    public function __construct($propFileName)
     {
-        $properties = $this->_importProperties($name);
+        $properties = $this->_importProperties($propFileName);
+        $this->_tableName = $properties[self::TBL_NAME];
         $this->_sequence = $properties[self::SEQUENCE];
         $this->_listOfSettings = $properties[self::SETTINGS];
+    }
+
+    /**
+     * Gets the table name defined at the top level of the property
+     * file, if one was provided.  Otherwise returns null.
+     *
+     */
+    public function getTopLevelTableName()
+    {
+        return $this->_tableName;
     }
 
     /**
@@ -76,7 +91,7 @@ class Application_Model_TVSGateway
      */
     public function getTableSettingNames()
     {
-        // Return sequence properties.
+        // Return table setting names read in so far.
         return array_keys($this->_listOfSettings);
     }
 
@@ -126,6 +141,10 @@ class Application_Model_TVSGateway
         $reader = new Application_Model_RampIniReader();
         $importedProps = $reader->importSettings($name)->toArray();
 
+        // Get top-level table name (if provided) from the imported properties.
+        $properties[self::TBL_NAME] =
+                        $this->_getKeyVal($importedProps, self::TBL_NAME);
+
         // Get sequence and setting information from the imported properties.
         $sequence = $this->_getSequenceProps($name, $importedProps);
         $settings = $this->_getSettingsProps($name, $importedProps);
@@ -170,6 +189,10 @@ class Application_Model_TVSGateway
             {
                 $allSequenceDefs[] = $value[self::SEQUENCE];
                 unset($propDefs[$key][self::SEQUENCE]);
+                if ( empty($propDefs[$key]) )
+                {
+                    unset($propDefs[$key]);
+                }
             }
         }
         if ( count($allSequenceDefs) > 1 )
@@ -249,7 +272,8 @@ class Application_Model_TVSGateway
      */
     protected function _getKeyVal($theArray, $key)
     {
-        return isset($theArray[$key]) ? $theArray[$key] : null;
+        return ( ! empty($theArray[$key]) && $theArray[$key] != "" )
+                    ? $theArray[$key] : null;
     }
 
     /**
@@ -288,7 +312,7 @@ class Application_Model_TVSGateway
      */
     protected function _isSettingSpec($propDefs)
     {
-        $dbNameIndex = Application_Model_SetTable::TABLE_NAME;
+        $dbNameIndex = self::TBL_NAME;
         return is_array($propDefs) &&
                array_key_exists($dbNameIndex, $propDefs);
     }
