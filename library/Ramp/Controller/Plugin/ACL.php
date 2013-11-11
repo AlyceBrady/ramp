@@ -22,8 +22,6 @@
  */
 class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
 {
-    const DEFAULT_ROLE = 'guest';
- 
     /**
      * Take care of any items to do before the actual dispatch:
      *      Check that the user is authorized to do this action.
@@ -49,35 +47,28 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         // Store Zend redirector for future use.
         $zendRedirector = $this->_getRedirector();
 
-        // Check if there is an authenticated user.
-        $auth = Zend_Auth::getInstance();
-        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        // Check whether the current user is authorized for the 
+        // requested resource.
+        if ( $acl->authorizesCurrentUser($requestedResource) )
         {
-            // Get the identity of the user.
-            $user = $auth->getIdentity();
-
-            // Check the user role against the request controller and action.
-            if ( $acl->isAllowed($user->role, $requestedResource) )
+            return;     // Authorized!
+        }
+        else
+        {
+            $auth = Zend_Auth::getInstance();
+            $mysession->destination_url = $request->getPathInfo();
+            if ( ! $auth->hasIdentity() || ! is_object($auth->getIdentity()) )
             {
-                // Allowed!
-                return;
+                // Not an authenticated user -- set the url accordingly.
+                return $zendRedirector->setGotoUrl('auth/login');
             }
             else
             {
                 // Not allowed -- set the url accordingly.
-                $mysession->destination_url = $request->getPathInfo();
                 return $zendRedirector->setGotoUrl('auth/unauthorized');
             }
-        } 
-
-        // If this is not an authenticated user, check the default role
-        // against the request controller/action.
-        else if ( ! $acl->isAllowed(self::DEFAULT_ROLE, $requestedResource) )
-        {
-            // Set the url accordingly.
-            $mysession->destination_url = $request->getPathInfo();
-            return $zendRedirector->setGotoUrl('auth/login');
         }
+
     }
 
     /**
@@ -91,7 +82,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
                                     Zend_Acl $acl)
     {
         // Construct the requestedResource from the controller, action,
-        // and  possibly the activity or table.
+        // and possibly the activity or table.
         $controllerName = $request->getControllerName();
         $requestedResource = $controllerName . '::'
                               . $request->getActionName();
@@ -115,7 +106,6 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         {
             // Accessing an undefined resource is an unauthorized access.
             $zendRedirector = $this->_getRedirector();
-            $mysession->destination_url = $request->getPathInfo();
             return $zendRedirector->setGotoUrl('auth/unauthorized');
         }
 

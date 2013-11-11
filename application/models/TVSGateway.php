@@ -25,10 +25,11 @@
  */
 class Application_Model_TVSGateway
 {
-    const TBL_NAME                  = "tableName";
-    const SEQUENCE                  = "sequence";
-    const SETTINGS                  = "settings";
-    const RAW                       = "raw";
+    const TBL_NAME     = Application_Model_SetTable::TABLE_NAME;
+    const SEQ_KEYWORD  = Application_Model_TableViewSequence::SEQUENCE;
+    const SEQ_INFO     = "sequence";
+    const SETTINGS     = "settings";
+    const RAW          = "raw";
 
     /** @var string */
     protected $_tableName;  // top-level table name (optional)
@@ -52,7 +53,7 @@ class Application_Model_TVSGateway
     {
         $properties = $this->_importProperties($propFileName);
         $this->_tableName = $properties[self::TBL_NAME];
-        $this->_sequence = $properties[self::SEQUENCE];
+        $this->_sequence = $properties[self::SEQ_INFO];
         $this->_listOfSettings = $properties[self::SETTINGS];
     }
 
@@ -110,7 +111,7 @@ class Application_Model_TVSGateway
         {
             // If not, import it and add to the overall list of settings.
             $importedProperties = $this->_importProperties($name);
-            if ( ! empty($importedProperties[self::SEQUENCE]) )
+            if ( ! empty($importedProperties[self::SEQ_INFO]) )
             {
                 throw new Exception("Error: too many lists of sequence " .
                     "properties found.");
@@ -148,7 +149,7 @@ class Application_Model_TVSGateway
         // Get sequence and setting information from the imported properties.
         $sequence = $this->_getSequenceProps($name, $importedProps);
         $settings = $this->_getSettingsProps($name, $importedProps);
-        $properties[self::SEQUENCE] = $sequence;
+        $properties[self::SEQ_INFO] = $sequence;
         $properties[self::SETTINGS] = $settings;
 
         return $properties;
@@ -172,7 +173,7 @@ class Application_Model_TVSGateway
     protected function _getSequenceProps($name, &$propDefs)
     {
 
-        // Look for sequence properties at top level, i.e., SEQUENCE
+        // Look for sequence properties at top level, i.e., SEQ_KEYWORD
 	// appears as key, but does not appear again as a key below
 	// that.  Also look for sequence properties nested in a
 	// section.  Ensure that only one set of sequence properties
@@ -180,15 +181,15 @@ class Application_Model_TVSGateway
         $allSequenceDefs = array();
         if ( $this->_hasSequenceSpec($propDefs) )
         {
-            $allSequenceDefs[] = $propDefs[self::SEQUENCE];
-            unset($propDefs[self::SEQUENCE]);
+            $allSequenceDefs[] = $propDefs[self::SEQ_KEYWORD];
+            unset($propDefs[self::SEQ_KEYWORD]);
         }
         foreach ( $propDefs as $key => $value )
         {
             if ( $this->_hasSequenceSpec($value) )
             {
-                $allSequenceDefs[] = $value[self::SEQUENCE];
-                unset($propDefs[$key][self::SEQUENCE]);
+                $allSequenceDefs[] = $value[self::SEQ_KEYWORD];
+                unset($propDefs[$key][self::SEQ_KEYWORD]);
                 if ( empty($propDefs[$key]) )
                 {
                     unset($propDefs[$key]);
@@ -258,7 +259,7 @@ class Application_Model_TVSGateway
             {
                 throw new Exception("Section $key not recognized as a " .
                     "sequence (no \"sequence\" properties) nor as a " .
-                    "setting (no database table name provided).");
+                    "setting (no table setting properties).");
             }
         }
 
@@ -278,15 +279,16 @@ class Application_Model_TVSGateway
 
     /**
      * Looks for a set of sequence properties at this level, i.e.,
-     * SEQUENCE appears as a key, but does not appear again as a
+     * SEQ_KEYWORD appears as a key, but does not appear again as a
      * key below that.
      *
      * Examples: 
-     *    $propDefs = array(SEQUENCE => array(... no SEQUENCE key ...), ...)
+     *    $propDefs =
+     *             array(SEQ_KEYWORD => array(... no SEQ_KEYWORD key ...), ...)
      *          returns true
-     *    $propDefs = array(SEQUENCE => array(SEQUENCE=>value, ...), ...)
+     *    $propDefs = array(SEQ_KEYWORD => array(SEQ_KEYWORD=>value, ...), ...)
      *          returns false, regardless of the type of value
-     *    $propDefs = array(... no SEQUENCE key ...)
+     *    $propDefs = array(... no SEQ_KEYWORD key ...)
      *          returns false
      *
      * @param array $propDefs   array of property definitions
@@ -296,9 +298,9 @@ class Application_Model_TVSGateway
     protected function _hasSequenceSpec($propDefs)
     {
         return is_array($propDefs) &&
-               array_key_exists(self::SEQUENCE, $propDefs) &&
-               is_array($propDefs[self::SEQUENCE]) &&
-               ! array_key_exists(self::SEQUENCE, $propDefs[self::SEQUENCE]);
+           array_key_exists(self::SEQ_KEYWORD, $propDefs) &&
+           is_array($propDefs[self::SEQ_KEYWORD]) &&
+           ! array_key_exists(self::SEQ_KEYWORD, $propDefs[self::SEQ_KEYWORD]);
     }
 
     /**
@@ -312,9 +314,25 @@ class Application_Model_TVSGateway
      */
     protected function _isSettingSpec($propDefs)
     {
-        $dbNameIndex = self::TBL_NAME;
-        return is_array($propDefs) &&
-               array_key_exists($dbNameIndex, $propDefs);
+        if ( ! is_array($propDefs) )
+        {
+            return false;
+        }
+
+        $settingProps = Application_Model_SetTable::validTableProps();
+        foreach ( $settingProps as $settingProp )
+        {
+            if ( array_key_exists($settingProp, $propDefs) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+        // $dbNameIndex = self::TBL_NAME;
+        // return is_array($propDefs) &&
+               // array_key_exists($dbNameIndex, $propDefs);
     }
 
 }

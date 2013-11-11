@@ -20,21 +20,21 @@
 
 class Application_Model_SetTable
 {
-    // Constants representing field setting properties
-    const SETTING_NAME          = 'settingName';
-    const SCHEMA                = 'schema';
-    const TABLE_NAME            = Application_Model_TVSGateway::TBL_NAME;
-    const TABLE_QUERY_CONSTRAINT= 'tableQueryConstraint';
+    // Constants representing table setting properties
+    const TABLE_NAME            = "tableName";
     const TITLE                 = 'tableTitle';
     const DESCRIPTION           = 'tableDescription';
     const TABLE_FOOTNOTE        = 'tableFootnote';
-    const SHOW_COLS_BY_DEFAULT  = 'tableShowColsByDefault';
-    const FIELDS                = 'field';
     const CONNECTED_TBL         = 'tableConnection';
-    const CONNECTION            = 'connection';
-    const ALIAS                 = 'aliasFor';
     const INIT_TBL_REF          = 'initTableRef';
     const EXTERNAL_TBL          = 'externalTableRef';
+    const SHOW_COLS_BY_DEFAULT  = 'tableShowColsByDefault';
+    const FIELDS                = 'field';
+    // const TABLE_QUERY_CONSTRAINT= 'tableQueryConstraint';
+
+    // Sub-properties for table connections
+    const CONNECTION            = 'connection';
+    const ALIAS                 = 'aliasFor';
 
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = '__any_search_value__';
@@ -43,10 +43,6 @@ class Application_Model_SetTable
     const ANY                   = 'any';
     const ALL                   = 'all';
     const EXCLUDE               = 'exclude';
-
-    // Sub-properties for initialization and external table references
-    const TBL_REF_TITLE         = 'title';
-    const TBL_REF_VIEWING_SEQUENCE = 'viewingSequence';
 
     // Status codes used for communicating whether the table has all 
     // recommended fields for a particular record.
@@ -89,8 +85,7 @@ class Application_Model_SetTable
                                             // tables, by table
 
     /** @var string */
-    protected $_joinExpressions;    // join expressions for importing fields
-
+    protected $_joinExpressions;    // join expressions for importing fields 
     /** @var array */
     protected $_linkFields = array(); // fields providing links to other tables
 
@@ -117,6 +112,18 @@ class Application_Model_SetTable
     protected $_externalTblRefs;    // external table refs that look like fields
 
     /**
+     * Returns a list of the valid sequence setting properties.
+     */
+    public static function validTableProps()
+    {
+        return array(self::TABLE_NAME, self::TITLE, self::DESCRIPTION,
+                     self::TABLE_FOOTNOTE, self::CONNECTED_TBL,
+                     self::INIT_TBL_REF, self::EXTERNAL_TBL,
+                     self::SHOW_COLS_BY_DEFAULT, self::FIELDS
+                    );
+    }
+
+    /**
      * Class constructor
      *
      * Creates an object that represents all the information known about 
@@ -135,14 +142,20 @@ class Application_Model_SetTable
 
         // Make sure that the setting properties include a table name
         // (min. requirement)
-        if ( ! array_key_exists(self::TABLE_NAME, $settingProps) )
+        if ( array_key_exists(self::TABLE_NAME, $settingProps) )
         {
-            throw new Exception($settingName .
-                                " setting must include a key for '" .
-                                self::TABLE_NAME .
-                                "' that names the database table to use.");
+            $this->_dbTableName = $settingProps[self::TABLE_NAME];
         }
-        $this->_dbTableName = $settingProps[self::TABLE_NAME];
+        else
+        {
+            if ( empty($dbTableName) )
+            {
+                throw new Exception($settingName .
+                                    " setting must include a key for '" .
+                                    self::TABLE_NAME .
+                                    "' that names the database table to use.");
+            }
+        }
         $this->_settingName = $settingName;
         $this->_dbModel =
                     new Application_Model_DbTable_Table($this->_dbTableName);
@@ -167,10 +180,12 @@ class Application_Model_SetTable
     {
 
         // Initialize remaining table attributes.
+        /*
         $this->_tableQueryConstraint =
                     isset($settingInfo[self::TABLE_QUERY_CONSTRAINT]) ?
                             $settingInfo[self::TABLE_QUERY_CONSTRAINT] :
                             "";
+         */
         $this->_title = isset($settingInfo[self::TITLE]) ?
                             $settingInfo[self::TITLE] :
                             $this->_dbTableName;

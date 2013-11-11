@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * TODO: Would be nice to have the test for internal vs external 
+ * authentication confined to a single method in a single class, 
+ * rather than spread across controllers/AuthController,
+ * library/Ramp/Acl.php, and views/helpers/LoggedInUser.php.
+ */ 
+
 /**
  * RAMP: Records and Activity Management Program
  *
@@ -28,11 +35,17 @@ class Ramp_Acl extends Zend_Acl
     const DELIM = '::';              // Delimiter separating resource sections
     const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
 
-    const PUBLIC_ACTS_RESOURCE = 'activity::index::PublicActivities';
+    const USERS_TABLE = 'ramp_auth_users';
+    const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';
 
-    // Keys for ACL Roles and Activity List Directories in Zend Registry.
+    // Keys for ACL Roles, Resources, and Rules in Zend Registry.
     const ACL_ROLES = 'rampAclRoles';
-    const ACTIVITY_LIST_DIRS = 'rampAclActivityListDirs';
+    const ACL_RESOURCES = 'rampAclResources';
+    const ACL_RULES = 'rampAclRules';
+
+    // Keywords for testing for Internal Authentication in Zend Registry.
+    const AUTH_TYPE = 'rampAuthenticationType';
+    const INTERNAL_AUTH_TYPE = 'internal';
 
     // ACL categories for Table actions.
     const VIEW = 'View';
@@ -45,11 +58,12 @@ class Ramp_Acl extends Zend_Acl
     protected $_tableCategories;
     protected $_tableAccessRules;
 
+    // STATIC (CLASS) FUNCTIONS
+
     /**
-     * STATIC (CLASS) FUNCTION:
-     *
      * Create an associative array of table action categories and the
      * list of actions associated with each category.
+     * (Static (Class) function.)
      */
     public static function createCategoryConverter()
     {
@@ -77,22 +91,50 @@ class Ramp_Acl extends Zend_Acl
     /*
      * CONSTRUCTOR:
      *
-     * Defines one default role (guest) and resources for the actions in 
-     * the Index, Auth, and Error Controllers.  Reads Activity 
-     * Controller resources (directories that may contain activity 
-     * lists) from the Zend Registry, and reads Table Controller 
-     * resources (action / table combinations) and Activity and Table 
-     * Access Rules from the database.
+     * Populates the Access Controll List with roles, resources, and 
+     * access control rules.
+     *
+     * ROLES: Defines one default role (guest) internally and reads
+     * additional roles from the Zend Registry.
+     *
+     * RESOURCES: Defines resources internally for most actions in the
+     * Index, Auth, and Error Controllers.  Reads additional resources from
+     * the Zend Registry and deduces others by scanning rules in the database.
+     * (Only rules involving activity directories and table/report actions
+     * may be specified in the database, so those are the only types of 
+     * resources derived from it.)
+     * Resources fall into three categories, specified as follows:
+     *    Controller actions:    controller::action
+     *    Activity directories:  activity::index::directory
+     *    Table/Report actions:  table::action::tableName
+     * Table and report resources are specific actions on specific 
+     * tables (note: tables, not settings).
+     *
+     * RULES: Defines some basic access control list rules internally and
+     * reads in additional rules from the Zend Registry and the database.
+     * (Only rules involving activity directories and table/report actions
+     * may be specified in the database.)  ACL rules consist of (role, 
+     * resource) pairings establishing what resources the role is 
+     * authorized to use.
      */
     public function __construct()
     {
+        // Some authorization resources and rules come from the 
+        // Authentication/Authorization database.
+        $this->_authInfo = new Application_Model_DbTable_Auths();
+
+	// Table access resources specify resources by categories of
+	// actions rather than by individual actions.  Create a
+	// "category converter" to use in converting categories to actions.
+        $this->_tableCategories = self::createCategoryConverter();
+
 
         /* ADDING ROLES */
 
-        // Add the default role called "guest".
+        // Add the built-in, default role called "guest".
         $this->addRole(new Zend_Acl_Role(self::DEFAULT_ROLE));
 
-        // Add other roles defined in the Registry.
+        // Add roles defined in the Registry.
         if ( Zend_Registry::isRegistered(self::ACL_ROLES) )
         {
             $aclRoles = Zend_Registry::get(self::ACL_ROLES);
@@ -102,16 +144,91 @@ class Ramp_Acl extends Zend_Acl
 
         /* ADDING RESOURCES */    
 
-        // Some authorization resources and rules come from the 
-        // Authentication/Authorization database.
-        $this->_authInfo = new Application_Model_DbTable_Auths();
+        // Add the basic resources: actions from the Index, Auth, and Error 
+        // controllers and the pre-defined, built-in Users and 
+        // Authorizations tables.
+        $this->_addBasicResources();
 
-        // Table access resources in the database specify resources by 
-        // categories of actions rather than by individual actions.  
-        // Create a "category converter" to use in converting categories
-        // to  actions.
-        $this->_tableCategories = self::createCategoryConverter();
+        // Add resources defined in the Registry.
+        if ( Zend_Registry::isRegistered(self::ACL_RESOURCES) )
+        {
+            $aclResources = Zend_Registry::get(self::ACL_RESOURCES);
+            $this->_addResources($aclResources);
+        }
 
+        // Add activity directory resources derived from the database.
+        $this->_addResources($this->_authInfo->getActivityResources());
+
+        // Add table and report resources derived from the database.
+        $this->_addResources($this->_authInfo->getTableResources());
+
+        /* ASSIGNING RESOURCES TO ROLES */ 
+
+        // Identify minimal resources available to anyone (even guests)
+        $this->_establishMinimalAuthorizations();
+
+        // Add rules defined in the Registry.
+        if ( Zend_Registry::isRegistered(self::ACL_RULES) )
+        {
+            $aclRules = Zend_Registry::get(self::ACL_RULES);
+            foreach ( $aclRules as $rule )
+            {
+                $components = explode(self::DELIM, $rule);
+                // There must be at least 2 components: role and resource.
+                if ( count($components) >= 2 )
+                {
+                    $role = array_shift($components);
+                    $resource = implode(self::DELIM, $components);
+                    $this->allow($role, $resource);
+                }
+            }
+        }
+
+        // // Add authorization rules in the database.
+        $this->_addRules($this->_authInfo->getActivityAccessRules());
+        $this->_addRules($this->_authInfo->getTableAccessRules());
+
+    }
+
+    /**
+     * Determines whether the current user is authorized to access
+     * the requested  resource.
+     *
+     * @param   $resource  the requested resource
+     */
+    public function authorizesCurrentUser($resource)
+    {
+        // If the default role allows access to the requested resource, 
+        // that's good enough.
+        if ( $this->isAllowed(self::DEFAULT_ROLE, $resource) )
+        {
+            return true;
+        }
+
+        // Otherwise, must be an authenticated user whose role allows access.
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        {
+            $user = $auth->getIdentity();
+
+            // Check the user role against the requested resource.
+            if ( $this->hasRole($user->role) && $this->has($resource)
+                   && $this->isAllowed($user->role, $resource) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Adds basic resources: actions from the Index, Auth, and Error
+     * controllers and the pre-defined, built-in Users and Authorizations
+     * tables.
+     */
+    protected function _addBasicResources()
+    {
         //Note: Any action in a controller with multiple camel-cased words 
         //      (e.g., chooseActivityListAction in IndexController) is
         //      named as a resource like this: choose-activity-list.
@@ -127,41 +244,33 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('auth::login'));
         $this->add(new Zend_Acl_Resource('auth::logout'));
         $this->add(new Zend_Acl_Resource('auth::unauthorized'));
-        $this->add(new Zend_Acl_Resource('auth::add-user'));
+        $this->add(new Zend_Acl_Resource('auth::init-password'));
+        $this->add(new Zend_Acl_Resource('auth::change-password'));
+        $this->add(new Zend_Acl_Resource('auth::reset-password'));
+        $this->add(new Zend_Acl_Resource('auth::validate-roles'));
         $this->add(new Zend_Acl_Resource('auth::validate-acl-rules'));
 
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));
 
-        // ACTIVITY CONTROLLER: Resources are the directories where 
-        // activity list specification files can be found.
-
-        // The PublicActivities directory should be provided for 
-        // activities that should be visible even to "guest" users.
-        $publicActivities = self::PUBLIC_ACTS_RESOURCE;
-        $this->add(new Zend_Acl_Resource($publicActivities));
-
-        // Add other activity list directory resources defined in the Registry.
-        if ( Zend_Registry::isRegistered(self::ACTIVITY_LIST_DIRS) )
+        // BUILT-IN TABLES:
+        // Get a list of all Table controller actions.
+        $actions = self::createCategoryConverter();
+        foreach ( $actions[self::ALL] as $action )
         {
-            $actListResources = Zend_Registry::get(self::ACTIVITY_LIST_DIRS);
-            $actPrefix = self::ACTIVITY_PREFIX . self::DELIM;
-            $this->_addResources($actPrefix, $actListResources);
+            $resourceName = "table::$action::" . self::USERS_TABLE;
+            $this->add(new Zend_Acl_Resource($resourceName));
+            $resourceName = "table::$action::" . self::AUTHORIZATIONS_TABLE;
+            $this->add(new Zend_Acl_Resource($resourceName));
         }
+    }
 
-        // Add other activity list directory resources defined in the database.
-        $this->_addResources('', $this->_authInfo->getActivityResources());
-
-        // TABLE AND REPORT CONTROLLERS: Resources are specific actions on 
-        // specific tables (note: tables, not settings).
-
-        // Add table resources defined in the database.
-        $this->_addResources('', $this->_authInfo->getTableResources());
-
-
-        /* ASSIGNING RESOURCES TO ROLES */ 
-
-        // Identify minimal resources available to anyone (even guests)
+    /**
+     * Establishes minimal authorizations (resources available to anyone,
+     * even guests who are not logged in).
+     */
+    protected function _establishMinimalAuthorizations()
+    {
         $this->allow(self::DEFAULT_ROLE, 'error::error');
 
         $this->allow(self::DEFAULT_ROLE, 'index::menu');
@@ -174,32 +283,17 @@ class Ramp_Acl extends Zend_Acl
         $this->allow(self::DEFAULT_ROLE, 'auth::logout');
         $this->allow(self::DEFAULT_ROLE, 'auth::unauthorized');
 
-        $this->allow(self::DEFAULT_ROLE, self::PUBLIC_ACTS_RESOURCE);
-
-        // Allow access to activities and tables based on authorization
-        // rules in the database.
-        $this->_addRules($this->_authInfo->getActivityAccessRules());
-        $this->_addRules($this->_authInfo->getTableAccessRules());
-
-        // FUTURE: $this->allow(self::DEFAULT_ROLE, 'document::index::about');
-
-        // The database administrator should be able to add or edit users and ACLs,
-        // and check whether the ACL rules are valid, whether through normal
-        // RAMP channels or through special actions in the Auth controller.
-        // (Note, though, that users and rules can be added, edited, and deleted 
-        // through normal RAMP channels, i.e., using the Table controller.)
-        $this->allow('ramp_dba', 'auth::add-user');
-        $this->allow('ramp_dba', 'auth::validate-acl-rules');
-
-        // If the following two tables are not defined in the database, they 
-        // should be defined here.
-        // $this->add(new Zend_Acl_Resource('table::index::ramp_auth_users'));
-        // $this->add(new Zend_Acl_Resource('table::index::ramp_auth_auths'));
-
+        // All users should be able to set or change their password if 
+        // Ramp is handling authentication internally.
+        if ( Zend_Registry::get(self::AUTH_TYPE) == self::INTERNAL_AUTH_TYPE )
+        {
+            $this->allow(self::DEFAULT_ROLE, 'auth::init-password');
+            $this->allow(self::DEFAULT_ROLE, 'auth::change-password');
+        }
     }
 
     /**
-     * Add roles with parent information.
+     * Adds roles with parent information.
      * Based on Zend Framework in Action by Allen, Lo, and Brown, 2009, p. 142.
      *
      * @param   $roles   array of (role => parents) associations,
@@ -219,12 +313,12 @@ class Ramp_Acl extends Zend_Acl
     }
 
     /**
-     * Add the specified resources.
+     * Adds the specified resources.
      *
      * @param   $prefix     a prefix to put in front of all resources
      * @param   $resources  a single resource or an array of resources
      */
-    protected function _addResources($prefix, $resources)
+    protected function _addResources($resources, $prefix='')
     {
         if ( ! empty($resources) )
         {
@@ -243,7 +337,7 @@ class Ramp_Acl extends Zend_Acl
     }
 
     /**
-     * Add the specified resource.
+     * Adds the specified resource.
      * 
      * @param   $prefix     a prefix to put in front of all resources
      * @param   $resource   a single resource
@@ -258,7 +352,7 @@ class Ramp_Acl extends Zend_Acl
     }
 
     /**
-     * Add the specified rules.
+     * Adds the specified rules.
      *
      * @param   $rules   array of (role => rule) associations
      */

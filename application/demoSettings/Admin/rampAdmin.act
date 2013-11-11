@@ -1,0 +1,66 @@
+; Smart Activities related to "ramp_auth_users" and "ramp_auth_auths" tables
+
+activityListHeading = "Choose an activity:"
+
+activity[] = "Smart View of Users"
+activity[] = "Auths"
+activity[] = "Spacer"
+activity[] = "ResetPassword"
+activity[] = "Spacer"
+activity[] = "ValidateUserRoles"
+activity[] = "Spacer"
+activity[] = "ValidateACL"
+
+
+[ Spacer ]
+
+type = "comment"
+comment = ""
+
+[ Add User ]
+
+type = "comment"
+comment = "Or, to go directly to add new users using a different page,
+set URL to hostname/auth/add-user"
+
+[ Smart View of Users ]
+
+type = "setting"
+source = "Admin/ramp_auth_users"
+title = "View Users"
+description = "View or modify list of users"
+
+[ Auths ]
+
+type = "setting"
+source = "Admin/ramp_auth_auths"
+title = "View Auths"
+description = "View or modify list of access control rules"
+
+[ ValidateUserRoles ]
+
+type = "controllerAction"
+title = "Validate User Roles"
+description = "Validate roles being used in the Users Table"
+controller = "auth"
+action = "validate-roles"
+parameter = ""
+
+[ ValidateACL ]
+
+type = "controllerAction"
+title = "Validate Auth Rules"
+description = "Validate the access control (authorization) rules"
+controller = "auth"
+action = "validate-acl-rules"
+parameter = ""
+
+[ ResetPassword ]
+
+type = "controllerAction"
+title = "Reset User Password"
+description = "Reset a user's password"
+controller = "auth"
+action = "reset-password"
+parameter = ""
+

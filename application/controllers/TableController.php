@@ -25,6 +25,10 @@
 
 class TableController extends Zend_Controller_Action
 {
+    /* Table and field that requires special processing */
+    const USERS_TABLE       = Ramp_Acl::USERS_TABLE;
+    const PASSWORD          = 'password';
+
     /* values used as keyword parameters (keyword or value) */
     const SUBMIT_BUTTON         = 'submit';
     const SETTING_NAME          = '_setting';
@@ -80,7 +84,7 @@ class TableController extends Zend_Controller_Action
         // Get the sequence information (types of table settings to use).
         $this->_encodedSeqName = $this->_getParam(self::SETTING_NAME, "");
         $seqName = urldecode($this->_encodedSeqName);
-        $this->_tblViewingSeq =
+        $this->_tblViewingSeq = $seq =
                 Application_Model_TVSFactory::getSequenceOrSetting($seqName);
 
         // Get and store parameters for possible future use.
@@ -199,16 +203,21 @@ class TableController extends Zend_Controller_Action
         {
             $this->_goTo('list-view');
         }
-        else    // Searching or adding...
+        else
         {
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
-                $nonNullData = $this->_filledFields($form->getValues());
+                $nonNullData = $this->_getFilledFields($form->getValues());
 
                 // Adding new entry based on failed search?
                 if ( $this->_buttonAction == self::ADD )
-                    { $this->_goTo('add', $nonNullData); }
+                {
+                    if ( $this->_illegalCallback($setTable) )
+                        { return; }
+
+                    $this->_goTo('add', $nonNullData);
+                }
 
                 // Searching for any or all matches. Display based on 
                 // number of results.
@@ -236,7 +245,9 @@ class TableController extends Zend_Controller_Action
         $setTable = $this->_tblViewingSeq->getSetTableForSearchResults();
 
         // Is this the initial display or a callback from a button action?
-        if ( $this->_thisIsInitialDisplay() )
+        //    (Or an illegal callback that could allow password corruption?)
+        if ( $this->_thisIsInitialDisplay() ||
+             $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data form to use.
             $this->view->buttonList = array(self::ADD, self::TABLE,
@@ -262,7 +273,9 @@ class TableController extends Zend_Controller_Action
         $setTable = $this->_tblViewingSeq->getSetTableForViewing();
 
         // Is this the initial display or a callback from a button action?
-        if ( $this->_thisIsInitialDisplay() )
+        //    (Or an illegal callback that could allow password corruption?)
+        if ( $this->_thisIsInitialDisplay() ||
+             $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data form to use.
             $this->view->buttonList = array(self::ADD, self::SEARCH);
@@ -298,7 +311,9 @@ class TableController extends Zend_Controller_Action
                     new Application_Form_TableRecordEntry($setTable, 0);
 
         // Is this the initial display or a callback from a button action?
-        if ( $this->_thisIsInitialDisplay() )
+        //    (Or an illegal callback that could allow password corruption?)
+        if ( $this->_thisIsInitialDisplay() ||
+             $this->_illegalCallback($setTable) )
         {
             // Retrieve record based on provided fields / primary keys.
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
@@ -401,7 +416,7 @@ class TableController extends Zend_Controller_Action
                 // fill them in.  Remove null fields.
                 $addValues = $this->_fillInitValues($setTable,
                                                     $form->getValues());
-                $nonNullData = $this->_filledFields($addValues);
+                $nonNullData = $this->_getFilledFields($addValues);
 
                 // Update the database and redisplay the record.
                 $setTable->addTableEntry($nonNullData);
@@ -531,6 +546,52 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Checks whether this is a callback that would lead to the ability 
+     * to set or modify encrypted passwords in the RAMP Users table.
+     * Generates an error message if this is such an illegal callback.
+     * (Should only be an issue when doing internal authentication, but
+     * the consequences are so severe that we should always check.)
+     *
+     * Pre-condition: should only be called on button callbacks, i.e., 
+     *    when $this->_thisIsInitialDisplay() is false.
+     *
+     * @return true if button action would go to an ADD or EDIT form and
+     *              the setting potentially allows corruption of encrypted 
+     *              passwords in the Users table; false otherwise
+     */
+    protected function _illegalCallback($setTable)
+    {
+        // Get the appropriate table setting based on the button action.
+        if ( $this->_buttonAction == self::ADD ||
+             $this->_buttonAction == self::CLONE_BUTTON )
+        {
+            $setTable = $this->_tblViewingSeq->getSetTableForAdding();
+        }
+        elseif ( $this->_buttonAction == self::EDIT )
+        {
+            $setTable = $this->_tblViewingSeq->getSetTableForModifying();
+        }
+        else
+        {
+            // This is not a modifying callback.
+            return false;
+        }
+
+        // Does this table setting allow modification of password field 
+        // in RAMP Users table?  (Is password field visible in setting?)
+        if ( $setTable->getDbTableName() == self::USERS_TABLE &&
+             $setTable->getFieldObject(self::PASSWORD)->isVisible() )
+        {
+            $this->view->errMsgs[] =
+                "Table Setting Error: May not Add, Edit, or Clone records " .
+                "using forms that allow manipulation of encrypted passwords.";
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Set up initial display (except for buttonList) for actions
      * involving multiple records.
      */
@@ -619,7 +680,7 @@ class TableController extends Zend_Controller_Action
      * @param array $data   Column-value pairs
      * @return array        Column-value pairs, with no empty values
      */
-    protected function _filledFields(array $data)
+    protected function _getFilledFields(array $data)
     {
         // Remove column-value pairs with null values.
         $nonNullData = array();

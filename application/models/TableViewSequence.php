@@ -56,11 +56,19 @@ class Application_Model_TableViewSequence
     /**
      * Returns a list of the valid sequence setting properties.
      */
-    protected static function validSequenceProps()
+    protected static function validSeqSettingProps()
     {
         return array(self::MAIN_SETTING, self::EDIT_SETTING, self::ADD_SETTING, 
                      self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
                      self::REFERENCE_SETTING);
+    }
+
+    /**
+     * Returns a list of the valid sequence setting properties.
+     */
+    protected static function validSequenceProps()
+    {
+        return self::validSeqSettingProps() + array(self::INIT_ACTION);
     }
 
     /**
@@ -156,14 +164,6 @@ class Application_Model_TableViewSequence
         $reference = $this->_settingNames[self::REFERENCE_SETTING] =
                         $reference ? : $add;
         $this->_settings = array();
-        /*
-        $this->_settings[self::MAIN_SETTING] = 
-                $this->_settings[self::REFERENCE_SETTING] = 
-                $this->_settings[self::EDIT_SETTING] = 
-                $this->_settings[self::ADD_SETTING] = 
-                $this->_settings[self::SEARCH_SPEC_SETTING] = 
-                $this->_settings[self::SEARCH_RES_SETTING] =  null;
-         */
     }
 
     /**
@@ -224,8 +224,8 @@ class Application_Model_TableViewSequence
             throw new Exception("Error: trying to get set table " .
                 "for empty setting property name.");
         }
-        $validSequenceProps = self::validSequenceProps();
-        if ( ! in_array($property, $validSequenceProps) )
+        $validSeqSettingProps = self::validSeqSettingProps();
+        if ( ! in_array($property, $validSeqSettingProps) )
         {
             throw new Exception("Error: trying to get set table " .
                 "for unknown setting property: " . $property . ".");

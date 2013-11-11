@@ -1,0 +1,19 @@
+<?php
+$this->title = "Role Validation";
+$this->headTitle($this->title);
+?>
+
+<h2>User Role Validation</h2>
+<?php if ( count($this->invalid) == 0 ) { ?>
+<p>All roles used in the users table have been defined.</p>
+<?php
+} else
+{
+    echo "<ul>\n";
+    foreach ( $this->invalid as $role )
+    {
+        echo "<li>Invalid role: $role</li>\n";
+    }
+    echo "</ul>\n";
+}
+?>

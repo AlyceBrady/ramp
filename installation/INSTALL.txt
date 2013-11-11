@@ -24,6 +24,21 @@ and tutorials:
     MySQL:  http://www.mysql.com/
     PHP:  http://www.php.net/
 
+Depending on the system you are using, you may need to update your httpd
+configuration (e.g., /etc/apache2/httpd.conf) to load the PHP module,
+turn on virtual hosting, and allow overrides to all in your
+DocumentRoot directory.
+
+Will need directions about setting up virtual hosts somewhere.
+
+In order to get better encryption, PHP recommends 5.3.7 or later,
+although I am currently running 5.4.19 and still getting MD5 when I use
+crypt without a salt.
+
+(If you make a link from your server's document root to folders or
+directories in personal space, make sure the permissions on the link and
+target directory will allow your web server to follow the link.)
+
 
 Zend Framework:
 ---------------
@@ -44,7 +59,9 @@ library to the library subdirectory within Ramp.  For example, if
 .../ZendFrameworkLoc refers to where your ZendFramework is installed
 and .../RampLoc refers to where RAMP is installed, then
 copy or link the .../ZendFrameworkLoc/library/Zend directory or folder
-into the .../RampLoc/library directory.
+into the .../RampLoc/library directory.  (If you use a link, make sure
+the permissions on the link and target directory will allow the server
+to follow the link to the Zend framework directory.)
 
 Ramp expects to find a file called application.ini in the
 .../RampLoc/application/configs/ directory.  This file would normally
@@ -75,7 +92,11 @@ Setting up Ramp on Your Server:
 … [Write instructions for setting up vhosts.] … See the vhostExamples.conf
 file in the installation directory for examples on setting up virtual
 hosts on your machine for the demonstration and development/production
-databases.  If the server is being used on the local machine, you need
+databases.  You may need to first enable virtual hosting within
+/etc/apache2/httpd.conf by uncommenting the Include line for
+httpd-vhosts.conf.
+
+If the server is being used on the local machine, you need
 to edit /etc/hosts and add lines that resolve the virtual server
 names from vhosts to the local machine.  For example,
     127.0.0.1       ramp.development
@@ -86,6 +107,7 @@ be visible beyond that, you probably need to register the server name.
 (If you can’t, or don’t want to, get vhosts to work, you may be able
 to get the same results with .htaccess.  Uncomment the last line and
 specify the correct APPLICATION_ENV (production, development, testing,
-rampdemo, smartdemo, etc.).  Without vhosts, though, it’s not quite
-as easy to have multiple environments running on one server.)
+rampdemo, smartdemo, etc.).  Without vhosts, though, it’s not
+as easy to have multiple Ramp/Smart database environments running on
+one server.)
 

@@ -8,6 +8,19 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $this->bootstrap('db');
         $db = $this->getResource('db');
         Zend_Registry::set('db', $db);
+        try
+        {
+            $dbAdapter = Zend_Registry::get('db');
+            $connection = $dbAdapter->getConnection();
+        }
+        catch (Exception $e)
+        {
+            $configInfo = $db->getConfig();
+            throw new Exception("Error: Cannot access database '".
+                $configInfo['dbname'] .  "' using user '" .
+                $configInfo['username'] . "'@'" .
+                $configInfo['host'] . "'.");
+        }
     }
 
     protected function _initConfig()
@@ -31,6 +44,22 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             // test vs. development environments).
             $rampConfigSettings = $configOptions['ramp'];
 
+            // Register the Authentication Type.
+            if ( ! empty($rampConfigSettings['authenticationType']) )
+            {
+                $authType = $rampConfigSettings['authenticationType'];
+                Zend_Registry::set('rampAuthenticationType', $authType);
+            }
+            unset($rampConfigSettings['authenticationType']);
+
+            // Register the Default Password.
+            if ( ! empty($rampConfigSettings['defaultPassword']) )
+            {
+                $default_pw = $rampConfigSettings['defaultPassword'];
+                Zend_Registry::set('rampDefaultPassword', $default_pw);
+            }
+            unset($rampConfigSettings['defaultPassword']);
+
             // Register the Access Control List roles.
             if ( ! empty($rampConfigSettings['aclNonGuestRole']) )
             {
@@ -39,15 +68,21 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
             unset($rampConfigSettings['aclNonGuestRole']);
 
-            // Register the Access Control List activity list resources.
-            if ( !
-                 empty($rampConfigSettings['activityListResourceDirectories'])
-               )
+            // Register Access Control List resources.
+            if ( !  empty($rampConfigSettings['aclResources']))
             {
-                $dirs = $rampConfigSettings['activityListResourceDirectories'];
-                Zend_Registry::set('rampAclActivityListDirs', $dirs);
+                $dirs = $rampConfigSettings['aclResources'];
+                Zend_Registry::set('rampAclResources', $dirs);
             }
-            unset($rampConfigSettings['activityListResourceDirectories']);
+            unset($rampConfigSettings['aclResources']);
+
+            // Register Access Control List rules.
+            if ( !  empty($rampConfigSettings['aclRules']))
+            {
+                $dirs = $rampConfigSettings['aclRules'];
+                Zend_Registry::set('rampAclRules', $dirs);
+            }
+            unset($rampConfigSettings['aclRules']);
 
             // Register the directory that stores table settings.
             if ( ! empty($rampConfigSettings['settingsDirectory']) )

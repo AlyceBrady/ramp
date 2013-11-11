@@ -72,6 +72,12 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         // that is tested in TVSGatewayTest.
     }
 
+    public function testSettingWithInheritedTableName()
+    {
+        // $table = $this->_settingForPartialTable;
+        // $this->assertSame("ramp_test_addresses", $table->getDbTableName());
+    }
+
     public function testValidSettingWithTableFootnote()
     {
         $expSetting = $this->_settingTests->getBasicSetting();

@@ -15,7 +15,7 @@ class Application_Form_LoginForm extends Zend_Form
 
         $password = new Zend_Form_Element_Password('password');
         $password->setLabel('Password')
-                ->setRequired(true)
+//                ->setRequired(true)
                 ->addFilter('StringTrim');
 
         $submit = new Zend_Form_Element_Submit('submit');
