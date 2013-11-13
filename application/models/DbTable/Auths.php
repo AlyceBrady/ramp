@@ -3,6 +3,7 @@
 class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 {
     const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
+    const DOCUMENT_PREFIX = 'document::index'; // Start of Document resources
     const TABLE_RES_TYPE = 'Table';            // Table resource type
     const REPORT_RES_TYPE = 'Report';          // Table resource type
 
@@ -11,17 +12,19 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 
     protected $_activityAccessRules = null;
     protected $_tableAccessRules = null;
+    protected $_documentAccessRules = null;
 
     /**
-     * Get all activity and table resources defined in the database.
+     * Get all activity, table, and document resources defined in the database.
      */
     public function getResources()
     {
         // Get all the activity and table resources.
         $actResources = $this->getActivityResources();
         $tableResources = $this->getTableResources();
+        $docResources = $this->getDocumentResources();
 
-        return array_merge($actResources, $tableResources);
+        return array_merge($actResources, $tableResources, $docResources);
     }
 
     /**
@@ -59,7 +62,24 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
     }
 
     /**
-     * Get all activity and table access rules defined in the database.
+     * Get all Document-related Resources.
+     *
+     */
+    public function getDocumentResources()
+    {
+        // Get all the table access rules (if not already retrieved).
+        if ( empty($this->_documentAccessRules) )
+        {
+            $this->_documentAccessRules = $this->getDocumentAccessRules();
+        }
+
+        // Dig the resource information out from inside the rules.
+        return $this->_getRawResources($this->_documentAccessRules);
+    }
+
+    /**
+     * Get all activity, table, and document access rules defined in the
+     * database.
      */
     public function getAccessRules()
     {
@@ -75,8 +95,15 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             $this->_tableAccessRules = $this->getTableAccessRules();
         }
 
+        // Get all the document access rules (if not already retrieved).
+        if ( empty($this->_documentAccessRules) )
+        {
+            $this->_documentAccessRules = $this->getDocumentAccessRules();
+        }
+
         return array_merge($this->_activityAccessRules,
-                            $this->_tableAccessRules);
+                           $this->_tableAccessRules,
+                           $this->_documentAccessRules);
     }
 
     /**
@@ -116,6 +143,46 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
         }
 
         $this->_activityAccessRules = $rules;
+        return $rules;
+    }
+
+    /**
+     * Get all Access Control List rules related to the Document resource
+     * type.
+     *
+     */
+    public function getDocumentAccessRules()
+    {
+        // If the rules have already been retrieved, just return them.
+        if ( ! empty($this->_documentAccessRules) )
+        {
+            return $this->_documentAccessRules;
+        }
+
+        $rules = array();
+
+        // Get the Document access rules from the database.
+        $where = array('resource_type = ?' => 'Document');
+        $rawDocumentAccessRules = $this->fetchAll($where);
+
+        // Build the full set of access rules from the rules in the database.
+        foreach ( $rawDocumentAccessRules as $rule )
+        {
+            if ( ! isset($rule->role) ||
+                 ! isset($rule->resource_name) )
+            {
+                throw new Exception("Access control list table contains " .
+                            "an invalid rule (rule " .  $rule->id . ").");
+            }
+
+            // Build up the resource name.
+            $prefix = Ramp_Acl::DOCUMENT_PREFIX;
+            $delim = Ramp_Acl::DELIM;
+            $rules[] = array($rule->role =>
+                             $prefix . $delim . $rule->resource_name);
+        }
+
+        $this->_documentAccessRules = $rules;
         return $rules;
     }
 

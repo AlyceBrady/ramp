@@ -164,6 +164,13 @@ div#activityPage dt.comment {
     font-style: oblique;
 }
 
+div#activityPage dt.text {
+    margin-top: 0;
+    width:      50%;
+    margin-left:     0;
+    text-align: left;
+}
+
 div#activityPage dt.wide {
     margin-top, margin-bottom: 20px;
     width:      30%;

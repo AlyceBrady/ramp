@@ -1,4 +1,7 @@
 <?php
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+
 /*
 echo "<p>Debugging info is:</p>";
 echo "<pre>\n"; print_r($this->activityList); echo "\n</pre>";
@@ -7,21 +10,18 @@ echo "<p>activity type: "; print_r($this->activityType); echo "</p>";
 echo "<p>activity: "; print_r($this->activity); echo "</p>";
  */
 
-// Heading may be specified with the activity or may be one of two 
-// defaults: "Choose an activity" or nothing at all (if there is just 
-// one activity which is to print HTML text as-is).
+// Heading may be specified with the activity or may be the
+// default: "Choose an activity".
 $userSpecifiedHeading = $this->activityTitle;   // set in controller
-$firstEltType = reset($this->activityList)->getType();
-$htmlType = Application_Model_ActivitySpec::HTML_TYPE;
-$default = ( count($this->activityList) == 1 && $firstEltType == $htmlType ) ? 
-                "" : "Choose an activity:";
-$heading = $userSpecifiedHeading ? : $default;
+$heading = $userSpecifiedHeading ? : "Choose an activity:";
 ?>
+
 <div id='activityPage'>
 
 <?php if ( $heading != "" ) echo "<h1>$heading</h1>" ?>
 
 <?php /* echo $this->form; */ ?>
+
 
 <form id='activityList' action='' method='post'>
 <dl>
@@ -31,23 +31,33 @@ foreach ( $this->activityList as $key => $activity )
 {
     switch ($activity->getType())
     {
-        case Application_Model_ActivitySpec::HTML_TYPE:
-                echo $activity->getHTML();
-                break;
         case Application_Model_ActivitySpec::COMMENT_TYPE:
-                echo "<dt class='comment'>" .  $activity->getComment() .
-                     "</dt><dd></dd>";
+                $comment = $this->escape($activity->getComment());
+                echo "<dt class='comment'>" . 
+                    Markdown::defaultTransform($comment) .
+                     "</dt><dd></dd>\n";
                 break;
         case Application_Model_ActivitySpec::SEPARATOR_TYPE:
-                echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>";
+                echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
                 break;
         default:        // SETTING and ACTIVITY_LIST types
-                echo "<dt>";
-                echo "<input type='submit'  name='$key' id='$key' " .
-                    "class='button' " .
-                    "value='" . $activity->getTitle() . "'>";
-                echo "</dt>";
-                echo "<dd>" . $activity->getDescription() . "</dd>";
+                // Get and format title for button.
+                $title = $this->escape($activity->getTitle());
+                // $title = Markdown::defaultTransform($title);
+
+                // Get and format description.
+                $desc = $this->escape($activity->getDescription());
+                $desc = Markdown::defaultTransform($desc);
+                if ( ( strpos($desc, '<p>') === 0 ) &&
+                     ( strrpos($desc, '</p>') === (strlen($desc) - 5) ) )
+                {
+                    // strip off beginning/end paragraph
+                    $desc = substr($desc, 3, -5);
+                }
+
+                echo "<dt><input type='submit'  name='$key' id='$key' " .
+                    "class='button' " .  "value='" . $title . "'></dt>\n";
+                echo "<dd>" . $desc . "</dd>\n";
     }
 }
 

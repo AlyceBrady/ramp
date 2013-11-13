@@ -42,7 +42,7 @@ class Application_Model_RampIniReader
     {
         // Determine the filename, based on system path and $name.
         $altName = dirname($name);
-        $dir = $this->_getActivitiesDirectory();
+        $dir = self::_getActivitiesDirectory();
         $actFile1 = $dir .  DIRECTORY_SEPARATOR .  $name;
         $actFile2 = $dir .  DIRECTORY_SEPARATOR .  $altName;
         if ( is_file($actFile1) )
@@ -66,7 +66,7 @@ class Application_Model_RampIniReader
     public function importActivitySpecs($name)
     {
         // Determine the file name, based on system path and $name.
-        $dir = $this->_getActivitiesDirectory();
+        $dir = self::_getActivitiesDirectory();
         $activitiesFile = $dir .  DIRECTORY_SEPARATOR .  $name;
         $altFilename = dirname($activitiesFile);
         $altActivityName = basename($activitiesFile);
@@ -93,8 +93,8 @@ class Application_Model_RampIniReader
     public function importSettings($name)
     {
         // Determine the file name, based on system path and $name.
-        $dir = $this->_getSettingsDirectory();
-        $suffix = $this->_getSettingsSuffix();
+        $dir = self::getSettingsDirectory();
+        $suffix = self::_getSettingsSuffix();
         $settingsFile = $dir .  DIRECTORY_SEPARATOR .  $name . $suffix;
         if ( ! file_exists($settingsFile) )
         {
@@ -112,7 +112,7 @@ class Application_Model_RampIniReader
      * @return string   directory path
      *
      */
-    protected function _getActivitiesDirectory()
+    protected static function _getActivitiesDirectory()
     {
         // Get the activities directory from Zend_Registry.  If none is 
         // found, use the settings directory.
@@ -121,7 +121,7 @@ class Application_Model_RampIniReader
                 Zend_Registry::get('rampActivitiesDirectory') :
                 null;
 
-        $path = $path ? : $this->_getSettingsDirectory();
+        $path = $path ? : self::getSettingsDirectory();
 
         return $path;
     }
@@ -132,7 +132,7 @@ class Application_Model_RampIniReader
      * @return string   directory path
      *
      */
-    protected function _getSettingsDirectory()
+    public static function getSettingsDirectory()
     {
         // Get the settings directory from Zend_Registry.
         $path = 
@@ -143,7 +143,7 @@ class Application_Model_RampIniReader
         if ( empty($path) )
         {
             // No directory specified; come up with a default instead.
-            $baseDir = $this->_getBaseDirectory();
+            $baseDir = self::_getBaseDirectory();
             $path = $baseDir . DIRECTORY_SEPARATOR . 'settings';
         }
 
@@ -156,7 +156,7 @@ class Application_Model_RampIniReader
      * @return string   suffix
      *
      */
-    protected function _getSettingsSuffix()
+    protected static function _getSettingsSuffix()
     {
         // Get the suffix from Zend_Registry.
         $suffix = 
@@ -177,7 +177,7 @@ class Application_Model_RampIniReader
      * @return the base directory for this application module
      *
      */
-    protected function _getBaseDirectory()
+    protected static function _getBaseDirectory()
     {
         $front = Zend_Controller_Front::getInstance();
         $module  = $front->getRequest()->getModuleName();

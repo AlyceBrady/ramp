@@ -84,7 +84,31 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
             unset($rampConfigSettings['aclRules']);
 
-            // Register the directory that stores table settings.
+            // Register the documentation root directory.
+            if ( ! empty($rampConfigSettings['documentRoot']) )
+            {
+                $path = $rampConfigSettings['documentRoot'];
+                Zend_Registry::set('rampDocumentRoot', $path);
+            }
+            unset($rampConfigSettings['documentRoot']);
+
+            // Register the documentation root directory.
+            if ( ! empty($rampConfigSettings['documentRoot']) )
+            {
+                $path = $rampConfigSettings['documentRoot'];
+                Zend_Registry::set('rampDocumentRoot', $path);
+            }
+            unset($rampConfigSettings['documentRoot']);
+
+            // Register the root directory for activities.
+            if ( ! empty($rampConfigSettings['activitiesDirectory']) )
+            {
+                $path = $rampConfigSettings['activitiesDirectory'];
+                Zend_Registry::set('rampActivitiesDirectory', $path);
+            }
+            unset($rampConfigSettings['activitiesDirectory']);
+
+            // Register the root directory for table settings.
             if ( ! empty($rampConfigSettings['settingsDirectory']) )
             {
                 $path = $rampConfigSettings['settingsDirectory'];

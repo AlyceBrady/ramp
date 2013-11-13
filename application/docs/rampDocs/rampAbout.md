@@ -1,10 +1,4 @@
-
 # RAMP: Record and Activity Management Program #
-# SMART: Software for Managing Academic Records and Transcripts #
-
-Welcome to the (temporarily) combined RAMP/SMART Release 0.0.0.1.
-
-## RAMP ##
 
 Ramp is a program that supports the easy creation of simple
 activity files (lists of grouped activities with descriptions),
@@ -31,54 +25,17 @@ defined, Ramp supports:
 Ramp is set up to work with tables defined in a MySQL database,
 using the Zend Framework.
 
-## SMART ##
-
-SMART currently consists of a set of activity files and table
-settings to support managing academic records in three broad
-categories:
-
- * Curriculum records dealing with courses of study (e.g.,
-   undergraduate mathematics), courses or modules (e.g., Calculus
-   I), and their individual offerings (e.g., the Spring 2012
-   offering of Calculus I)
-
- * Instructor records (e.g., contract start/end dates, courses or
-   modules taught)
-
- * Student records (e.g., courses of study, test scores, enrollment
-   history)
-
-In time, the plan is to separate Ramp and Smart into separate
-projects, and to expand Smart to include customized activities
-specific to the academic records domain (as opposed to the more
-general-purpose activities supported by Ramp).
-
-
 ### RELEASE INFORMATION ###
+RAMP/SMART Release 0.0.0.1.  
+Released on July 12, 2012.
 
-RAMP/SMART Release 0.5.1.  
-Released on March 12, 2013.
-
-### SYSTEM REQUIREMENTS ###
-
-RAMP (Record and Activity Management Program) was developed using
-Apache 2, MySQL 5.5, PHP 5.3 and Zend Framework 1.11.11.  It has
-been tested (and seems to work) with MySQL 5.1.44, PHP 5.2.15, and
-Zend Framework 1.11.10, as well as later versions up to MySQL 5.5.24,
-PHP 5.3.15, and Zend Framework 1.12.  It has not been tested with
-earlier versions of MySQL or PHP.  It did not appear to work with
-one installation of Zend Framework 1.11.4, nor does it work yet
-with Zend 2, which is a completely redesigned version of the Zend
-Framework.
-
-### INSTALLATION ###
-
-Please see INSTALL.txt.  (Under construction...)
 
 ### LICENSE ###
 
 The source files for Ramp/Smart are released under a BSD 2-Clause license.
-You can find a copy of this license in LICENSE.txt.
+You can find a copy of this license in
+[LICENSE.txt] [license].
+
 
 ### ACKNOWLEDGEMENTS ###
 
@@ -112,4 +69,6 @@ Individual contributors include:
 >   Kyle Sunden  
 >   Jiakan Wang  
 >   Riley Wetzel  
+
+[license]:  /LICENSE.txt
 

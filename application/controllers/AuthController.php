@@ -42,6 +42,9 @@ class AuthController extends Zend_Controller_Action
     const NEW_PW            = 'new_password';
     const CONFIRMED_PW      = 'confirm_password';
 
+    /* Keywords related to passing parameters to actions in this controller. */
+    const DETAILS           = 'details';
+
 
     /**
      * Indicates whether authentication is internal or external.
@@ -116,13 +119,23 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Sends unauthorized user to a "not authorized" page.
+     * Informs users when they are trying to perform an action for which 
+     * they are not authorized.
      * Justin Leatherwood, November 2012.
      */ 
     public function unauthorizedAction()
     {
+        // See if specific information was passed as a parameter.
+        $resource = $this->_getParam(self::DETAILS, "");
+        $resourceName = $this->_formatResourceName($resource);
+
         $this->view->errorMsg =
-                'Sorry, you are not authorized to perform this action.';
+                'Sorry, you are not authorized to perform this action';
+        if ( $resourceName != "" )
+        {
+            $this->view->errorMsg .= ' (' . $resourceName . ')';
+        }
+        $this->view->errorMsg .= '.';
     }
 
     /**
@@ -354,8 +367,7 @@ class AuthController extends Zend_Controller_Action
     {
         // Get authentication type (e.g., internal, LDAP, etc) and 
         // appropriate authentication adapter.
-        $authType = Zend_Registry::get(self::AUTH_TYPE);
-        if ( $authType === self::INTERNAL_AUTH_TYPE )
+        if ( self::usingInternalAuthentication() )
         {
             $authAdapter = $this->_getInternalAuthAdapter($username, $password);
             if ( $authAdapter == null )
@@ -432,6 +444,28 @@ class AuthController extends Zend_Controller_Action
         }
 
         return $authAdapter;
+    }
+
+    /**
+     * Format resource name from full resource specification.
+     *
+     * @param $resourceSpec  full resource specification
+     */
+    protected function _formatResourceName($resourceSpec)
+    {
+        // Get the various components of a full resource spec.  If it 
+        // doesn't have the expected components, return full spec.
+        $components = explode(Ramp_Acl::DELIM, $resourceSpec);
+        if ( count($components) != 3 )
+        {
+            return $resourceSpec;
+        }
+
+        // Return the resource type plus either the second or third
+        // component, depending on the  resource type.
+        return ( $components[0] == 'Table' || $components[0] == 'Report' ?
+                    $components[1] : $components[2] ) .
+               ' ' .  $components[0];
     }
 
     /**

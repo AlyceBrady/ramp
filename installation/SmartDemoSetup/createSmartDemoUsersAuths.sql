@@ -124,6 +124,7 @@ INSERT INTO `ramp_auth_auths`
 , ('smart_dba','Table','ramp_auth_auths','All')
 , ('guest','Activity','.','All')
 , ('guest','Activity','PublicActivities','All')
+, ('guest','Document','PublicActivities/smartAbout.md','All')
 , ('guest','Activity','Smart','All')
 , ('guest','Activity','Smart/Curriculum','All')
 , ('guest','Activity','Smart/Person','All')

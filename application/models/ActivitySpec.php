@@ -32,7 +32,7 @@ class Application_Model_ActivitySpec
     const SOURCE        = "source";
     const TITLE         = "title";
     const DESCRIPTION   = "description";
-    const HTML          = "html";
+    const TEXT          = "text";
     const CONTROLLER    = "controller";
     const ACTION        = "action";
     const PARAMETER     = "parameter";
@@ -40,14 +40,16 @@ class Application_Model_ActivitySpec
 
     // Valid specification types
     const SEPARATOR_TYPE            = "separator";
-    const COMMENT_TYPE              = self::COMMENT;
+    const COMMENT_TYPE              = "comment";
     const ACTIVITY_LIST_TYPE        = "activityList";
     const SETTING_TYPE              = "setting";
     const SEQUENCE_TYPE             = "sequence";
     const REPORT_TYPE               = "report";
-    const HTML_TYPE                 = self::HTML;
     const CONTROLLER_ACTION_TYPE    = "controllerAction";
-    const URL_TYPE                  = self::URL;
+    const HTML_TYPE                 = "html";
+    const MD_TYPE                   = "markdown";
+    const DOCUMENT_TYPE             = "document";
+    const URL_TYPE                  = "url";
 
     protected $_name;   // activity name (used for keyword lookup and
                         // error messages)
@@ -71,7 +73,8 @@ class Application_Model_ActivitySpec
     protected $_validSpecTypes = array(
         self::COMMENT_TYPE, self::SEPARATOR_TYPE, self::ACTIVITY_LIST_TYPE,
         self::SETTING_TYPE, self::SEQUENCE_TYPE, self::REPORT_TYPE,
-        self::HTML_TYPE, self::CONTROLLER_ACTION_TYPE, self::URL_TYPE);
+        self::CONTROLLER_ACTION_TYPE, self::HTML_TYPE, self::MD_TYPE,
+        self::DOCUMENT_TYPE, self::URL_TYPE);
 
     /**
      * Constructs an ActivitySpec object using the information provided 
@@ -107,7 +110,7 @@ class Application_Model_ActivitySpec
                 $valTypes .= $sep . $valType;
                 $sep = ", ";
             }
-            throw new Exception("Error: " . $this->_type . " is an " .
+            throw new Exception("Error: '" . $this->_type . "' is an " .
                                 "invalid specification type; valid types are " .
                                 $valTypes);
         }
@@ -125,16 +128,20 @@ class Application_Model_ActivitySpec
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
                 break;
             case self::HTML_TYPE:
+            case self::MD_TYPE:
                 $this->_description =
-                    $this->_confirmProperty(self::HTML, $specAsArray);
+                        $this->_confirmProperty(self::TEXT, $specAsArray);
                 break;
             case self::SETTING_TYPE:
             case self::REPORT_TYPE:
             case self::ACTIVITY_LIST_TYPE:
-                $this->_title = $this->_confirmProperty(self::TITLE, $specAsArray);
+            case self::DOCUMENT_TYPE:
+                $this->_title = $this->_confirmProperty(self::TITLE,
+                                                        $specAsArray);
                 $this->_description =
                     $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
-                $this->_source = $this->_confirmProperty(self::SOURCE, $specAsArray);
+                $this->_source = $this->_confirmProperty(self::SOURCE,
+                                                         $specAsArray);
                 break;
             case self::CONTROLLER_ACTION_TYPE:
                 $this->_title =
@@ -176,16 +183,16 @@ class Application_Model_ActivitySpec
         if ( ! array_key_exists($property, $spec) )
         {
             throw new Exception("Activity List Error: activity " .
-                "specification " . $this->_name . " has no " .
+                "specification '" . $this->_name . "' has no " .
                 $property . " property"
             );
         }
 
         if ( ! is_string($spec[$property]) )
         {
-            throw new Exception("Activity List Error: the " .
-                "$property property value for activity " .
-                "specification " . $this->_name . " must be a string");
+            throw new Exception("Activity List Error: the '" .
+                "$property' property value for activity " .
+                "specification '" . $this->_name . "' must be a string");
         }
 
         return $spec[$property];
@@ -248,12 +255,31 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Checks whether the "activity" is a URL.
+     * Checks whether the "activity" is actually Markdown text.
+     *
+     */
+    public function isMarkdown()
+    {
+        return $this->_type == self::MD_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is a controller/action combination.
      *
      */
     public function isControllerAction()
     {
         return $this->_type == self::CONTROLLER_ACTION_TYPE;
+    }
+
+    /**
+     * Checks whether the "activity" is a document containing text (might be 
+     * formatted text using HTML or Markdown).
+     *
+     */
+    public function isDocument()
+    {
+        return $this->_type == self::DOCUMENT_TYPE;
     }
 
     /**
@@ -326,11 +352,11 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Gets the value specified with the html property.  Returns an 
+     * Gets the value specified with the text property.  Returns an 
      * empty string if no value was specified for this property.
      *
      */
-    public function getHTML()
+    public function getText()
     {
         return $this->_description;
     }
@@ -372,7 +398,6 @@ class Application_Model_ActivitySpec
         {
             $item = explode('=', $paramAssignment);
             $params[$item[0]] = urlencode($item[1]);
-            // $params[$item[0]] = urldecode($item[1]);
         } 
         return $params;
     }

@@ -20,8 +20,9 @@
 
 class IndexController extends Zend_Controller_Action
 {
-    const SETTING_NAME = 'setting';     // TODO: should use one in TableController!
-    const AL_NAME = 'activity';     // TODO: should use one in ActivityController!
+    const SETTING_PARAM = Ramp_Controller_KeyParameters::SETTING_PARAM;
+    const ACT_PARAM = Ramp_Controller_KeyParameters::ACT_KEY_PARAM;
+
     // Define constants that define basic configuration variables.
     const CONFIG_SETTINGS = "rampConfigSettings";
     const TITLE = "title";
@@ -104,7 +105,7 @@ class IndexController extends Zend_Controller_Action
         if ( $this->_initialActivity != null )
         {
             $activityListName = urlencode($this->_initialActivity);
-            $params = array(self::AL_NAME => $activityListName);
+            $params = array(self::ACT_PARAM => $activityListName);
 
             $this->_helper->redirector('index', 'activity', null, $params);
         }
@@ -139,7 +140,7 @@ class IndexController extends Zend_Controller_Action
             {
                 $settingName = $form->getValue('settingName');
                 $settingName = urlencode($settingName);
-                $params = array(self::SETTING_NAME => $settingName);
+                $params = array(self::SETTING_PARAM => $settingName);
 
                 $this->_helper->redirector('index', 'table', null, $params);
             }
@@ -173,7 +174,7 @@ class IndexController extends Zend_Controller_Action
             {
                 $activityListName = $form->getValue('activityName');
                 $activityListName = urlencode($activityListName);
-                $params = array(self::AL_NAME => $activityListName);
+                $params = array(self::ACT_PARAM => $activityListName);
 
                 $this->_helper->redirector('index', 'activity', null, $params);
             }
@@ -216,9 +217,12 @@ class IndexController extends Zend_Controller_Action
         $roles = Zend_Registry::get('roles');
         $resources = Zend_Registry::get('resources');
         $rules = Zend_Registry::get('rules');
-        $this->view->authDebugging .= "<blockquote><b>Roles</b>: " . print_r($roles, true) . "</blockquote>";
-        $this->view->authDebugging .= "<blockquote><b>Resources</b>: " . print_r($resources, true) . "</blockquote>";
-        $this->view->authDebugging .= "<blockquote><b>Rules</b>: " . print_r($rules, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Roles</b>: " .
+            print_r($roles, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Resources</b>: " .
+            print_r($resources, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Rules</b>: " .
+            print_r($rules, true) . "</blockquote>";
     }
 
 }

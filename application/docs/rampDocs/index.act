@@ -1,0 +1,70 @@
+; List of Activities for Ramp Demo
+
+activity[] = "About Ramp"
+activity[] = "Act Spec Doc"
+activity[] = "Sample INI"
+activity[] = "Table Settings"
+activity[] = "Admin User Man"
+activity[] = "README"
+activity[] = "Real README"
+
+
+[horizRule]
+
+type = "separator"
+
+[About Ramp]
+
+type = "document"
+title = "About Ramp"
+description = "An introduction to Ramp: Records and Activity Management
+Program"
+source = "rampDocs/rampAbout.md"
+
+[Act Spec Doc]
+
+type = "document"
+title = "Activity Specs"
+description = "How to write Activity Specification files"
+source = "rampDocs/activityListDocumentation.act"
+
+[Sample INI]
+
+type = "document"
+title = "Table Settings Sample"
+description = "Table Settings sample/template"
+source = "rampDocs/sample.ini"
+
+[Table Settings]
+
+type = "document"
+title = "Table Settings Documentation"
+description = "Documentation about Table Settings (should be worked into
+a section of _Admin User Manual_?)"
+source = "rampDocs/TableSettings.md"
+
+[Admin User Man]
+
+type = "document"
+title = "Prelim Admin User Manual Notes"
+description = "__Really__ preliminary! (just barely started)"
+source = "rampDocs/AdminUserManualNotes.md"
+
+[README]
+
+type = "document"
+title = "README"
+description = "A README file in the rampDocs directory.  (Why?)
+[Currently broken and acting as a reminder to look into weird error
+reporting error.]"
+source = "rampDocs/README.txt"
+
+[Real README]
+
+type = "document"
+title = "Real README"
+description = "The top-level README file; should it duplicate aboutRamp?
+Or point to it and to the installation 'documentation'?  (_NOTE: has been
+md-ified but has txt extension so is not being Markdown::transform'ed._)"
+source = "../../README.txt"
+

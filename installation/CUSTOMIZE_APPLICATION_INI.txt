@@ -18,11 +18,11 @@ INSTALL_DB.txt).
 2. Addressing Security Concerns:
 --------------------------------
 
-    * Ramp's application/configs/application.ini file should also be
-      protected, but must be readable by the web server.  The best way
-      to achieve this could be, for example, to have the application.ini
-      owned by the database administrator but part of the same group as
-      the httpd web server (or vice versa).
+    * Ramp's application/configs/application.ini file should be
+      protected, but must be readable by the web server.  The best
+      way to achieve this could be, for example, to have the
+      application.ini owned by the database administrator but part
+      of the same group as the httpd web server (or vice versa).
 
 Basics:
   -- Customize timezone if necessary (phpSettings.date.timezone).
@@ -84,6 +84,10 @@ Ramp Basics:
 Customizing for the Application:
   -- Authorization:  See separate section on defining roles, resources,
      and authorization rules!
+
+  -- Customize documentation root (optional: will use settings directory
+     otherwise).  Customize settings directory (may need to override
+     this in some environments -- see below).
 
 Customizing for various Environments/Databases:
   -- [Development environments only]: Allow system (PHP/Zend) errors

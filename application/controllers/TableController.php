@@ -56,7 +56,7 @@ class TableController extends Zend_Controller_Action
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
-    protected $_controllerName = 'table';
+    protected $_controllerName;
 
     protected $_encodedSeqName;
 
@@ -77,22 +77,23 @@ class TableController extends Zend_Controller_Action
     /**
      * Initializes the attributes for this object as well as some
      * values commonly used by the associated view scripts.
-     *
      */
     public function init()
     {
         // Get the sequence information (types of table settings to use).
-        $this->_encodedSeqName = $this->_getParam(self::SETTING_NAME, "");
-        $seqName = urldecode($this->_encodedSeqName);
+        $seqName =
+            Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
+        $this->_encodedSeqName = urlencode($seqName);
         $this->_tblViewingSeq = $seq =
                 Application_Model_TVSFactory::getSequenceOrSetting($seqName);
 
-        // Get and store parameters for possible future use.
+        // Get and store other parameters for possible future use.
         $this->_buttonAction = $this->_getParam(self::SUBMIT_BUTTON);
         $this->_searchType = $this->_getParam(self::SEARCH_TYPE);
         $this->_fieldsToMatch = $this->_getFieldsToMatch();
 
         // Set the basic parameters to build on when going to other actions.
+        $this->_controllerName = $this->getRequest()->getControllerName();
         $this->_baseParams = array('controller' => $this->_controllerName,
                        self::SETTING_NAME => $this->_encodedSeqName);
 
@@ -115,7 +116,6 @@ class TableController extends Zend_Controller_Action
      * Provides a gateway to this set of actions.  Chooses the actual 
      * action to take based on the initial action defined for this table 
      * setting.
-     *
      */
     public function indexAction()
     {
@@ -125,7 +125,6 @@ class TableController extends Zend_Controller_Action
     /**
      * Controls the search action, presenting a new page in which
      * to add values to match against.
-     *
      */
     public function searchAction()
     {
@@ -238,7 +237,6 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Provides a list view of table records (usually search results).
-     *
      */
     public function listViewAction()
     {
@@ -266,7 +264,6 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Provides a tabular view of table records.
-     *
      */
     public function tableViewAction()
     {
@@ -296,7 +293,6 @@ class TableController extends Zend_Controller_Action
      *
      * Precondition: this action should only be invoked when the 
      * provided parameters uniquely identify a single record.
-     *
      */
     public function recordViewAction()
     {
@@ -335,7 +331,6 @@ class TableController extends Zend_Controller_Action
      *
      * Precondition: this action should only be invoked when the 
      * parameters provided uniquely identify a single record.
-     *
      */
     public function recordEditAction()
     {
@@ -383,7 +378,6 @@ class TableController extends Zend_Controller_Action
     /**
      * Controls the Table add action, presenting a new page in which
      * to add a new entry to the table.
-     *
      */
     public function addAction()
     {
@@ -449,7 +443,6 @@ class TableController extends Zend_Controller_Action
      * that only confirmed delete requests get to the server.  In that 
      * case, processing of deletion requests would probably move to the 
      * appropriate display or edit actions.
-     *
      */
     public function deleteAction()
     {
@@ -513,7 +506,6 @@ class TableController extends Zend_Controller_Action
      *
      * @param Application_Model_SetTable  table: setting & db info
      * @return string       error message (or empty string if no error)
-     *
      */
     protected function _getExtraneousFieldsErrorMsg($setTable)
     {
@@ -538,7 +530,6 @@ class TableController extends Zend_Controller_Action
      * display for the current action.  A return of false, therefore, 
      * indicates that the current request represents the callback with 
      * fields to add, modify, or search filled in.
-     *
      */
     protected function _thisIsInitialDisplay()
     {
@@ -615,7 +606,6 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Gets the action usually associated with the given button.
-     *
      */
     protected function _getUsualAction($buttonLabel)
     {
@@ -633,7 +623,6 @@ class TableController extends Zend_Controller_Action
      * to use in database queries.
      *
      * @return array    name=>value pairs passed as params
-     *
      */
     protected function _getFieldsToMatch()
     {

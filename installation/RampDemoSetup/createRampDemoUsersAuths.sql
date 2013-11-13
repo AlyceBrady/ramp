@@ -94,7 +94,7 @@ DROP TABLE IF EXISTS `ramp_auth_auths`;
 CREATE TABLE `ramp_auth_auths` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role` varchar(100) NOT NULL,
-  `resource_type` enum('Activity','Report','Table') NOT NULL,
+  `resource_type` enum('Activity','Document','Report','Table') NOT NULL,
   `resource_name` varchar(100) NOT NULL,
   `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords')
         NOT NULL DEFAULT 'View'
@@ -107,6 +107,7 @@ LOCK TABLES `ramp_auth_auths` WRITE;
 INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
 ('guest','Activity','PublicActivities','All')
+, ('guest','Document','PublicActivities/rampAbout.md','All')
 , ('guest','Activity','rampDemo','All')
 , ('guest','Table','albums','View')
 , ('guest','Report','places','View')

@@ -1,12 +1,7 @@
 <?php
 
-// This is a quick first pass at a controller that will control access 
-// to static documents (e.g., plain text or documents in HTML, 
-// Markdown, or other formats).
-
-// This controller is not currently used -- instead, static documents 
-// must be created as activity lists with a single activity whose type 
-// is "html" and then the ActivityController is handling those.
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
 
 /**
  * RAMP: Records and Activity Management Program
@@ -28,27 +23,111 @@
 
 class DocumentController extends Zend_Controller_Action
 {
-    const DOCUMENT_KEYWORD = 'document';
+    protected $_document;
+    protected $_contents;
 
+    /**
+     * Initializes attributes for this object.
+     */
     public function init()
     {
+        // Get the document associated with the name passed as a parameter.
+        $docName =
+            Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
+        $this->_document = $this->_getDocumentFilename($docName);
+        $this->_contents = file_get_contents($this->_document);
     }
 
+    /**
+     * Acts on a Document.
+     */
     public function indexAction()
     {
-        // Get the document file associated with the name passed as a 
-        // parameter.
-        $rawDocFilename = $this->_getParam(self::DOCUMENT_KEYWORD);
-        $documentFilename = urldecode($rawDocFilename);
-        // TODO: Should use a different gateway and different access function.
-        $gateway = new Application_Model_ActivityGateway();
-        $contents = $gateway->getActivityList($documentFilename);
-
-        // This is not a dynamic page, so don't have to differentiate 
-        // between the initial display or a callback from a button action.
+        // Determine whether this is an HTML file (which does not need 
+        // special processing), a Markdown file (which needs to be 
+        // transformed to HTML), or plain text (which needs to be put in 
+        // <PRE> tags in case line breaks are important).
+        // Assumption:  all files are either HTML, Markdown, or plain text.
+        if ( $this->_isHtml($this->_document) )
+        {
+            // do nothing
+        }
+        else if ( $this->_isMarkdown($this->_document) )
+        {
+            $this->_contents = Markdown::defaultTransform($this->_contents);
+        }
+        else
+        {
+            $this->_contents = "<PRE>\n" . $this->_contents . "\n</PRE>\n";
+        }
 
         // Make the document contents available to the View Renderer.
-        $this->view->pageContents = $contents;
+        $this->view->pageContents = $this->_contents;
+    }
+
+    /**
+     * Resolves the document filename to a pathname within the document
+     * root directory.
+     *
+     * @param  string $name name passed to the Document Controller
+     * @return string       the file's full pathname
+     */
+    protected function _getDocumentFilename($name)
+    {
+        // Determine the filename, based on system path and $name.
+        $dir = $this->_getDocumentRootDirectory();
+        $docFile = $dir .  DIRECTORY_SEPARATOR .  $name;
+        if ( ! file_exists($docFile) )
+        {
+            throw new Exception('Missing file: ' .  $docFile);
+        }
+        return $docFile;
+    }
+
+    /**
+     * Gets the root directory being used for documentation files.
+     *
+     * @return string   directory path
+     *
+     */
+    protected function _getDocumentRootDirectory()
+    {
+        // Get the document root directory from Zend_Registry.  If none is 
+        // found, use the settings root directory.
+        $path = 
+            Zend_Registry::isRegistered('rampDocumentRoot') ?
+                Zend_Registry::get('rampDocumentRoot') :
+                null;
+
+        $path = $path ? :
+                    Application_Model_RampIniReader::getSettingsDirectory();
+
+        return $path;
+    }
+
+    /**
+     * Determine whether this is an HTML file.
+     */
+    protected function _isHtml($filename)
+    {
+        $path_parts = pathinfo($filename);
+        $fileExtension = isset($path_parts['extension']) ?
+                                    $path_parts['extension'] : "";
+        $fileExtension = strtolower($fileExtension);
+        return ( $fileExtension == 'htm' || $fileExtension == 'html' );
+    }
+
+    /**
+     * Determine whether this is a Markdown file.
+     */
+    protected function _isMarkdown($filename)
+    {
+        $path_parts = pathinfo($filename);
+        $fileExtension = isset($path_parts['extension']) ?
+                                    $path_parts['extension'] : "";
+        $fileExtension = strtolower($fileExtension);
+        return ( $fileExtension == 'md' || $fileExtension == 'mdown' ||
+                 $fileExtension == 'markdown' || $fileExtension == 'mkd' );
     }
 
 }

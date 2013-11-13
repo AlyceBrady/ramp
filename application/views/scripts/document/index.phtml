@@ -1,13 +1,3 @@
-<?php
-// This script is not currently used.  Instead, static documents must be 
-// formatted as activity lists with a single activity whose type is "html".
-?>
-
-<div id='activityPage'>
-
-<?php
-$pageContents = reset($this->pageContents);
-echo $pageContents->getHTML();
-?>
-
+<div id='documentPage'>
+<?php echo $this->pageContents; ?>
 </div>

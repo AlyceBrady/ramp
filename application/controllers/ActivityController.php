@@ -20,23 +20,36 @@
 
 class ActivityController extends Zend_Controller_Action
 {
-    const SETTING_KEYWORD = '_setting';  // TODO: should use one in TableController!
-    const AL_KEYWORD = 'activity';
+    // Valid controller types
+    const DOC_CONTROLLER = Ramp_Controller_KeyParameters::DOC_CONTROLLER;
+    const REP_CONTROLLER = Ramp_Controller_KeyParameters::REP_CONTROLLER;
+    const TBL_CONTROLLER = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
 
-    protected $_actListName;
+    // Keywords for sending parameters to controller/action combinations
+    const AL_PARAM        = Ramp_Controller_KeyParameters::ACT_KEY_PARAM;
+    const DOC_PARAM       = Ramp_Controller_KeyParameters::DOC_KEY_PARAM;
+    const SETTING_PARAM   = Ramp_Controller_KeyParameters::SETTING_PARAM;
 
+    protected $_actSpecName;
+
+    /**
+     * Initializes attributes for this object.
+     */
     public function init()
     {
-        // Get the activity list associated with the name passed as a 
-        // parameter.
-        $rawActivityName = $this->_getParam(self::AL_KEYWORD);
-        $this->_activityListName = urldecode($rawActivityName);
+        // Get the activity specification associated with the name
+        // passed as a  parameter.
+        $this->_actSpecName =
+            Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
     }
 
+    /**
+     * Acts on an Activity specification or list.
+     */
     public function indexAction()
     {
         $gateway = new Application_Model_ActivityGateway();
-        $actList = $gateway->getActivityList($this->_activityListName);
+        $actList = $gateway->getActivityList($this->_actSpecName);
 
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
@@ -44,18 +57,34 @@ class ActivityController extends Zend_Controller_Action
             // Make the activity list available to the View Renderer.
             $this->view->activityList = $actList;
             $this->view->activityTitle = 
-                    $gateway->getActivityListTitle($this->_activityListName);
+                    $gateway->getActivityListTitle($this->_actSpecName);
         }
         else        // Callback based on a button action.
         {
-            // The selected activity name is the only parameter being 
-            // posted.
+            // The selected activity name is the only parameter that
+            // was posted.
             $postParamNames = array_keys($this->getRequest()->getPost());
             $activity = $actList[$postParamNames[0]];
             $type = $activity->getType();
 
             switch ( $type )
             {
+                case Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE :
+                    $this->_redirectToSource(null, 'index', self::AL_PARAM,
+                                             $activity);
+                    break;
+                case Application_Model_ActivitySpec::SETTING_TYPE :
+                    $this->_redirectToSource(self::TBL_CONTROLLER, 'index',
+                                             self::SETTING_PARAM, $activity);
+                    break;
+                case Application_Model_ActivitySpec::REPORT_TYPE :
+                    $this->_redirectToSource(self::REP_CONTROLLER, 'index',
+                                             self::SETTING_PARAM, $activity);
+                    break;
+                case Application_Model_ActivitySpec::DOCUMENT_TYPE :
+                    $this->_redirectToSource(self::DOC_CONTROLLER, 'index',
+                                             self::DOC_PARAM, $activity);
+                    break;
                 case Application_Model_ActivitySpec::URL_TYPE :
                     $this->_redirect($activity->getUrl());
                     break;
@@ -64,19 +93,6 @@ class ActivityController extends Zend_Controller_Action
                             $activity->getAction(), $activity->getController(),
                             null, $activity->getParameters());
                     break;
-                case Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE :
-                    $this->_redirectToSource(null, 'index', self::AL_KEYWORD, $activity);
-                    break;
-                case Application_Model_ActivitySpec::SETTING_TYPE :
-                    $this->_redirectToSource('table', 'index',
-                                             self::SETTING_KEYWORD, $activity);
-                    break;
-
-                case Application_Model_ActivitySpec::REPORT_TYPE :
-                    $this->_redirectToSource('report', 'index',
-                                             self::SETTING_KEYWORD, $activity);
-                    break;
-
             }
         }
     }
@@ -85,7 +101,8 @@ class ActivityController extends Zend_Controller_Action
      * Redirects to a controller and activity based on the source provided.
      *
      */
-    protected function _redirectToSource($controller, $action, $keyword, $activity)
+    protected function _redirectToSource($controller, $action, $keyword,
+                                         $activity)
     {
         $source = $activity->getSource();
         $source = urlencode($source);

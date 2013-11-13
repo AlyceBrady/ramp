@@ -34,6 +34,7 @@ class Ramp_Acl extends Zend_Acl
 
     const DELIM = '::';              // Delimiter separating resource sections
     const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
+    const DOCUMENT_PREFIX = 'document::index'; // Start of Activity resources
 
     const USERS_TABLE = 'ramp_auth_users';
     const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';
@@ -156,15 +157,13 @@ class Ramp_Acl extends Zend_Acl
             $this->_addResources($aclResources);
         }
 
-        // Add activity directory resources derived from the database.
-        $this->_addResources($this->_authInfo->getActivityResources());
+        // Add resources derived from authorization rules in the database.
+        $this->_addResources($this->_authInfo->getResources());
 
-        // Add table and report resources derived from the database.
-        $this->_addResources($this->_authInfo->getTableResources());
 
         /* ASSIGNING RESOURCES TO ROLES */ 
 
-        // Identify minimal resources available to anyone (even guests)
+        // Identify minimal resources available to anyone (even guests).
         $this->_establishMinimalAuthorizations();
 
         // Add rules defined in the Registry.
@@ -184,9 +183,8 @@ class Ramp_Acl extends Zend_Acl
             }
         }
 
-        // // Add authorization rules in the database.
-        $this->_addRules($this->_authInfo->getActivityAccessRules());
-        $this->_addRules($this->_authInfo->getTableAccessRules());
+        // Add authorization rules in the database.
+        $this->_addRules($this->_authInfo->getAccessRules());
 
     }
 
@@ -253,6 +251,9 @@ class Ramp_Acl extends Zend_Acl
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));
 
+        // DOCUMENT CONTROLLER: all actions
+        $this->add(new Zend_Acl_Resource('document::index'));
+
         // BUILT-IN TABLES:
         // Get a list of all Table controller actions.
         $actions = self::createCategoryConverter();
@@ -263,6 +264,7 @@ class Ramp_Acl extends Zend_Acl
             $resourceName = "table::$action::" . self::AUTHORIZATIONS_TABLE;
             $this->add(new Zend_Acl_Resource($resourceName));
         }
+
     }
 
     /**
