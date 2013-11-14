@@ -638,7 +638,14 @@ class TableController extends Zend_Controller_Action
                                 self::SEARCH_TYPE => null);
 
         // Return an array that does not include those parameters.
-        return array_diff_key($request->getUserParams(), $paramsToRemove);
+        $fieldsToMatch = array();
+        $userParams = array_diff_key($request->getUserParams(),
+                                     $paramsToRemove);
+        foreach ( $userParams as $key => $val )
+        {
+            $fieldsToMatch[urldecode($key)] = urldecode($val);
+        }
+        return $fieldsToMatch;
     }
 
     /**
@@ -654,10 +661,17 @@ class TableController extends Zend_Controller_Action
     {
         // Build up parameters to pass to next action.
         $params = array(self::SETTING_NAME => $this->_encodedSeqName);
-        if ( $matchingFields != null )
-            $params += $matchingFields;
         if ( $includeSearchType )
+        {
             $params[self::SEARCH_TYPE] = $this->_searchType;
+        }
+        if ( $matchingFields != null )
+        {
+            foreach ( $matchingFields as $key => $val )
+            {
+                $params[urlencode($key)] = urlencode($val);
+            }
+        }
 
         $this->_helper->redirector($nextAction, $this->_controllerName,
                                    null, $params);
