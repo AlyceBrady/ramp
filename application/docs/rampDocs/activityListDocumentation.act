@@ -2,7 +2,13 @@
 ; An activity file may contain a single activity specification, a list
 ; of activity specifications, or even multiple activity specification
 ; lists.  A single list, though, is the most common form of activity
-; file.
+; file.  The file may also contain an optional heading, such as
+;   activityListHeading = "Choose a table:"
+; or
+;   activityListHeading = "Choose a file or activity:"
+; When no heading is provided, the heading will default to "Choose an
+; activity:".
+
 
 ; ACTIVITY SCPECIFICATION LISTS:
 ; An activity specification list defines a list of activities, in
@@ -93,7 +99,7 @@ i; activities (Style 1), deferred specifications (Style 2), and unnamed
 ;       -- description: a description (should not go beyond a line or two)
 ;       -- controller:
 ;       -- action:
-;       -- parameter:   [key1=param1&key2=param2 format]
+;       -- parameter:   [URL-style key1=param1&key2=param2 format]
 ;       [This type requires knowledge of the application code.]
 
 ; Note: If an activity file contains multiple activity lists, one must

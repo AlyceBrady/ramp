@@ -38,7 +38,7 @@ class ActivityController extends Zend_Controller_Action
     public function init()
     {
         // Get the activity specification associated with the name
-        // passed as a  parameter.
+        // passed as a parameter.
         $this->_actSpecName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
     }
@@ -104,8 +104,7 @@ class ActivityController extends Zend_Controller_Action
     protected function _redirectToSource($controller, $action, $keyword,
                                          $activity)
     {
-        $source = $activity->getSource();
-        $source = urlencode($source);
+        $source = urlencode($activity->getSource());
         $this->_helper->redirector($action, $controller, null,
                                    array($keyword => $source));
     }

@@ -22,6 +22,7 @@
  */
 class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
 {
+
     /**
      * Take care of any items to do before the actual dispatch:
      *      Check that the user is authorized to do this action.
@@ -44,7 +45,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         // Determine what resource is being requested.
         $requestedResource = $this->_getResource($request, $acl);
 
-        // Store Zend redirector for future use.
+        // Store Zend redirector for use in errors.
         $zendRedirector = $this->_getRedirector();
 
         // Check whether the current user is authorized for the 
@@ -59,17 +60,13 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
             $mysession->destination_url = $request->getPathInfo();
             if ( ! $auth->hasIdentity() || ! is_object($auth->getIdentity()) )
             {
-                // Not an authenticated user -- set the url accordingly.
+                // Not an authenticated user -- need to log in.
                 return $zendRedirector->setGotoUrl('auth/login');
             }
             else
             {
-                // Not allowed -- set the url accordingly.
-    throw new Exception("I'm here");
-                $params = array('details' => $requestedResource);
-                $zendRedirector = $this->_getRedirector();
-                return $zendRedirector->setGotoSimple('unauthorized', 'auth',
-                                                      null, $params);
+                // Not authorized -- report.
+                $this->_reportUnauthorized($requestedResource);
             }
         }
 
@@ -85,46 +82,67 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
     protected function _getResource(Zend_Controller_Request_Abstract $request,
                                     Zend_Acl $acl)
     {
-        // Construct the requestedResource from the controller, action,
-        // and possibly the activity or table.
-        $controllerName = $request->getControllerName();
-        $requestedResource = $controllerName . Ramp_Acl::DELIM
-                              . $request->getActionName();
-        $keyParam = Ramp_Controller_KeyParameters::getKeyParam($request);
+        // Start with controller and action.
+        $controller = $request->getControllerName();
+        $resource = $controller . Ramp_Acl::DELIM . $request->getActionName();
 
-        if ( $controllerName == 'activity' )
+        // Add activity, document, or table/report details.
+        $param = Ramp_Controller_KeyParameters::getKeyParam($request);
+        if ( $controller == Ramp_Controller_KeyParameters::ACT_CONTROLLER )
         {
-            $requestedResource .= Ramp_Acl::DELIM . dirname($keyParam);
+            $resource .= Ramp_Acl::DELIM . dirname($param);
         }
-        else if ( $controllerName == 'table' || $controllerName == 'report' )
+        else if ( $controller == Ramp_Controller_KeyParameters::TBL_CONTROLLER
+               || $controller == Ramp_Controller_KeyParameters::REP_CONTROLLER )
         {
-            $tblViewingSeq =
-                Application_Model_TVSFactory::getSequenceOrSetting($keyParam);
-            $setTable = $tblViewingSeq->getSetTableForViewing();
-            $requestedResource .= Ramp_Acl::DELIM . $setTable->getDbTableName();
+            try
+            {
+                $tblViewingSeq =
+                    Application_Model_TVSFactory::getSequenceOrSetting($param);
+                $setTable = $tblViewingSeq->getSetTableForViewing();
+                $resource .= Ramp_Acl::DELIM . $setTable->getDbTableName();
+            }
+            catch (Exception $e)
+            {
+                $resource .= Ramp_Acl::DELIM . $param;
+                $this->_reportUnauthorized($resource);
+            }
         }
-        else if ( $controllerName == 'document' )
+        else if ( $controller == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
         {
-            $requestedResource .= Ramp_Acl::DELIM . $keyParam;
+            $resource .= Ramp_Acl::DELIM . $param;
         }
 
         // Check that the requested resource is a defined resource.
-        if ( ! $acl->has($requestedResource) )
+        if ( ! $acl->has($resource) )
         {
             // Accessing an undefined resource is an unauthorized access.
-            $params = array('details' => $requestedResource);
-            $zendRedirector = $this->_getRedirector();
-            return $zendRedirector->setGotoSimple('unauthorized', 'auth',
-                                                  null, $params);
+            $this->_reportUnauthorized($resource);
         }
 
-        return $requestedResource;
+        return $resource;
     }
 
+    /**
+     * Report unauthorized attempt to use resource.
+     *
+     * @param  resource  undefined resource or one user is unauthorized to use
+     */
+    protected function _reportUnauthorized($resource)
+    {
+        $params = array('details' => urlencode($resource));
+        $zendRedirector = $this->_getRedirector();
+        $zendRedirector->setGotoSimple('unauthorized', 'auth', null, $params);
+    }
+
+    /**
+     * Get Zend redirector for situations where user is not authorized 
+     * to do their requested action.
+     */
     protected function _getRedirector()
     {
-        return
-            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+        return Zend_Controller_Action_HelperBroker::
+                                            getStaticHelper('redirector');
     }
 
 }

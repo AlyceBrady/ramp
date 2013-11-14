@@ -41,17 +41,6 @@ class IndexController extends Zend_Controller_Action
     {
         /* Initialize action controller here */
 
-        /* Doesn't work!!!
-        // Make sure that TableController has been loaded, so that this 
-        // controller can use its constants for inter-controller 
-        // communication.
-        if ( ! class_exists('TableController') )
-        {
-            require_once 'Zend/Loader.php';
-            Zend_Loader::loadClass('TableController');
-        }
-         */
-
         // Get various applications variables from Zend_Registry.
         if ( Zend_Registry::isRegistered(self::CONFIG_SETTINGS) )
         {
@@ -93,6 +82,8 @@ class IndexController extends Zend_Controller_Action
         }
 
 // $this->_getAuthDebuggingInfo();
+// $this->view->authDebugging .= "<blockquote><b>Request</b>: " .
+//      print_r($this->getRequest(), true) . "</blockquote>";
 
     }
 

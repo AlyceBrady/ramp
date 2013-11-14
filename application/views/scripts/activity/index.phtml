@@ -20,44 +20,45 @@ $heading = $userSpecifiedHeading ? : "Choose an activity:";
 
 <?php if ( $heading != "" ) echo "<h1>$heading</h1>" ?>
 
-<?php /* echo $this->form; */ ?>
-
 
 <form id='activityList' action='' method='post'>
 <dl>
 
 <?php
-foreach ( $this->activityList as $key => $activity )
+if ( isset($this->activityList) && is_array($this->activityList) )
 {
-    switch ($activity->getType())
+    foreach ( $this->activityList as $key => $activity )
     {
-        case Application_Model_ActivitySpec::COMMENT_TYPE:
-                $comment = $this->escape($activity->getComment());
-                echo "<dt class='comment'>" . 
-                    Markdown::defaultTransform($comment) .
-                     "</dt><dd></dd>\n";
-                break;
-        case Application_Model_ActivitySpec::SEPARATOR_TYPE:
-                echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
-                break;
-        default:        // SETTING and ACTIVITY_LIST types
-                // Get and format title for button.
-                $title = $this->escape($activity->getTitle());
-                // $title = Markdown::defaultTransform($title);
+        switch ($activity->getType())
+        {
+            case Application_Model_ActivitySpec::COMMENT_TYPE:
+                    $comment = $this->escape($activity->getComment());
+                    echo "<dt class='comment'>" . 
+                        Markdown::defaultTransform($comment) .
+                         "</dt><dd></dd>\n";
+                    break;
+            case Application_Model_ActivitySpec::SEPARATOR_TYPE:
+                    echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
+                    break;
+            default:        // SETTING and ACTIVITY_LIST types
+                    // Get and format title for button.
+                    $title = $this->escape($activity->getTitle());
+                    // $title = Markdown::defaultTransform($title);
 
-                // Get and format description.
-                $desc = $this->escape($activity->getDescription());
-                $desc = Markdown::defaultTransform($desc);
-                if ( ( strpos($desc, '<p>') === 0 ) &&
-                     ( strrpos($desc, '</p>') === (strlen($desc) - 5) ) )
-                {
-                    // strip off beginning/end paragraph
-                    $desc = substr($desc, 3, -5);
-                }
+                    // Get and format description.
+                    $desc = $this->escape($activity->getDescription());
+                    $desc = Markdown::defaultTransform($desc);
+                    if ( ( strpos($desc, '<p>') === 0 ) &&
+                         ( strrpos($desc, '</p>') === (strlen($desc) - 5) ) )
+                    {
+                        // strip off beginning/end paragraph
+                        $desc = substr($desc, 3, -5);
+                    }
 
-                echo "<dt><input type='submit'  name='$key' id='$key' " .
-                    "class='button' " .  "value='" . $title . "'></dt>\n";
-                echo "<dd>" . $desc . "</dd>\n";
+                    echo "<dt><input type='submit'  name='$key' id='$key' " .
+                        "class='button' " .  "value='" . $title . "'></dt>\n";
+                    echo "<dd>" . $desc . "</dd>\n";
+        }
     }
 }
 

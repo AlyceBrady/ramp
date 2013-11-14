@@ -32,7 +32,6 @@ class Application_Model_ActivitySpec
     const SOURCE        = "source";
     const TITLE         = "title";
     const DESCRIPTION   = "description";
-    const TEXT          = "text";
     const CONTROLLER    = "controller";
     const ACTION        = "action";
     const PARAMETER     = "parameter";
@@ -46,8 +45,6 @@ class Application_Model_ActivitySpec
     const SEQUENCE_TYPE             = "sequence";
     const REPORT_TYPE               = "report";
     const CONTROLLER_ACTION_TYPE    = "controllerAction";
-    const HTML_TYPE                 = "html";
-    const MD_TYPE                   = "markdown";
     const DOCUMENT_TYPE             = "document";
     const URL_TYPE                  = "url";
 
@@ -73,8 +70,7 @@ class Application_Model_ActivitySpec
     protected $_validSpecTypes = array(
         self::COMMENT_TYPE, self::SEPARATOR_TYPE, self::ACTIVITY_LIST_TYPE,
         self::SETTING_TYPE, self::SEQUENCE_TYPE, self::REPORT_TYPE,
-        self::CONTROLLER_ACTION_TYPE, self::HTML_TYPE, self::MD_TYPE,
-        self::DOCUMENT_TYPE, self::URL_TYPE);
+        self::CONTROLLER_ACTION_TYPE, self::DOCUMENT_TYPE, self::URL_TYPE);
 
     /**
      * Constructs an ActivitySpec object using the information provided 
@@ -126,11 +122,6 @@ class Application_Model_ActivitySpec
             case self::COMMENT_TYPE:
                 $this->_description =
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
-                break;
-            case self::HTML_TYPE:
-            case self::MD_TYPE:
-                $this->_description =
-                        $this->_confirmProperty(self::TEXT, $specAsArray);
                 break;
             case self::SETTING_TYPE:
             case self::REPORT_TYPE:
@@ -246,24 +237,6 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Checks whether the "activity" is actually HTML text.
-     *
-     */
-    public function isHTML()
-    {
-        return $this->_type == self::HTML_TYPE;
-    }
-
-    /**
-     * Checks whether the "activity" is actually Markdown text.
-     *
-     */
-    public function isMarkdown()
-    {
-        return $this->_type == self::MD_TYPE;
-    }
-
-    /**
      * Checks whether the "activity" is a controller/action combination.
      *
      */
@@ -352,16 +325,6 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Gets the value specified with the text property.  Returns an 
-     * empty string if no value was specified for this property.
-     *
-     */
-    public function getText()
-    {
-        return $this->_description;
-    }
-
-    /**
      * Gets the value specified with the controller property.  Returns a
      * null if no value was specified for this property.
      *
@@ -397,6 +360,12 @@ class Application_Model_ActivitySpec
         foreach ( $paramAssignments as $paramAssignment )
         {
             $item = explode('=', $paramAssignment);
+            if ( count($item) != 2 )
+            {
+                throw new Exception("Error: '" . $this->getType() .
+                    "' activity with title '" . $this->getTitle() .
+                    "' has a badly-formatted parameter property.");
+            }
             $params[$item[0]] = urlencode($item[1]);
         } 
         return $params;

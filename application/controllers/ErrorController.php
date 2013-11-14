@@ -7,7 +7,7 @@ class ErrorController extends Zend_Controller_Action
     {
         $errors = $this->_getParam('error_handler');
         
-        if ( !$errors || !$errors instanceof ArrayObject )
+        if ( ! $errors || ! $errors instanceof ArrayObject )
         {
             $this->view->message = 'You have reached the error page';
             return;
@@ -54,7 +54,7 @@ class ErrorController extends Zend_Controller_Action
     {
         $bootstrap = $this->getInvokeArg('bootstrap');
         // if ( ! isset($bootstrap) || !$bootstrap->hasResource('Log') )
-        if ( !$bootstrap->hasResource('Log') )
+        if ( ! $bootstrap->hasResource('Log') )
         {
             return false;
         }

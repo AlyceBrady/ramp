@@ -126,8 +126,8 @@ class AuthController extends Zend_Controller_Action
     public function unauthorizedAction()
     {
         // See if specific information was passed as a parameter.
-        $resource = $this->_getParam(self::DETAILS, "");
-        $resourceName = $this->_formatResourceName($resource);
+        $resource = urldecode($this->_getParam(self::DETAILS, ""));
+        $resourceName = $this->_formatUnauthResourceName($resource);
 
         $this->view->errorMsg =
                 'Sorry, you are not authorized to perform this action';
@@ -145,7 +145,8 @@ class AuthController extends Zend_Controller_Action
     public function initPasswordAction()
     {
         // Get the username.
-        $this->view->username = $username = $this->_getParam(self::USERNAME);
+        $this->view->username = $username =
+                        urldecode($this->_getParam(self::USERNAME));
 
         // Instantiate the form that prompts user for new password.
         $form = new Application_Form_SetPasswordForm();
@@ -440,7 +441,7 @@ class AuthController extends Zend_Controller_Action
         if ( $authAdapter->needsPassword() )
         {
             $this->_helper->redirector('init-password', 'auth', null,
-                        array(self::USERNAME => $username));
+                        array(self::USERNAME => urlencode($username)));
         }
 
         return $authAdapter;
@@ -451,21 +452,32 @@ class AuthController extends Zend_Controller_Action
      *
      * @param $resourceSpec  full resource specification
      */
-    protected function _formatResourceName($resourceSpec)
+    protected function _formatUnauthResourceName($resourceSpec)
     {
         // Get the various components of a full resource spec.  If it 
         // doesn't have the expected components, return full spec.
         $components = explode(Ramp_Acl::DELIM, $resourceSpec);
         if ( count($components) != 3 )
         {
-            return $resourceSpec;
+            return 'Resource: ' . $resourceSpec;
         }
 
         // Return the resource type plus either the second or third
-        // component, depending on the  resource type.
-        return ( $components[0] == 'Table' || $components[0] == 'Report' ?
-                    $components[1] : $components[2] ) .
-               ' ' .  $components[0];
+        // component, depending on the resource type.
+        if ( $components[0] == Ramp_Controller_KeyParameters::ACT_CONTROLLER )
+        {
+            return 'activities in ' . $components[2] . ' directory';
+        }
+        if ( $components[0] == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
+        {
+            return $components[2] . ' document';
+        }
+        if ( $components[0] == Ramp_Controller_KeyParameters::TBL_CONTROLLER ||
+             $components[0] == Ramp_Controller_KeyParameters::REP_CONTROLLER )
+        {
+            return $components[0] . ' in setting ' . $components[2];
+        }
+        return 'Resource: ' . $resourceSpec;
     }
 
     /**

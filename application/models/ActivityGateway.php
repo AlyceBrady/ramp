@@ -225,7 +225,6 @@ class Application_Model_ActivityGateway
             $objectList[$specName] = $validSpecObj;
         }
 
-        // return $objectList;
         $this->_listOfActivityLists[$name][self::ACT_LIST] = $objectList;
         $this->_listOfActivityLists[$name][self::ACT_TITLE] = $title;
     }
