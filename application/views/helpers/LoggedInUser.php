@@ -48,7 +48,6 @@ class Zend_View_Helper_LoggedInUser
 
             $string = 'Logged in as ' . $username .  ' |' .  $changePW .
                 '<a href=' . $logoutURL . '>Log out</a>';
-           /* '<a href=' . $changepwURL . '>Change password</a>' . ' |' . */
         }
         else
         {

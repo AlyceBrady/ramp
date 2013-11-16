@@ -21,9 +21,6 @@
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: AuthController.php 1 2012-07-12 alyce $
- * @version    $Id: AuthController.php 1 2012-11-28 Justin, Chris Cain, Alyce $
- * @version    $Id: AuthController.php 1 2013-11-3 Alyce $
  *
  */
 class AuthController extends Zend_Controller_Action
@@ -32,13 +29,12 @@ class AuthController extends Zend_Controller_Action
     const AUTH_TYPE          = 'rampAuthenticationType';
     const INTERNAL_AUTH_TYPE = 'internal';
 
-    /* Keywords related to accessing the Users table. */
+    /* Keywords related to accessing the Users table and related form. */
     const USERS_TABLE       = Ramp_Acl::USERS_TABLE;
-    const USERNAME          = 'username';
-    const PASSWORD          = 'password';
-    const IS_ACTIVE         = 'active = "TRUE"';
+    const USERNAME          = Application_Model_DbTable_Users::USERNAME;
+    const PASSWORD          = Application_Model_DbTable_Users::PASSWORD;
 
-    /* Keywords related to initializing a password. */
+    /* Form keywords related to initializing a password. */
     const NEW_PW            = 'new_password';
     const CONFIRMED_PW      = 'confirm_password';
 
@@ -391,10 +387,11 @@ class AuthController extends Zend_Controller_Action
         $result = $auth->authenticate($authAdapter);
         if ( $result->isValid() )
         {
-            // Get everything except the password, and store it for a
-            // persistent identity.
+            // Get everything except the password, and save it as
+            // persistent identity.  Apply other identity-related 
+            // customizations.
             $data = $authAdapter->getResultRowObject(null, self::PASSWORD);
-            $auth->getStorage()->write($data);
+            $this->_customizeForUser($auth, $data);
             return true;
         }
 
@@ -448,7 +445,28 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Format resource name from full resource specification.
+     * Customizes environment for user.
+     */
+    protected function _customizeForUser($auth, $userData)
+    {
+        // Store user-specific information for session.
+        $data = $userData;
+
+        // Determine appropriate menu for this user's role.
+        $configs = Application_Model_RampConfigs::getInstance();
+        $menu = $configs->getMenu($userData->role);
+        if ( ! file_exists($menu) )
+        {
+            $menu = $configs->getDefaultMenu();
+        }
+        $data->menuFilename = $menu;
+
+        // Store user-specific information for session.
+        $auth->getStorage()->write($data);
+    }
+
+    /**
+     * Formats resource name from full resource specification.
      *
      * @param $resourceSpec  full resource specification
      */

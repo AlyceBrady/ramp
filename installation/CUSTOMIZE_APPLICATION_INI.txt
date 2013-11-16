@@ -89,6 +89,18 @@ Customizing for the Application:
      otherwise).  Customize settings directory (may need to override
      this in some environments -- see below).
 
+  -- Menus (here or in next section?): ramp.menuFilename provides a
+     single menu for all users (including ones who are not logged in).
+     It's possible, though, to create different menus for different
+     roles, e.g., ramp.roleBasedMenus['guest'] = ".../guestMenu.ini" and
+     ramp.roleBasedMenus['ramp_dba'] = ".../dbaMenu.ini".  If there is
+     no role-based menu for the user's role, then RAMP will use the
+     menuFilename property.  [ TODO: a) Don't remember what RAMP does if
+     menuFilename is undefined.  b) What if there is no role-based menu
+     for user's role, but there is one for a role from which the user's
+     role inherits? Too bad -- multiple inheritance makes that too
+     complicated. ]
+
 Customizing for various Environments/Databases:
   -- [Development environments only]: Allow system (PHP/Zend) errors
      to be displayed when running a development environment.

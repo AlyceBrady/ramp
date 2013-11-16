@@ -27,28 +27,22 @@ class IndexController extends Zend_Controller_Action
     const CONFIG_SETTINGS = "rampConfigSettings";
     const TITLE = "title";
     const SUBTITLE = "subtitle";
-    const MENU_FILENAME = "menuFilename";
     const INITIAL_ACTIVITY = "initialActivity";
     const STYLE_SHEET = "css";
     const TAB_TITLE = "applicationShortName";
     const ICON = "icon";
 
     // Define instance variables that hold basic configuration variables.
-    protected $_menuFilename = null;
     protected $_initialActivity = null;
 
     public function init()
     {
         /* Initialize action controller here */
 
-        // Get various applications variables from Zend_Registry.
+        // Get various application variables from Zend_Registry.
         if ( Zend_Registry::isRegistered(self::CONFIG_SETTINGS) )
         {
             $configSettings = Zend_Registry::get(self::CONFIG_SETTINGS);
-
-            // Get the menu filename from Zend_Registry.
-            $this->_menuFilename = isset($configSettings[self::MENU_FILENAME]) ?
-                    $configSettings[self::MENU_FILENAME] : null;
 
             // Get the initial activity from Zend_Registry.
             $this->_initialActivity =
@@ -82,8 +76,6 @@ class IndexController extends Zend_Controller_Action
         }
 
 // $this->_getAuthDebuggingInfo();
-// $this->view->authDebugging .= "<blockquote><b>Request</b>: " .
-//      print_r($this->getRequest(), true) . "</blockquote>";
 
     }
 
@@ -186,6 +178,7 @@ class IndexController extends Zend_Controller_Action
         // TODO: Convert this to use Zend_Navigation
 
         // Assigns the menu to the view & changes the response placeholder.
+        // $this->view->menu = "Hello, world";
         $this->view->menu = $this->_readMenu();
         $this->_helper->viewRenderer->setResponseSegment('menu');
     }
@@ -198,8 +191,28 @@ class IndexController extends Zend_Controller_Action
      */
     protected function _readMenu()
     {
-        $menu =  new Zend_Config_Ini($this->_menuFilename);
+        $menu =  new Zend_Config_Ini($this->_determineMenu());
         return $menu;
+    }
+
+    /**
+     * Determines the menu to use, which is role-dependent if this is an 
+     * authenticated user whose role has its own menu or the defined 
+     * default menu otherwise.
+     */
+    protected function _determineMenu()
+    {
+        // Is this an authenticated user whose role dictates a specific menu?
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        {
+            $user = $auth->getIdentity();
+            return $user->menuFilename;
+        }
+
+        // No, so return the default menu.
+        $configs = Application_Model_RampConfigs::getInstance();
+        return $configs->getDefaultMenu();
     }
 
 
@@ -214,6 +227,8 @@ class IndexController extends Zend_Controller_Action
             print_r($resources, true) . "</blockquote>";
         $this->view->authDebugging .= "<blockquote><b>Rules</b>: " .
             print_r($rules, true) . "</blockquote>";
+        $this->view->authDebugging .= "<blockquote><b>Request</b>: " .
+            print_r($this->getRequest(), true) . "</blockquote>";
     }
 
 }
