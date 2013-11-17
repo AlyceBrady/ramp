@@ -87,11 +87,9 @@ class AuthController extends Zend_Controller_Action
                 $password = $formData[self::PASSWORD];
                 if ( $this->_authenticate($username, $password) )
                 {
-                    // Logged in; go to Home page.
-                    $this->_helper->redirector('index', 'index');
-
-                    // TODO: Would be nice if it went instead to the 
-                    // page the user was originally trying to get to.
+                    // If user was attempting to go somewhere, go there.
+                    // Otherwise, go to Home page.
+                    $this->_goToAttemptedDestOrHome();
                 }
                 else
                     { $this->view->formResponse = 'Login failed'; }
@@ -165,10 +163,9 @@ class AuthController extends Zend_Controller_Action
                 {
                     if ( $this->_authenticate($username, $password) )
                     {
-                        // Go to Home page.
-                        // TODO: Would be nice if it went to the page the
-                        // user was originally trying to get to instead.
-                        $this->_helper->redirector('index', 'index');
+                        // If user was attempting to go somewhere, go there.
+                        // Otherwise, go to Home page.
+                        $this->_goToAttemptedDestOrHome();
                     }
                     else
                     {
@@ -481,26 +478,22 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Sets the session timeout (if one has been set in configurations).
+     * Goes to attempted destination (before detour to log in) or to 
+     * home page if there is no attempted destination.
      */
-    protected function _setSessionTimeout()
+    protected function _goToAttemptedDestOrHome()
     {
-        $configs = Application_Model_RampConfigs::getInstance();
-        $timeout = $configs->getSessionTimeout();
-        if ( $timeout > 0 )
+        $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
+        if ( isset($mysession->destination_url) )
         {
-            $this->_getAuthNamespace()->setExpirationSeconds($timeout);
+            $destinationAttempt = $mysession->destination_url;
+            unset($mysession->destination_url);
+            $this->_redirect($destinationAttempt);
         }
-    }
-
-    /**
-     * Gets the namespace associated with authentication.
-     */
-    protected function _getAuthNamespace()
-    {
-        $auth = Zend_Auth::getInstance();
-        $namespaceName = $auth->getStorage()->getNamespace();
-        return new Zend_Session_Namespace($namespaceName);
+        else
+        {
+            $this->_helper->redirector('index', 'index');
+        }
     }
 
     /**

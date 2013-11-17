@@ -35,9 +35,6 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
-        // Get the current session.
-        $mysession = new Zend_Session_Namespace('Ramp_in_progress');
-
         // Create a new Zend ACL object.
         $acl = new Ramp_Acl();
 
@@ -57,8 +54,11 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         }
         else
         {
-            $auth = Zend_Auth::getInstance();
+            // Save the attempted destination.
+            $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
             $mysession->destination_url = $request->getPathInfo();
+
+            $auth = Zend_Auth::getInstance();
             if ( ! $auth->hasIdentity() || ! is_object($auth->getIdentity()) )
             {
                 // Not an authenticated user -- need to log in.
@@ -66,7 +66,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
             }
             else
             {
-                // Not authorized -- report.
+                // Not authorized -- inform user.
                 $this->_reportUnauthorized($requestedResource);
             }
         }
@@ -127,7 +127,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
     /**
      * Report unauthorized attempt to use resource.
      *
-     * @param  resource  undefined resource or one user is unauthorized to use
+     * @param  resource  undefined resource or user is unauthorized to use it
      */
     protected function _reportUnauthorized($resource)
     {
