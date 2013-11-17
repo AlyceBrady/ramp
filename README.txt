@@ -63,7 +63,7 @@ Released on March 12, 2013.
 
 RAMP (Record and Activity Management Program) was developed using
 Apache 2, MySQL 5.5, PHP 5.3 and Zend Framework 1.11.11.  It has
-been tested (and seems to work) with MySQL 5.1.44, PHP 5.2.15, and
+been tested (and seems to work) with MySQL 5.1.44 and
 Zend Framework 1.11.10, as well as later versions up to MySQL 5.5.24,
 PHP 5.3.15, and Zend Framework 1.12.  It has not been tested with
 earlier versions of MySQL or PHP.  It did not appear to work with

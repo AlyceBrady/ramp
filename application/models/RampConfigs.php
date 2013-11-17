@@ -24,6 +24,7 @@ class Application_Model_RampConfigs
     const AUTH_TYPE       = "rampAuthenticationType";
     const INTERNAL_AUTH   = "internal";
 
+    const BASE_MENU_DIR   = "menuDirectory";
     const MENU_LIST       = "roleBasedMenus";
     const DEFAULT_MENU    = "menuFilename";
 
@@ -80,17 +81,12 @@ class Application_Model_RampConfigs
      */
 
     /**
-     * Gets the appropriate menu for the given role (or the default menu 
-     * if no role-specific menu has been defined for the given role).
-     *
-     * @param $role  the user's role
+     * Gets the base directory for menus.
      */
-    public function getMenu($role)
+    public function getMenuDirectory()
     {
-        return ( isset($this->_configs[self::MENU_LIST]) &&
-                 isset($this->_configs[self::MENU_LIST][$role]) )
-                    ? $this->_configs[self::MENU_LIST][$role]
-                    : $this->getDefaultMenu();
+        // Get the settings directory from Zend_Registry.
+        return $this->_configs[self::BASE_MENU_DIR] ? : null;
     }
 
     /**
@@ -98,14 +94,64 @@ class Application_Model_RampConfigs
      */
     public function getDefaultMenu()
     {
-        return isset($this->_configs[self::DEFAULT_MENU])
-                    ? $this->_configs[self::DEFAULT_MENU]
-                    : null;
+        if ( isset($this->_configs[self::DEFAULT_MENU]) )
+        {
+            $defaultMenu = $this->_configs[self::DEFAULT_MENU];
+            return $this->_buildMenuFilename($defaultMenu);
+        }
+        return null;
     }
 
     /**
-     * Gets the directory being used for activity specification files.
-     * If there isn't one defined, use the settings directory.
+     * Returns the given menu name if that file exists, an extended 
+     * version of the menu name (built up from the base menu directory 
+     * and the given file name) if that file exists, or null.
+     *
+     * @param $menuFilename
+     */
+    protected function _buildMenuFilename($menuFilename)
+    {
+        if ( file_exists($menuFilename) )
+        {
+            return $menuFilename;
+        }
+        $menuDir = $this->getMenuDirectory();
+        if ( $menuDir != null )
+        {
+            $extendedFilename = $this->getMenuDirectory() .
+                                DIRECTORY_SEPARATOR .  $menuFilename;
+            if ( file_exists($extendedFilename) )
+            {
+                return $extendedFilename;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the appropriate menu for the given role (or the default menu 
+     * if no role-specific menu has been defined for the given role).
+     *
+     * @param $role  the user's role
+     */
+    public function getMenu($role)
+    {
+        if ( isset($this->_configs[self::MENU_LIST]) &&
+             isset($this->_configs[self::MENU_LIST][$role]) )
+        {
+            $menu = $this->_configs[self::MENU_LIST][$role];
+            $menu = $this->_buildMenuFilename($menu);
+            if ( $menu != null )
+            {
+                return $menu;
+            }
+        }
+        return $this->getDefaultMenu();
+    }
+
+    /**
+     * Gets the base directory being used for activity specification
+     * files.  If there isn't one defined, use the settings directory.
      *
      * @return string   directory path
      */
@@ -115,7 +161,7 @@ class Application_Model_RampConfigs
     }
 
     /**
-     * Gets the directory being used for table sequence/setting files.
+     * Gets the base directory being used for table sequence/setting files.
      *
      * @return string   directory path
      */

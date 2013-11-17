@@ -455,10 +455,6 @@ class AuthController extends Zend_Controller_Action
         // Determine appropriate menu for this user's role.
         $configs = Application_Model_RampConfigs::getInstance();
         $menu = $configs->getMenu($userData->role);
-        if ( ! file_exists($menu) )
-        {
-            $menu = $configs->getDefaultMenu();
-        }
         $data->menuFilename = $menu;
 
         // Store user-specific information for session.

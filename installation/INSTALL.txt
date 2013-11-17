@@ -31,6 +31,8 @@ DocumentRoot directory.
 
 Will need directions about setting up virtual hosts somewhere.
 
+Ramp requires at least PHP 5.3, because it uses the modified ternary
+operator ( ? : with the middle part left out).
 In order to get better encryption, PHP recommends 5.3.7 or later,
 although I am currently running 5.4.19 and still getting MD5 when I use
 crypt without a salt.
