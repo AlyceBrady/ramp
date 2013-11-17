@@ -95,6 +95,7 @@ class ActivityController extends Zend_Controller_Action
                     break;
             }
         }
+
     }
 
     /**

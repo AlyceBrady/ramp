@@ -362,21 +362,9 @@ class AuthController extends Zend_Controller_Action
      */ 
     protected function _authenticate($username, $password)
     {
-        // Get authentication type (e.g., internal, LDAP, etc) and 
-        // appropriate authentication adapter.
-        if ( self::usingInternalAuthentication() )
-        {
-            $authAdapter = $this->_getInternalAuthAdapter($username, $password);
-            if ( $authAdapter == null )
-                { return false; }
-        }
-        else
-        {
-            // TODO: Handle other types of authentication, such as LDAP.
-            // For now, assume internal authentication using users table.
-            throw new Exception("rampAuthenticationType must be 'internal' " .
-                                "in application.ini.");
-        }
+        $authAdapter = $this->_getAuthAdapter($username, $password);
+        if ( $authAdapter == null )
+            { return false; }
 
         // Add check for user being active.
         $select = $authAdapter->getDbSelect();
@@ -391,11 +379,39 @@ class AuthController extends Zend_Controller_Action
             // persistent identity.  Apply other identity-related 
             // customizations.
             $data = $authAdapter->getResultRowObject(null, self::PASSWORD);
-            $this->_customizeForUser($auth, $data);
+            $this->_saveUserSessionInfo($auth, $data);
+
+            // Set session timeout.
+            Application_Model_RampConfigs::setSessionTimeout();
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Gets the authentication adapter (connection to internal or 
+     * external authentication mechanism).
+     *
+     * @param   $username   username returned from the login form
+     * @param   $password   password returned from the login form
+     * @return  appropriate authentication adapter
+     */
+    protected function _getAuthAdapter($username, $password)
+    {
+        // Get authentication type (e.g., internal, LDAP, etc) and 
+        // appropriate authentication adapter.
+        if ( self::usingInternalAuthentication() )
+        {
+            return $this->_getInternalAuthAdapter($username, $password);
+        }
+        else
+        {
+            // TODO: Handle other types of authentication, such as LDAP.
+            // For now, assume internal authentication using users table.
+            throw new Exception("rampAuthenticationType must be 'internal' " .
+                                "in application.ini.");
+        }
     }
 
     /**
@@ -445,20 +461,46 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Customizes environment for user.
+     * Saves identity-related user session information.
+     *
+     * @param @auth       authentication object
+     * @param $userData   user data from Ramp authentication (username, 
+     *                        role, active, and possibly others)
      */
-    protected function _customizeForUser($auth, $userData)
+    protected function _saveUserSessionInfo($auth, $userData)
     {
         // Store user-specific information for session.
         $data = $userData;
 
         // Determine appropriate menu for this user's role.
         $configs = Application_Model_RampConfigs::getInstance();
-        $menu = $configs->getMenu($userData->role);
-        $data->menuFilename = $menu;
+        $data->menuFilename = $configs->getMenu($userData->role);
 
         // Store user-specific information for session.
         $auth->getStorage()->write($data);
+    }
+
+    /**
+     * Sets the session timeout (if one has been set in configurations).
+     */
+    protected function _setSessionTimeout()
+    {
+        $configs = Application_Model_RampConfigs::getInstance();
+        $timeout = $configs->getSessionTimeout();
+        if ( $timeout > 0 )
+        {
+            $this->_getAuthNamespace()->setExpirationSeconds($timeout);
+        }
+    }
+
+    /**
+     * Gets the namespace associated with authentication.
+     */
+    protected function _getAuthNamespace()
+    {
+        $auth = Zend_Auth::getInstance();
+        $namespaceName = $auth->getStorage()->getNamespace();
+        return new Zend_Session_Namespace($namespaceName);
     }
 
     /**

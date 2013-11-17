@@ -24,6 +24,8 @@ $heading = $userSpecifiedHeading ? : "Choose an activity:";
 <form id='activityList' action='' method='post'>
 <dl>
 
+<?php if ( $this->message != "" ) echo "$this->message" ?>
+
 <?php
 if ( isset($this->activityList) && is_array($this->activityList) )
 {

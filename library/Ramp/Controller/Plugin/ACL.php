@@ -14,7 +14,6 @@
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Justin Leatherwood
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: ACL.php 1 2012-11-13 Justin Leatherwood $
  *
  * This class was added based on a tutorial found at:
  * http://www.ens.ro/2012/03/20/zend-authentication-and-authorization-tutorial-with-zend_auth-and-zend_acl/
@@ -37,7 +36,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
         // Get the current session.
-        $mysession = new Zend_Session_Namespace('mysession');
+        $mysession = new Zend_Session_Namespace('Ramp_in_progress');
 
         // Create a new Zend ACL object.
         $acl = new Ramp_Acl();
@@ -52,7 +51,9 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         // requested resource.
         if ( $acl->authorizesCurrentUser($requestedResource) )
         {
-            return;     // Authorized!
+            // Authorized!  Reset session timeout and return.
+            Application_Model_RampConfigs::setSessionTimeout();
+            return;
         }
         else
         {

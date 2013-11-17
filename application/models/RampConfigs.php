@@ -24,6 +24,8 @@ class Application_Model_RampConfigs
     const AUTH_TYPE       = "rampAuthenticationType";
     const INTERNAL_AUTH   = "internal";
 
+    const SESSION_TIMEOUT = "sessionTimeout";
+
     const BASE_MENU_DIR   = "menuDirectory";
     const MENU_LIST       = "roleBasedMenus";
     const DEFAULT_MENU    = "menuFilename";
@@ -39,6 +41,8 @@ class Application_Model_RampConfigs
     protected $_settingsDirectory;
 
 
+    // STATIC FUNCTIONS
+
     /**
      * Gets the singleton instance of the RampConfigs class.
      */
@@ -48,6 +52,24 @@ class Application_Model_RampConfigs
                             new Application_Model_RampConfigs();
         return self::$_singleton;
     }
+
+    /**
+     * Sets the session timeout.
+     */
+    public static function setSessionTimeout()
+    {
+        $configs = self::getInstance();
+        $timeout = $configs->getSessionTimeout();
+        if ( $timeout > 0 )
+        {
+            $sessionInfo = Zend_Auth::getInstance()->getStorage();
+            $ns = new Zend_Session_Namespace($sessionInfo->getNamespace());
+            $ns->setExpirationSeconds($timeout);
+        }
+    }
+
+
+    // CONSTRUCTOR AND INSTANCE FUNCTIONS
 
     /**
      * Class constructor
@@ -79,6 +101,22 @@ class Application_Model_RampConfigs
     {
     }
      */
+
+    /**
+     * Checks whether sessions should timeout.
+    public function getSessionTimeout()
+    {
+        return $this->_configs[self::SESSION_TIMEOUT] ? : 0;
+    }
+     */
+
+    /**
+     * Gets the session timeout value.
+     */
+    public function getSessionTimeout()
+    {
+        return $this->_configs[self::SESSION_TIMEOUT] ? : 0;
+    }
 
     /**
      * Gets the base directory for menus.
