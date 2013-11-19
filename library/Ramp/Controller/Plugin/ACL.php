@@ -48,8 +48,8 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         // requested resource.
         if ( $acl->authorizesCurrentUser($requestedResource) )
         {
-            // Authorized!  Reset session timeout and return.
-            Application_Model_RampConfigs::setSessionTimeout();
+            // Authorized!  Reset session timer and return.
+            Application_Model_SessionTimer::startSessionTimer();
             return;
         }
         else

@@ -379,7 +379,7 @@ class AuthController extends Zend_Controller_Action
             $this->_saveUserSessionInfo($auth, $data);
 
             // Set session timeout.
-            Application_Model_RampConfigs::setSessionTimeout();
+            Application_Model_SessionTimer::startSessionTimer();
             return true;
         }
 

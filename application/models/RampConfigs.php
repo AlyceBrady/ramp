@@ -53,21 +53,6 @@ class Application_Model_RampConfigs
         return self::$_singleton;
     }
 
-    /**
-     * Sets the session timeout.
-     */
-    public static function setSessionTimeout()
-    {
-        $configs = self::getInstance();
-        $timeout = $configs->getSessionTimeout();
-        if ( $timeout > 0 )
-        {
-            $sessionInfo = Zend_Auth::getInstance()->getStorage();
-            $ns = new Zend_Session_Namespace($sessionInfo->getNamespace());
-            $ns->setExpirationSeconds($timeout);
-        }
-    }
-
 
     // CONSTRUCTOR AND INSTANCE FUNCTIONS
 
@@ -99,14 +84,6 @@ class Application_Model_RampConfigs
      * UNDER CONSTRUCTION
     public function usingInternalAuthentication()
     {
-    }
-     */
-
-    /**
-     * Checks whether sessions should timeout.
-    public function getSessionTimeout()
-    {
-        return $this->_configs[self::SESSION_TIMEOUT] ? : 0;
     }
      */
 
