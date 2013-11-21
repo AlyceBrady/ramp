@@ -35,7 +35,9 @@ if ( isset($this->activityList) && is_array($this->activityList) )
         {
             case Application_Model_ActivitySpec::COMMENT_TYPE:
                     $comment = $this->escape($activity->getComment());
-                    echo "<dt class='comment'>" . 
+                    $commentClass = $activity->isInactive()
+                        ? "class='disabledComment'" : "class='comment'";
+                    echo "<dt $commentClass>" . 
                         Markdown::defaultTransform($comment) .
                          "</dt><dd></dd>\n";
                     break;
@@ -57,9 +59,15 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                         $desc = substr($desc, 3, -5);
                     }
 
+                    // Should button be disabled?
+                    $disabledOrNot =
+                        $activity->isInactive() ? "disabled" : "";
+                    $descDisabledOrNot =
+                        $activity->isInactive() ? "class='disabled'" : "";
                     echo "<dt><input type='submit'  name='$key' id='$key' " .
-                        "class='button' " .  "value='" . $title . "'></dt>\n";
-                    echo "<dd>" . $desc . "</dd>\n";
+                        "class='button' value='$title' $disabledOrNot>" .
+                        "</dt>\n";
+                    echo "<dd $descDisabledOrNot>" . $desc . "</dd>\n";
         }
     }
 }

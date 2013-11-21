@@ -86,6 +86,15 @@ div#activityPage .button {
     background-color: lavender;
 }
 
+div#activityPage :disabled {
+    color:            grey;
+    background-color: #DDDDDD;
+}
+
+div#activityPage .disabled, .disabledComment {
+    color:            grey;
+}
+
 
 /* Styles used by title bars on most table-viewing/modifying pages */
 

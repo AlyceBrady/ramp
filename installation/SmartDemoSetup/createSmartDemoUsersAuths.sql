@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS `ramp_auth_auths`;
 CREATE TABLE `ramp_auth_auths` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role` varchar(100) NOT NULL,
-  `resource_type` enum('Activity','Report','Table') NOT NULL,
+  `resource_type` enum('Activity','Document','Report','Table') NOT NULL,
   `resource_name` varchar(100) NOT NULL,
   `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords')
         NOT NULL DEFAULT 'View'
@@ -123,8 +123,17 @@ INSERT INTO `ramp_auth_auths`
 , ('smart_dba','Table','ramp_auth_users','View')
 , ('smart_dba','Table','ramp_auth_auths','All')
 , ('guest','Activity','.','All')
-, ('guest','Activity','PublicActivities','All')
-, ('guest','Document','PublicActivities/smartAbout.md','All')
+, ('guest','Activity','../docs/rampDocs','All')
+, ('guest','Document','../../README.txt','All')
+, ('guest','Document','rampDocs/rampAbout.md','All')
+, ('guest','Document','rampDocs/smartAbout.md','All')
+, ('guest','Document','rampDocs/RampUserManual.md','All')
+, ('guest','Document','rampDocs/AdminUserManual.md','All')
+, ('guest','Document','rampDocs/ActivityLists.md','All')
+, ('guest','Document','rampDocs/TableSettings.md','All')
+, ('guest','Document','rampDocs/sample.ini','All')
+, ('guest','Document','rampDocs/DeveloperUserManual.md','All')
+, ('guest','Document','rampDocs/README.txt','All')
 , ('guest','Activity','Smart','All')
 , ('guest','Activity','Smart/Curriculum','All')
 , ('guest','Activity','Smart/Person','All')

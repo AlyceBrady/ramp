@@ -156,7 +156,7 @@ div#activityPage dd {
     width:      60%;
 }
 
-div#activityPage dt.comment {
+div#activityPage dt.comment, div#activityPage dt.disabledComment {
     margin-top: 0;
     width:      50%;
     margin-left:     0;
@@ -175,6 +175,10 @@ div#activityPage dt.wide {
     margin-top, margin-bottom: 20px;
     width:      30%;
     margin-left:     0;
+}
+
+div#activityPage .disabled {
+    font-style: oblique;
 }
 
 

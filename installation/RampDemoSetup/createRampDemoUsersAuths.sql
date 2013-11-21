@@ -106,8 +106,17 @@ CREATE TABLE `ramp_auth_auths` (
 LOCK TABLES `ramp_auth_auths` WRITE;
 INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
-('guest','Activity','PublicActivities','All')
-, ('guest','Document','PublicActivities/rampAbout.md','All')
+('guest','Activity','../docs/rampDocs','All')
+, ('guest','Document','../../README.txt','All')
+, ('guest','Document','rampDocs/rampAbout.md','All')
+, ('guest','Document','rampDocs/smartAbout.md','All')
+, ('guest','Document','rampDocs/RampUserManual.md','All')
+, ('guest','Document','rampDocs/AdminUserManual.md','All')
+, ('guest','Document','rampDocs/ActivityLists.md','All')
+, ('guest','Document','rampDocs/TableSettings.md','All')
+, ('guest','Document','rampDocs/sample.ini','All')
+, ('guest','Document','rampDocs/DeveloperUserManual.md','All')
+, ('guest','Document','rampDocs/README.txt','All')
 , ('guest','Activity','rampDemo','All')
 , ('guest','Table','albums','View')
 , ('guest','Report','places','View')

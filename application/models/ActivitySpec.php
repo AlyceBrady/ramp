@@ -28,6 +28,7 @@ class Application_Model_ActivitySpec
 
     // Valid properties
     const TYPE          = "type";
+    const INACTIVE      = "inactive";
     const COMMENT       = "comment";
     const SOURCE        = "source";
     const TITLE         = "title";
@@ -53,13 +54,15 @@ class Application_Model_ActivitySpec
 
     protected $_type;   // type of activity being specified
 
-    protected $_source; // setting, activity list, url, or other activity source
+    protected $_inactive; // whether activity has been inactivated
 
     protected $_title;  // brief title for activity
 
     protected $_description;  // summary description of activity
                               // (or comment/html body, in the case of
                               // comment/html "activities")
+
+    protected $_source; // setting, activity list, url, or other activity source
 
     protected $_controller;   // controller tied to controller/action activity
 
@@ -110,6 +113,11 @@ class Application_Model_ActivitySpec
                                 "invalid specification type; valid types are " .
                                 $valTypes);
         }
+
+        // By default, assume that activities have not been inactivated.
+        $this->_inactive = isset($specAsArray[self::INACTIVE]) &&
+                                    $specAsArray[self::INACTIVE] == true
+                        ? true : false;
 
         // "Sequence" is a synonym for "setting" -- normalize to 1 term.
         $this->_type = ($this->_type == self::SEQUENCE_TYPE) ?
@@ -262,6 +270,15 @@ class Application_Model_ActivitySpec
     public function isUrl()
     {
         return $this->_type == self::URL_TYPE;
+    }
+
+    /**
+     * Checks whether the activity has been marked as inactive.
+     *
+     */
+    public function isInactive()
+    {
+        return $this->_inactive;
     }
 
     /**
