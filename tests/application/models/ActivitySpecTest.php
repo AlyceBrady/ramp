@@ -24,8 +24,10 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
                                     'action' => 'This is the action',
                                     'parameter' => "p1=param1&p2=param2"
                                   ),
-            'goodHTML' => array( 'type' => 'html',
-                                    'html' => 'This is the html'
+            'goodDocument' => array( 'type' => 'document',
+                                    'title' => 'This is a title',
+                                    'description' => 'This is a description',
+                                    'source' => 'This is the source'
                                   ),
             'goodReport' => array( 'type' => 'report',
                                     'title' => 'This is a title',
@@ -96,7 +98,18 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
                                     'controller' => 'This is the controller',
                                     'action' => 'This is the action'
                                   ),
-            'badHTML' => array( 'type' => 'html'),
+            'docNoTitle' => array( 'type' => 'document',
+                                    'description' => 'This is a description',
+                                    'source' => 'This is the source'
+                                  ),
+            'docNoDescription' => array( 'type' => 'document',
+                                    'title' => 'This is a title',
+                                    'source' => 'This is the source'
+                                  ),
+            'docNoSource' => array( 'type' => 'document',
+                                    'title' => 'This is a title',
+                                    'description' => 'This is a description'
+                                  ),
             'repNoTitle' => array( 'type' => 'report',
                                     'description' => 'This is a description',
                                     'source' => 'This is the source'
@@ -161,7 +174,7 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $actTypes = array(Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE,
                           Application_Model_ActivitySpec::COMMENT_TYPE,
                       Application_Model_ActivitySpec::CONTROLLER_ACTION_TYPE,
-                          Application_Model_ActivitySpec::HTML_TYPE,
+                          Application_Model_ActivitySpec::DOCUMENT_TYPE,
                           Application_Model_ActivitySpec::REPORT_TYPE,
                           Application_Model_ActivitySpec::SEPARATOR_TYPE,
                           Application_Model_ActivitySpec::SEQUENCE_TYPE,
@@ -183,7 +196,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('This is the source', $spec->getSource());
         $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -202,7 +214,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a comment') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -224,7 +235,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
         $this->assertSame('This is the controller', $spec->getController());
@@ -232,23 +242,22 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertSame(2, count($spec->getParameters()));
     }
 
-    public function testConstructorForSettingWithValidHTMLType()
+    public function testConstructorForSettingWithValidDocumentType()
     {
-        $aSpec = $this->_actSpecList['goodHTML'];
-        $spec = new Application_Model_ActivitySpec('validHTML', $aSpec);
-        $this->assertSame(Application_Model_ActivitySpec::HTML_TYPE,
+        $aSpec = $this->_actSpecList['goodDocument'];
+        $spec = new Application_Model_ActivitySpec('validDocument', $aSpec);
+        $this->assertSame(Application_Model_ActivitySpec::DOCUMENT_TYPE,
                           $spec->getType());
-        $this->assertTrue($spec->isHTML());
+        $this->assertTrue($spec->isDocument());
 
+        $this->assertSame('This is a title', $spec->getTitle());
         $this->assertTrue(strpos($spec->getDescription(),
-            'This is the html') === 0);
+            'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
-        $this->assertSame('Title' . $spec->getTitle(), 'Title');
-        $this->assertSame('Source' . $spec->getSource(), 'Source');
+        $this->assertSame('This is the source', $spec->getSource());
+        $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
-        $this->assertSame('Url' . $spec->getUrl(), 'Url');
         $this->assertSame(array(), $spec->getParameters());
     }
 
@@ -264,7 +273,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('This is the source', $spec->getSource());
         $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -284,7 +292,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Descrip' . $spec->getDescription(), 'Descrip');
-        $this->assertSame('Html' . $spec->getHTML(), 'Html');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame('Url' . $spec->getUrl(), 'Url');
@@ -303,7 +310,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('This is the source', $spec->getSource());
         $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -323,7 +329,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('This is the source', $spec->getSource());
         $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -343,13 +348,17 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a description') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertTrue(strpos($spec->getSource(), 'This is the url') === 0);
         $this->assertSame($spec->getSource(), $spec->getUrl());
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
         $this->assertSame('Action' . $spec->getAction(), 'Action');
         $this->assertSame(array(), $spec->getParameters());
     }
+
+    // TODO: Need test for URL with valid, non-empty parameters.
+
+    // TODO: Need test for URL with a badly-formatted parameter 
+    // property.
 
     public function testConstructorWithNoName()
     {
@@ -362,7 +371,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($spec->getDescription(),
             'This is a comment') === 0);
         $this->assertSame($spec->getDescription(), $spec->getComment());
-        $this->assertSame($spec->getDescription(), $spec->getHTML());
         $this->assertSame('Title' . $spec->getTitle(), 'Title');
         $this->assertSame('Source' . $spec->getSource(), 'Source');
         $this->assertSame('Controller' . $spec->getController(), 'Controller');
@@ -380,7 +388,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $title = $spec->getTitle();
         $description = $spec->getDescription();
         $comment = $spec->getComment();
-        $html = $spec->getHTML();
         $source = $spec->getSource();
         $url = $spec->getUrl();
         $controller = $spec->getController();
@@ -397,7 +404,6 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $this->assertSame($title, $spec->getTitle());
         $this->assertSame($description, $spec->getDescription());
         $this->assertSame($comment, $spec->getComment());
-        $this->assertSame($html, $spec->getHTML());
         $this->assertSame($controller, $spec->getController());
         $this->assertSame($action, $spec->getAction());
         $this->assertSame($params, $spec->getParameters());
@@ -489,11 +495,25 @@ class models_ActivitySpecTest extends PHPUnit_Framework_TestCase
         $spec = new Application_Model_ActivitySpec('caNoParameter', $aSpec);
     }
 
-    public function testConstructorForInvalidHTML()
+    public function testConstructorForDocumentWithNoTitle()
     {
-        $this->setExpectedException('Exception', 'has no html property');
-        $aSpec = $this->_badList['badHTML'];
-        $spec = new Application_Model_ActivitySpec('badHTML', $aSpec);
+        $this->setExpectedException('Exception', 'has no title property');
+        $aSpec = $this->_badList['docNoTitle'];
+        $spec = new Application_Model_ActivitySpec('docNoTitle', $aSpec);
+    }
+
+    public function testConstructorForDocumentWithNoDescription()
+    {
+        $this->setExpectedException('Exception', 'has no description property');
+        $aSpec = $this->_badList['docNoDescription'];
+        $spec = new Application_Model_ActivitySpec('docNoDescription', $aSpec);
+    }
+
+    public function testConstructorForDocumentWithNoSource()
+    {
+        $this->setExpectedException('Exception', 'has no source property');
+        $aSpec = $this->_badList['docNoSource'];
+        $spec = new Application_Model_ActivitySpec('docNoSource', $aSpec);
     }
 
     public function testConstructorForReportWithNoTitle()

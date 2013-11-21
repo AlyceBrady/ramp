@@ -27,13 +27,19 @@ class TestSettings
     const FILE_SHOWING_COLS_BY_DEFAULT = 'ShowColsByDefault';
     const FILE_WITH_EXTERNAL_INIT = 'settingTests/InitTesting';
     const EXT_REF_TARGET = 'settingTests/Users';
+    const NO_TABLE_PROPS_SETTINGS_FILE = 'sectionWNoTableProps';
     const NO_TABLE_SETTINGS_FILE = 'noDbTable';
     const NO_TABLE_SETTINGS_FILE2 = 'noDbTableInSubSetting';
+    const BAD_MULT_SETTINGS_FILE = 'multSettingsError';
+    const BAD_TOP_LEVEL_PROP = 'badTopLevelProperty';
     const FILE_W_EXTRA_SEQUENCE = 'extSettingsWithAddSequence';
     const FILE_W_INVAL_MULT_SEQ = 'multSeqError';
+    const MISLEADING_SEQ_SEC = 'misleadingSeqSection';
+    const MISLEADING_SEQ_PROP = 'misleadingSeqProperty';
 
     // Sequence test cases...
-    const NO_SETTING = 'sequenceTests/noSeqOrSetting';
+    const EMPTY_SETTING = 'sequenceTests/noNothing';
+    const NO_SEQ = 'sequenceTests/noExplicitOrImplicitSequence';
     const MAIN_ONLY = 'sequenceTests/mainSeqOnly';
     const ADD_AND_SEARCH_RES = 'sequenceTests/addAndSearchResSeqs';
     const ADD_AND_EDIT = 'sequenceTests/editAndAddSeqs';
@@ -108,7 +114,8 @@ class TestSettings
             'referenceSetting' => self::BASIC_SETTINGS_FILE
         );
 
-        self::$_settingNames = array('DetailedView', 'ModifyingView',
+        self::$_settingNames = array('SharedProperties',
+                                     'DetailedView', 'ModifyingView',
                                      'AddView', 'TableSetting3',
                                      self::MULT_SETTINGS_FILE);
     }

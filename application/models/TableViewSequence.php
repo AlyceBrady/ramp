@@ -64,7 +64,7 @@ class Application_Model_TableViewSequence
     }
 
     /**
-     * Returns a list of the valid sequence setting properties.
+     * Returns a list of the valid sequence properties.
      */
     protected static function validSequenceProps()
     {
@@ -141,8 +141,8 @@ class Application_Model_TableViewSequence
             }
             else
             {
-                throw new Exception("Must specify " .
-                    "at least one table setting in $name");
+                throw new Exception("Must specify a sequence or " .
+                    "one table setting in $name");
             }
         }
 

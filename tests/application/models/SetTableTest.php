@@ -67,15 +67,20 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
 
     public function testSettingWithNoTableName()
     {
-        // "setting must include a key" exception is impossible; would 
-        // first create an exception when reading from the gateway, and 
-        // that is tested in TVSGatewayTest.
+        // Test constructing a table setting with table setting
+        // properties, but no table specified.
+        $this->setExpectedException('Exception',
+                                    'setting must include a key');
+        $settingFileName = TestSettings::NO_TABLE_SETTINGS_FILE;
+        $settingName = 'TableSetting';
+        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $table = new Application_Model_SetTable($settingName, $gateway);
     }
 
     public function testSettingWithInheritedTableName()
     {
-        // $table = $this->_settingForPartialTable;
-        // $this->assertSame("ramp_test_addresses", $table->getDbTableName());
+        $table = $this->_settingForPartialTable;
+        $this->assertSame("ramp_test_addresses", $table->getDbTableName());
     }
 
     public function testValidSettingWithTableFootnote()
@@ -230,6 +235,27 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $fieldObj = $this->_setTableWithImports->getFieldObject('addr_id');
         $this->assertNotNull($fieldObj);
         $this->assertTrue($fieldObj->isInTable());
+        $this->assertTrue($fieldObj->isDiscouraged());
+    }
+
+    public function testGetInheritedFieldObjectInTable()
+    {
+        $fieldObj = $this->_settingForPartialTable->getFieldObject('addr_id');
+        $this->assertNotNull($fieldObj);
+        $this->assertTrue($fieldObj->isInTable());
+        $this->assertSame('Addr ID', $fieldObj->getLabel());
+        $this->assertSame('', $fieldObj->getFieldFootnote());
+        $this->assertFalse($fieldObj->isDiscouraged());
+    }
+
+    public function testGetPartiallyInheritedFieldObjectInTable()
+    {
+        $fieldObj = $this->_setTableWithImports->getFieldObject('addr_id');
+        $this->assertNotNull($fieldObj);
+        $this->assertTrue($fieldObj->isInTable());
+        $this->assertSame('Addr ID', $fieldObj->getLabel());
+        $this->assertSame('set automatically; do not update!',
+                          $fieldObj->getFieldFootnote());
         $this->assertTrue($fieldObj->isDiscouraged());
     }
 

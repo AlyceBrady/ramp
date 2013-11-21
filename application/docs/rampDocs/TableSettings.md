@@ -10,9 +10,9 @@ allows users to define "table settings" that specify a title for the
 table, which columns to include, the column order, and column headings.
 Getting a little fancier, the table setting can include a "footnote" for
 the table (although the current views display the footnote below the
-title, not below the table) and "footnotes" for columns (displayed as
-mouse-over notes).  An example of a fairly straight-forward table
-setting is in settings/demo/PlacesComplete.ini.
+title as a subtitle, not below the table) and "footnotes" for columns
+(displayed as mouse-over notes).  An example of a fairly straight-forward
+table setting is in settings/demoSettings/rampDemo/PlacesComplete.ini.
 
 [Note that some table setting information is for the table as a whole
 (title, table footnote, external links), but most describes specific
@@ -189,7 +189,44 @@ one to be used for inserting new records, one for viewing records, one
 for searches, one for listing key information for a set of records, and
 one for viewing a full table or set of search results in tabular format.
 A set of table settings like is this is called a "viewing sequence."
-[Provide an example in place or a pointer to an example.]
+[Provide an example in place or a pointer to an example.]  FORGOT
+MODIFYING RECORDS?
 
 The initial action (initAction) property can be set to search or
 displayAll (list view).
+
+NOTE:  It is possible to use inheritance among sections in an ini file
+to avoid repeating similar information for different table settings in a
+viewing sequence.  The only potential problem is that an additional
+fields defined in a table setting will appear after the inherited
+fields, since the order in which fields appear is the order in which
+they are introduced in the table setting.  For example, an ini file
+could have the following properties:
+    [ SharedProperties ]
+    field.a.label = "A"
+    field.b.label = "B"
+    field.d.label = "D"
+    [ View ]
+    field.b.recommended = true
+    [ Modify ]
+    field.c.label = "C"
+    field.d.recommended = true
+In this case, both the View and Modify table settings have the three
+fields labeled A, B, and D.  In View, field B is recommended, whereas in
+Modify, field D is recommended.  Modify also introduces an additional field C.
+The order of the fields in the Modify table setting will always be
+A, B, D, C, even if A, B, C, D might have been more desirable.  The
+easiest way to get around this ordering problem is to introduce all the
+appropriate fields in the parent section and then hide fields you don't
+want in some settings.  In this case, the ini file would become:
+    [ SharedProperties ]
+    field.a.label = "A"
+    field.b.label = "B"
+    field.c.label = "C"
+    field.d.label = "D"
+    [ View ]
+    field.b.recommended = true
+    field.c.hide = true
+    [ Modify ]
+    field.d.recommended = true
+A more real example is in demoSettings/Smart/Student/Enrollment.ini.

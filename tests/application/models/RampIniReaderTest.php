@@ -55,14 +55,19 @@ class models_RampIniReaderTest extends PHPUnit_Framework_TestCase
         return $importedSpecs;
     }
 
-    public function testGetSimpleFilename()
+    public function testGetSimpleFilenameWhenActDirIsNull()
     {
+        // ramp.activitiesDirectory in regressiontesting section of 
+        // application.ini is currently null.
         $filename = self::SIMPLE_TEST;
         $retrievedFilename =
             $this->_iniReader->getActivityListFilename($filename);
         $this->assertSame($filename, $retrievedFilename);
         return $retrievedFilename;
     }
+
+    // TODO: How do we test the case where we're getting an activities 
+    // directory that is defined in configuration file?
 
     public function testActListInFilename()
     {

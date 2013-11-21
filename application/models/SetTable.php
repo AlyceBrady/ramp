@@ -148,13 +148,11 @@ class Application_Model_SetTable
         }
         else
         {
-            if ( empty($dbTableName) )
-            {
-                throw new Exception($settingName .
-                                    " setting must include a key for '" .
-                                    self::TABLE_NAME .
-                                    "' that names the database table to use.");
-            }
+            // Table name is not present (nor inherited)
+            throw new Exception($settingName .
+                                " setting must include a key for '" .
+                                self::TABLE_NAME .
+                                "' that names the database table to use.");
         }
         $this->_settingName = $settingName;
         $this->_dbModel =

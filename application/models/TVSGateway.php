@@ -248,18 +248,29 @@ class Application_Model_TVSGateway
             if ( isset($allSettingDefs[$name]) )
             {
                 throw new Exception("There are two sets of table settings " .
-                    "properties associated with the name $key, one at the " .
+                    "properties associated with the name $name, one at the " .
                     "top level and one in a section.");
             }
             $allSettingDefs[$name] = $propDefs;
         }
         else
         {
+            // Get "first" unaccounted-for item using foreach mechanism
+            // (won't go further than first, because throwing an Exception).
+            // If there are no unaccounted-for items, loop will end quickly.
             foreach ( $propDefs as $key => $value )
             {
-                throw new Exception("Section $key not recognized as a " .
-                    "sequence (no \"sequence\" properties) nor as a " .
-                    "setting (no table setting properties).");
+                if ( is_array($value) )
+                {
+                    throw new Exception("Section $key not recognized as a " .
+                        "sequence (no \"sequence\" properties) nor as a " .
+                        "setting (no table setting properties).");
+                }
+                else
+                {
+                    throw new Exception("Property $key not recognized as a " .
+                        "sequence or setting property.");
+                }
             }
         }
 
@@ -298,16 +309,14 @@ class Application_Model_TVSGateway
     protected function _hasSequenceSpec($propDefs)
     {
         return is_array($propDefs) &&
-           array_key_exists(self::SEQ_KEYWORD, $propDefs) &&
-           is_array($propDefs[self::SEQ_KEYWORD]) &&
-           ! array_key_exists(self::SEQ_KEYWORD, $propDefs[self::SEQ_KEYWORD]);
+               array_key_exists(self::SEQ_KEYWORD, $propDefs) &&
+               is_array($propDefs[self::SEQ_KEYWORD]) &&
+               ! array_key_exists(self::SEQ_KEYWORD, $propDefs[self::SEQ_KEYWORD]);
     }
 
     /**
-     * Checks whether the given array parameter contains table settings 
-     * property definitions.  Since every table setting must include a 
-     * specification for the name of an associated database table, we just
-     * look for that.
+     * Checks whether the given array parameter contains any table settings 
+     * property definitions.
      *
      * @return bool
      *
@@ -330,6 +339,11 @@ class Application_Model_TVSGateway
 
         return false;
 
+        /* Old function description included:
+         * ...  Since every table setting must include a 
+         * specification for the name of an associated database table,
+         * we just look for that.
+         */
         // $dbNameIndex = self::TBL_NAME;
         // return is_array($propDefs) &&
                // array_key_exists($dbNameIndex, $propDefs);

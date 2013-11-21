@@ -5,7 +5,8 @@ require_once 'TestSettings.php';
 class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
 {
     const NON_FILE = TestSettings::NON_FILE;
-    const NO_SETTING = TestSettings::NO_SETTING;
+    const EMPTY_SEQ_SETTING = TestSettings::EMPTY_SETTING;
+    const NO_SEQ = TestSettings::NO_SEQ;
     const BASIC_FILE = TestSettings::BASIC_SETTINGS_FILE;
     const MULT_SETTINGS = TestSettings::MULT_SETTINGS_FILE;
     const NO_SEQ_TBL_NAME = TestSettings::FILE_SHOWING_COLS_BY_DEFAULT;
@@ -42,18 +43,50 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
 
     public function testInvalidSettingSequenceFile()
     {
-        $this->setExpectedException('Exception', 'Missing settings file');
         // Test constructing a sequence from an invalid file.
+        $this->setExpectedException('Exception', 'Missing settings file');
         $sequence = new Application_Model_TableViewSequence(self::NON_FILE);
     }
 
+    // _initSettingsUsedInSequence: no sequence, no setting
     public function testNoExplicitOrImpliedSequence()
     {
         $this->setExpectedException('Exception',
-                                    'not recognized as a sequence');
-        $sequence = new Application_Model_TableViewSequence(self::NO_SETTING);
+                                    'sequence or one table setting');
+        $sequence =
+            new Application_Model_TableViewSequence(self::EMPTY_SEQ_SETTING);
     }
 
+    // _initSettingsUsedInSequence: misleading sequence prop, not setting
+    public function testSequencePropertyHasNothingToDoWithSequence()
+    {
+        // No sequence or table setting (though one invalid property 
+        //      called "sequence").
+        //  NOTE: Not an error.  (Property is ignored.)
+        $filename = TestSettings::MISLEADING_SEQ_PROP;
+        $sequence = new Application_Model_TableViewSequence($filename);
+    }
+
+    // _initSettingsUsedInSequence: sequence is empty array; mult tables read
+    public function testNoExplicitBadImpliedSequence()
+    {
+        $this->setExpectedException('Exception',
+                                    'sequence or one table setting');
+        $sequence = new Application_Model_TableViewSequence(self::NO_SEQ);
+    }
+
+    // _initSettingsUsedInSequence: misleading seq section; mult tables read
+    public function testSequenceSectionHasNothingToDoWithSequence()
+    {
+        // No sequence, multiple table settings (one of which is 
+        //      misleadingly called "sequence").
+        $this->setExpectedException('Exception',
+                                    'sequence or one table setting');
+        $filename = TestSettings::MISLEADING_SEQ_SEC;
+        $sequence = new Application_Model_TableViewSequence($filename);
+    }
+
+    // _initSettingsUsedInSequence: sequence is empty array; one table read
     public function testSimpleImpliedSequence()
     {
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);

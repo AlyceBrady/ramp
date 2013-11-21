@@ -138,6 +138,13 @@ for
 ;   Later parents take precedence over earlier ones if there are
 conflicts.
 
+NOTE: even though ini sections can inherit properties from other
+sections, it seems that you can't inherit non-guest roles and add 
+others.  I seem to have had to redefine all the roles when I want to
+change any of them in a particular environment (section).  [Double-check
+whether this is true, since inheritance seems to work great in table
+settings.]
+
 Authorization: Resources:
 ; Define basic Access Control List resources.  (These resources and
 others
