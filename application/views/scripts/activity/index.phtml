@@ -35,15 +35,35 @@ if ( isset($this->activityList) && is_array($this->activityList) )
         {
             case Application_Model_ActivitySpec::COMMENT_TYPE:
                     $comment = $this->escape($activity->getComment());
+                    $comment = Markdown::defaultTransform($comment);
                     $commentClass = $activity->isInactive()
                         ? "class='disabledComment'" : "class='comment'";
-                    echo "<dt $commentClass>" . 
-                        Markdown::defaultTransform($comment) .
-                         "</dt><dd></dd>\n";
+
+                    // If comment is single paragraph, don't need 
+                    // <p></p> inside <dt></dt>.
+                    $paragraphs = explode('<p>', $comment);
+                    if ( count($paragraphs) == 2 )
+                    {
+                        // strip off beginning/end paragraph
+                        $begP = strpos($comment, '<p>');
+                        $endP = strrpos($comment, '</p>');
+                        $lenComment = $endP - ($begP + 3);
+                        $prefix = $begP == 0
+                                    ? "" : substr($comment, 0, $begP - 1);
+                        $content = $lenComment > 0
+                                    ? substr($comment, $begp + 3, $lenComment)
+                                    : "";
+                        $comment = "<br />" . $prefix . $content .
+                                   substr($comment, $endP + 4);
+                    }
+
+                    echo "<dt $commentClass>$comment</dt><dd></dd>\n";
                     break;
+
             case Application_Model_ActivitySpec::SEPARATOR_TYPE:
                     echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
                     break;
+
             default:        // SETTING and ACTIVITY_LIST types
                     // Get and format title for button.
                     $title = $this->escape($activity->getTitle());
@@ -52,11 +72,22 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     // Get and format description.
                     $desc = $this->escape($activity->getDescription());
                     $desc = Markdown::defaultTransform($desc);
-                    if ( ( strpos($desc, '<p>') === 0 ) &&
-                         ( strrpos($desc, '</p>') === (strlen($desc) - 5) ) )
+
+                    // If description is single paragraph, don't need 
+                    // <p></p> inside <dd></dd>.
+                    $paragraphs = explode('<p>', $desc);
+                    if ( count($paragraphs) == 2 )
                     {
                         // strip off beginning/end paragraph
-                        $desc = substr($desc, 3, -5);
+                        $begP = strpos($desc, '<p>');
+                        $endP = strrpos($desc, '</p>');
+                        $lenContent = $endP - ($begP + 3);
+                        $prefix = $begP == 0
+                                    ? "" : substr($desc, 0, $begP - 1);
+                        $content = $lenContent > 0
+                                    ? substr($desc, $begp + 3, $lenContent)
+                                    : "";
+                        $desc = $prefix . $content . substr($desc, $endP + 4);
                     }
 
                     // Should button be disabled?

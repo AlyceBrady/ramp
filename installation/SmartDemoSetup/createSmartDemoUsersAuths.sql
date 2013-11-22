@@ -9,10 +9,15 @@
 -- be any need to define users for the SMART demo database; the
 -- Authorizations table allows "guest" users -- those who have not
 -- logged in -- read-only access to the basic tables in the demo.)
+-- To make the demo environment easier to set up, define
+-- additional generic users with different access permissions as well.
 
 -- Prerequisite: The database name (smart_demo) and the database
 -- administrator role (smart_dba) must be defined in the 
 -- application/configs/application.ini file.
+-- The application.ini file should also define two roles used by the
+-- additional generic users set up here.  Those roles are: hr_staff
+-- and regist_staff.
 
 -- You must run MySQL as root (or some other user that has permission
 -- to create databases) to execute the commands found in this file.
@@ -91,7 +96,7 @@ UNLOCK TABLES;
 -- here.
 --
 -- "Guests" (anyone who is not logged in) may see the activities listed
--- in activity files in the PublicActivities directory and other
+-- in activity files in the docs/rampDocs directory and other
 -- directories containing public Smart information, such as lists of
 -- terms, academic programs, modules, and module offerings.  Database
 -- administrators, HR staff, and Registrar staff may see the same data
@@ -154,6 +159,7 @@ INSERT INTO `ramp_auth_auths`
 , ('regist_staff','Table','Advising','View')
 , ('regist_staff','Table','StudentAcadProgram','View')
 , ('regist_staff','Table','ModuleAssignments','View')
+, ('regist_staff','Table','ModuleSchedule','View')
 , ('regist_staff','Table','Enrollment','View')
 , ('regist_staff','Table','TermStanding','View')
 , ('regist_staff','Table','TestScores','View')
@@ -161,6 +167,6 @@ INSERT INTO `ramp_auth_auths`
 UNLOCK TABLES;
 
 -- Very basic authorizations can alternatively be defined in 
--- the application.ini file, e.g., guest access to the PublicActivities
+-- the application.ini file, e.g., guest access to the docs/rampDocs
 -- directory or smart_dba access to the Admin directory and the
 -- ramp_auth_users and ramp_auth_auths tables.

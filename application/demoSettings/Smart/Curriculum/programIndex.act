@@ -1,0 +1,30 @@
+; List of Curriculum-Related Smart tables.
+
+activityListHeading = "Choose a table:"
+
+activity[] = "Programs Heading"
+activity[] = "Programs"
+activity[] = "More about Programs"
+
+
+[horizRule]
+
+type = "separator"
+
+[Programs Heading]
+
+type = "comment"
+comment = "__Programs__"
+
+[Programs]
+
+type = "setting"
+source = "Smart/Curriculum/AcadProgram"
+title = "Programs"
+description = "Academic Programs (Courses of Study)"
+
+[More about Programs]
+
+type = "comment"
+comment = "Program tables/activities might also include
+Admission Requirements or Graduation Requirements."
