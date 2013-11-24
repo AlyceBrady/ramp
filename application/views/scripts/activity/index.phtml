@@ -38,26 +38,11 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     $comment = Markdown::defaultTransform($comment);
                     $commentClass = $activity->isInactive()
                         ? "class='disabledComment'" : "class='comment'";
-
-                    // If comment is single paragraph, don't need 
-                    // <p></p> inside <dt></dt>.
-                    $paragraphs = explode('<p>', $comment);
-                    if ( count($paragraphs) == 2 )
-                    {
-                        // strip off beginning/end paragraph
-                        $begP = strpos($comment, '<p>');
-                        $endP = strrpos($comment, '</p>');
-                        $lenComment = $endP - ($begP + 3);
-                        $prefix = $begP == 0
-                                    ? "" : substr($comment, 0, $begP - 1);
-                        $content = $lenComment > 0
-                                    ? substr($comment, $begp + 3, $lenComment)
-                                    : "";
-                        $comment = "<br />" . $prefix . $content .
-                                   substr($comment, $endP + 4);
-                    }
-
-                    echo "<dt $commentClass>$comment</dt><dd></dd>\n";
+                    echo "<dt $commentClass>";
+                    echo $this->partial("activity/_cleanIfSinglePar.phtml",
+                            array('content'=>$comment,
+                            'includeBreak' => true));
+                    echo "</dt><dd></dd>\n";
                     break;
 
             case Application_Model_ActivitySpec::SEPARATOR_TYPE:
@@ -73,23 +58,6 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     $desc = $this->escape($activity->getDescription());
                     $desc = Markdown::defaultTransform($desc);
 
-                    // If description is single paragraph, don't need 
-                    // <p></p> inside <dd></dd>.
-                    $paragraphs = explode('<p>', $desc);
-                    if ( count($paragraphs) == 2 )
-                    {
-                        // strip off beginning/end paragraph
-                        $begP = strpos($desc, '<p>');
-                        $endP = strrpos($desc, '</p>');
-                        $lenContent = $endP - ($begP + 3);
-                        $prefix = $begP == 0
-                                    ? "" : substr($desc, 0, $begP - 1);
-                        $content = $lenContent > 0
-                                    ? substr($desc, $begp + 3, $lenContent)
-                                    : "";
-                        $desc = $prefix . $content . substr($desc, $endP + 4);
-                    }
-
                     // Should button be disabled?
                     $disabledOrNot =
                         $activity->isInactive() ? "disabled" : "";
@@ -98,7 +66,11 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     echo "<dt><input type='submit'  name='$key' id='$key' " .
                         "class='button' value='$title' $disabledOrNot>" .
                         "</dt>\n";
-                    echo "<dd $descDisabledOrNot>" . $desc . "</dd>\n";
+                    echo "<dd $descDisabledOrNot>";
+                    echo $this->partial("activity/_cleanIfSinglePar.phtml",
+                            array('content'=>$desc,
+                            'includeBreak' => false));
+                    echo "</dd>\n";
         }
     }
 }
