@@ -6,25 +6,25 @@
  * Attribution: the structure of rendering label, element, and errors 
  * separately, to allow the insertion of href links, came from:
  * http://monzee.wordpress.com/2009/02/23/decorators-are-hard-lets-go-shopping/
+ *
+ * Updated for Twitter-Bootstrap, Ashton Galloway, March 2013
  */
 
 $fields = $this->table->getFields();
 $form = $this->form;
 ?>
 
-<?php /* echo $this->form->renderForm(false); */ ?>
-<dl>
+<div class="control-group">
 <?php foreach ( $form->getElements() as $name => $elt ) :
-    echo "<dt id=\"$name-label\">";
+    echo "<div id=\"$name-label\" class=\"control-label\">";
     echo $this->partial("table/_fieldLabel.phtml",
             array('formType'=>$form->getFormType(), 'fields'=>$fields,
                   'fieldName' => $name, 'elt'=>$elt));
-    echo "</dt>\n";
-    echo "<dd id=\"$name-element\">\n";
+    echo "</div>\n";
+    echo "<div id=\"$name-element\" class=\"controls\">\n";
     echo $elt->renderElem() . "\n";
     echo $elt->renderErrors();
-    echo "</dd>\n";
+    echo "</div>\n";
 endforeach; ?>
-</dl>
-<!-- </form> -->
+</div>
 

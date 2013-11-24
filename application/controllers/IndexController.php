@@ -43,11 +43,11 @@ class IndexController extends Zend_Controller_Action
         if ( Zend_Registry::isRegistered(self::CONFIG_SETTINGS) )
         {
             $configSettings = Zend_Registry::get(self::CONFIG_SETTINGS);
+            $configs = Ramp_RegistryInterface::getInstance();
 
             // Get the initial activity from Zend_Registry.
             $this->_initialActivity =
-                isset($configSettings[self::INITIAL_ACTIVITY]) ?
-                    $configSettings[self::INITIAL_ACTIVITY] : null;
+                $configs->getDefaultInitialActivity();
 
             // Get appropriate title, subtitle, tab title, and icon
             // information from Zend_Registry.
@@ -64,6 +64,7 @@ class IndexController extends Zend_Controller_Action
             $this->view->pageSubTitle = isset($configSettings[self::SUBTITLE]) ?
                             $configSettings[self::SUBTITLE] : null;
 
+            /*
             // Get the appropriate cascading stylesheet from Zend_Registry.
             $stylesheet =
                 isset($configSettings[self::STYLE_SHEET]) ?
@@ -72,6 +73,7 @@ class IndexController extends Zend_Controller_Action
             {
                 $this->view->headLink()->prependStylesheet($stylesheet);
             }
+             */
 
         }
 
@@ -101,6 +103,8 @@ class IndexController extends Zend_Controller_Action
     /**
      * Show the user a form from which they should choose a
      * table/table setting.
+     *
+     * NOTE: This function has not been used or tested for a long time.
      * DEPRECATED?  Certainly no longer used as initial page, as it was 
      * in the very first version of RAMP.
      */
@@ -137,6 +141,9 @@ class IndexController extends Zend_Controller_Action
     /**
      * Show the user a form from which they should choose an
      * activity to perform.
+     *
+     * NOTE: This function has not been used or tested for a long time.
+     * DEPRECATED?
      */
     public function chooseActivityListAction()
     {
@@ -166,53 +173,6 @@ class IndexController extends Zend_Controller_Action
                 $form->populate($formData);
             }
         }
-    }
-
-    /**
-     * Provides the main menu.
-     * From Zend Framework in Action by Allen, Lo, and Brown,
-     *      2009, p. 74.
-     */ 
-    public function menuAction()
-    {
-        // TODO: Convert this to use Zend_Navigation
-
-        // Assigns the menu to the view & changes the response placeholder.
-        // $this->view->menu = "Hello, world";
-        $this->view->menu = $this->_readMenu();
-        $this->_helper->viewRenderer->setResponseSegment('menu');
-    }
-
-    /**
-     * Reads in the menu.
-     *
-     * @return string   filename
-     *
-     */
-    protected function _readMenu()
-    {
-        $menu =  new Zend_Config_Ini($this->_determineMenu());
-        return $menu;
-    }
-
-    /**
-     * Determines the menu to use, which is role-dependent if this is an 
-     * authenticated user whose role has its own menu or the defined 
-     * default menu otherwise.
-     */
-    protected function _determineMenu()
-    {
-        // Is this an authenticated user whose role dictates a specific menu?
-        $auth = Zend_Auth::getInstance();
-        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
-        {
-            $user = $auth->getIdentity();
-            return $user->menuFilename;
-        }
-
-        // No, so return the default menu.
-        $configs = Application_Model_RampConfigs::getInstance();
-        return $configs->getDefaultMenu();
     }
 
 

@@ -21,9 +21,6 @@ $errormsgs[] = $this->undefinedFieldsErrorMsg;  // Set in controller
 
 ?>
 
-<form id="record-page-form" enctype="application/x-www-form-urlencoded"
-    action="" method="post">
-
 <!-- Display title bar -->
 <div id="titlebar-area">
 
@@ -38,6 +35,9 @@ $errormsgs[] = $this->undefinedFieldsErrorMsg;  // Set in controller
 
 </div>  <!-- End of "titlebar-area" -->
 
+
+<form id="record-page-form" enctype="application/x-www-form-urlencoded"
+    action="" method="post" class="form-horizontal">
 
 <!-- Display buttons in sidebar -->
 <?php echo $this->partial("table/_buttonList.phtml",

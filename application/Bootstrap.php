@@ -146,5 +146,92 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         return $objFront;
     }
 
+    /**
+     * Initialize navigation
+     *
+     * Ashton Galloway, March 2013
+     */
+    protected function _initNavigation()
+    {
+        $this->bootstrap('view');
+        $view = $this->getResource('view');
+        $configs = Ramp_RegistryInterface::getInstance();
+        $menuFilename = $this->_determineMenu();
+        $initActivity = $configs->getDefaultInitialActivity();
+        $menu = new Zend_Navigation();
+        if ( ! empty($menuFilename) )
+        {
+            $ini = new Zend_Config_Ini($menuFilename);
+            foreach ( $ini as $entry )
+            {
+                $uri = '/';
+                $children = array();
+                //assumption: a menu entry with no url is the home entry
+                if ( ! is_null($entry->url) )
+                {
+                    $uri = '/' . $entry->url->controller . '/' 
+                        . $entry->url->action . '/activity/' 
+                        //must double encode urls so they work properly with the activityController
+                        . urlencode(urlencode($entry->url->activity));
+                }
+                else
+                {
+                    $children = $this->_readActivityMenu($initActivity);
+                }
+                $menu->addPage(new Zend_Config(array(
+                    'label' => $entry->title,
+                    'uri' => $uri,
+                    'pages' => $children
+                )));
+            } }
+        $view->navigation($menu);
+    }
+
+    /**
+     * Determines the menu to use, which is role-dependent if this is an 
+     * authenticated user whose role has its own menu or the defined 
+     * default menu otherwise.
+     */
+    protected function _determineMenu()
+    {
+        // Is this an authenticated user whose role dictates a specific menu?
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        {
+            $user = $auth->getIdentity();
+            return $user->menuFilename;
+        }
+
+        // No, so return the default menu.
+        $configs = Ramp_RegistryInterface::getInstance();
+        return $configs->getDefaultMenu();
+    }
+
+    /**
+     * Read menu of possible activities.
+     *
+     * Ashton Galloway, March 2013
+     */
+    protected function _readActivityMenu($filename)
+    {
+        $activityMenu = new Zend_Config_Ini($filename);
+        $pages = array();
+        foreach ( $activityMenu as $activity )
+        {
+            if ( ! is_null($activity->source) )
+            {
+                // TODO: Bad Assumption that all activities in an 
+                // activity file are table settings!
+                //assumption: all setting type activities have links
+                $uri = '/table/index/_setting/'. urlencode(urlencode($activity->source));
+                array_push($pages, array(
+                    'label' => $activity->title,
+                    'uri' => $uri
+                ));
+            }
+        }
+        return $pages;
+    }
+
 }
 

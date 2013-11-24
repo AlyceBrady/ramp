@@ -1,0 +1,24 @@
+to resolve dependencies with Zend and Twitter Bootstrap:
+
+install Composer:
+
+    *nix:
+    curl -s https://getcomposer.org/installer | php
+
+    Windows:
+    https://getcomposer.org/Composer-Setup.exe
+
+then run it
+    *nix:
+    cd /path/to/ramp/
+    php composer.phar install
+
+    Windows:
+    cd /path/to/ramp/
+    composer install
+
+This will give you a bunch of things in a folder named ext-libs. To link them so that RAMP will be able to use the resources, either link or copy:
+
+ext-libs/bonndan/twitter-bootstrap-zf1/lib/TwitterBootstrap to library/TwitterBootstrap
+ext-libs/simukti/zf1/Zend to library/Zend
+twitter-bootstrap/docs/assets to public/tb_assets

@@ -11,17 +11,30 @@ echo $this->doctype();
     <?php if ( isset($this->icon) ) : ?>
         <link rel='icon' href='<?php echo $this->icon; ?>'>
     <?php endif; ?>
+
+    <link rel="stylesheet"
+        href="<?php echo $this->baseUrl('tb_assets/css/bootstrap.css')?>" />
+
+    <script src="<?php echo $this->baseUrl('tb_assets/js/jquery.js')?>"
+        type="text/javascript"></script>
+
+    <script src="<?php echo $this->baseUrl('tb_assets/js/bootstrap.js')?>"
+        type="text/javascript"></script>
+
 </head>
 
 <body>
-<?php echo $this->partial("_header.phtml",
-        array('title'=>$this->pageTitle, 'subtitle'=>$this->pageSubTitle)); ?>
-<?php echo $this->layout()->menu; ?>
-<div id="content">
-    <?php echo $this->layout()->content; ?>
-</div>
-<?php echo $this->authDebugging; ?>
-<?php echo $this->partial("_footer.phtml"); ?>
+    <div class="container">
+        <?php echo $this->partial("_header.phtml",
+            array('title'=>$this->pageTitle,
+                  'subtitle'=>$this->pageSubTitle)); ?>
+        <?php echo $this->navigation()->menu()->setPartial("_menu.phtml"); ?>
+        <div id="content" class="row">
+            <?php echo $this->layout()->content; ?>
+        </div>
+        <?php echo $this->authDebugging; ?>
+        <?php echo $this->partial("_footer.phtml"); ?>
+    </div>
 </body>
 
 </html>

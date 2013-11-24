@@ -15,6 +15,7 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
 
 ?>
 
+<div class="span8">
 <div id="title-block">  <!-- Contains title, footnotes, and instructions -->
 <?php if ( $subtleFootnote )
         { echo "<h1 title='" . $this->escape($this->footnote) . "'>"; }
@@ -48,4 +49,5 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
             array('tag'=>'li', 'value'=>$msg)); ?>
 <?php endforeach; ?>
 </ul>
+</div>
 </div>

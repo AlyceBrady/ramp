@@ -7,9 +7,8 @@
 $charset = '^a-zA-Z0-9_\x7f-\xff';
 ?>
 
-<div id="title-sidebar">
-<ul>
-<fieldset id="button-list" class="sidebar">
+<fieldset id="button-list" class="span4">
+<div class="btn-group btn-group-vertical pull-right">
 
 <?php
 foreach ( $this->buttonList as $buttonLabel ) :
@@ -18,11 +17,11 @@ foreach ( $this->buttonList as $buttonLabel ) :
     $buttonLabel = $this->escape($buttonLabel);
     $buttonId = $this->escape(preg_replace('/[' . $charset . ']/', '', 
                                     (string) $buttonLabel));
-    echo "<li><input type='$buttonType' name='submit' id='$buttonId'
-            value='$buttonLabel' /></li>\n";
+    echo "<input type='$buttonType' name='submit' id='$buttonId'
+            value='$buttonLabel' class='btn' />\n";
 endforeach;
 ?>
 
-</fieldset>
-</ul>
 </div>
+</fieldset>
+

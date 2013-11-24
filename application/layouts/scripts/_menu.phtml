@@ -1,0 +1,24 @@
+<div id="menu-bar" class="navbar row">
+<div class="navbar-inner">
+<ul id="main-menu" class="nav">
+    <?php foreach($this->container as $page)
+    {
+        if($page->pages == null)
+        {
+            echo '<li><a href="' . $page->uri . '">' . $page->label . '</a></li>';
+        }
+        else
+        {
+            echo '<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $page->label . '</a>';
+            echo '<ul class="dropdown-menu" role="menu">';
+            echo '<li><a href="' . $page->uri . '">' . $page->label . '</a></li>';
+            foreach($page->pages as $child)
+            {
+                echo '<li><a href="' . $child->uri . '">' . $child->label . '</a></li>';
+            }
+            echo '</ul></li>';
+        }
+    }
+    ?>
+</ul>
+<p class="pull-right navbar-text"><?php echo $this->loggedInUser(); ?></p></div></div>
