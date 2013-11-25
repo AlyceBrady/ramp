@@ -1,12 +1,5 @@
 <?php
 
-/*
- * TODO: Would be nice to have the test for internal vs external 
- * authentication confined to a single method in a single class, 
- * rather than spread across controllers/AuthController,
- * library/Ramp/Acl.php, and views/helpers/LoggedInUser.php.
- */ 
-
 /**
  * RAMP: Records and Activity Management Program
  *
@@ -18,10 +11,9 @@
  * http://www.cs.kzoo.edu/ramp/LICENSE.txt
  *
  * @category   Ramp
- * @package    Ramp_Controller
- * @copyright  Copyright (c) 2012 Justin Leatherwood
+ * @package    Ramp
+ * @copyright  Copyright (c) 2013 Alyce Brady
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Acl.php 1 2012-11-13 Justin Leatherwood $
  *
  * This class was added based on a tutorial found at
  * http://www.ens.ro/2012/03/20/zend-authentication-and-authorization-tutorial-with-zend_auth-and-zend_acl/

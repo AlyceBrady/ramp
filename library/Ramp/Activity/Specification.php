@@ -11,19 +11,18 @@
  * http://www.cs.kzoo.edu/ramp/LICENSE.txt
  *
  * @category   Ramp
- * @package    Ramp_Model
+ * @package    Ramp_Activity
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_ActivitySpec.php 1 2012-07-12 alyce $
  *
  */
 
 /**
- * An Application_Model_ActivitySpec object models an activity 
+ * A Ramp_Activity_Specification object models an activity 
  * specification.
  *
  */
-class Application_Model_ActivitySpec
+class Ramp_Activity_Specification
 {
 
     // Valid properties
@@ -416,12 +415,12 @@ class Application_Model_ActivitySpec
         switch ( $this->_type )
         {
             case self::ACTIVITY_LIST_TYPE:
-                return AL_PARAM;
+                return self::AL_PARAM;
             case self::SETTING_TYPE:
             case self::REPORT_TYPE:
-                return SETTING_PARAM;
+                return self::SETTING_PARAM;
             case self::DOCUMENT_TYPE:
-                return DOC_PARAM;
+                return self::DOC_PARAM;
         }
     }
 

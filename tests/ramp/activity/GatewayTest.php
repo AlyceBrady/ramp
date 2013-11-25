@@ -1,7 +1,7 @@
 <?php
 require_once 'TestConfiguration.php';
 
-class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
+class Ramp_Activity_GatewayTest extends PHPUnit_Framework_TestCase
 {
     const SIMPLE_TEST = TestSettings::SIMPLE_ACT_LIST;
     const MULT_LISTS = TestSettings::MULT_ACT_LISTS;
@@ -26,7 +26,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Test getting an activity list from a valid file.
         // Activities are fully defined in place.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::SIMPLE_TEST);
         $this->assertSame(7, count($actList));
     }
@@ -35,7 +35,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Read in activity list file with multiple activity lists, then 
         // get one that was already read in.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::MULT_LISTS);
         $actList2 = $gateway->getActivityList(self::INTERNAL_ACT_LIST);
         $this->assertSame(7, count($actList));
@@ -46,7 +46,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Test getting an activity list from a file that does not 
         // have a top-level list, but has a section matching the file name.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::MATCHING_ACT_LIST);
     }
 
@@ -54,7 +54,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception', 'Missing activities file');
         // Test (not) getting an activity list from an invalid file.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::NON_FILE);
     }
 
@@ -64,7 +64,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
                                     'does not contain a top-level activity');
         // Test (not) getting an activity list from a file that does not 
         // have a top-level list, nor a section matching the file name.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::BAD_ACT_LISTS);
     }
 
@@ -74,7 +74,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
                                     'does not contain a section');
         // Test (not) getting an activity list from a file that has other
         // activity lists but not the one being requested.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::BAD_AL_IN_GOOD_ALFILE);
     }
 
@@ -82,7 +82,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Test getting an activity list from a file that has it 
         // (although it doesn't have a list matching the file name).
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::GOOD_AL_IN_BAD_ALFILE);
         $this->assertSame(5, count($actList));
     }
@@ -91,7 +91,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Test getting the main activity list from a file with 
         // duplicate sections.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::DUPL_ACT_LISTS);
         $this->assertSame(8, count($actList));
     }
@@ -100,7 +100,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     {
         // Test getting the duplicated list from a file with duplicate 
         // sections (the later section will override the earlier one).
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::DUPLICATED_LIST);
         $this->assertSame(7, count($actList));
     }
@@ -108,7 +108,7 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     public function testGetSingleUnnamedActivity()
     {
         // Test getting unnamed activity that is only contents of file.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList(self::UNNAMED_ACT_LIST);
         $this->assertSame(1, count($actList));
         $this->assertTrue($actList[0]->isSetting());
@@ -117,14 +117,14 @@ class models_ActivityGatewayTest extends PHPUnit_Framework_TestCase
     public function testGetNullTitleForActList()
     {
         // Test getting the title from an activity list that doesn't have one.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $this->assertNull($gateway->getActivityListTitle(self::SIMPLE_TEST));
     }
 
     public function testGetNonNullTitleForActList()
     {
         // Test getting a valid title from an activity list.
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $title = $gateway->getActivityListTitle(self::INTERNAL_ACT_LIST);
         $this->assertNotNull($title);
     }

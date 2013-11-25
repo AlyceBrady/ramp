@@ -2,11 +2,13 @@
     <testsuites>
     <testsuite name="Model Test Suite">
         <!-- Define ordered test suite. -->
+        <file>./ramp/RegistryFacadeTest.php</file>
+        <file>./ramp/activity/IniReaderTest.php</file>
         <file>./application/models/RampIniReaderTest.php</file>
 
-        <file>./application/models/ActivitySpecTest.php</file>
-        <file>./application/models/ActivityGatewayTest.php</file>
-            <!-- depends on RampIniReader and ActivitySpec -->
+        <file>./ramp/activity/SpecificationTest.php</file>
+        <file>./ramp/activity/GatewayTest.php</file>
+            <!-- depends on Activity_IniReader and Activity_Specification -->
 
         <file>./application/models/TVSGatewayTest.php</file>
             <!-- depends on RampIniReader -->

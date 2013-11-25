@@ -33,7 +33,7 @@ if ( isset($this->activityList) && is_array($this->activityList) )
     {
         switch ($activity->getType())
         {
-            case Application_Model_ActivitySpec::COMMENT_TYPE:
+            case Ramp_Activity_Specification::COMMENT_TYPE:
                     $comment = $this->escape($activity->getComment());
                     $comment = Markdown::defaultTransform($comment);
                     $commentClass = $activity->isInactive()
@@ -45,11 +45,11 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     echo "</dt><dd></dd>\n";
                     break;
 
-            case Application_Model_ActivitySpec::SEPARATOR_TYPE:
+            case Ramp_Activity_Specification::SEPARATOR_TYPE:
                     echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
                     break;
 
-            default:        // SETTING and ACTIVITY_LIST types
+            default:      // Active types, e.g., SETTING and ACTIVITY_LIST
                     // Get and format title for button.
                     $title = $this->escape($activity->getTitle());
                     // $title = Markdown::defaultTransform($title);
