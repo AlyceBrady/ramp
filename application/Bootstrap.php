@@ -81,7 +81,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $this->bootstrap('view');
         $view = $this->getResource('view');
-        $configs = Ramp_RegistryInterface::getInstance();
+        $configs = Ramp_RegistryFacade::getInstance();
         $menuFilename = $this->_determineMenu();
         $initActivity = $configs->getDefaultInitialActivity();
         $menu = new Zend_Navigation();
@@ -109,7 +109,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                     'uri' => $uri,
                     'pages' => $children
                 )));
-            } }
+            }
+            $menu->addPage($ini);
+        }
         $view->navigation($menu);
     }
 
@@ -129,7 +131,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         // No, so return the default menu.
-        $configs = Ramp_RegistryInterface::getInstance();
+        $configs = Ramp_RegistryFacade::getInstance();
         return $configs->getDefaultMenu();
     }
 
@@ -137,12 +139,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
      * Read menu of possible activities.
      *
      * Ashton Galloway, March 2013
-     */
     protected function _readActivityMenu($filename)
     {
-        $activityMenu = new Zend_Config_Ini($filename);
+        $activityList = new Zend_Config_Ini($filename);
         $pages = array();
-        foreach ( $activityMenu as $activity )
+        foreach ( $activityList as $activity )
         {
             if ( ! is_null($activity->source) )
             {
@@ -154,6 +155,50 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                     'label' => $activity->title,
                     'uri' => $uri
                 ));
+            }
+        }
+        return $pages;
+    }
+     */
+
+    /**
+     * Read menu of possible activities.
+     */
+    protected function _readActivityMenu($filename)
+    {
+        $gateway = new Application_Model_ActivityGateway();
+        $activityList = $gateway->getActivityList($filename);
+        $activityTitle =  $gateway->getActivityListTitle($filename);
+        // $activityList = new Zend_Config_Ini($filename);
+        $pages = array();
+        foreach ( $activityList as $activity )
+        {
+            if ( $activity->isControllerAction() )
+            {
+                array_push($pages, array(
+                                'label' => $activityTitle,
+                                'controller' => $activity->getController(),
+                                'action' => $activity->getAction(),
+                                'params' => $activity->getParameters()
+                            ));
+            }
+            else if ( $activity->isUrl() )
+            {
+                array_push($pages, array(
+                                'label' => $activityTitle,
+                                'uri' => $activity->getSource()
+                            ));
+            }
+            else if ( ! ( $activity->isSeparator() || $activity->isComment() ) )
+            {
+                $keyword = $activity->getParamKeyword();
+                $source = urlencode($activity->getSource());
+                array_push($pages, array(
+                                'label' => $activityTitle,
+                                'controller' => $activity->getController(),
+                                'action' => $activity->getAction(),
+                                'params' => array($keyword => $source)
+                            ));
             }
         }
         return $pages;
