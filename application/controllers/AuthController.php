@@ -1,12 +1,5 @@
 <?php
 
-/*
- * TODO: Would be nice to have the test for internal vs external 
- * authentication confined to a single method in a single class, 
- * rather than spread across controllers/AuthController,
- * library/Ramp/Acl.php, and views/helpers/LoggedInUser.php.
- */ 
-
 /**
  * RAMP: Records and Activity Management Program
  *

@@ -11,19 +11,18 @@
  * http://www.cs.kzoo.edu/ramp/LICENSE.txt
  *
  * @category   Ramp
- * @package    Ramp_Model
+ * @package    Ramp_Activity
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_ActivitySpec.php 1 2012-07-12 alyce $
  *
  */
 
 /**
- * An Application_Model_ActivitySpec object models an activity 
+ * A Ramp_Activity_Specification object models an activity 
  * specification.
  *
  */
-class Application_Model_ActivitySpec
+class Ramp_Activity_Specification
 {
 
     // Valid properties
@@ -48,6 +47,18 @@ class Application_Model_ActivitySpec
     const CONTROLLER_ACTION_TYPE    = "controllerAction";
     const DOCUMENT_TYPE             = "document";
     const URL_TYPE                  = "url";
+
+    // Common controller/action types
+    const ACT_CONTROLLER = Ramp_Controller_KeyParameters::ACT_CONTROLLER;
+    const DOC_CONTROLLER = Ramp_Controller_KeyParameters::DOC_CONTROLLER;
+    const REP_CONTROLLER = Ramp_Controller_KeyParameters::REP_CONTROLLER;
+    const TBL_CONTROLLER = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
+    const DEFAULT_ACTION = "index";
+
+    // Keywords for sending parameters to controller/action combinations
+    const AL_PARAM        = Ramp_Controller_KeyParameters::ACT_KEY_PARAM;
+    const DOC_PARAM       = Ramp_Controller_KeyParameters::DOC_KEY_PARAM;
+    const SETTING_PARAM   = Ramp_Controller_KeyParameters::SETTING_PARAM;
 
     protected $_name;   // activity name (used for keyword lookup and
                         // error messages)
@@ -131,9 +142,9 @@ class Application_Model_ActivitySpec
                 $this->_description =
                     $this->_confirmProperty(self::COMMENT, $specAsArray);
                 break;
+            case self::ACTIVITY_LIST_TYPE:
             case self::SETTING_TYPE:
             case self::REPORT_TYPE:
-            case self::ACTIVITY_LIST_TYPE:
             case self::DOCUMENT_TYPE:
                 $this->_title = $this->_confirmProperty(self::TITLE,
                                                         $specAsArray);
@@ -141,6 +152,8 @@ class Application_Model_ActivitySpec
                     $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
                 $this->_source = $this->_confirmProperty(self::SOURCE,
                                                          $specAsArray);
+                $this->_setController();
+                $this->_action = self::DEFAULT_ACTION;
                 break;
             case self::CONTROLLER_ACTION_TYPE:
                 $this->_title =
@@ -195,6 +208,28 @@ class Application_Model_ActivitySpec
         }
 
         return $spec[$property];
+    }
+
+    /**
+     * Sets the controller associated with this activity.
+     */
+    protected function _setController()
+    {
+        switch ( $this->_type )
+        {
+            case self::ACTIVITY_LIST_TYPE:
+                $this->_controller = self::ACT_CONTROLLER;
+                break;
+            case self::SETTING_TYPE:
+                $this->_controller = self::TBL_CONTROLLER;
+                break;
+            case self::REPORT_TYPE:
+                $this->_controller = self::REP_CONTROLLER;
+                break;
+            case self::DOCUMENT_TYPE:
+                $this->_controller = self::DOC_CONTROLLER;
+                break;
+        }
     }
 
     /**
@@ -342,23 +377,51 @@ class Application_Model_ActivitySpec
     }
 
     /**
-     * Gets the value specified with the controller property.  Returns a
-     * null if no value was specified for this property.
+     * Returns the controller associated with this activity.  If
+     * the activity type is controller/action, returns the value
+     * specified with the controller property.  If the activity is an 
+     * activity list, table setting, report, or document, returns the 
+     * appropriate controller. Returns an empty string for activities
+     * like separators and comments that do not have any controller 
+     * associated with them.
      *
      */
     public function getController()
     {
-        return $this->_controller == "" ? null : $this->_controller;
+        return empty($this->_controller) ? "" : $this->_controller;
     }
 
     /**
-     * Gets the value specified with the action property.  Returns an 
-     * empty string if no value was specified for this property.
-     *
+     * Returns the action associated with this activity.  If
+     * the activity type is controller/action, returns the value
+     * specified with the action property.  If the activity is an 
+     * activity list, table setting, report, or document, returns the 
+     * appropriate action. Returns an empty string for activities
+     * like separators and comments that do not have any action 
+     * associated with them.
      */
     public function getAction()
     {
-        return $this->_action == "" ? null : $this->_action;
+        return empty($this->_action) ? "" : $this->_action;
+    }
+
+    /**
+     * Returns the parameter keyword associated with this activity
+     * if an activity list, table setting, report, or document; returns
+     * an empty string for other activities.
+     */
+    public function getParamKeyword()
+    {
+        switch ( $this->_type )
+        {
+            case self::ACTIVITY_LIST_TYPE:
+                return self::AL_PARAM;
+            case self::SETTING_TYPE:
+            case self::REPORT_TYPE:
+                return self::SETTING_PARAM;
+            case self::DOCUMENT_TYPE:
+                return self::DOC_PARAM;
+        }
     }
 
     /**

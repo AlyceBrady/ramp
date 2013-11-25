@@ -2,11 +2,11 @@
 
 class Application_Form_ActivityList extends Zend_Form
 {
-    const COMMENT_TYPE       = Application_Model_ActivitySpec::COMMENT_TYPE;
-    const SEPARATOR_TYPE     = Application_Model_ActivitySpec::SEPARATOR_TYPE;
-    const SETTING_TYPE       = Application_Model_ActivitySpec::SETTING_TYPE;
+    const COMMENT_TYPE       = Ramp_Activity_Specification::COMMENT_TYPE;
+    const SEPARATOR_TYPE     = Ramp_Activity_Specification::SEPARATOR_TYPE;
+    const SETTING_TYPE       = Ramp_Activity_Specification::SETTING_TYPE;
     const ACTIVITY_LIST_TYPE =
-                            Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE;
+                            Ramp_Activity_Specification::ACTIVITY_LIST_TYPE;
 
 
     protected $_activityList;

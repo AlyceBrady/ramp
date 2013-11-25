@@ -11,19 +11,18 @@
  * http://www.cs.kzoo.edu/ramp/LICENSE.txt
  *
  * @category   Ramp
- * @package    Ramp_Model
+ * @package    Ramp_Activity
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_ActivityGateway.php 1 2012-07-12 alyce $
  *
  */
 
 /**
- * An Application_Model_ActivityGateway object gets activity 
+ * A Ramp_Activity_Gateway object gets activity 
  * specifications from associated external sources.
  *
  */
-class Application_Model_ActivityGateway
+class Ramp_Activity_Gateway
 {
     // Keywords
     const ACTIVITY      = "activity";
@@ -102,7 +101,7 @@ class Application_Model_ActivityGateway
 
         // Import all activity specifications provided in the external
         // source associated with $name.
-        $reader = new Application_Model_RampIniReader();
+        $reader = new Ramp_Activity_Config_IniReader();
         $importedSpecs = $reader->importActivitySpecs($name)->toArray();
         $filename = $reader->getActivityListFilename($name);
 
@@ -253,7 +252,7 @@ class Application_Model_ActivityGateway
 
         // Otherwise, construct a valid activity specification object 
         // (validation is performed as the object is constructed).
-        return new Application_Model_ActivitySpec($actList, $spec);
+        return new Ramp_Activity_Specification($actList, $spec);
     }
 
     /**

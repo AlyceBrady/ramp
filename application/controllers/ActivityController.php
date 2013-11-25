@@ -14,21 +14,11 @@
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: ActivityController.php 1 2012-07-12 alyce $
  *
  */
 
 class ActivityController extends Zend_Controller_Action
 {
-    // Valid controller types
-    const DOC_CONTROLLER = Ramp_Controller_KeyParameters::DOC_CONTROLLER;
-    const REP_CONTROLLER = Ramp_Controller_KeyParameters::REP_CONTROLLER;
-    const TBL_CONTROLLER = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
-
-    // Keywords for sending parameters to controller/action combinations
-    const AL_PARAM        = Ramp_Controller_KeyParameters::ACT_KEY_PARAM;
-    const DOC_PARAM       = Ramp_Controller_KeyParameters::DOC_KEY_PARAM;
-    const SETTING_PARAM   = Ramp_Controller_KeyParameters::SETTING_PARAM;
 
     protected $_actSpecName;
 
@@ -48,7 +38,7 @@ class ActivityController extends Zend_Controller_Action
      */
     public function indexAction()
     {
-        $gateway = new Application_Model_ActivityGateway();
+        $gateway = new Ramp_Activity_Gateway();
         $actList = $gateway->getActivityList($this->_actSpecName);
 
         // Is this the initial display or a callback from a button action?
@@ -69,26 +59,16 @@ class ActivityController extends Zend_Controller_Action
 
             switch ( $type )
             {
-                case Application_Model_ActivitySpec::ACTIVITY_LIST_TYPE :
-                    $this->_redirectToSource(null, 'index', self::AL_PARAM,
-                                             $activity);
+                case Ramp_Activity_Specification::ACTIVITY_LIST_TYPE :
+                case Ramp_Activity_Specification::SETTING_TYPE :
+                case Ramp_Activity_Specification::REPORT_TYPE :
+                case Ramp_Activity_Specification::DOCUMENT_TYPE :
+                    $this->_redirectToSource($activity);
                     break;
-                case Application_Model_ActivitySpec::SETTING_TYPE :
-                    $this->_redirectToSource(self::TBL_CONTROLLER, 'index',
-                                             self::SETTING_PARAM, $activity);
-                    break;
-                case Application_Model_ActivitySpec::REPORT_TYPE :
-                    $this->_redirectToSource(self::REP_CONTROLLER, 'index',
-                                             self::SETTING_PARAM, $activity);
-                    break;
-                case Application_Model_ActivitySpec::DOCUMENT_TYPE :
-                    $this->_redirectToSource(self::DOC_CONTROLLER, 'index',
-                                             self::DOC_PARAM, $activity);
-                    break;
-                case Application_Model_ActivitySpec::URL_TYPE :
+                case Ramp_Activity_Specification::URL_TYPE :
                     $this->_redirect($activity->getUrl());
                     break;
-                case Application_Model_ActivitySpec::CONTROLLER_ACTION_TYPE :
+                case Ramp_Activity_Specification::CONTROLLER_ACTION_TYPE :
                     $this->_helper->redirector(
                             $activity->getAction(), $activity->getController(),
                             null, $activity->getParameters());
@@ -102,9 +82,11 @@ class ActivityController extends Zend_Controller_Action
      * Redirects to a controller and activity based on the source provided.
      *
      */
-    protected function _redirectToSource($controller, $action, $keyword,
-                                         $activity)
+    protected function _redirectToSource($activity)
     {
+        $controller = $activity->getController();
+        $action = $activity->getAction();
+        $keyword = $activity->getParamKeyword();
         $source = urlencode($activity->getSource());
         $this->_helper->redirector($action, $controller, null,
                                    array($keyword => $source));

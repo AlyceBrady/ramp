@@ -1,12 +1,5 @@
 <?php
 
-/*
- * TODO: Would be nice to have the test for internal vs external 
- * authentication confined to a single method in a single class, 
- * rather than spread across controllers/AuthController,
- * library/Ramp/Acl.php, and this file.
- */ 
-
 class Zend_View_Helper_LoggedInUser
 {
     protected $view;
