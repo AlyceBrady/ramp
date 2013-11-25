@@ -1,3 +1,4 @@
+
 # RAMP: Record and Activity Management Program #
 
 Ramp is a program that supports the easy creation of simple
@@ -26,15 +27,15 @@ Ramp is set up to work with tables defined in a MySQL database,
 using the Zend Framework.
 
 ### RELEASE INFORMATION ###
-RAMP/SMART Release 0.0.0.1.  
-Released on July 12, 2012.
+
+RAMP/SMART Release 0.5.2.  
+Released on November 24, 2013.
 
 
 ### LICENSE ###
 
 The source files for Ramp/Smart are released under a BSD 2-Clause license.
-You can find a copy of this license in
-[LICENSE.txt] [license].
+You can find a copy of this license in [LICENSE.txt] [license].
 
 
 ### ACKNOWLEDGEMENTS ###
@@ -62,6 +63,7 @@ Individual contributors include:
 >   Guilherme Guedes  
 >   Simon Haile  
 >   Tristan Kiel  
+>   Lucas Kushner  
 >   Justin Leatherwood  
 >   Tendai Mudyiwa  
 >   William Reichle  

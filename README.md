@@ -2,7 +2,7 @@
 # RAMP: Record and Activity Management Program #
 # SMART: Software for Managing Academic Records and Transcripts #
 
-Welcome to the (temporarily) combined RAMP/SMART Release 0.0.0.1.
+Welcome to the (temporarily) combined RAMP/SMART Project.
 
 ## RAMP ##
 
@@ -56,8 +56,8 @@ general-purpose activities supported by Ramp).
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.1.  
-Released on March 12, 2013.
+RAMP/SMART Release 0.5.2.  
+Released on November 24, 2013.
 
 ### SYSTEM REQUIREMENTS ###
 
@@ -71,6 +71,9 @@ one installation of Zend Framework 1.11.4, nor does it work yet
 with Zend 2, which is a completely redesigned version of the Zend
 Framework.
 
+Ramp also uses Michel Fortin's PHP Markdown Lib 1.3, which depends
+on PHP 5.3, for converting Markdown text to HTML.
+
 ### INSTALLATION ###
 
 Please see INSTALL.txt.  (Under construction...)
@@ -78,7 +81,7 @@ Please see INSTALL.txt.  (Under construction...)
 ### LICENSE ###
 
 The source files for Ramp/Smart are released under a BSD 2-Clause license.
-You can find a copy of this license in LICENSE.txt.
+You can find a copy of this license in [LICENSE.txt] [license].
 
 ### ACKNOWLEDGEMENTS ###
 
@@ -105,6 +108,7 @@ Individual contributors include:
 >   Guilherme Guedes  
 >   Simon Haile  
 >   Tristan Kiel  
+>   Lucas Kushner  
 >   Justin Leatherwood  
 >   Tendai Mudyiwa  
 >   William Reichle  
@@ -112,4 +116,6 @@ Individual contributors include:
 >   Kyle Sunden  
 >   Jiakan Wang  
 >   Riley Wetzel  
+
+[license]:  /LICENSE.txt
 

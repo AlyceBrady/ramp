@@ -1,3 +1,4 @@
+
 # SMART: Software for Managing Academic Records and Transcripts #
 
 Smart is a program for managing records needed to support an academic
@@ -19,11 +20,9 @@ Smart allows a database administrator to create various views of
 the tables in the database, called "table settings." For any database
 table for which a table setting has been defined, Smart supports:
 
- * A search mechanism for finding records based on values in
- fields
+ * A search mechanism for finding records based on values in fields
 
- * A table view for viewing a set of table records with column
- headings
+ * A table view for viewing a set of table records with column headings
 
  * A list view for viewing table records (often just a defined
    subset of columns, useful for selecting a single record from
@@ -32,8 +31,7 @@ table for which a table setting has been defined, Smart supports:
  * A single-record view for viewing records in their entirety,
    modifying them, or adding new records to the table; single-record
    views may also contain links to other, related tables or
-   records if the relationships are defined in the table
-   setting
+   records if the relationships are defined in the table setting
 
 In time, the plan is to expand Smart to include customized activities
 specific to the academic records domain, such as student registration
@@ -46,15 +44,15 @@ in turn, uses MySQL, PHP, and the Zend Framework.
 
 
 ### RELEASE INFORMATION ###
-RAMP/SMART Release 0.0.0.1.  
-Released on July 12, 2012.
+
+RAMP/SMART Release 0.5.2.  
+Released on November 24, 2013.
 
 
 ### LICENSE ###
 
 The source files for Smart/Ramp are released under a BSD 2-Clause license.
-You can find a copy of this license in
-[LICENSE.txt] [license].
+You can find a copy of this license in [LICENSE.txt] [license].
 
 
 ### ACKNOWLEDGEMENTS ###
@@ -82,6 +80,7 @@ Individual contributors include:
 >   Guilherme Guedes  
 >   Simon Haile  
 >   Tristan Kiel  
+>   Lucas Kushner  
 >   Justin Leatherwood  
 >   Tendai Mudyiwa  
 >   William Reichle  
