@@ -9,9 +9,6 @@
 
 class Zend_View_Helper_LoggedInUser
 {
-    const AUTH_TYPE          = 'rampAuthenticationType';
-    const INTERNAL_AUTH      = 'internal';
-
     protected $view;
 
     function setView($view)
@@ -26,8 +23,7 @@ class Zend_View_Helper_LoggedInUser
      */
     function loggedInUser()
     {
-        $authType = Zend_Registry::get(self::AUTH_TYPE);
-        $usingInternalAuthentication = $authType === self::INTERNAL_AUTH;
+        $configs = Ramp_RegistryFacade::getInstance();
 
         $auth = Zend_Auth::getInstance();
         $string = "";
@@ -40,7 +36,7 @@ class Zend_View_Helper_LoggedInUser
             $user = $auth->getIdentity();
             $username = $this->view->escape($user->username);
             $changePW = "";
-            if ( $usingInternalAuthentication )
+            if ( $configs->usingInternalAuthentication() )
             {
                 $changePW = '<a href=' . $changepwURL .
                                     '>Change password</a>' . ' |';

@@ -75,34 +75,14 @@ class DocumentController extends Zend_Controller_Action
     protected function _getDocumentFilename($name)
     {
         // Determine the filename, based on system path and $name.
-        $dir = $this->_getDocumentRootDirectory();
+        $configs = Ramp_RegistryFacade::getInstance();
+        $dir = $configs->getDocumentRoot();
         $docFile = $dir .  DIRECTORY_SEPARATOR .  $name;
         if ( ! file_exists($docFile) )
         {
             throw new Exception('Missing file: ' .  $docFile);
         }
         return $docFile;
-    }
-
-    /**
-     * Gets the root directory being used for documentation files.
-     *
-     * @return string   directory path
-     *
-     */
-    protected function _getDocumentRootDirectory()
-    {
-        // Get the document root directory from Zend_Registry.  If none is 
-        // found, use the settings root directory.
-        $path = 
-            Zend_Registry::isRegistered('rampDocumentRoot') ?
-                Zend_Registry::get('rampDocumentRoot') :
-                null;
-
-        $path = $path ? :
-                    Application_Model_RampIniReader::getSettingsDirectory();
-
-        return $path;
     }
 
     /**

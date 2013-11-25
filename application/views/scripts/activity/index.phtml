@@ -41,7 +41,7 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     echo "<dt $commentClass>";
                     echo $this->partial("activity/_cleanIfSinglePar.phtml",
                             array('content'=>$comment,
-                            'includeBreak' => "true"));
+                            'includeBreak' => true));
                     echo "</dt><dd></dd>\n";
                     break;
 
@@ -69,8 +69,7 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                     echo "<dd $descDisabledOrNot>";
                     echo $this->partial("activity/_cleanIfSinglePar.phtml",
                             array('content'=>$desc,
-                            'includeBreak' => "false"));
-                    echo $desc;
+                            'includeBreak' => false));
                     echo "</dd>\n";
         }
     }

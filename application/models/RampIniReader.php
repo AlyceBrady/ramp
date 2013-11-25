@@ -40,15 +40,16 @@ class Application_Model_RampIniReader
      */
     public function getActivityListFilename($name)
     {
-        // Determine the filename, based on system path and $name.
-        $altName = dirname($name);
+        // Given name might be the filename or might be the name of an 
+        // activity with the file.  Determine the filename.
+        $name2 = dirname($name);
         $dir = self::_getActivitiesDirectory();
-        $actFile1 = $dir .  DIRECTORY_SEPARATOR .  $name;
-        $actFile2 = $dir .  DIRECTORY_SEPARATOR .  $altName;
-        if ( is_file($actFile1) )
+        $fullPath1 = $dir .  DIRECTORY_SEPARATOR .  $name;
+        $fullPath2 = $dir .  DIRECTORY_SEPARATOR .  $name2;
+        if ( is_file($fullPath1) )
             { return $name; }
-        elseif ( is_file($actFile2) )
-            { return $altName; }
+        elseif ( is_file($fullPath2) )
+            { return $name2; }
         else
             { return null; }
     }
@@ -67,18 +68,19 @@ class Application_Model_RampIniReader
     {
         // Determine the file name, based on system path and $name.
         $dir = self::_getActivitiesDirectory();
-        $activitiesFile = $dir .  DIRECTORY_SEPARATOR .  $name;
-        $altFilename = dirname($activitiesFile);
-        $altActivityName = basename($activitiesFile);
-        if ( is_file($activitiesFile) )
-            { return new Zend_Config_Ini($activitiesFile); }
-        elseif ( is_file($altFilename) )
-            { return new Zend_Config_Ini($altFilename); }
+        $fullPath1 = $dir .  DIRECTORY_SEPARATOR .  $name;
+        $fullPath2 = dirname($fullPath1);
+        $activityName = basename($fullPath1);
+
+        if ( is_file($fullPath1) )
+            { return new Zend_Config_Ini($fullPath1); }
+        elseif ( is_file($fullPath2) )
+            { return new Zend_Config_Ini($fullPath2); }
         else
         {
             throw new Exception("Missing activities file  (no " .
-                "'$activitiesFile' file or '$altFilename' file that " .
-                "might have an internal '$altActivityName' in it)");
+                "'$fullPath1' file or '$fullPath2' file that " .
+                "might have an internal '$activityName' in it)");
         }
     }
 
@@ -94,7 +96,7 @@ class Application_Model_RampIniReader
     {
         // Determine the file name, based on system path and $name.
         $dir = self::getSettingsDirectory();
-        $suffix = self::_getSettingsSuffix();
+        $suffix = $this->_getSettingsSuffix();
         $settingsFile = $dir .  DIRECTORY_SEPARATOR .  $name . $suffix;
         if ( ! file_exists($settingsFile) )
         {
@@ -114,16 +116,9 @@ class Application_Model_RampIniReader
      */
     protected static function _getActivitiesDirectory()
     {
-        // Get the activities directory from Zend_Registry.  If none is 
-        // found, use the settings directory.
-        $path = 
-            Zend_Registry::isRegistered('rampActivitiesDirectory') ?
-                Zend_Registry::get('rampActivitiesDirectory') :
-                null;
-
-        $path = $path ? : self::getSettingsDirectory();
-
-        return $path;
+        // Get the activities directory from the Registry.
+        $configs = Ramp_RegistryFacade::getInstance();
+        return $configs->getActivitiesDirectory();
     }
 
     /**
@@ -134,60 +129,27 @@ class Application_Model_RampIniReader
      */
     public static function getSettingsDirectory()
     {
-        // Get the settings directory from Zend_Registry.
-        $path = 
-            Zend_Registry::isRegistered('rampSettingsDirectory') ?
-                Zend_Registry::get('rampSettingsDirectory') :
-                null;
-
-        if ( empty($path) )
-        {
-            // No directory specified; come up with a default instead.
-            $baseDir = self::_getBaseDirectory();
-            $path = $baseDir . DIRECTORY_SEPARATOR . 'settings';
-        }
-
-        return $path;
+        // Get the settings directory from the Registry.
+        $configs = Ramp_RegistryFacade::getInstance();
+        return $configs->getSettingsDirectory();
     }
 
     /**
      * Gets the suffix being used for table sequence/setting files.
+     * The default, if none is provided, is '.ini'.
      *
      * @return string   suffix
      *
      */
     protected static function _getSettingsSuffix()
     {
-        // Get the suffix from Zend_Registry.
-        $suffix = 
-            Zend_Registry::isRegistered('rampSettingsSuffix') ?
-                Zend_Registry::get('rampSettingsSuffix') :
-                null;
+        // Get the suffix from the Registry.
+        $configs = Ramp_RegistryFacade::getInstance();
+        $suffix = $configs->getSettingsSuffix();
 
         $suffix = $suffix ? : '.ini';
 
         return $suffix;
-    }
-
-    /**
-     * Gets the path where settings should be stored.  Uses code from 
-     * Zend_Controller_Action::initView() -- if only the Zend 
-     * programmers had broken this out into a protected function!
-     *
-     * @return the base directory for this application module
-     *
-     */
-    protected static function _getBaseDirectory()
-    {
-        $front = Zend_Controller_Front::getInstance();
-        $module  = $front->getRequest()->getModuleName();
-        $dirs    = $front->getControllerDirectory();
-        if (empty($module) || !isset($dirs[$module])) {
-            $module = $front->getDispatcher()->getDefaultModule();
-        }
-        $baseDir = dirname($dirs[$module]);
-
-        return $baseDir;
     }
 
 }

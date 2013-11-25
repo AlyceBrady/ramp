@@ -39,15 +39,6 @@ class Ramp_Acl extends Zend_Acl
     const USERS_TABLE = 'ramp_auth_users';
     const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';
 
-    // Keys for ACL Roles, Resources, and Rules in Zend Registry.
-    const ACL_ROLES = 'rampAclRoles';
-    const ACL_RESOURCES = 'rampAclResources';
-    const ACL_RULES = 'rampAclRules';
-
-    // Keywords for testing for Internal Authentication in Zend Registry.
-    const AUTH_TYPE = 'rampAuthenticationType';
-    const INTERNAL_AUTH_TYPE = 'internal';
-
     // ACL categories for Table actions.
     const VIEW = 'View';
     const ADD = 'AddRecords';
@@ -136,9 +127,10 @@ class Ramp_Acl extends Zend_Acl
         $this->addRole(new Zend_Acl_Role(self::DEFAULT_ROLE));
 
         // Add roles defined in the Registry.
-        if ( Zend_Registry::isRegistered(self::ACL_ROLES) )
+        $registryFacade = Ramp_RegistryFacade::getInstance();
+        $aclRoles = $registryFacade->getAclRoles();
+        if ( ! empty($aclRoles) )
         {
-            $aclRoles = Zend_Registry::get(self::ACL_ROLES);
             $this->_addRoles($aclRoles);
         }
 
@@ -151,9 +143,9 @@ class Ramp_Acl extends Zend_Acl
         $this->_addBasicResources();
 
         // Add resources defined in the Registry.
-        if ( Zend_Registry::isRegistered(self::ACL_RESOURCES) )
+        $aclResources = $registryFacade->getAclRoles();
+        if ( ! empty($aclResources) )
         {
-            $aclResources = Zend_Registry::get(self::ACL_RESOURCES);
             $this->_addResources($aclResources);
         }
 
@@ -167,19 +159,16 @@ class Ramp_Acl extends Zend_Acl
         $this->_establishMinimalAuthorizations();
 
         // Add rules defined in the Registry.
-        if ( Zend_Registry::isRegistered(self::ACL_RULES) )
+        $aclRules = $registryFacade->getAclRules();
+        foreach ( $aclRules as $rule )
         {
-            $aclRules = Zend_Registry::get(self::ACL_RULES);
-            foreach ( $aclRules as $rule )
+            $components = explode(self::DELIM, $rule);
+            // There must be at least 2 components: role and resource.
+            if ( count($components) >= 2 )
             {
-                $components = explode(self::DELIM, $rule);
-                // There must be at least 2 components: role and resource.
-                if ( count($components) >= 2 )
-                {
-                    $role = array_shift($components);
-                    $resource = implode(self::DELIM, $components);
-                    $this->allow($role, $resource);
-                }
+                $role = array_shift($components);
+                $resource = implode(self::DELIM, $components);
+                $this->allow($role, $resource);
             }
         }
 
@@ -218,6 +207,45 @@ class Ramp_Acl extends Zend_Acl
         }
 
         return false;
+    }
+
+    /**
+     * DEBUGGING: Gets all roles.
+     */
+    public function getRoles()
+    {
+        return array_keys($this->_getRoleRegistry()->getRoles());
+    }
+
+    /**
+     * DEBUGGING: Gets all resources.
+     */
+    public function getResources()
+    {
+        return array_keys($this->_resources);
+    }
+
+    /**
+     * DEBUGGING: Gets all rules.
+     */
+    public function getRules()
+    {
+        // Too hard to return all rules, so just concentrate on rules 
+        // from Registry and Database.
+        $configInfo = Ramp_RegistryFacade::getInstance();
+        $regRules = $configInfo->getAclRules();
+        $dbAuthInfo = new Application_Model_DbTable_Auths();
+        $dbRules = $dbAuthInfo->getAccessRules();
+        return array_merge($regRules, $dbRules);
+        /*
+            $simpleList = array();
+            $byResourceId = $this->_rules['byResourceId'];
+            foreach ( $byResourceId as $resource => $ruleInfo )
+            {
+                $simpleList['resource'] = "hi"; // $ruleInfo['byRuleId'];
+            }
+            return $simpleList;
+         */
     }
 
     /**
@@ -287,7 +315,8 @@ class Ramp_Acl extends Zend_Acl
 
         // All users should be able to set or change their password if 
         // Ramp is handling authentication internally.
-        if ( Zend_Registry::get(self::AUTH_TYPE) == self::INTERNAL_AUTH_TYPE )
+        $registryFacade = Ramp_RegistryFacade::getInstance();
+        if ( $registryFacade->usingInternalAuthentication() )
         {
             $this->allow(self::DEFAULT_ROLE, 'auth::init-password');
             $this->allow(self::DEFAULT_ROLE, 'auth::change-password');

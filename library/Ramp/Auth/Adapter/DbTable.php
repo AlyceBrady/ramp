@@ -20,7 +20,6 @@
  */
 class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
 {
-    const DEFAULT_PW    = 'rampDefaultPassword';
 
     protected $_notValidIdentity = false;   // Assume this is a valid identity
     protected $_pw_not_set_yet = false;     // Assume there is a password
@@ -45,10 +44,8 @@ class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
     public function setCredential($credential)
     {
         // Determine the default password if there is one.
-        if ( Zend_Registry::isRegistered(self::DEFAULT_PW) )
-            { $defaultPassword = Zend_Registry::get(self::DEFAULT_PW); }
-        else
-            { $defaultPassword = ''; }
+        $configs = Ramp_RegistryFacade::getInstance();
+        $defaultPassword = $configs->getDefaultPassword() ? : '';
 
         // Store the GIVEN credential while determining the salt.
         $this->_credential = $credential;

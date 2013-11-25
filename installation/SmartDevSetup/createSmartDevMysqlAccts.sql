@@ -7,7 +7,11 @@
 -- and one for web-based RAMP access to the database -- and grant
 -- those accounts appropriate permissions to access the Developer
 -- database (whose name is assumed to be 'smart_dev') and the database
--- for automated regression testing.
+-- for automated regression testing.  (The actual database is created
+-- later.)
+--
+-- Create similar accounts for the database used for regression testing.
+-- Create the regression testing database also.
 
 
 -- Please read the installation instructions in INSTALL_DB.txt,
@@ -65,4 +69,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON `smart_dev`.*
 
 GRANT DROP, CREATE, SELECT, INSERT, UPDATE, DELETE, TRIGGER
     ON `smart_automated_tests`.* TO 'smartdev'@'localhost';
+
+
+--     Create database for automated regression testing, since we don't
+--     have a separate script to create and populate the database.
+
+DROP DATABASE IF EXISTS `smart_automated_tests`;
+CREATE DATABASE `smart_automated_tests`;
 

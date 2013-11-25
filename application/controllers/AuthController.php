@@ -25,9 +25,6 @@
  */
 class AuthController extends Zend_Controller_Action
 {
-    /* Keywords related to authentication types. */
-    const AUTH_TYPE          = 'rampAuthenticationType';
-    const INTERNAL_AUTH_TYPE = 'internal';
 
     /* Keywords related to accessing the Users table and related form. */
     const USERS_TABLE       = Ramp_Acl::USERS_TABLE;
@@ -41,15 +38,6 @@ class AuthController extends Zend_Controller_Action
     /* Keywords related to passing parameters to actions in this controller. */
     const DETAILS           = 'details';
 
-
-    /**
-     * Indicates whether authentication is internal or external.
-     */
-    public static function usingInternalAuthentication()
-    {
-        $authType = Zend_Registry::get(self::AUTH_TYPE);
-        return $authType === self::INTERNAL_AUTH_TYPE;
-    }
 
     public function init()
     {
@@ -398,7 +386,8 @@ class AuthController extends Zend_Controller_Action
     {
         // Get authentication type (e.g., internal, LDAP, etc) and 
         // appropriate authentication adapter.
-        if ( self::usingInternalAuthentication() )
+        $configs = Ramp_RegistryFacade::getInstance();
+        if ( $configs->usingInternalAuthentication() )
         {
             return $this->_getInternalAuthAdapter($username, $password);
         }
@@ -470,7 +459,7 @@ class AuthController extends Zend_Controller_Action
         $data = $userData;
 
         // Determine appropriate menu for this user's role.
-        $configs = Application_Model_RampConfigs::getInstance();
+        $configs = Ramp_RegistryFacade::getInstance();
         $data->menuFilename = $configs->getMenu($userData->role);
 
         // Store user-specific information for session.

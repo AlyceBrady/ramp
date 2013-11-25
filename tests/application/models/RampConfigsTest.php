@@ -1,4 +1,14 @@
 <?php
+/*
+ * NOTE: Application_Model_RampConfigs moved to 
+ * library/Ramp/RegistryFacade, so technically this shouldn't be 
+ * tested here, but I don't know yet how to set up a test against things 
+ * in library/Ramp, so it's staying here for now.
+ *
+ * NOTE 2: TODO: Many more functions have been added to what is now
+ * library/Ramp/RegistryFacade for which test cases have not yet been 
+ * written.
+ */
 require_once 'TestSettings.php';
 
 class models_RampConfigsTest extends PHPUnit_Framework_TestCase
@@ -14,7 +24,7 @@ class models_RampConfigsTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_configs = Application_Model_RampConfigs::getInstance();
+        $this->_configs = Ramp_RegistryFacade::getInstance();
     }
 
     // How do we run test that timeout works correctly?  (Have access 
