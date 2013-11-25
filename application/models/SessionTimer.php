@@ -41,7 +41,7 @@ class Application_Model_SessionTimer
      */
     public static function startSessionTimer()
     {
-        $configs = Application_Model_RampConfigs::getInstance();
+        $configs = Ramp_RegistryFacade::getInstance();
         $timeout = $configs->getSessionTimeout();
         if ( $timeout > 0 )
         {

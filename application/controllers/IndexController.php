@@ -23,56 +23,37 @@ class IndexController extends Zend_Controller_Action
     const SETTING_PARAM = Ramp_Controller_KeyParameters::SETTING_PARAM;
     const ACT_PARAM = Ramp_Controller_KeyParameters::ACT_KEY_PARAM;
 
-    // Define constants that define basic configuration variables.
-    const CONFIG_SETTINGS = "rampConfigSettings";
-    const TITLE = "title";
-    const SUBTITLE = "subtitle";
-    const INITIAL_ACTIVITY = "initialActivity";
-    const STYLE_SHEET = "css";
-    const TAB_TITLE = "applicationShortName";
-    const ICON = "icon";
-
     // Define instance variables that hold basic configuration variables.
+    protected $_configInfo;
     protected $_initialActivity = null;
 
     public function init()
     {
         /* Initialize action controller here */
 
-        // Get various application variables from Zend_Registry.
-        if ( Zend_Registry::isRegistered(self::CONFIG_SETTINGS) )
+        // Get various application variables from the Registry.
+        $this->_configInfo = Ramp_RegistryFacade::getInstance();
+
+        // Get the initial activity.
+        $this->_initialActivity =
+                $this->_configInfo->getDefaultInitialActivity();
+
+        // Get appropriate title, subtitle, tab title, and icon information.
+        $look = $this->_configInfo->getLookAndFeel();
+        $tabTitle = $look['shortName'];
+        if ( ! empty($tabTitle) )
         {
-            $configSettings = Zend_Registry::get(self::CONFIG_SETTINGS);
+            $this->view->headTitle($tabTitle)->setSeparator(' - ');
+        }
+        $this->view->icon = $look['icon'];
+        $this->view->pageTitle = $look['title'];
+        $this->view->pageSubTitle = $look['subtitle'];
 
-            // Get the initial activity from Zend_Registry.
-            $this->_initialActivity =
-                isset($configSettings[self::INITIAL_ACTIVITY]) ?
-                    $configSettings[self::INITIAL_ACTIVITY] : null;
-
-            // Get appropriate title, subtitle, tab title, and icon
-            // information from Zend_Registry.
-            $tabTitle = isset($configSettings[self::TAB_TITLE]) ?
-                            $configSettings[self::TAB_TITLE] : null;
-            if ( ! empty($tabTitle) )
-            {
-                $this->view->headTitle($tabTitle)->setSeparator(' - ');
-            }
-            $this->view->icon = isset($configSettings[self::ICON]) ?
-                            $configSettings[self::ICON] : null;
-            $this->view->pageTitle = isset($configSettings[self::TITLE]) ?
-                            $configSettings[self::TITLE] : null;
-            $this->view->pageSubTitle = isset($configSettings[self::SUBTITLE]) ?
-                            $configSettings[self::SUBTITLE] : null;
-
-            // Get the appropriate cascading stylesheet from Zend_Registry.
-            $stylesheet =
-                isset($configSettings[self::STYLE_SHEET]) ?
-                    $configSettings[self::STYLE_SHEET] : null;
-            if ( ! empty($stylesheet) )
-            {
-                $this->view->headLink()->prependStylesheet($stylesheet);
-            }
-
+        // Get the appropriate cascading stylesheet.
+        $stylesheet = $look['rampStyleSheet'];
+        if ( ! empty($stylesheet) )
+        {
+            $this->view->headLink()->prependStylesheet($stylesheet);
         }
 
 // $this->_getAuthDebuggingInfo();
@@ -211,16 +192,16 @@ class IndexController extends Zend_Controller_Action
         }
 
         // No, so return the default menu.
-        $configs = Application_Model_RampConfigs::getInstance();
-        return $configs->getDefaultMenu();
+        return $this->_configInfo->getDefaultMenu();
     }
 
 
     protected function _getAuthDebuggingInfo()
     {
-        $roles = Zend_Registry::get('roles');
-        $resources = Zend_Registry::get('resources');
-        $rules = Zend_Registry::get('rules');
+        $acl = new Ramp_Acl();
+        $roles = $acl->getRoles();
+        $resources = $acl->getResources();
+        $rules = $acl->getRules();
         $this->view->authDebugging .= "<blockquote><b>Roles</b>: " .
             print_r($roles, true) . "</blockquote>";
         $this->view->authDebugging .= "<blockquote><b>Resources</b>: " .
@@ -228,7 +209,7 @@ class IndexController extends Zend_Controller_Action
         $this->view->authDebugging .= "<blockquote><b>Rules</b>: " .
             print_r($rules, true) . "</blockquote>";
         $this->view->authDebugging .= "<blockquote><b>Request</b>: " .
-            print_r($this->getRequest(), true) . "</blockquote>";
+            print_r($this->getRequest()->getParams(), true) . "</blockquote>";
     }
 
 }
