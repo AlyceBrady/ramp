@@ -2,7 +2,9 @@ Here are some notes I shared with students about table settings that
 should be expanded into an introduction or tutorial, with some samples
 as "illustrations".
 
-===========
+----------------------------
+
+### Generic Code, Table-Specific "Table Settings" ###
 
 At the code level, Ramp treats every table the same.  To allow
 it to display tables (or different views of tables) uniquely, Ramp
@@ -12,44 +14,95 @@ Getting a little fancier, the table setting can include a "footnote" for
 the table (although the current views display the footnote below the
 title as a subtitle, not below the table) and "footnotes" for columns
 (displayed as mouse-over notes).  An example of a fairly straight-forward
-table setting is in settings/demoSettings/rampDemo/PlacesComplete.ini.
+table setting is below.  (This setting can also be found in
+demoSettings/rampDemo/PlacesComplete.ini.)
 
-[Note that some table setting information is for the table as a whole
+        ; This file provides labels for all the fields in the "places" table,
+        ; making all fields visible.
+
+        ;
+        ; NOTES:
+        ;   "places" table in Ramp Demo database has 4 required fields:
+        ;       - id (auto-incremented)
+        ;       - date_created
+        ;       - date_updated
+        ;       - name
+        ;   It also has 2 fields with defaults:
+        ;       - town (default is London)
+        ;       - country (default is UK)
+        ;   This setting marks two additional fields as "recommended" (address1
+        ;   and town), and provides field footnotes for three fields (name,
+        ;   date_created, and date_updated).
+
+        tableName = "places"
+        tableTitle = "Places"
+        tableDescription = "A list of Places (e.g., for a Travel Review page)"
+        tableFootnote = "(Example from Zend Framework in Action by Allen, Lo,
+                        Brown)"
+
+        field.id.label = "ID"
+        field.id.hide = true;
+
+        field.name.label = "Place Name"
+        field.name.footnote = "Name of this Location"
+
+        field.address1.label = "Street Address"
+        field.address1.recommended = true;
+
+        field.town.label = "Town"
+        field.town.recommended = true;
+
+        field.county.label = "County"
+
+        field.country.label = "Country"
+
+        field.postcode.label = "Post Code"
+
+        field.date_created.label = "Date Created"
+        field.date_created.footnote = "yyyy-mm-dd hh:mm:ss"
+
+        field.date_updated.label = "Date Updated"
+        field.date_updated.footnote = "yyyy-mm-dd hh:mm:ss"
+
+Note that some table setting information is for the table as a whole
 (title, table footnote, external links), but most describes specific
 fields (label, field footnote, whether the field should be hidden,
-recommended, discouraged, etc).]
+recommended, discouraged, _etc._).
 
-[Note the general syntax for field properties:
-    field.fieldNameInDb.property = value
+Note the general syntax for field properties:
+
+        field.fieldNameInDb.property = value
+
 For example,
-    field.first_name.label = "First Name"
-specifies the label (column heading) to use for the column representing
-the field called "first_name" in the database.
-]
 
-Field Visibility:
+        field.first_name.label = "First Name"
+
+specifies the label (column heading) to use for the column representing
+the field called `first_name` in the database.
+
+#### Field Visibility: ####
 
 By default, a table view includes all columns (and only those columns)
 that have a label (column heading) specified in the specific table
 setting.  It is possible, though, to override both defaults.  One can
 provide information about a column, including a label, but still choose
-to not include it in the table view by setting the 'hide' property to
+to not include it in the table view by setting the `hide` property to
 true.  One can choose to have all columns shown by default by specifying
-showColsByDefault, in which case it is still possible to hide specific
+`showColsByDefault`, in which case it is still possible to hide specific
 columns.
 
-Required, Recommended, and Discouraged Fields:
+#### Required, Recommended, and Discouraged Fields: ####
 
 A table setting can also specify that a particular field or
-column is recommended by setting the 'recommended' property to true.
+column is recommended by setting the `recommended` property to true.
 (One specifies that a column is required, rather than merely
 recommended, in the database itself as part of the column type and
 properties.)  [Talk about fields with defaults or auto-incrementing
 specified in the database, and why providing values for them might be
 discouraged.  Last modified dates are another example of this: see
-sample.ini for more information.]
+`sample.ini` for more information.]
 
-Providing info from multiple tables in a single table view:
+#### Providing info from multiple tables in a single table view: ####
 
 A table view can include data that actually comes from other
 tables.  For example, what appears to be a table of student ids, student
@@ -57,28 +110,35 @@ names, and student addresses could actually, in the database, be the
 result of a database join between a table of ids and names and a table
 of ids and addresses.  The table setting would specify one database
 table as the source and import the columns from the other table using an
-"importedFrom" property.  For example, in a typical Smart application,
+`importedFrom` property.  For example, in a typical Smart application,
 the Module Assignments table view includes information such as the
 instructor's name from the Person table.
 
 In order for a table to "import" fields from another table, the table
 setting must establish the connection between the two tables.  For
-example, the Student table setting can document a connection to the Person
-table through its studentID field, which refers to the id field in the
-Person table, with the following setting specification:
-    tableConnection.Person = "Student.studentID = Person.id"
-The Student table can then import a student's first and last names from
-the Person table as follows:
-    field.firstname.label = "First Name"
-    field.firstname.importedFrom = "Person"
-    field.lastname.label = "Last Name"
-    field.lastname.importedFrom = "Person"
+example, the `Student` table setting can document a connection to the
+`Person` table through its `studentID` field, which refers to the
+`id` field in the `Person` table, with the following setting
+specification:
+
+        tableConnection.Person = "Student.studentID = Person.id"
+
+The `Student` table can then import a student's first and last names from
+the `Person` table as follows:
+
+        field.firstname.label = "First Name"
+        field.firstname.importedFrom = "Person"
+        field.lastname.label = "Last Name"
+        field.lastname.importedFrom = "Person"
 
 The simplest syntax for the tableConnection specification is:
-    tableConnection.OtherTable = "ThisTable.col = OtherTable.its_col"
+
+        tableConnection.OtherTable = "ThisTable.col = OtherTable.its_col"
+
 If a connection is based on more than one column, the multiple
-connections can be linked with "and":
-    tableConnection.Other="Table.col1 = Other.col1 AND Table.col2 = Other.col2"
+connections can be linked with `and`:
+
+        tableConnection.Other="Table.col1 = Other.col1 AND Table.col2 = Other.col2"
 
 In some cases, an external table may be used to provide information
 for two (or more) different purposes, in which case defining one
@@ -89,38 +149,42 @@ advisors might import both the student's name and the advisor's
 name from a Person table.  In this case, we could define an alias
 for the Person table for the advisor relationship and then establish
 two table connections, one for the student relationship and one for
-the advisor relationship.  The tableConnection and importFrom
+the advisor relationship.  The `tableConnection` and `importFrom`
 statements dealing with the advisor relationship use the alias name
 rather than the actual table name.
-    tableConnection.Person = "Student.studentID = Person.id"
-    tableConnection.Advisor.aliasFor = "Person"
-    tableConnection.Advisor.connection = "Advising.advisorID = Advisor.id"
-    ...
-    field.lastname.importedFrom = "Person"
-    field.studentLastname.importedField = "lastname"
-    field.advisorLastname.importedFrom = "Advisor"
-    field.advisorLastname.importedField = "lastname"
-When a tableConnection includes an "aliasFor" property, the connection
-must be defined with an explicit "connection" property, i.e.,
-    tableConnection.AliasName.connection = "Tbl.col = AliasName.its_col"
+
+        tableConnection.Person = "Student.studentID = Person.id"
+        tableConnection.Advisor.aliasFor = "Person"
+        tableConnection.Advisor.connection = "Advising.advisorID = Advisor.id"
+        ...
+        field.lastname.importedFrom = "Person"
+        field.studentLastname.importedField = "lastname"
+        field.advisorLastname.importedFrom = "Advisor"
+        field.advisorLastname.importedField = "lastname"
+
+When a `tableConnection` includes an `aliasFor` property, the connection
+must be defined with an explicit `connection` property, i.e.,
+
+        tableConnection.AliasName.connection = "Tbl.col = AliasName.its_col"
 
 The table connection depends on the right data being provided when the
 dependent table entry is created.  For example,
-When adding a new Student record, the user must provide the correct
-Person id for the studentID field.  [In theory, the selectUsing field
+when adding a new Student record, the user must provide the correct
+Person id for the studentID field.  [In theory, the `selectUsing` field
 setting allows the view to provide a link to the external table so that
 the user can do a search and get the right id, but this is not currently
 working!]
 
-Initializing a field from a table of legal values:
+#### Initializing a field from a table of legal values: ####
 
-[New feature: selectFrom field setting that allows the program to use a
+New feature: `selectFrom` field setting that allows the program to use a
 specified field from an external table as a source of possible values,
-e.g., for a drop-down menu or for validation or field auto-completion.]
-    field.term.label = "Term"
-    field.term.selectFrom = "Terms.term"  [dbTableName.dbColName]
+e.g., for a drop-down menu or for validation or field auto-completion.
 
-Duplicating information for historical reasons or efficiency:
+        field.term.label = "Term"
+        field.term.selectFrom = "Terms.term"  [dbTableName.dbColName]
+
+#### Duplicating information for historical reasons or efficiency: ####
 
 A more unusual specification indicates that, on creation of a new
 record, a field should be initialized from a record in another table.
@@ -134,32 +198,35 @@ would be initialized from its module record.
 
 To do this, the table setting developer must establish the connection
 between the current table and the source table (similar to a
-tableConnection specification [why not just use tableConnection? why
-does it need a setting?]).  This is done with an initTableRef
+`tableConnection` specification [why not just use `tableConnection`? why
+does it need a setting?]).  This is done with an `initTableRef`
 specification such as the following:
-    initTableRef.Modules.viewingSequence = Smart/Curriculum/Modules
-    initTableRef.Modules.match.localField = "moduleID"
-    initTableRef.Modules.match.externalField = "moduleID"
+
+        initTableRef.Modules.viewingSequence = Smart/Curriculum/Modules
+        initTableRef.Modules.match.localField = "moduleID"
+        initTableRef.Modules.match.externalField = "moduleID"
 
 [Syntax seems to be initTableRef.TableName.viewingSequence = Setting.]
 
-The matchings do not specifically need to use the "match" keyword,
-so long as the same keyword is used to link the localField with the
-externalField.  If the connection depends on multiple fields (e.g.,
-module number, section, and term), then one could use match1.localField,
-match1.externalField, match2.localField, match2.externalField, etc.
+The matchings do not specifically need to use the `match` keyword,
+so long as the same keyword is used to link the `localField` with the
+`externalField`.  If the connection depends on multiple fields (e.g.,
+module number, section, and term), then one could use
+`match1.localField`, `match1.externalField`, `match2.localField`,
+`match2.externalField`, _etc._
 
-Having established the connection, the setting can use the initFrom
+Having established the connection, the setting can use the `initFrom`
 property to specify that a given field is being initialized from the
 other table.
-    field.modCode.label = "Code"
-    field.modCode.initFrom = "Modules"
-    field.sTitle.label = "Short Title"
-    field.sTitle.initFrom = "Modules"
-    field.sTitle.initFromField = "shortTitle"
 
-Difference between importFrom and initFrom:  importFrom is relevant when
-viewing and is manifested in a join expression, whereas initFrom is
+        field.modCode.label = "Code"
+        field.modCode.initFrom = "Modules"
+        field.sTitle.label = "Short Title"
+        field.sTitle.initFrom = "Modules"
+        field.sTitle.initFromField = "shortTitle"
+
+Difference between `importFrom` and `initFrom`:  `importFrom` is relevant when
+viewing and is manifested in a join expression, whereas `initFrom` is
 relevant only when adding, and involves getting and copying the values
 from the original source table into the current table (so the values now
 exist separately in the two tables and can diverge).  "Imported"
@@ -167,7 +234,7 @@ fields never become part of the dependent table; instead, the
 importFrom provides a "pointer" to the value in the original source
 table (where it stays).
 
-External Links:
+#### External Links: ####
 
 A table view can also provide links to related tables that are specified
 in the table setting; for example, a module view could include a link to
@@ -182,7 +249,7 @@ common, such as a Person ID, or the module ID, section, and term fields
 for module offerings and assignments.
 
 <a name="viewing_sequences"></a>
-Viewing Sequences:
+#### Viewing Sequences: ####
 
 It is possible to provide a set of table settings for a single table:
 one to be used for inserting new records, one for viewing records, one
@@ -192,41 +259,45 @@ A set of table settings like is this is called a "viewing sequence."
 [Provide an example in place or a pointer to an example.]  FORGOT
 MODIFYING RECORDS?
 
-The initial action (initAction) property can be set to search or
-displayAll (list view).
+The initial action (`initAction`) property can be set to `search` or
+`displayAll` (list view).
 
 NOTE:  It is possible to use inheritance among sections in an ini file
 to avoid repeating similar information for different table settings in a
 viewing sequence.  The only potential problem is that an additional
-fields defined in a table setting will appear after the inherited
+field defined in a table setting will appear after the inherited
 fields, since the order in which fields appear is the order in which
 they are introduced in the table setting.  For example, an ini file
 could have the following properties:
-    [ SharedProperties ]
-    field.a.label = "A"
-    field.b.label = "B"
-    field.d.label = "D"
-    [ View ]
-    field.b.recommended = true
-    [ Modify ]
-    field.c.label = "C"
-    field.d.recommended = true
+
+        [ SharedProperties ]
+        field.a.label = "A"
+        field.b.label = "B"
+        field.d.label = "D"
+        [ View ]
+        field.b.recommended = true
+        [ Modify ]
+        field.c.label = "C"
+        field.d.recommended = true
+
 In this case, both the View and Modify table settings have the three
 fields labeled A, B, and D.  In View, field B is recommended, whereas in
 Modify, field D is recommended.  Modify also introduces an additional field C.
 The order of the fields in the Modify table setting will always be
 A, B, D, C, even if A, B, C, D might have been more desirable.  The
 easiest way to get around this ordering problem is to introduce all the
-appropriate fields in the parent section and then hide fields you don't
+appropriate fields in the parent section and then hide fields you do not
 want in some settings.  In this case, the ini file would become:
-    [ SharedProperties ]
-    field.a.label = "A"
-    field.b.label = "B"
-    field.c.label = "C"
-    field.d.label = "D"
-    [ View ]
-    field.b.recommended = true
-    field.c.hide = true
-    [ Modify ]
-    field.d.recommended = true
+
+        [ SharedProperties ]
+        field.a.label = "A"
+        field.b.label = "B"
+        field.c.label = "C"
+        field.d.label = "D"
+        [ View ]
+        field.b.recommended = true
+        field.c.hide = true
+        [ Modify ]
+        field.d.recommended = true
+
 A more real example is in demoSettings/Smart/Student/Enrollment.ini.
