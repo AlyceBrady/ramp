@@ -8,9 +8,15 @@
 // Establish status codes.
 $statusCodes = array(
         // Application_Model_SetTable::UNKNOWN => 'icon-question-sign',
-        Application_Model_SetTable::BLANK => 'icon-remove-sign',
-        Application_Model_SetTable::PARTIAL => 'icon-plus-sign',
-        Application_Model_SetTable::GOOD => 'icon-ok-sign',
+        Application_Model_SetTable::BLANK =>
+            array('icon' => 'icon-minus', 'text' => 'Empty'),
+        Application_Model_SetTable::PARTIAL =>
+            array('icon' => 'icon-adjust',
+                  'text' => 'Missing recommended fields'),
+        Application_Model_SetTable::GOOD =>
+            array('icon' => '',
+                  'text' => 'Has all recommended fields')
+              /* Other possibilities: 'icon-ok', 'icon-ok-sign' */
     );
 
 // Get the objects passed to this partial helper.
@@ -19,7 +25,8 @@ $status = $this->status;
 
 // Create a status indicator for whether all recommended fields have 
 // been set for this record in the external table.
-$statusCode = $statusCodes[$status];
-echo "<i id='$table' class='$statusCode statusCode'> </i>\n";
+$icon = $statusCodes[$status]['icon'];
+$text = $statusCodes[$status]['text'];
+echo "<i class='$icon statusCode' title='$text'> </i>\n";
 
 ?>

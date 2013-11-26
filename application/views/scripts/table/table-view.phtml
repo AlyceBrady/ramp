@@ -1,27 +1,36 @@
 <?php
+
 $table = $this->tableInfo;
 
-// Set page and window title.
-$tableTitle = $table->getTitle();
-$pageTitle = $tableTitle . " Table";
-$this->headTitle($pageTitle);
-
-// Get values from set table for title area and data area.
+// Get values from set table for data area.
 $seqSetting = $this->seqSetting;        // Set in controller
 $addSetting = $this->addSetting;        // Set in controller for getting
                                         // filled-in status information
-$tableFootnote = $table->getTableFootnote();
 $visibleFieldInfo = $table->getVisibleFields();
 $keyFields = $table->getPrimaryKeys();
 $tableValues = $this->dataToDisplay;    // Set in controller
 $highlightEveryN = 2;
 
+// Set page and window title.
+$tableTitle = $table->getTitle();
+$title = $tableTitle . " Table";
+$this->headTitle($title);
+$titleAndMsgs['title'] = $title;
+
 // Determine instructions and messages specific to this page.
-$instructions = "";
-$msgs = $this->msgs;                    // Set in controller
-$msgs[] = "Found " . count($tableValues) . " entries.";
-$errormsgs = $this->errMsgs;            // Set in controller
-$errormsgs[] = $this->undefinedFieldsErrorMsg;
+$titleAndMsgs['instructions'] = "";
+$titleAndMsgs['msgs'] = $this->msgs;        // All msgs are set in controller
+$titleAndMsgs['msgs'][] = "Found " . count($tableValues) . " entries.";
+$titleAndMsgs['errormsgs'] = $this->errMsgs;
+$titleAndMsgs['errormsgs'][] = $this->undefinedFieldsErrorMsg;
+
+// Get other values from set table for title area.
+$titleAndMsgs['description'] = "";
+$titleAndMsgs['footnote'] = $table->getTableFootnote();
+$titleAndMsgs['footnoteAsTooltip'] = false;
+
+$titleBar['titleAndMsgs'] = $titleAndMsgs;
+$titleBar['buttonList'] = $this->buttonList;   // Set in controller
 
 // Construct core parameters to send to all actions.
 $commonParams = $this->baseParams;      // Set in controller
@@ -30,28 +39,16 @@ $deleteParams = $commonParams + array('action'=>'delete');
 
 ?>
 
+<div>
 <form id="table-view-form" enctype="application/x-www-form-urlencoded"
     action="" method="post">
 
-<!-- Display title bar -->
-<div id="titlebar-area">
+<!-- Display title bar (title, messages, buttons) -->
+<?php echo $this->partial("table/_titleBar.phtml", $titleBar); ?>
 
-<!-- Display title and messages -->
+<!-- Display records -->
 
-<div id="left-column" class="column">  <!-- Contains title block and msgs -->
-<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
-            array('title'=>$pageTitle, 'description' => "",
-                  'footnote'=>$tableFootnote, 'instructions'=>$instructions,
-                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs)); ?>
-</div>  <!-- End of "left-column" -->
-
-<!-- Display buttons in sidebar -->
-<?php echo $this->partial("table/_buttonList.phtml",
-            array('buttonList' => $this->buttonList)); ?>
-
-</div>  <!-- End of "titlebar-area" -->
-
-<div id='record-table'>
+<div id='record-table' class='row'>
 <table class='table table-striped'>
 
 <!-- DISPLAY COLUMN HEADERS -->
@@ -101,6 +98,13 @@ foreach($tableValues as $recordValues) :
 
     <!-- Display select/delete links -->
     <td>
+        <a href="<?php echo $this->url(
+                        $selectParams + $rowSpecParams, null, true); ?>"><i
+                            class='icon-zoom-in' title='Select'></i></a>
+            <!-- Other possibilities: 'icon-list', 'icon-list-alt' -->
+        <a href="<?php echo $this->url(
+                        $deleteParams + $rowSpecParams, null, true); ?>"><i
+                            class='icon-remove' title='Delete'></i></a>
         <?php
         // Display indication of whether record has all recommended fields.
         $status = $addSetting->getStatusOfRecord($rowSpecParams);
@@ -108,12 +112,6 @@ foreach($tableValues as $recordValues) :
                             array('table' => $table->getDbTableName(),
                                   'status' => $status));
         ?>
-        <a href="<?php echo $this->url(
-                        $selectParams + $rowSpecParams, null, true); ?>"><i
-                            class='icon-pencil'></i></a>
-        <a href="<?php echo $this->url(
-                        $deleteParams + $rowSpecParams, null, true); ?>"><i
-                            class='icon-trash'></i></a>
     </td>
     </tr>
 
@@ -123,6 +121,7 @@ foreach($tableValues as $recordValues) :
 </div>  <!-- End of "record-table" -->
 
 </form>
+</div>
 
 <?php
 /*
@@ -150,5 +149,4 @@ function getModificationIconInstructions()
 // which fields are required, recommended, or neither.
 
 */
-
 ?>

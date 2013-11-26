@@ -1,0 +1,34 @@
+<?php 
+  /* This helper script expects an array with two elements, both of 
+   * which are also arrays:
+   *   Title Block ('titleAndMsgs')
+   *    - the title         ('title')
+   *    - the description   ('description')
+   *    - the footnote      ('footnote')
+   *    - instructions relevant to this page    ('instructions')
+   *    - information messages      ('msgs')
+   *    - error messages            ('errormsgs')
+   *    - whether to show footnote as tooltip rather than explicitly
+   *            ('footnoteAsTooltip': optional, defaults to false)
+   *   Button Labels ('buttonList')
+   *    - an array of button labels
+   */
+
+?>
+
+<!-- Display title bar area (title, messages, buttons) -->
+<div id="titlebar-area">
+
+<!-- Display title block and messages -->
+<div id="left-column" class="column span8">
+<?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+                          $this->titleAndMsgs); ?>
+</div>  <!-- End of "left-column" -->
+
+<!-- Display buttons in sidebar -->
+<div id="button-sidebar" class="span4">
+<?php echo $this->partial("table/_buttonList.phtml", $this); ?>
+</div>  <!-- End of "button-sidebar" -->
+
+</div>  <!-- End of "titlebar-area" -->
+

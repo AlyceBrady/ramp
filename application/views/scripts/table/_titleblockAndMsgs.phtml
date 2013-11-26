@@ -15,7 +15,6 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
 
 ?>
 
-<div class="span8">
 <div id="title-block">  <!-- Contains title, footnotes, and instructions -->
 <?php if ( $subtleFootnote )
         { echo "<h1 title='" . $this->escape($this->footnote) . "'>"; }
@@ -30,7 +29,7 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
 <?php endif; ?>
 <?php echo $this->partial("table/_stringInTag.phtml",
                           array('tag'=>'p', 'value'=>$this->instructions)); ?>
-</div>
+</div>  <!-- End of "table-notes" -->
 </div>  <!-- End of "title-block" -->
 
 <div id="info-messages">
@@ -40,7 +39,7 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
             array('tag'=>'li', 'value'=>$msg)); ?>
 <?php endforeach; ?>
 </ul>
-</div>
+</div>  <!-- End of "info-messages" -->
 
 <div id="error-messages">
 <ul>
@@ -49,5 +48,4 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
             array('tag'=>'li', 'value'=>$msg)); ?>
 <?php endforeach; ?>
 </ul>
-</div>
-</div>
+</div>  <!-- End of "error-messages" -->

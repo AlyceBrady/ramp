@@ -384,7 +384,7 @@ class TableController extends Zend_Controller_Action
         $this->_initViewTableInfo($setTable);
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::SEARCH);
-        $this->view->form = $form =
+        $this->view->dataEntryForm = $form =
                 new Application_Form_TableRecordEntry($setTable, 0, self::ADD);
 
         // Is this the initial display or the callback with fields provided?

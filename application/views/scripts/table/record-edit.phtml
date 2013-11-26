@@ -1,51 +1,64 @@
 <?php
-$table = $this->tableInfo;
+
+$table = $this->tableInfo;                  // Set in controller
 
 // Set page and window title.
-$this->headTitle($this->title);
 $tableTitle = $table->getTitle();
-// $pageTitle = $tableTitle . ": Edit";
-$pageTitle = "Edit Mode";
 $headTitle = "Edit " . $tableTitle;
 $this->headTitle($headTitle);
-
-// Get values from set table for title area and data area.
-$seqSetting = $this->seqSetting;        // Set in controller
+$titleAndMsgs['title'] = "Edit Mode";
+// $titleAndMsgs['title'] = $tableTitle . ": Edit";
 
 // Determine instructions and messages specific to this page.
-$instructions = "";
-$msgs = $this->msgs;                    // Set in controller
-$errormsgs = $this->errMsgs;            // Set in controller
+$titleAndMsgs['instructions'] = "";
+$titleAndMsgs['msgs'] = $this->msgs;        // All msgs are set in controller
+$titleAndMsgs['errormsgs'] = $this->errMsgs;
+
+// Get other values from set table for title area.
+$titleAndMsgs['description'] = "";
+$titleAndMsgs['footnote'] = "";
+$titleAndMsgs['footnoteAsTooltip'] = true;
+
+$titleBar['titleAndMsgs'] = $titleAndMsgs;
+$buttons['buttonList'] = $this->buttonList; // Set in controller
+
+// Get values from set table for data area.
+$form = $this->dataEntryForm;               // Set in controller
 
 ?>
 
 <form id="edit-page-form" enctype="application/x-www-form-urlencoded"
     action="" method="post" class="form-horizontal">
 
-<!-- Display title bar -->
-<div id="titlebar-area" class='span9'>
+<div id="page">
 
-<!-- Display buttons in sidebar -->
-<?php echo $this->partial("table/_buttonList.phtml",
-            array('buttonList' => $this->buttonList)); ?>
+<div id="left-column" class="column span9">
 
-<!-- Display title and messages -->
-<div id="left-column" class="column">  <!-- Contains title block and msgs -->
+<!-- Display title block and messages -->
 <?php echo $this->partial("table/_titleblockAndMsgs.phtml",
-            array('title'=>$pageTitle, 'description' => "",
-                  'footnote'=>"", 'instructions'=>"",
-                  'msgs'=>$msgs, 'errormsgs'=>$errormsgs,
-                  'footnoteAsTooltip'=>true)); ?>
-</div>  <!-- End of "left-column" of title and messages -->
-
-</div>  <!-- End of "titlebar-area" -->
-
-
+                          $titleAndMsgs); ?>
 
 <!-- Display data entry fields -->
 <div id='record-block' class='edit'>
 <?php echo $this->partial("table/_tableEntryForm.phtml",
-        array('table' => $table, 'form' => $this->dataEntryForm)); ?>
+        array('table' => $table, 'form' => $form)); ?>
 </div>
+
+<!-- Display external table references -->
+<div id='external-refs' class='view'>
+<?php
+echo $this->partial("table/_externalRefs.phtml",
+        array('table' => $table, 'form' => $form));
+?>
+</div>
+
+</div>  <!-- End of "left-column" -->
+
+<!-- Display buttons in sidebar -->
+<div id="button-sidebar" class="span3">
+<?php echo $this->partial("table/_buttonList.phtml", $buttons); ?>
+</div>  <!-- End of "button-sidebar" -->
+
+</div>  <!-- End of "page" -->
 
 </form>
