@@ -21,10 +21,16 @@ $heading = $userSpecifiedHeading ? : "Choose an activity:";
 <?php if ( $heading != "" ) echo "<h1>$heading</h1>" ?>
 
 
+<?php if ( $this->message != "" ) echo "$this->message" ?>
+
+<?php if ( ! empty($this->errMsg) ) : ?>
+    <p>
+    <?php echo $this->errMsg; ?>
+    </p>
+<?php endif; ?>
+
 <form id='activityList' action='' method='post'>
 <dl>
-
-<?php if ( $this->message != "" ) echo "$this->message" ?>
 
 <?php
 if ( isset($this->activityList) && is_array($this->activityList) )

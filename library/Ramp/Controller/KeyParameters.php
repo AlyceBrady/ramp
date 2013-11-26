@@ -65,4 +65,26 @@ class Ramp_Controller_KeyParameters
         return urldecode($keyParam);
     }
 
+    /**
+     * Gets the key parameter keyword for the given controller type.
+     *
+     * @param controller  the given controller type ('activity', 
+     *                    'table', etc.)
+     */
+    public static function getKeyParamKeyword($controller)
+    {
+        switch ($controller)
+        {
+            case self::ACT_CONTROLLER:
+                return self::ACT_KEY_PARAM;
+
+            case self::DOC_CONTROLLER:
+                return self::DOC_KEY_PARAM;
+
+            case self::TBL_CONTROLLER:
+            case self::REP_CONTROLLER:
+                return self::DOC_KEY_PARAM;
+        }
+    }
+
 }

@@ -20,6 +20,8 @@
 class ActivityController extends Zend_Controller_Action
 {
 
+    protected $_debugging = false;
+
     protected $_actSpecName;
 
     /**
@@ -31,6 +33,9 @@ class ActivityController extends Zend_Controller_Action
         // passed as a parameter.
         $this->_actSpecName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
+
+// $this->_debugging = true;
+        $this->_debug();
     }
 
     /**
@@ -79,17 +84,17 @@ class ActivityController extends Zend_Controller_Action
     }
 
     /**
-     * Redirects to a controller and activity based on the source provided.
+     * Initializes basic view renderer information from the set table.
      *
+     * @param Application_Model_SetTable  table: setting & db info
      */
-    protected function _redirectToSource($activity)
+    protected function _debug()
     {
-        $controller = $activity->getController();
-        $action = $activity->getAction();
-        $keyword = $activity->getParamKeyword();
-        $source = urlencode($activity->getSource());
-        $this->_helper->redirector($action, $controller, null,
-                                   array($keyword => $source));
+        if ( $this->_debugging )
+        {
+            $this->view->errMsg = "DEBUGGING INFO:  Request params are: "
+                        . print_r($this->getRequest()->getParams(), true);
+        }
     }
 
     /**
@@ -102,6 +107,20 @@ class ActivityController extends Zend_Controller_Action
     protected function _thisIsInitialDisplay()
     {
         return !  $this->getRequest()->isPost();
+    }
+
+    /**
+     * Redirects to a controller and activity based on the source provided.
+     *
+     */
+    protected function _redirectToSource($activity)
+    {
+        $controller = $activity->getController();
+        $action = $activity->getAction();
+        $keyword = $activity->getParamKeyword();
+        $source = urlencode($activity->getSource());
+        $this->_helper->redirector($action, $controller, null,
+                                   array($keyword => $source));
     }
 
 

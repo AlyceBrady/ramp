@@ -56,6 +56,8 @@ class TableController extends Zend_Controller_Action
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
+    protected $_debugging = false;
+
     protected $_controllerName;
 
     protected $_encodedSeqName;
@@ -101,15 +103,10 @@ class TableController extends Zend_Controller_Action
         $this->view->seqSetting = $seqName;
         $this->view->baseParams = $this->_baseParams;
         $this->view->msgs = array();
-        $this->view->errMsgs = array(
-                // "DEBUGGING INFO: "
-                // . " Base params are: "
-                // . print_r($this->_baseParams, true)
-                // . " Request params are: "
-                // . print_r($this->getRequest()->getParams(), true)
-                // . " Fields to match are: "
-                // . print_r($this->_fieldsToMatch, true)
-            );
+        $this->view->errMsgs = array();
+
+// $this->_debugging = true;
+
     }
 
     /**
@@ -498,6 +495,18 @@ class TableController extends Zend_Controller_Action
             $this->view->errMsgs[] =
                     "This table setting has no visible fields.";
         }
+
+        if ( $this->_debugging )
+        {
+            $this->view->errMsgs[] = "DEBUGGING INFO: ";
+            $this->view->errMsgs[] = " Base params are: "
+                        . print_r($this->_baseParams, true);
+            $this->view->errMsgs[] = " Request params are: "
+                        . print_r($this->getRequest()->getParams(), true);
+            $this->view->errMsgs[] = " Fields to match are: "
+                        . print_r($this->_fieldsToMatch, true);
+        }
+
     }
 
     /**

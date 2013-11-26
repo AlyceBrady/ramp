@@ -2,6 +2,12 @@
 
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
+    const ACT_CONTROLLER = Ramp_Controller_KeyParameters::ACT_CONTROLLER;
+    const DOC_CONTROLLER = Ramp_Controller_KeyParameters::DOC_CONTROLLER;
+    const REP_CONTROLLER = Ramp_Controller_KeyParameters::REP_CONTROLLER;
+    const TBL_CONTROLLER = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
+
+    const ACT_DEFAULT_ACTION = 'index';
 
     protected function _initRegistryWithDB()
     {
@@ -31,7 +37,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     }
 
     /**
-     * Register RAMP configuration settings.
+     * Registers RAMP configuration settings.
      */
     protected function _initRamp()
     {
@@ -53,7 +59,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     }
 
     /**
-     * Register the ACL (Access Control List) plugin to check for
+     * Registers the ACL (Access Control List) plugin to check for
      * authorization to perform various actions.
      *
      * Based on a tutorial found at:
@@ -73,45 +79,73 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     }
 
     /**
-     * Initialize navigation
+     * Initializes navigation
      *
      * Ashton Galloway, March 2013
+     * updated by Alyce Brady, November 2013
      */
     protected function _initNavigation()
     {
         $this->bootstrap('view');
         $view = $this->getResource('view');
-        $configs = Ramp_RegistryFacade::getInstance();
-        $menuFilename = $this->_determineMenu();
-        $initActivity = $configs->getDefaultInitialActivity();
+
+        // Determine what menu to use.
         $menu = new Zend_Navigation();
+        $menuFilename = $this->_determineMenu();
+        $actKeyParam = Ramp_Controller_KeyParameters::
+                                    getKeyParamKeyword(self::ACT_CONTROLLER);
         if ( ! empty($menuFilename) )
         {
-            $ini = new Zend_Config_Ini($menuFilename);
-            foreach ( $ini as $entry )
+            // Step through the menu entries in the menu.
+            $menuEntries = new Zend_Config_Ini($menuFilename);
+            foreach ( $menuEntries as $entry )
             {
-                $uri = '/';
-                $children = array();
-                //assumption: a menu entry with no url is the home entry
-                if ( ! is_null($entry->url) )
+                // Menu item's action is usually specified with url info.
+                if ( empty($entry->url) )
                 {
-                    $uri = '/' . $entry->url->controller . '/' 
-                        . $entry->url->action . '/activity/' 
-                        //must double encode urls so they work properly with the activityController
-                        . urlencode(urlencode($entry->url->activity));
+                    // No url info; use the initial activity as the action.
+                    $controller = self::ACT_CONTROLLER;
+                    $action = self::ACT_DEFAULT_ACTION;
+                    $configs = Ramp_RegistryFacade::getInstance();
+                    $activity = $configs->getDefaultInitialActivity();
+                    $uri = $this->_build_uri($controller, $action,
+                                urlencode($activity), $actKeyParam);
                 }
                 else
                 {
-                    $children = $this->_readActivityMenu($initActivity);
+                    // Use the url controller/action info provided.
+                    $controller = $entry->url->controller;
+                    $action = $entry->url->action;
+
+                    // Build up rest of info from other properties.
+                    $otherInfo = array();
+                    foreach ( $entry->url as $key => $val )
+                    {
+                        // Add property info, but only if new.
+                        if ( $key != 'controller' && $key != 'action' )
+                        {
+                            $otherInfo[$key] = urlencode($val);
+                        }
+
+                        // If this is an activity property, store its value.
+                        $activity = ( $key == $actKeyParam ? $val : null );
+                    }
+                    $uri = $this->_build_uri($controller, $action, $otherInfo);
                 }
+
+                // Get the menu entry's sub-items (if an activity list).
+                $children = ( $controller == self::ACT_CONTROLLER )
+                                ? $this->_readActivityListFile($activity)
+                                : array();
+
                 $menu->addPage(new Zend_Config(array(
                     'label' => $entry->title,
                     'uri' => $uri,
                     'pages' => $children
                 )));
             }
-            $menu->addPage($ini);
         }
+
         $view->navigation($menu);
     }
 
@@ -136,70 +170,73 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     }
 
     /**
-     * Read menu of possible activities.
-     *
-     * Ashton Galloway, March 2013
-    protected function _readActivityMenu($filename)
+     * Builds a URI out of the controller/action/keyword/param (or 
+     * controller/action/param_key_val_pairs).
+     */
+    protected function _build_uri($controller, $action, $params,
+                                  $keyword = null )
     {
-        $activityList = new Zend_Config_Ini($filename);
-        $pages = array();
-        foreach ( $activityList as $activity )
+        $uri = DIRECTORY_SEPARATOR . $controller .
+               DIRECTORY_SEPARATOR . $action;
+        if ( is_array($params) )
         {
-            if ( ! is_null($activity->source) )
+            foreach ( $params as $key => $val )
             {
-                // TODO: Bad Assumption that all activities in an 
-                // activity file are table settings!
-                //assumption: all setting type activities have links
-                $uri = '/table/index/_setting/'. urlencode(urlencode($activity->source));
-                array_push($pages, array(
-                    'label' => $activity->title,
-                    'uri' => $uri
-                ));
+                $uri .= DIRECTORY_SEPARATOR . $key .
+                        DIRECTORY_SEPARATOR . urlencode($val);
             }
         }
-        return $pages;
+        else if ( ! empty($keyword) )
+        {
+            $uri .= DIRECTORY_SEPARATOR . $keyword .
+                    DIRECTORY_SEPARATOR . urlencode($params);
+        }
+        return $uri;
     }
-     */
 
     /**
-     * Read menu of possible activities.
+     * Reads the activity list file containing menu sub-items.
+     *
+     * @param $filename  the name of the activity list file
      */
-    protected function _readActivityMenu($filename)
+    protected function _readActivityListFile($filename)
     {
-        $gateway = new Application_Model_ActivityGateway();
+        // if $filename is not set (or is empty), there is nothing to do.
+        if ( empty($filename) )
+        {
+            return array();
+        }
+
+        // Read the activity list 
+        $gateway = new Ramp_Activity_Gateway();
         $activityList = $gateway->getActivityList($filename);
         $activityTitle =  $gateway->getActivityListTitle($filename);
-        // $activityList = new Zend_Config_Ini($filename);
+
+        // Build up the menu sub-items.
         $pages = array();
         foreach ( $activityList as $activity )
         {
+            // URI for menu destination depends on activity type.
             if ( $activity->isControllerAction() )
             {
-                array_push($pages, array(
-                                'label' => $activityTitle,
-                                'controller' => $activity->getController(),
-                                'action' => $activity->getAction(),
-                                'params' => $activity->getParameters()
-                            ));
+                $uri = $this->_build_uri($activity->getController(),
+                        $activity->getAction(), $activity->getParameters());
             }
             else if ( $activity->isUrl() )
             {
-                array_push($pages, array(
-                                'label' => $activityTitle,
-                                'uri' => $activity->getSource()
-                            ));
+                $uri = $activity->getSource();
             }
             else if ( ! ( $activity->isSeparator() || $activity->isComment() ) )
             {
                 $keyword = $activity->getParamKeyword();
                 $source = urlencode($activity->getSource());
-                array_push($pages, array(
-                                'label' => $activityTitle,
-                                'controller' => $activity->getController(),
-                                'action' => $activity->getAction(),
-                                'params' => array($keyword => $source)
-                            ));
+                $uri = $this->_build_uri($activity->getController(),
+                        $activity->getAction(), $source, $keyword);
             }
+            array_push($pages, array(
+                            'label' => $activity->getTitle(),
+                            'uri' => $uri
+                        ));
         }
         return $pages;
     }

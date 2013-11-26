@@ -426,7 +426,7 @@ class Ramp_Activity_Specification
 
     /**
      * Gets the array specified with the parameter property.  Returns an 
-     * empty string if no value was specified for this property.
+     * empty array if no value was specified for this property.
      *
      */
     public function getParameters()
