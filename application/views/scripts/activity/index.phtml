@@ -37,46 +37,45 @@ if ( isset($this->activityList) && is_array($this->activityList) )
 {
     foreach ( $this->activityList as $key => $activity )
     {
-        switch ($activity->getType())
+        if ( $activity->isComment() )
         {
-            case Ramp_Activity_Specification::COMMENT_TYPE:
-                    $comment = $this->escape($activity->getComment());
-                    $comment = Markdown::defaultTransform($comment);
-                    $commentClass = $activity->isInactive()
-                        ? "class='disabledComment'" : "class='comment'";
-                    echo "<dt $commentClass>";
-                    echo $this->partial("activity/_cleanIfSinglePar.phtml",
-                            array('content'=>$comment,
-                            'includeBreak' => true));
-                    echo "</dt><dd></dd>\n";
-                    break;
+            $comment = $this->escape($activity->getComment());
+            $comment = Markdown::defaultTransform($comment);
+            $commentClass = $activity->isInactive()
+                ? "class='disabledComment'" : "class='comment'";
+            echo "<dt $commentClass>";
+            echo $this->partial("activity/_cleanIfSinglePar.phtml",
+                    array('content'=>$comment,
+                    'includeBreak' => true));
+            echo "</dt><dd></dd>\n";
+        }
+        else if ( $activity->isSeparator() )
+        {
+            echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
+        }
+        else
+        {
+            // Get and format title for button.
+            $title = $this->escape($activity->getTitle());
+            // $title = Markdown::defaultTransform($title);
 
-            case Ramp_Activity_Specification::SEPARATOR_TYPE:
-                    echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
-                    break;
+            // Get and format description.
+            $desc = $this->escape($activity->getDescription());
+            $desc = Markdown::defaultTransform($desc);
 
-            default:      // Active types, e.g., SETTING and ACTIVITY_LIST
-                    // Get and format title for button.
-                    $title = $this->escape($activity->getTitle());
-                    // $title = Markdown::defaultTransform($title);
-
-                    // Get and format description.
-                    $desc = $this->escape($activity->getDescription());
-                    $desc = Markdown::defaultTransform($desc);
-
-                    // Should button be disabled?
-                    $disabledOrNot =
-                        $activity->isInactive() ? "disabled" : "";
-                    $descDisabledOrNot =
-                        $activity->isInactive() ? "class='disabled'" : "";
-                    echo "<dt><input type='submit'  name='$key' id='$key' " .
-                        "class='button btn' value='$title' $disabledOrNot>" .
-                        "</dt>\n";
-                    echo "<dd $descDisabledOrNot>";
-                    echo $this->partial("activity/_cleanIfSinglePar.phtml",
-                            array('content'=>$desc,
-                            'includeBreak' => false));
-                    echo "</dd>\n";
+            // Should button be disabled?
+            $disabledOrNot =
+                $activity->isInactive() ? "disabled" : "";
+            $descDisabledOrNot =
+                $activity->isInactive() ? "class='disabled'" : "";
+            echo "<dt><input type='submit'  name='$key' id='$key' " .
+                "class='button btn' value='$title' $disabledOrNot>" .
+                "</dt>\n";
+            echo "<dd $descDisabledOrNot>";
+            echo $this->partial("activity/_cleanIfSinglePar.phtml",
+                    array('content'=>$desc,
+                    'includeBreak' => false));
+            echo "</dd>\n";
         }
     }
 }

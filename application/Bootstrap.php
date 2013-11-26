@@ -100,6 +100,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             $menuEntries = new Zend_Config_Ini($menuFilename);
             foreach ( $menuEntries as $entry )
             {
+                $uri = "/";
+                $children = array();
+
                 // Menu item's action is usually specified with url info.
                 if ( empty($entry->url) )
                 {
@@ -110,6 +113,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                     $activity = $configs->getDefaultInitialActivity();
                     $uri = $this->_build_uri($controller, $action,
                                 urlencode($activity), $actKeyParam);
+                    $children = $this->_readActivityListFile($activity);
                 }
                 else
                 {
@@ -128,15 +132,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                         }
 
                         // If this is an activity property, store its value.
-                        $activity = ( $key == $actKeyParam ? $val : null );
+                        if ( $key == $actKeyParam )
+                        {
+                            $children = $this->_readActivityListFile($val);
+                        }
                     }
                     $uri = $this->_build_uri($controller, $action, $otherInfo);
                 }
-
-                // Get the menu entry's sub-items (if an activity list).
-                $children = ( $controller == self::ACT_CONTROLLER )
-                                ? $this->_readActivityListFile($activity)
-                                : array();
 
                 $menu->addPage(new Zend_Config(array(
                     'label' => $entry->title,
@@ -210,14 +212,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         // Read the activity list 
         $gateway = new Ramp_Activity_Gateway();
         $activityList = $gateway->getActivityList($filename);
-        $activityTitle =  $gateway->getActivityListTitle($filename);
 
         // Build up the menu sub-items.
         $pages = array();
         foreach ( $activityList as $activity )
         {
             // URI for menu destination depends on activity type.
-            if ( $activity->isControllerAction() )
+            if ( $activity->isSeparator() || $activity->isComment() )
+            {
+                continue;
+            }
+            else if ( $activity->isControllerAction() )
             {
                 $uri = $this->_build_uri($activity->getController(),
                         $activity->getAction(), $activity->getParameters());
@@ -226,7 +231,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             {
                 $uri = $activity->getSource();
             }
-            else if ( ! ( $activity->isSeparator() || $activity->isComment() ) )
+            else
             {
                 $keyword = $activity->getParamKeyword();
                 $source = urlencode($activity->getSource());
