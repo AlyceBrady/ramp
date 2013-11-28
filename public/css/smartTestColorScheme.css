@@ -1,101 +1,203 @@
-
-p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
-    /* is this used? */
-        background-color:   Lavender;
-}
+/* COLOR SCHEME used by SMART Testing */
 
 
 /* Styles used in header (banner area with application name) and footer. */
-div#header {
-	/* background: #fff url(../img/ramp-logo.gif) no-repeat; */
+
+h1, h1 small, .appName {
+	color:	#652DC1;       /* #66C? */     /* Amethyst = 96c */
 }
 
-div#header .appName, div#header .appDesc {
-	color:	#66C;
+h1.loggedInAs small {
+	color:	#00C;
 }
 
 #footer {
-	background: #fff;
 	color: #888;
 }
 
+/* Styles used in menu bar. */
 
-/* Styles used by menu bar. */
-
-#menu-bar {
-    border-top:1px solid #fff;
-    background-color: #CCF;
-    color: #000;
+.navbar {
+    background-color: #00C;     /* Use in combination with next stanza. */
 }
 
-#menu-login, #menu-login a, #main-menu a {
-    color:#fff;
+.navbar-inner {
+    min-height: 0px;
+    height: 0px;
+    border: 1px solid #00C;
+        /* No idea why this combination works to set background of
+         * entire menu (not just bg of menu items) to the right color,
+         * but it does!
+        */
 }
 
-#main-menu li {
-    border-right:1px solid #fff;
+.navbar .nav > li > a           /* Menu items */
+{
+    color: #fff;
+    background-color: #00C;
 }
 
-#menu-login a:hover, #main-menu a:hover, #main-menu a:focus {
-    color:#fff;
+/* Menu items during focus, hover, or when dropdown is showing */
+.navbar .nav > li > a:focus
+, .navbar .nav > li > a:hover
+, .navbar .nav li.dropdown.open > .dropdown-toggle
+, .navbar .nav li.dropdown.active > .dropdown-toggle
+, .navbar .nav li.dropdown.open.active > .dropdown-toggle
+{
+    color: #00C;
+    background-color: Lavender;  /* (i.e., #E6E6FA; an alt is #66f) */
+}
+
+/* Dropdown background */
+.navbar .nav > li > .dropdown-menu              /* Gets edges */
+, .navbar .nav > li > .dropdown-menu > li       /* Get li bg but not edges */
+, .navbar .nav > li > .dropdown-menu .caret     /* Doesn't work */
+{
+    background-color: #EFEFFA;
+}
+
+/* Dropdown background when item is selected */
+.navbar .nav > li > .dropdown-menu > li > a:focus  /* Doesn't work */
+, .navbar .nav > li > .dropdown-menu > li > a:hover  /* Doesn't work */
+/*, .navbar .nav > li > .dropdown-menu > li.active /* Doesn't work */
+{
+    background-color: #B57EDC;          /* Floral lavender; alt: #00C */
+}
+
+/* Dropdown text color (not hovering) */
+.navbar .nav > li > .dropdown-menu > li > a
+{
+    color: #00C;
+}
+
+/* Dropdown text color (hovering) */
+.navbar .nav > li > .dropdown-menu > li > a:focus
+, .navbar .nav > li > .dropdown-menu > li > a:hover
+{
+    color: #fff;
 }
 
 
+/* Generic styles used throughout display pages. */
 
-/* Styles used to create columns */
-.sidebar {                      /* sets attributes common to all sidebars */
-        background-color:   #CCF;
+div#content h2 {
+    color:  #652DC1;       /* or Red? */
 }
 
-
-/* Styles used by page content below menu bar.  (Some not used.) */
-
-div#content h1 {
-	color: #66C;
-}
-
-div#content h2, div#content h3, div#content h4, div#content h5 {
-	color: #039;
+div#content h3, div#content h4, div#content h5 {
+    color: #039;
 }
 
 div#content a,  div#content a:visited,  div#content a:active {
-	color: #00C;
+    color: #00C;
 }
 
 div#content a:hover {
-	color: #009;
+    color: #009;
+}
+
+input.btn {
+    color: #652DC1;               /* Works */
+    background-color: Lavender;   /* Doesn't work */
+}
+
+input.btn:hover,
+input.btn:active,
+input.btn.active {
+    color: #000066;
+    background-color: Lavender;
+    /* background-color: #B57EDC;  /* Doesn't completely fill?  Ridiculous. */
+}
+
+input.btn.disabled,
+input.btn[disabled] {
+    color: Grey;
+    background-color: #dddddd;
+}
+
+
+/* Styles for informational & error messages on many pages. */
+
+/* This style should not be necessary with Bootstrap 3.0! */
+.text-danger {
+    color: Red;
 }
 
 
 /* Styles used by activity list pages */
-div#activityPage {
-        background-color:   #fdfdfd;
-        color: #00C;
+
+div#activityPage h2 {
+    color: #652DC1;    /* alt: #039 */
 }
 
-div#activityPage h1 {
-    color: #66C;    /* alt: #039 */
+div#activityPage hr {
+    color: #00C;        /* Doesn't work. hr is very light. */
 }
 
-div#activityPage .button {
-    color:            #006;
-    background-color: lavender;
-}
-
-div#activityPage :disabled {
-    color:            grey;
-    background-color: #DDDDDD;
-}
-
-div#activityPage .disabled, .disabledComment {
-    color:            grey;
+div#activityPage .disabled, div#activityPage .disabledComment {
+    color:            Grey;
 }
 
 
-/* Styles used by title bars on most table-viewing/modifying pages */
+/* Styles used by list and table views */
 
-div#error-messages li {
-        color:          red;
+.table-hover tbody tr:hover, .table-hover tbody tr:hover td
+{
+    background-color: #FFF0F5;   /* #F6FFF6; */
+}
+
+#record-table td.select, #record-list td.select
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #99EC99;
+  *background-color: #90D890;
+  background-image: -moz-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#A1F9A1), to(#90D890));
+  background-image: -webkit-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: -o-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: linear-gradient(to bottom, #A1F9A1, #90D890);
+  background-repeat: repeat-x;
+  border-color: #90D890 #90D890 #77A577;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffA1F9A1', endColorstr='#ff90D890', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+#record-table td.select:hover, #record-list td.select:hover
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #5bb75b;
+  *background-color: #51a351;
+  background-image: -moz-linear-gradient(top, #62c462, #51a351);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
+  background-image: -webkit-linear-gradient(top, #62c462, #51a351);
+  background-image: -o-linear-gradient(top, #62c462, #51a351);
+  background-image: linear-gradient(to bottom, #62c462, #51a351);
+  background-repeat: repeat-x;
+  border-color: #51a351 #51a351 #387038;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff51a351', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+#record-table td.delete:hover, #record-list td.delete:hover
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #dd6632;
+  *background-color: #dc3406;
+  background-image: -moz-linear-gradient(top, #dec170, #dc3406);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dec170), to(#dc3406));
+  background-image: -webkit-linear-gradient(top, #dec170, #dc3406);
+  background-image: -o-linear-gradient(top, #dec170, #dc3406);
+  background-image: linear-gradient(to bottom, #dec170, #dc3406);
+  background-repeat: repeat-x;
+  border-color: #dc3406 #dc3406 #A02200;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdec170', endColorstr='#ffdc3406', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
 
@@ -118,31 +220,12 @@ div#error-messages li {
 
 input.readonly, select.readOnly,
 input.statusCode {
-        background-color: #eef;
+        background-color: #FAFFFA;  /* was #efe; Could be F6FFF6 */
 }
 
 #record-block.edit input.readonly {
-        background-color: #eef;
+        background-color: #FAFFFA;  /* was #efe; Could be #F6FFF6 */
         color: #999;
 }
 
 
-/* Styles used by pages that display data in list or table format. */
-
-div#record-list table {
-    border: 15px solid #EEF;
-    background-color:   #EEF;
-}
-
-div#record-table td.highlighted, div#record-table th.highlighted {
-    background-color: #EEF;
-}
-
-div#record-list td, div#record-list th,
-div#record-table td, div#record-table th {
-    background-color:   #fff;
-}
-
-div#record-list td, div#record-list th {
-    border-bottom: 20px solid #EEF;
-}

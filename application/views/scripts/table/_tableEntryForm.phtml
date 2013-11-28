@@ -21,7 +21,7 @@ $form = $this->form;
             array('formType'=>$form->getFormType(), 'fields'=>$fields,
                   'fieldName' => $name, 'elt'=>$elt));
     echo "</div>\n";
-    echo "<div id=\"$name-element\" class=\"controls\">\n";
+    echo "<div id=\"$name-element\" class=\"controls btn-small\">\n";
     echo $elt->renderElem() . "\n";
     echo $elt->renderErrors();
     echo "</div>\n";

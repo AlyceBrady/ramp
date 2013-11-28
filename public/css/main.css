@@ -4,17 +4,20 @@
  */
 
 
-
 /* Generic styles used throughout display pages. */
 
 /* Font style used for the application name. (Color set in color file.) */
 .appName {
-	font-family: /* Georgia, */ "Times New Roman", Times, serif;
+    font-family: /* Georgia, */ "Times New Roman", Times, serif;
+}
+
+.hidden {
+    display:    none;
 }
 
 /* Font sizes  (menu font sizes are in menu.css) */
 html, body {
-        font-size: 12px;
+    font-size: 12px;
 }
 
 h1 {
@@ -30,19 +33,19 @@ div#activityPage h2 {
 }
 
 h3 {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 h4 {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 h5 {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 h6 {
-  font-size: 10px;
+    font-size: 10px;
 }
 
 h1 small {
@@ -50,191 +53,29 @@ h1 small {
 }
 
 #footer {
-	font-size: 0.8em;
+    font-size: 0.8em;
 }
-
-div#activityPage {
-        font-size: medium;
-}
-
-/*
-label,                  /* Not being picked up? * /
-input,
-button,
-select,
-textarea {
-  font-size: 10px;
-  font-weight: normal;
-  line-height: 15px;
-}
-
-select,
-textarea,
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"],
-.uneditable-input {
-  display: inline-block;
-  height: 20px;
-  padding: 4px 6px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  line-height: 20px;
-  color: #555555;
-  vertical-align: middle;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-}
-*/
 
 .btn {
-  font-size: 12px;
-}
-
-/*
-
-.btn {
-  color: #333333;
-  background-color: #f5f5f5;
-  *background-color: #e6e6e6;
-}
-
-.btn:hover,
-.btn:active,
-.btn.active,
-.btn.disabled,
-.btn[disabled] {
-  color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-}
-
-.btn:active,
-.btn.active {
-  background-color: #cccccc \9;
-}
-
-.btn:hover {
-  color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-  /* Buttons in IE7 don't get borders, so darken on hover * /
-}
-
-.btn.active,
-.btn:active {
-  background-color: #e6e6e6;
-  background-color: #d9d9d9 \9;
-}
-
-.btn-primary {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #006dcc;
-  *background-color: #0044cc;
-  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
-  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
-  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
-  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
-  background-repeat: repeat-x;
-  border-color: #0044cc #0044cc #002a80;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-}
-
-.btn-primary:hover,
-.btn-primary:active,
-.btn-primary.active,
-.btn-primary.disabled,
-.btn-primary[disabled] {
-  color: #ffffff;
-  background-color: #0044cc;
-  *background-color: #003bb3;
-}
-
-.btn-primary:active,
-.btn-primary.active {
-  background-color: #003399 \9;
-}
-
-.btn-danger {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #da4f49;
-  *background-color: #bd362f;
-  background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#bd362f));
-  background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
-  background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
-  background-image: linear-gradient(to bottom, #ee5f5b, #bd362f);
-  background-repeat: repeat-x;
-  border-color: #bd362f #bd362f #802420;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffbd362f', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-}
-
-.btn-danger:hover,
-.btn-danger:active,
-.btn-danger.active,
-.btn-danger.disabled,
-.btn-danger[disabled] {
-  color: #ffffff;
-  background-color: #bd362f;
-  *background-color: #a9302a;
-}
-
-.btn-danger:active,
-.btn-danger.active {
-  background-color: #942a25 \9;
+    font-size: 12px;
 }
 
 
-
-.btn.disabled,
-.btn[disabled] {
-  cursor: default;
-  background-color: #e6e6e6;
-  opacity: 0.65;
-  filter: alpha(opacity=65);
-}
-
-*/
-
-
-/* Styles used in header (banner area with application name) and footer. */
+/* Styles used in header (banner area with application name). */
 
 h1 {
-	font-family: /* Georgia, */ "Times New Roman", Times, serif;
-	font-weight: bold;
-	font-style: italic;
+    font-family: /* Georgia, */ "Times New Roman", Times, serif;
+    font-weight: bold;
+    font-style: italic;
 }
 
 h1 small {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 .loggedInAs {
-	font-family: /* Georgia, */ "Times New Roman", Times, serif;
-	font-style: italic;
-}
-
-#footer {
-	margin-top: 2em;
+    font-family: /* Georgia, */ "Times New Roman", Times, serif;
+    font-style: italic;
 }
 
 
@@ -242,19 +83,23 @@ h1 small {
 
 .text-info, .text-warning, .text-danger, .text-success
 {
-        margin:     0;
-        padding:    0;
-        font-size:      90%;
-        font-style:     italic;
+    margin:     0;
+    padding:    0;
+    font-size:      90%;
+    font-style:     italic;
 }
 
 div#info-messages ul, div#error-messages ul {
-        padding:    0;
-        list-style:     none;
+    padding:    0;
+    list-style:     none;
 }
 
 
 /* Styles used by activity list pages */
+
+div#activityPage {
+    font-size: medium;
+}
 
 div#activityPage .comment, div#activityPage .disabledComment {
     text-align: left;
@@ -295,15 +140,20 @@ div#table-notes p {             /* Table "footnotes" */
     font-style:     italic;
 }
 
+div#record-block, div#record-block input {
+    font-size: small;           /* Not doing anything? */
+}
+
+div#record-block textarea {
+    width: 95%
+}
+
 #record-table td.select, #record-list td.select,
 #record-table td.delete, #record-list td.delete,
 #record-table td.completionStatus, #record-list td.completionStatus
 {
     text-align:     center;
 }
-
-
-/* Styles used by record display/modify pages */
 
 #external-refs li {
     margin-left: 20px;
@@ -312,80 +162,18 @@ div#table-notes p {             /* Table "footnotes" */
 }
 
 
-/*
-
-div#record-block dl {
-    width:      100%;
-    overflow:   hidden;
-}
-
-div#record-block.view dl {
-    padding: 5px;
-}
-
-div#record-block dt, div#record-block dd {
-    display:    block;
-    float:      left;
-    margin-top: 10px;
-}
-
-div#record-block dt {
-    width:      15%;
-    text-align: right;
-    clear:      both;
-}
-
-div#record-block dd {
-    width:      80%;
-}
-
-input.statusCode {
-        padding: 1px;
-        width:  10px;
-}
-
-
-
-/* Styles used by pages that display data in list or table format. 
-div#record-list table, div#record-table table {
-        clear: both;
-}
-
-div#record-list td, div#record-list th {
-    padding:    2px;
-}
-
-div#record-table td, div#record-table th {
-    padding:    3px;
-}
-
-div#record-table td.highlighted, div#record-table th.highlighted {
-}
-
-div#record-table th {
-    border-bottom: 1px solid;
-}
-
-
-
-/* Styles used when printing, especially the table display format. 
+/* Styles used when printing, especially the table display format. */
 @media print {
 
+    /*
     body, p, th, td, select, th input.button, button, .textfield {
         font-size:  x-small;
     }
-
-    .appName {
-        font-size: large;
-    }
-
-    .appDesc {
-        font-size: 9px;
-    }
+        */
 
     h1 {
         font-family: "Century Schoolbook", Times, serif;
-        font-size: medium;
+        font-size: large;
     }
 
     h2 {
@@ -400,14 +188,12 @@ div#record-table th {
         vertical-align: top;
     }
 
-    div#menu-bar, div#title-sidebar, div#body-sidebar,
-    blockquote.menu, .noprint {
+    .loggedInAs, div#menu-bar li, #tableActions, td.select, td.delete,
+    td.completionStatus, .hidden, .noprint {
         display: none;
     }
 
 }
-
-/* ===================================
 
 /* Generic styles used throughout display pages. */
 
@@ -422,147 +208,8 @@ body,html {
 	margin:0;
 }
 
-td,div,body {
-	font-family:Verdana,Arial,Helvetica,sans-serif
-}
-
 th, td {
     vertical-align: top;
-}
-
-.fieldFootnote {    /* is this used? 
-        font-size:      x-small;
-        font-weight:    normal;
-        font-style:     italic;
-}
-
-button, input.button, input.submit {        /* Not working! 
-        font-size:  80%;
-}
-
-.hidden {
-    display:    none;
-}
-
-
-/* Styles used in header (banner area with application name) and footer. */
-
-/*
-div#header {
-        height: 45px;
-	padding: 0;
-	margin-left: 1em;
-        text-align: left;
-}
-
-div#header .appName {
-	font-size: 35px;
-	font-family: /* Georgia, * / "Times New Roman", Times, serif;
-	font-weight: bold;
-	font-style: italic;
-}
-
-div#header .appDesc {
-	font-family: /* Georgia, * / "Times New Roman", Times, serif;
-	font-size: 10px;
-	font-style: italic;
-	font-weight: normal;
-}
-
-#footer {
-	clear: both;
-	padding: 0.3em ;
-	margin-top: 2em;
-        margin-left: 1em;
-	font-size: 0.8em;
-}
-
-
-/* Styles used to create columns 
-
-.sidebar {                      /* sets attributes common to all sidebars 
-        /* min-width: 130px; 
-	padding: 0 0;
-        float: right;
-	margin-right: 50px;
-        font-size:      80%;
-        vertical-align: top;
-}
-
-div#left-column .column {   /* used to put any other div in a left column 
-	min-width: 620px;
-	position: relative;
-        width: 80%;
-	float: left;
-}
-
-
-/* Styles used by page content below menu bar.  (Some not used.) 
-
-div#content {
-	margin-top: 2em;
-	margin-left: 1em;
-	width: 100%;
-}
-
-div#content h1 {
-        text-align: center;
-}
-
-div#content h2, div#content h3, div#content h4, div#content h5 {
-        padding-top: 15px;
-	font-weight: normal;
-}
-
-div#content h1, div#content h2, div#content h3 {
-        font-weight: bold;
-}
-
-div#content p {
-	font-size: 1em;
-}
-
-div#content a,  div#content a:visited,  div#content a:active {
-	text-decoration: underline;
-}
-
-div#content a:hover {
-	text-decoration: underline;
-}
-
-
-/* Styles used by activity list pages 
-
-div#activityPage h2 {
-    padding-top: 15px;
-    text-align: left;
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size:   18px;
-    font-weight: bold;
-}
-
-/* Styles used by title bar area on most table-viewing/modifying pages 
-
-div#titlebar-area {
-        margin: 0 auto;
-        width:  100%;
-}
-
-div#titlebar-area .sidebar {
-        min-width: 130px;
-}
-
-
-/* Styles used by action button lists 
-
-#title-sidebar ul {
-        padding:    0;
-        list-style:     none;
-}
-
-fieldset#button-list li {
-        margin:     0;
-        padding:    5px;
 }
 
 */
