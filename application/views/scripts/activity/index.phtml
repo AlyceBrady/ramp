@@ -2,35 +2,33 @@
 require_once('Michelf/Markdown.php');
 use \Michelf\Markdown;
 
-/*
-echo "<p>Debugging info is:</p>";
-echo "<pre>\n"; print_r($this->activityList); echo "\n</pre>";
-echo "<p>activity key: "; print_r($this->activityKey); echo "</p>";
-echo "<p>activity type: "; print_r($this->activityType); echo "</p>";
-echo "<p>activity: "; print_r($this->activity); echo "</p>";
- */
-
 // Heading may be specified with the activity or may be the
 // default: "Choose an activity".
 $userSpecifiedHeading = $this->activityTitle;   // set in controller
 $heading = $userSpecifiedHeading ? : "Choose an activity:";
+
 ?>
 
 <div id='activityPage'>
 
-<?php if ( $heading != "" ) echo "<h1>$heading</h1>" ?>
+<?php if ( $heading != "" ) echo "<h2>$heading</h2>" ?>
 
 
-<?php if ( $this->message != "" ) echo "$this->message" ?>
+<ul class='unstyled list-unstyled'>   <!-- Bootstrap 2 & 3, respectively -->
+<div id="info-messages" class="text-info">
+<?php if ( $this->message != "" ) echo "<li>$this->message</li>\n"; ?>
+</div>  <!-- End of "info-messages" -->
 
+<div id="error-messages" class="text-danger">
 <?php if ( ! empty($this->errMsg) ) : ?>
-    <p>
-    <?php echo $this->errMsg; ?>
-    </p>
+    <?php echo "<li>$this->errMsg</li>\n"; ?>
 <?php endif; ?>
+</div>  <!-- End of "error-messages" -->
+</ul>
 
 <form id='activityList' action='' method='post'>
-<dl>
+
+<div>
 
 <?php
 if ( isset($this->activityList) && is_array($this->activityList) )
@@ -39,19 +37,15 @@ if ( isset($this->activityList) && is_array($this->activityList) )
     {
         if ( $activity->isComment() )
         {
+            $commentClass = $activity->isInactive()
+                                    ? "disabledComment" : "comment";
             $comment = $this->escape($activity->getComment());
             $comment = Markdown::defaultTransform($comment);
-            $commentClass = $activity->isInactive()
-                ? "class='disabledComment'" : "class='comment'";
-            echo "<dt $commentClass>";
-            echo $this->partial("activity/_cleanIfSinglePar.phtml",
-                    array('content'=>$comment,
-                    'includeBreak' => true));
-            echo "</dt><dd></dd>\n";
+            echo "<div class='$commentClass'>$comment</div>\n";
         }
         else if ( $activity->isSeparator() )
         {
-            echo "<dt class='wide'>" . "<hr />" . "</dt><dd></dd>\n";
+            echo "<hr />\n";
         }
         else
         {
@@ -64,25 +58,26 @@ if ( isset($this->activityList) && is_array($this->activityList) )
             $desc = Markdown::defaultTransform($desc);
 
             // Should button be disabled?
-            $disabledOrNot =
-                $activity->isInactive() ? "disabled" : "";
-            $descDisabledOrNot =
-                $activity->isInactive() ? "class='disabled'" : "";
-            echo "<dt><input type='submit'  name='$key' id='$key' " .
-                "class='button btn' value='$title' $disabledOrNot>" .
-                "</dt>\n";
-            echo "<dd $descDisabledOrNot>";
+            $disabledOrNot = $activity->isInactive() ? "disabled" : "";
+            echo "<div class='row'>";
+            echo "<p class='title span2'><input type='submit' " .
+                "name='$key' id='$key' class='btn btn-small' value='$title' " .
+                "$disabledOrNot>" .  "</p>\n";
+            echo "<div class='$disabledOrNot description span10'>";
             echo $this->partial("activity/_cleanIfSinglePar.phtml",
                     array('content'=>$desc,
                     'includeBreak' => false));
-            echo "</dd>\n";
+            echo "</div>\n";
+            echo "</div>\n";
         }
     }
 }
 
 ?>
 
-</dl>
+</div>
+
 </form>
 
 </div>
+

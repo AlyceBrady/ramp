@@ -13,7 +13,7 @@ activity[] = "Class Lists"
 [Modules Heading]
 
 type = "comment"
-comment = "__Modules__"
+comment = "### Modules ###"
 
 [Modules]
 

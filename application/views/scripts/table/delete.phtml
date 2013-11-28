@@ -18,7 +18,7 @@ $titleAndMsgs['errormsgs'] = $this->errMsgs;
 
 // Get other values from set table for title area.
 $titleAndMsgs['description'] = "";
-$titleAndMsgs['footnote'] = "";
+$titleAndMsgs['footnote'] = $table->getTableFootnote();
 $titleAndMsgs['footnoteAsTooltip'] = true;
 
 $titleBar['titleAndMsgs'] = $titleAndMsgs;

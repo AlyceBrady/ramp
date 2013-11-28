@@ -1,11 +1,8 @@
-
-p.highlighted, td.highlighted, span.highlighted, input.highlighted { 
-    /* is this used? */
-        background-color:   Lavender;
-}
+/* COLOR SCHEME used by RAMP and SMART Demos */
 
 
 /* Styles used in header (banner area with application name) and footer. */
+
 div#header {
 	/* background: #fff url(../img/ramp-logo.gif) no-repeat; */
 }
@@ -18,28 +15,6 @@ div#header .appName, div#header .appDesc {
 	background: #fff;
 	color: #888;
 }
-
-
-/* Styles used by menu bar. */
-
-#menu-bar {
-    border-top:1px solid #fff;
-    background-color: #CCF;
-    color: #000;
-}
-
-#menu-login, #menu-login a, #main-menu a {
-    color:#fff;
-}
-
-#main-menu li {
-    border-right:1px solid #fff;
-}
-
-#menu-login a:hover, #main-menu a:hover, #main-menu a:focus {
-    color:#fff;
-}
-
 
 
 /* Styles used to create columns */
@@ -92,7 +67,7 @@ div#activityPage .disabled, .disabledComment {
 }
 
 
-/* Styles used by title bars on most table-viewing/modifying pages */
+/* Styles used by error messages */
 
 div#error-messages li {
         color:          red;

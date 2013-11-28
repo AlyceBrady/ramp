@@ -33,9 +33,6 @@ class ActivityController extends Zend_Controller_Action
         // passed as a parameter.
         $this->_actSpecName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
-
-// $this->_debugging = true;
-        $this->_debug();
     }
 
     /**
@@ -81,6 +78,9 @@ class ActivityController extends Zend_Controller_Action
             }
         }
 
+// $this->_debugging = true;
+        $this->_debug();
+
     }
 
     /**
@@ -92,8 +92,12 @@ class ActivityController extends Zend_Controller_Action
     {
         if ( $this->_debugging )
         {
-            $this->view->errMsg = "DEBUGGING INFO:  Request params are: "
+            $actList = $this->view->activityList;
+            $errMsg = "<pre>DEBUGGING INFO:  Request params are: "
                         . print_r($this->getRequest()->getParams(), true);
+            $errMsg .= "</pre><pre>Activity List:  "
+                        . var_export($actList, true) .  "</pre>";
+            $this->view->errMsg = $errMsg;
         }
     }
 

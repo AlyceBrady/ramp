@@ -1,24 +1,65 @@
+<?php
+
+$configs = Ramp_RegistryFacade::getInstance();
+$auth = Zend_Auth::getInstance();
+$loginURL = $this->url(array('controller'=>'auth', 'action'=>'login'));
+$logoutURL = $this->url(array('controller'=>'auth', 'action'=>'logout'));
+$changepwURL = $this->url(array('controller'=>'auth',
+                    'action'=>'change-password'));
+$msgs = array();
+if ( $auth->hasIdentity() )
+{
+    if ( $configs->usingInternalAuthentication() )
+    {
+        $msgs[] = "<a href='$changepwURL'>Change password</a>";
+    }
+    $msgs[] = "<a href='$logoutURL'>Log out</a>";
+}
+else
+{
+    $msgs[] = "<a href='$loginURL'>Log in</a>";
+}
+
+?>
+
 <div id="menu-bar" class="navbar row">
 <div class="navbar-inner">
+
 <ul id="main-menu" class="nav">
     <?php foreach($this->container as $page)
     {
         if($page->pages == null)
         {
-            echo '<li><a href="' . $page->uri . '">' . $page->label . '</a></li>';
+            echo '<li><a href="' . $page->uri . '">' . $page->label .
+                 '</a></li>';
         }
         else
         {
-            echo '<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">' . $page->label . '</a>';
+            echo '<li class="dropdown">' .
+                 '<a class="dropdown-toggle" data-toggle="dropdown" ' .
+                 'href="#">' . $page->label . '</a>';
             echo '<ul class="dropdown-menu" role="menu">';
-            echo '<li><a href="' . $page->uri . '">' . $page->label . '</a></li>';
+            echo '<li><a href="' . $page->uri . '">' . $page->label .
+                 '</a><hr /></li>';
             foreach($page->pages as $child)
             {
-                echo '<li><a href="' . $child->uri . '">' . $child->label . '</a></li>';
+                echo '<li class="child"><a href="' . $child->uri . '">' .
+                     $child->label . '</a></li>';
             }
             echo '</ul></li>';
         }
     }
     ?>
 </ul>
-<p class="pull-right navbar-text"><?php echo $this->loggedInUser(); ?></p></div></div>
+
+<ul id="main-menu" class="nav pull-right">
+    <?php foreach($msgs as $msg)
+    {
+        echo "<li>$msg</li>";
+    }
+    ?>
+</ul>
+
+</div>
+</div>
+

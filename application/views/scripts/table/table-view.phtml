@@ -49,9 +49,10 @@ $deleteParams = $commonParams + array('action'=>'delete');
 <!-- Display records -->
 
 <div id='record-table' class='row'>
-<table class='table table-striped'>
+<table class='table table-striped table-hover table-condensed'>
 
 <!-- DISPLAY COLUMN HEADERS -->
+<thead>
 <tr>
     <?php
     foreach($visibleFieldInfo as $fieldName => $field) :
@@ -63,8 +64,10 @@ $deleteParams = $commonParams + array('action'=>'delete');
     ?>
     <th> Actions </th>
 </tr>
+</thead>
 
 <!-- DISPLAY RECORDS -->
+<tbody>
 <?php
 $rowNum = 0;
 foreach($tableValues as $recordValues) :
@@ -97,14 +100,7 @@ foreach($tableValues as $recordValues) :
     ?>
 
     <!-- Display select/delete links -->
-    <td>
-        <a href="<?php echo $this->url(
-                        $selectParams + $rowSpecParams, null, true); ?>"><i
-                            class='icon-zoom-in' title='Select'></i></a>
-            <!-- Other possibilities: 'icon-list', 'icon-list-alt' -->
-        <a href="<?php echo $this->url(
-                        $deleteParams + $rowSpecParams, null, true); ?>"><i
-                            class='icon-remove' title='Delete'></i></a>
+    <td class='completionStatus'>
         <?php
         // Display indication of whether record has all recommended fields.
         $status = $addSetting->getStatusOfRecord($rowSpecParams);
@@ -113,10 +109,22 @@ foreach($tableValues as $recordValues) :
                                   'status' => $status));
         ?>
     </td>
+    <td class='delete'>
+        <a href="<?php echo $this->url(
+                        $deleteParams + $rowSpecParams, null, true); ?>"><i
+                            class='icon-remove' title='Delete'></i></a>
+    </td>
+    <td class='select'>
+        <a href="<?php echo $this->url(
+                        $selectParams + $rowSpecParams, null, true); ?>"><i
+                        class='icon-search' title='Select'></i></a>
+    <!-- Other possibilities: 'icon-zoom-in', 'icon-list', 'icon-list-alt' -->
+    </td>
     </tr>
 
 <?php endforeach; ?>
 
+</tbody>
 </table>
 </div>  <!-- End of "record-table" -->
 

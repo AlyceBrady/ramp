@@ -28,17 +28,17 @@ type = "separator"
 [People Heading]
 
 type = "comment"
-comment = "__People__"
+comment = "### People ###"
 
 [Staff Heading]
 
 type = "comment"
-comment = "__Tables that deal with Staff records__"
+comment = "### Tables that deal with Staff records ###"
 
 [Student Heading]
 
 type = "comment"
-comment = "__Tables that deal with Student records__"
+comment = "### Tables that deal with Student records ###"
 
 [Person Table]
 

@@ -24,7 +24,7 @@ type = "separator"
 [Programs Heading]
 
 type = "comment"
-comment = "__Programs__"
+comment = "### Programs ###"
 
 [Programs]
 
@@ -58,7 +58,7 @@ Admission Requirements or Graduation Requirements."
 [Terms Heading]
 
 type = "comment"
-comment = "__Terms__"
+comment = "### Terms ###"
 
 [Terms]
 
@@ -70,7 +70,7 @@ description = "View or modify list of Terms"
 [Modules Heading]
 
 type = "comment"
-comment = "__Modules__"
+comment = "### Modules ###"
 
 [Modules]
 

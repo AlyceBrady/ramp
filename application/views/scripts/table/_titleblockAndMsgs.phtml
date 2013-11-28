@@ -13,15 +13,14 @@
 $subtleFootnote = isset($this->footnoteAsTooltip) ?
                      $this->footnoteAsTooltip : false;
 
+$footnoteAsTooltip = $subtleFootnote
+                        ? " title='" . $this->escape($this->footnote) . "'"
+                        : "";
+
 ?>
 
 <div id="title-block">  <!-- Contains title, footnotes, and instructions -->
-<?php if ( $subtleFootnote )
-        { echo "<h1 title='" . $this->escape($this->footnote) . "'>"; }
-    else
-        { echo "<h1>"; }
-?>
-<?php echo $this->escape($this->title); ?></h1>
+<?php echo "<h2 $footnoteAsTooltip>" . $this->escape($this->title); ?></h2>
 <div id="table-notes">
 <?php if ( ! $subtleFootnote ) : ?>
     <?php echo $this->partial("table/_stringInTag.phtml",
@@ -32,8 +31,8 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
 </div>  <!-- End of "table-notes" -->
 </div>  <!-- End of "title-block" -->
 
-<div id="info-messages">
-<ul>
+<div id="info-messages" class='text-info'>
+<ul class='unstyled list-unstyled'>   <!-- Bootstrap 2 & 3, respectively -->
 <?php foreach ( $this->msgs as $msg ) : ?>
     <?php echo $this->partial("table/_stringInTag.phtml",
             array('tag'=>'li', 'value'=>$msg)); ?>
@@ -41,11 +40,12 @@ $subtleFootnote = isset($this->footnoteAsTooltip) ?
 </ul>
 </div>  <!-- End of "info-messages" -->
 
-<div id="error-messages">
-<ul>
+<div id="error-messages" class='text-danger'>
+<ul class='unstyled list-unstyled'>   <!-- Bootstrap 2 & 3, respectively -->
 <?php foreach ( $this->errormsgs as $msg ) : ?>
     <?php echo $this->partial("table/_stringInTag.phtml",
             array('tag'=>'li', 'value'=>$msg)); ?>
 <?php endforeach; ?>
 </ul>
 </div>  <!-- End of "error-messages" -->
+

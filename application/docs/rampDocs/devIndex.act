@@ -1,5 +1,7 @@
 ; List of Activities for Viewing Ramp/Smart Documents
 
+activityListHeading = "Choose a document:"
+
 activity[] = "About Ramp"
 activity[] = "README"
 activity[] = "Ramp User Man"
@@ -27,21 +29,22 @@ source = "rampDocs/rampAbout.md"
 [Ramp User Man]
 
 type = "document"
-title = "Placeholder for Future Ramp User Manual"
-description = "A place to store notes for writing Ramp User Manual"
+title = "Ramp User Manual"
+description = "Vaporware: Will initially be a place to store notes for
+writing Ramp User Manual"
 source = "rampDocs/RampUserManual.md"
 
 [Admin User Man]
 
 type = "document"
-title = "Prelim Admin User Manual Notes"
+title = "Admin User Manual"
 description = "__Really__ preliminary! (just barely started)"
 source = "rampDocs/AdminUserManual.md"
 
 [Act Spec Doc]
 
 type = "document"
-title = "Activity Specs"
+title = "Activity Specs HowTo"
 description = "How to write Activity Specification files"
 source = "rampDocs/ActivityLists.md"
 
@@ -55,7 +58,7 @@ source = "rampDocs/sample.ini"
 [Table Settings]
 
 type = "document"
-title = "Table Settings Documentation"
+title = "Table Settings HowTo"
 description = "Documentation about Table Settings (should be worked into
 a section of _Admin User Manual_?)"
 source = "rampDocs/TableSettings.md"

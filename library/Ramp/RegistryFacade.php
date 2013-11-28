@@ -246,7 +246,7 @@ class Ramp_RegistryFacade
         // If no directory specified, come up with a default instead.
         if ( empty($path) )
         {
-            $baseDir = self::_getBaseDirectory();
+            $baseDir = Zend_Controller_Front::getInstance()->getBaseUrl();
             $path = $baseDir . DIRECTORY_SEPARATOR . 'settings';
         }
 
@@ -305,27 +305,6 @@ class Ramp_RegistryFacade
             }
         }
         return null;
-    }
-
-    /**
-     * Gets the path where settings should be stored.  Uses code from 
-     * Zend_Controller_Action::initView() -- if only the Zend 
-     * programmers had broken this out into a protected function!
-     *
-     * @return the base directory for this application module
-     *
-     */
-    protected static function _getBaseDirectory()
-    {
-        $front = Zend_Controller_Front::getInstance();
-        $module  = $front->getRequest()->getModuleName();
-        $dirs    = $front->getControllerDirectory();
-        if (empty($module) || !isset($dirs[$module])) {
-            $module = $front->getDispatcher()->getDefaultModule();
-        }
-        $baseDir = dirname($dirs[$module]);
-
-        return $baseDir;
     }
 
 }

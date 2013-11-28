@@ -38,24 +38,6 @@ class IndexController extends Zend_Controller_Action
         $this->_initialActivity =
                 $this->_configInfo->getDefaultInitialActivity();
 
-        // Get appropriate title, subtitle, tab title, and icon information.
-        $look = $this->_configInfo->getLookAndFeel();
-        $tabTitle = $look['shortName'];
-        if ( ! empty($tabTitle) )
-        {
-            $this->view->headTitle($tabTitle)->setSeparator(' - ');
-        }
-        $this->view->icon = $look['icon'];
-        $this->view->pageTitle = $look['title'];
-        $this->view->pageSubTitle = $look['subtitle'];
-
-        // Get the appropriate cascading stylesheet.
-        $stylesheet = $look['rampStyleSheet'];
-        if ( ! empty($stylesheet) )
-        {
-            $this->view->headLink()->prependStylesheet($stylesheet);
-        }
-
 // $this->_getAuthDebuggingInfo();
 
     }

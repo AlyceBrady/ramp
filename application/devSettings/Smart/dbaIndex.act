@@ -24,7 +24,7 @@ type = "separator"
 [Admin Heading]
 
 type = "comment"
-comment = "__Admin Activities__"
+comment = "### Admin Activities ###"
 
 [Admin Activities]
 
@@ -37,7 +37,7 @@ administrative activities"
 [Core Heading]
 
 type = "comment"
-comment = "__Core Tables__"
+comment = "### Core Tables ###"
 
 [Terms Table]
 
@@ -65,7 +65,7 @@ tables."
 [Curriculum Heading]
 
 type = "comment"
-comment = "__Curriculum__"
+comment = "### Curriculum ###"
 
 [Programs]
 

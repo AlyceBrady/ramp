@@ -21,7 +21,7 @@ type = "separator"
 [Tables]
 
 type = "comment"
-comment = "__Tables__"
+comment = "### Tables ###"
 
 [Staff Table]
 
@@ -62,7 +62,7 @@ term, module, section, and/or instructor"
 [Reports]
 
 type = "comment"
-comment = "__Reports__"
+comment = "### Reports ###"
 
 [Appt Renewal Form]
 

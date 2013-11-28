@@ -30,13 +30,13 @@ type = "separator"
 [Admin Heading]
 
 type = "comment"
-comment = "__Admin Activities (must be logged in as _dba_)__"
+comment = "### Admin Activities (must be logged in as _dba_) ###"
 inactive = true
 
 [Core Heading]
 
 type = "comment"
-comment = "__Core Tables__"
+comment = "### Core Tables ###"
 
 [Terms Table]
 
@@ -64,7 +64,7 @@ tables."
 [Curriculum Heading]
 
 type = "comment"
-comment = "__Curriculum__"
+comment = "### Curriculum ###"
 
 [Programs]
 
@@ -89,7 +89,7 @@ program requirements to facilitate requirements checking."
 [People Heading]
 
 type = "comment"
-comment = "__People__"
+comment = "### People ###"
 
 [Staff Tables]
 
@@ -112,7 +112,7 @@ inactive = true
 [Procedures Heading]
 
 type = "comment"
-comment = "__Procedure Example(s)__"
+comment = "### Procedure Example(s) ###"
 
 [ChangeAdvisor]
 
