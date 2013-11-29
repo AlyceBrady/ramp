@@ -229,3 +229,17 @@ input.statusCode {
 }
 
 
+/* Styles used by documents */
+
+div#documentPage code, div#documentPage pre {
+    color: Blue;
+    background-color: inherit;
+}
+
+div#documentPage pre code {
+    color: #C00;
+    background-color: transparent;
+}
+
+
+

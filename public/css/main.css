@@ -162,6 +162,49 @@ div#record-block textarea {
 }
 
 
+/* Styles used by documents */
+
+div#documentPage p {
+    font-size: 14px;
+}
+
+div#documentPage {
+    padding:    10px 0px;
+}
+
+div#documentPage h1 {
+    font-family: inherit;
+    font-style: inherit;
+}
+
+div#documentPage h1 small {
+    font-size: 16px;        /* same size as h3 above */
+}
+
+div#documentPage code, div#documentPage pre {
+    font-family: "Courier New", monospace;
+    border: 0;
+}
+
+div#documentPage pre code {
+    padding: 0 0 0 10px;
+    border: 0;
+}
+
+div#documentPage blockquote {
+    font-family: inherit;
+    padding: 0 0 0 30px;
+    border-left: 0;
+}
+
+div#documentPage #footer {
+    margin:     0 0 0 0;
+    padding:    0 0 0 0;
+}
+
+
+
+
 /* Styles used when printing, especially the table display format. */
 @media print {
 

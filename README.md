@@ -1,52 +1,37 @@
-
 # RAMP: Record and Activity Management Program #
 # SMART: Software for Managing Academic Records and Transcripts #
 
-Welcome to the (temporarily) combined RAMP/SMART Project.
+Welcome to the (temporarily) combined RAMP and SMART Projects.
 
-## RAMP ##
+#### RAMP ####
 
-Ramp is a program that supports the easy creation of simple
-activity files (lists of grouped activities with descriptions),
-provides a mechanism for creating database views (called "table
-settings") that is meant to be accessible to domain experts (as
-opposed to database experts), and provides software for populating,
-viewing, and updating database tables through the table settings.
-For any database table for which a table setting has been
-defined, Ramp supports:
+Ramp is a program that supports domain expert access to a relational
+database.  Whereas a program like phpMyAdmin is aimed at database
+administrators who need to update and maintain a database, Ramp is aimed
+at the store owner, librarian, registrar, or other professional who
+needs to access and update the data in a structured set of tables.
 
- * A search mechanism for finding records based on values in fields
+Ramp's software treats the tables in a database generically, but
+provides reasonably light-weight methods for customizing the user's
+interaction with those tables to give the appearance of an
+application-specific program.  The two primary mechanisms for this
+customization are activity lists, which provide a customized interface
+to the structure of the tables, and table settings, which provide
+customized views of tables.  Activity files and table settings are
+created as ini configuration files, making it relatively easy to create
+a Ramp-based application to interact with any new set of tables.
 
- * A table view for viewing a set of table records with column headings
+For more information about Ramp, see [About RAMP] [aboutRamp].
 
- * A list view for viewing table records (often just a defined
-   subset of columns, useful for selecting a single record from
-   a search that yielded multiple results)
+#### SMART ####
 
- * A single-record view for viewing records in their entirety,
-   modifying them, or adding new records to the table; single-record
-   views may also contain links to other, related tables or
-   records if the relationships are defined in the table setting
+Smart is a Ramp-based program that provides a set of activity files and
+table settings appropriate for managing academic records, including
+curriculum records (_e.g._, programs available, course modules, and
+course module schedules) and student records (_e.g._, enrolled
+program, course module history, test scores).
 
-Ramp is set up to work with tables defined in a MySQL database,
-using the Zend Framework.
-
-## SMART ##
-
-SMART currently consists of a set of activity files and table
-settings to support managing academic records in three broad
-categories:
-
- * Curriculum records dealing with courses of study (e.g.,
-   undergraduate mathematics), courses or modules (e.g., Calculus
-   I), and their individual offerings (e.g., the Spring 2012
-   offering of Calculus I)
-
- * Instructor records (e.g., contract start/end dates, courses or
-   modules taught)
-
- * Student records (e.g., courses of study, test scores, enrollment
-   history)
+For more information about Smart, see [About SMART] [aboutSmart].
 
 In time, the plan is to separate Ramp and Smart into separate
 projects, and to expand Smart to include customized activities
@@ -56,32 +41,75 @@ general-purpose activities supported by Ramp).
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.2.  
-Released on November 24, 2013.
+RAMP/SMART Release 0.5.3.  
+Released on November 28, 2013.
 
 ### SYSTEM REQUIREMENTS ###
 
-RAMP (Record and Activity Management Program) was developed using
-Apache 2, MySQL 5.5, PHP 5.3 and Zend Framework 1.11.11.  It has
-been tested (and seems to work) with MySQL 5.1.44 and
-Zend Framework 1.11.10, as well as later versions up to MySQL 5.5.24,
-PHP 5.3.15, and Zend Framework 1.12.  It has not been tested with
-earlier versions of MySQL or PHP.  It did not appear to work with
-one installation of Zend Framework 1.11.4, nor does it work yet
-with Zend 2, which is a completely redesigned version of the Zend
-Framework.
+Ramp is set up to work with tables defined in a MySQL database,
+using the Zend Framework.
 
-Ramp also uses Michel Fortin's PHP Markdown Lib 1.3, which depends
-on PHP 5.3, for converting Markdown text to HTML.
+#### AMP and ZF1 ####
+RAMP (Record and Activity Management Program) was developed using
+[Apache HTTP Server 2] [apache], [MySQL Community Server 5] [mysql] (5.5),
+[PHP 5] [php] (5.3) and [Zend Framework 1] [zf1] (1.11.11).  It has
+also been tested with later versions up to MySQL 5.6.13, PHP 5.4.19,
+and Zend Framework 1.12.  It does not work yet with [Zend 2] [zf2],
+which is a completely redesigned version of the Zend Framework.
+
+#### Markdown, Twitter Bootstrap, and twitter-bootstrap-zf1 ####
+Ramp also uses Michel Fortin's [PHP Markdown Lib 1.3] [md], which
+depends on PHP 5.3, for converting Markdown text to HTML, and
+[`twitter-bootstrap-zf1`] [tbz], a library to work with [Twitter
+Bootstrap 2] [tb] and Zend Framework 1.
+
+Ramp also includes some dependencies on HTML 5.  Thus the full list of
+dependencies is:
+
+>   Apache HTTP Server 2  
+>   MySQL Community Server, version 5.3 or later  
+>   PHP, version 5.3 or later  
+>   Zend Framework 1, version 1.11.10 or later (but not Zend Framework 2)  
+>   PHP Markdown Lib 1.3  
+>   twitter-bootstrap-zf  
+>   Twitter Bootstrap 2 (but not Twitter Bootstrap 3)  
+>   Browsers that support HTML 5  
+
+The current version of Ramp includes bundled versions of the
+Zend Framework 1, the Markdown library, the `twitter-bootstrap-zf1`
+library, and a subset of Twitter Bootstrap 2.  (See the [License section]
+[license-section] for information about the licenses for those
+components.)
 
 ### INSTALLATION ###
 
-Please see INSTALL.txt.  (Under construction...)
+[TODO: Need to provide at least an overview of what will be found (and
+what to look for) in INSTALL.md before directing people off to that
+file.]
+Please see [INSTALL.md] [install].  (Under construction...)
 
+<a name="LICENSE"></a>
 ### LICENSE ###
 
 The source files for Ramp/Smart are released under a BSD 2-Clause license.
-You can find a copy of this license in [LICENSE.txt] [license].
+You can find a copy of this license in [LICENSE.md] [license].
+
+[TODO: Need to choose the correct CC license for documentation.  Do
+activity files and table settings fit under software or documentation
+for licensing purposes?]
+
+The following software may be included with this project:
+
+Zend Framework 1 (version 1.11.11):  The Zend Framework license is
+included as [LICENSE-ZF1.txt] [zf-license].
+
+PHP Markdown Lib 1.3:  The Markdown Library license is
+included as [License-php-markdown-lib.md] [md-license].
+
+`twitter-bootstrap-zf1` and Twitter Bootstrap:  The
+Twitter-Bootstrap-ZF1 license is
+included as [README-twitter-bootstrap-zf1.md] [tbz-license]; the Twitter
+Bootstrap license as [LICENSE-bootstrap-2.3.2] [tb-license].
 
 ### ACKNOWLEDGEMENTS ###
 
@@ -117,5 +145,22 @@ Individual contributors include:
 >   Jiakan Wang  
 >   Riley Wetzel  
 
-[license]:  /LICENSE.txt
+[license-section]: #LICENSE
+[aboutRamp]: /document/index/document/rampDocs%252FrampAbout.md
+[aboutSmart]: /document/index/document/rampDocs%252FsmartAbout.md
+[install]: /document/index/document/..%252F..%252Finstallation%252FINSTALL.md
+[license]:  /document/index/document/..%252F..%252FLICENSE.md
+[apache]:  http://httpd.apache.org/
+[mysql]:  http://dev.mysql.com/downloads/
+[php]: http://php.net/
+[zf1]: http://www.zend.com/community/downloads
+[zf-license]: /document/index/document/..%252F..%252FLICENSE-ZF1.txt
+[zf-license-online]: http://framework.zend.com/license/new-bsd
+[zf2]: http://framework.zend.com/
+[md]:  http://michelf.ca/projects/php-markdown/
+[md-license]: /document/index/document/..%252F..%252FLicense-php-markdown-lib.md
+[tb]: http://getbootstrap.com/2.3.2/index.html
+[tb-license]: /document/index/document/..%252F..%252FLICENSE-bootstrap-2.3.2
+[tbz]: https://github.com/andreaswarnaar/twitter-bootstrap-zf1
+[tbz-license]: /document/index/document/..%252F..%252FREADME-twitter-bootstrap-zf1.md
 

@@ -74,7 +74,6 @@ source = "rampDocs/sample.ini"
 type = "document"
 title = "README"
 description = "The top-level README file; should it duplicate aboutRamp?
-Or point to it and to the installation 'documentation'?  (_NOTE: has been
-md-ified but has txt extension so is not being Markdown::transform'ed._)"
-source = "../../README.txt"
+Or point to it and to the installation 'documentation'?"
+source = "../../README.md"
 

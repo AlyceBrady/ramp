@@ -199,6 +199,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     /**
      * Reads the activity list file containing menu sub-items.
      *
+     * Ashton Galloway, March 2013
+     * updated by Alyce Brady, November 2013
+     *
      * @param $filename  the name of the activity list file
      */
     protected function _readActivityListFile($filename)

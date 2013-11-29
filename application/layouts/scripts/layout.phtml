@@ -1,5 +1,10 @@
 <?php
 
+/* This script defines the overall layout for Ramp/Smart pages.
+ *
+ * Updated for Twitter-Bootstrap, Ashton Galloway, March 2013
+ */
+
 $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');
 
 $configs = Ramp_RegistryFacade::getInstance();
@@ -60,8 +65,8 @@ echo $this->doctype();
         <?php echo $this->navigation()->menu()->setPartial("_menu.phtml"); ?>
         <div id="content" class="row">
             <?php echo $this->layout()->content; ?>
-            <?php echo $this->authDebugging; ?>
         </div>
+        <?php echo $this->authDebugging; ?>
         <?php echo $this->partial("_footer.phtml"); ?>
     </div>
 </body>

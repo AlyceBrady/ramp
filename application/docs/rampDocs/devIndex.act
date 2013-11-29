@@ -12,7 +12,6 @@ activity[] = "Table Settings"
 activity[] = "Sample INI"
 activity[] = "horizRule"
 activity[] = "Developer User Man"
-activity[] = "Local README"
 
 
 [horizRule]
@@ -68,9 +67,8 @@ source = "rampDocs/TableSettings.md"
 type = "document"
 title = "README"
 description = "The top-level README file; should it duplicate aboutRamp?
-Or point to it and to the installation 'documentation'?  (_NOTE: has been
-md-ified but has txt extension so is not being Markdown::transform'ed._)"
-source = "../../README.txt"
+Or point to it and to the installation 'documentation'?"
+source = "../../README.md"
 
 [Developer User Man]
 
@@ -78,13 +76,4 @@ type = "document"
 title = "Prelim Developer's User Manual Notes"
 description = "__Really__ preliminary! (just barely started)"
 source = "rampDocs/DeveloperUserManual.md"
-
-[Local README]
-
-type = "document"
-title = "Local README"
-description = "A README file in the rampDocs directory.  (Why?)
-[Currently broken and acting as a reminder to look into weird error
-reporting error.]"
-source = "rampDocs/README.txt"
 
