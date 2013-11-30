@@ -10,20 +10,10 @@ class Application_Form_ChangePasswordForm extends Zend_Form
 
     public function init()
     {
-        $hiddenFieldDecParams =
-                    array('separator'=>'', 'tag'=>'div', 'class'=>'hidden');
-        $hiddenFieldDecorators = array(
-            array(array('Elem' => 'ViewHelper'), $hiddenFieldDecParams),
-            array('Label', $hiddenFieldDecParams),
-            array('Errors', $hiddenFieldDecParams),
-        );
 
         $this->setName('changePassword');
 
-        $userid = new Zend_Form_Element_Text('username');
-        $userid->setLabel('Username')
-                ->setAttrib('class', 'hidden')
-                ->setDecorators($hiddenFieldDecorators);
+        $userid = new Zend_Form_Element_Hidden('username');
 
         $old_password = new Zend_Form_Element_Password('password');
         $old_password->setLabel('Old Password')

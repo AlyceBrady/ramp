@@ -12,7 +12,11 @@
 }
 
 .hidden {
-    display:    none;
+    display:    none;    /* Worked before switching to Twitter Bootstrap ! */
+}
+
+.invisible {
+    height:    0px;     /* not working; hidden text field still taking space */
 }
 
 /* Font sizes  (menu font sizes are in menu.css) */
