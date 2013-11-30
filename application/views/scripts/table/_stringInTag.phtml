@@ -5,9 +5,12 @@
    */
 
 $tag = $this->escape($this->tag);
+
+if ( strlen($this->value) > 0 ) :
+    echo "<$tag;>";
+    echo $this->escape($this->value);
+    echo "</$tag>";
+endif;
+
 ?>
 
-<?php if ( strlen($this->value) > 0 ) : ?>
-    <<?php echo $tag; ?>><?php echo $this->escape($this->value); ?>
-    </<?php echo $tag; ?>>
-<?php endif; ?>

@@ -4,7 +4,8 @@
 /* Styles used in header (banner area with application name) and footer. */
 
 h1, h1 small, .appName {
-	color:	#ED1C24;       /* #66C? */     /* Amethyst = 96c */
+	color:	#FF0080;       /* #ED1C24?, FBA0E3? */     /* Amethyst = 96c */
+            /* DF73FF = Heliotrope */
 }
 
 h1.loggedInAs small {
@@ -149,7 +150,8 @@ div#activityPage .disabled, div#activityPage .disabledComment {
 
 .table-hover tbody tr:hover, .table-hover tbody tr:hover td
 {
-    background-color: #F6FFF6;   /* #FFF0F5 is a very faint pink */
+    background-color: #FFF0F5;   /* #FFF0F5 is a very faint pink */
+        /* F6FFF6 is a very faint green */
 }
 
 #record-table td.select, #record-list td.select

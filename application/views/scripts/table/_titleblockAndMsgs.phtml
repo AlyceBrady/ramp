@@ -10,24 +10,27 @@
    *            ('footnoteAsTooltip': optional, defaults to false)
    */
 
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+
+$title = Markdown::defaultTransform($this->escape($this->title));
+
+$footnote = Markdown::defaultTransform($this->escape($this->footnote));
 $subtleFootnote = isset($this->footnoteAsTooltip) ?
                      $this->footnoteAsTooltip : false;
+$footnoteAsTooltip = $subtleFootnote ? " title='" .  $footnote . "'" : "";
 
-$footnoteAsTooltip = $subtleFootnote
-                        ? " title='" . $this->escape($this->footnote) . "'"
-                        : "";
+$instructions = Markdown::defaultTransform($this->escape($this->instructions));
 
 ?>
 
 <div id="title-block">  <!-- Contains title, footnotes, and instructions -->
-<?php echo "<h2 $footnoteAsTooltip>" . $this->escape($this->title); ?></h2>
+<?php echo "<h2 $footnoteAsTooltip>" . $title; ?></h2>
 <div id="table-notes">
 <?php if ( ! $subtleFootnote ) : ?>
-    <?php echo $this->partial("table/_stringInTag.phtml",
-                              array('tag'=>'p', 'value'=>$this->footnote)); ?>
+    <?php echo $footnote; ?>
 <?php endif; ?>
-<?php echo $this->partial("table/_stringInTag.phtml",
-                          array('tag'=>'p', 'value'=>$this->instructions)); ?>
+<?php echo $instructions; ?>
 </div>  <!-- End of "table-notes" -->
 </div>  <!-- End of "title-block" -->
 

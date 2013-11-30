@@ -65,8 +65,7 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                 "$disabledOrNot>" .  "</p>\n";
             echo "<div class='$disabledOrNot description span10'>";
             echo $this->partial("activity/_cleanIfSinglePar.phtml",
-                    array('content'=>$desc,
-                    'includeBreak' => false));
+                    array('content'=>$desc));
             echo "</div>\n";
             echo "</div>\n";
         }

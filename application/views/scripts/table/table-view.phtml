@@ -1,5 +1,8 @@
 <?php
 
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+
 $table = $this->tableInfo;
 
 // Get values from set table for data area.
@@ -9,7 +12,6 @@ $addSetting = $this->addSetting;        // Set in controller for getting
 $visibleFieldInfo = $table->getVisibleFields();
 $keyFields = $table->getPrimaryKeys();
 $tableValues = $this->dataToDisplay;    // Set in controller
-$highlightEveryN = 2;
 
 // Set page and window title.
 $tableTitle = $table->getTitle();
@@ -56,10 +58,19 @@ $deleteParams = $commonParams + array('action'=>'delete');
 <tr>
     <?php
     foreach($visibleFieldInfo as $fieldName => $field) :
-        $title = $field->getFieldFootnote();
-        $title = $title ? " title='$title'" : "";
-        echo "<th" . $this->escape($title) . ">";
-        echo $this->escape($field->getLabel()) . "</th>";
+        $footnote = $this->escape( $field->getFieldFootnote());
+        if ( ! empty($footnote) )
+        {
+            $footnote = Markdown::defaultTransform($footnote);
+            $footnote = $this->partial("table/_cleanIfSinglePar.phtml",
+                            array('content'=>$footnote));
+        }
+        $title = $footnote ? "title='$footnote'" : "";
+        echo "<th $title>";
+        $colHeading =
+            Markdown::defaultTransform($this->escape($field->getLabel()));
+        echo $this->partial("table/_cleanIfSinglePar.phtml",
+                array('content'=>$colHeading)) . "</th>";
     endforeach;
     ?>
     <th> Actions </th>
@@ -77,11 +88,10 @@ foreach($tableValues as $recordValues) :
     <tr>
     <?php
 
-    // Determine fields to display, whether to highlight, and which 
-    // fields to pass as parameters to select and delete requests.
+    // Determine fields to display and which fields to pass as
+    // parameters to select and delete requests.
     $rowNum++;
     $rowSpecParams = array();
-    $class = ($rowNum % $highlightEveryN) ? "" : " class='highlighted'";
     foreach ( $keyFields as $keyFieldName => $ignoredFieldInfo ) :
         $rowSpecParams[$keyFieldName] = $recordValues[$keyFieldName];
     endforeach;
@@ -90,11 +100,10 @@ foreach($tableValues as $recordValues) :
     <!-- Display visible field values. -->
     <?php
     foreach($visibleFieldInfo as $fieldName => $field) :
-        $colHeading = $field->getLabel();
-        $title = $field->getFieldFootnote();
+        $colHeading = $this->escape($field->getLabel());
+        $title = $this->escape( $field->getFieldFootnote());
         $title = $title ? "$colHeading: $title" : $colHeading;
-        $title = " title='$title'";
-        echo "<td" . $this->escape($class) . $this->escape($title) . ">";
+        echo "<td title='$title'>";
         echo $this->escape($recordValues[$fieldName]) . "</td>";
     endforeach;
     ?>

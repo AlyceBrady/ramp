@@ -1,5 +1,8 @@
 <?php
 
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+
 $table = $this->tableInfo;
 
 // Get values from set table for data area.
@@ -65,8 +68,6 @@ foreach($tableValues as $recordValues) :
     // fields to pass as parameters to select and delete requests.
     $rowNum++;
     $rowSpecParams = array();
-    $class = "";
-    // $class = ($rowNum % $highlightEveryN) ? "" : " class='highlighted'";
     foreach ( $keyFields as $keyFieldName => $ignoredFieldInfo ) :
         $rowSpecParams[$keyFieldName] = $recordValues[$keyFieldName];
     endforeach;
@@ -75,11 +76,10 @@ foreach($tableValues as $recordValues) :
     <!-- Display visible field values. -->
     <?php
     foreach($visibleFieldInfo as $fieldName => $field) :
-        $colHeading = $field->getLabel();
-        $title = $field->getFieldFootnote();
+        $colHeading = $this->escape($field->getLabel());
+        $title = $this->escape( $field->getFieldFootnote());
         $title = $title ? "$colHeading: $title" : $colHeading;
-        $title = " title='$title'";
-        echo "<td" . $this->escape($class) . $this->escape($title) . ">";
+        echo "<td title='$title'>";
         echo $this->escape($recordValues[$fieldName]) . "</td>";
     endforeach;
     ?>
