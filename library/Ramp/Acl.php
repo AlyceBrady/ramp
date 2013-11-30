@@ -24,9 +24,8 @@ class Ramp_Acl extends Zend_Acl
 {
     const DEFAULT_ROLE = 'guest';
 
-    const DELIM = '::';              // Delimiter separating resource sections
-    const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
-    const DOCUMENT_PREFIX = 'document::index'; // Start of Activity resources
+    const DELIM = Ramp_Controller_KeyParameters::DELIM;
+                                            // Separates resource sections
 
     const USERS_TABLE = 'ramp_auth_users';
     const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';

@@ -89,7 +89,8 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
 
         // Add activity, document, or table/report details.
         $param = Ramp_Controller_KeyParameters::getKeyParam($request);
-        if ( $controller == Ramp_Controller_KeyParameters::ACT_CONTROLLER )
+        if ( $controller == Ramp_Controller_KeyParameters::ACT_CONTROLLER
+            || $controller == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
         {
             $resource .= Ramp_Acl::DELIM . dirname($param);
         }
@@ -108,10 +109,6 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
                 $resource .= Ramp_Acl::DELIM . $param;
                 $this->_reportUnauthorized($resource);
             }
-        }
-        else if ( $controller == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
-        {
-            $resource .= Ramp_Acl::DELIM . $param;
         }
 
         // Check that the requested resource is a defined resource.

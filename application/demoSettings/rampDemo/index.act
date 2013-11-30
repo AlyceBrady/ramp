@@ -1,7 +1,10 @@
 ; List of Activities for Ramp Demo
 
 activity[] = "Albums Table"
+activity[] = "horizRule"
 activity[] = "Places Table"
+activity[] = "Reviewers Table"
+activity[] = "Reviews Table"
 activity[] = "Places Report"
 
 
@@ -12,7 +15,7 @@ type = "separator"
 [Albums Table]
 
 type = "setting"
-source = "rampDemo/AlbumsTest1"
+source = "rampDemo/AlbumsExample"
 title = "Albums Table"
 description = "A list of Albums, providing a very simple table
 for demonstration purposes."
@@ -24,7 +27,22 @@ source = "rampDemo/places"
 title = "Places Table"
 description = "A list of Places (e.g., for a Travel Review page)
 taken from the extended example from _Zend Framework in Action_
-by Allen, Lo, and Brown."
+by Allen, Lo, and Brown; Manning Publications, 2009."
+
+[Reviewers Table]
+
+type = "setting"
+source = "rampDemo/reviewers"
+title = "Reviewers Table"
+description = "A list of Reviewers based on the 'users' table in
+_Zend Framework in Action_."
+
+[Reviews Table]
+
+type = "setting"
+source = "rampDemo/reviews"
+title = "Reviews Table"
+description = "A list of Reviews taken from _Zend Framework in Action_."
 
 [Places Report]
 

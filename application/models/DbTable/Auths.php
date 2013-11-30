@@ -2,8 +2,9 @@
 
 class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 {
-    const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
-    const DOCUMENT_PREFIX = 'document::index'; // Start of Document resources
+    const DELIM = Ramp_Controller_KeyParameters::DELIM;
+    const ACTIVITY_PREFIX = Ramp_Controller_KeyParameters::ACTIVITY_PREFIX;
+    const DOCUMENT_PREFIX = Ramp_Controller_KeyParameters::DOCUMENT_PREFIX;
     const TABLE_RES_TYPE = 'Table';            // Table resource type
     const REPORT_RES_TYPE = 'Report';          // Table resource type
 
@@ -36,7 +37,7 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
         // Get all the activity access rules (if not already retrieved).
         if ( empty($this->_activityAccessRules) )
         {
-            $delim = Ramp_Acl::DELIM;
+            $delim = self::DELIM;
             $this->_activityAccessRules = $this->getActivityAccessRules();
         }
 
@@ -136,8 +137,8 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             }
 
             // Build up the resource name.
-            $prefix = Ramp_Acl::ACTIVITY_PREFIX;
-            $delim = Ramp_Acl::DELIM;
+            $prefix = self::ACTIVITY_PREFIX;
+            $delim = self::DELIM;
             $rules[] = array($rule->role =>
                              $prefix . $delim . $rule->resource_name);
         }
@@ -176,8 +177,8 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             }
 
             // Build up the resource name.
-            $prefix = Ramp_Acl::DOCUMENT_PREFIX;
-            $delim = Ramp_Acl::DELIM;
+            $prefix = self::DOCUMENT_PREFIX;
+            $delim = self::DELIM;
             $rules[] = array($rule->role =>
                              $prefix . $delim . $rule->resource_name);
         }
@@ -243,7 +244,7 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
             {
                 // Build up the resource name.
                 $prefix = strtolower($controller);
-                $delim = Ramp_Acl::DELIM;
+                $delim = self::DELIM;
                 $this->_tableAccessRules[] =
                             array($rule->role =>
                                   $prefix . $delim . $action

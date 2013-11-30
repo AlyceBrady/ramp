@@ -31,7 +31,7 @@ class Ramp_Controller_KeyParameters
 
     const DELIM = '::';              // Delimiter separating resource sections
     const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
-    const DOCUMENT_PREFIX = 'document::index'; // Start of Activity resources
+    const DOCUMENT_PREFIX = 'document::index'; // Start of Document resources
 
     // STATIC (CLASS) FUNCTIONS
 

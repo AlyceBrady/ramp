@@ -4,7 +4,7 @@
 /* Styles used in header (banner area with application name) and footer. */
 
 h1, h1 small, .appName {
-	color:	#652DC1;       /* #66C? */     /* Amethyst = 96c */
+	color:	#ED1C24;       /* #66C? */     /* Amethyst = 96c */
 }
 
 h1.loggedInAs small {
@@ -81,38 +81,44 @@ h1.loggedInAs small {
 /* Generic styles used throughout display pages. */
 
 div#content h2 {
-    color:  #652DC1;       /* or Red? */
+    color:  #00C;       /* or FBA0E3 */
 }
 
 div#content h3, div#content h4, div#content h5 {
     color: #039;
 }
 
-div#content a,  div#content a:visited,  div#content a:active {
+div#content a,  a:visited,  div#content a:active {
     color: #00C;
 }
 
-div#content a:hover {
+div#content div#content a:hover {
     color: #009;
 }
 
 input.btn {
-    color: #652DC1;               /* Works */
+    color: #00C;               /* Works */
     background-color: Lavender;   /* Doesn't work */
 }
 
 input.btn:hover,
 input.btn:active,
 input.btn.active {
-    color: #000066;
-    background-color: Lavender;
-    /* background-color: #B57EDC;  /* Doesn't completely fill?  Ridiculous. */
+    color: #00C;
+    background-color: Lavender;  /* Doesn't completely fill?  Ridiculous. */
+    /* background-color: #B57EDC; */
 }
 
 input.btn.disabled,
 input.btn[disabled] {
     color: Grey;
     background-color: #dddddd;
+}
+
+code, pre {
+    color: #009;
+    background-color: inherit;
+    border: inherit;
 }
 
 
@@ -127,7 +133,7 @@ input.btn[disabled] {
 /* Styles used by activity list pages */
 
 div#activityPage h2 {
-    color: #652DC1;    /* alt: #039 */
+    color: #00C;    /* alt: #FBA0E3 */
 }
 
 div#activityPage hr {
@@ -143,7 +149,7 @@ div#activityPage .disabled, div#activityPage .disabledComment {
 
 .table-hover tbody tr:hover, .table-hover tbody tr:hover td
 {
-    background-color: #FFF0F5;   /* #F6FFF6; */
+    background-color: #F6FFF6;   /* #FFF0F5 is a very faint pink */
 }
 
 #record-table td.select, #record-list td.select
@@ -231,13 +237,13 @@ input.statusCode {
 
 /* Styles used by documents */
 
-div#documentPage code, div#documentPage pre {
-    color: Blue;
-    background-color: inherit;
+#content h1, #content h1 small {
+	color:	#00C;       /* Amethyst = 96c */
 }
 
 div#documentPage pre code {
-    color: #C00;
+    font-size: medium;
+    color: #009;
     background-color: transparent;
 }
 

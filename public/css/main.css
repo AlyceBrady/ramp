@@ -118,6 +118,7 @@ div#activityPage .title {
 
 div#activityPage .description {
     padding-left:  10px;
+    padding-bottom:  5px;
 }
 
 div#activityPage .disabled {

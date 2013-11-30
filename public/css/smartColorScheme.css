@@ -94,11 +94,11 @@ div#content h3, div#content h4, div#content h5 {
     color: #039;
 }
 
-div#content a,  div#content a:visited,  div#content a:active {
+div#content a,  div#content a:active {
     color: #00C;
 }
 
-div#content a:hover {
+div#content a:visited,  div#content a:hover {
     color: #009;
 }
 
@@ -111,6 +111,7 @@ input.btn:hover,
 input.btn:active,
 input.btn.active {
     color: #000066;
+    /* background-color: Lavender; /* Doesn't completely fill?  Ridiculous. */
     /* background-color: #B57EDC;  /* Doesn't completely fill?  Ridiculous. */
 }
 
@@ -118,6 +119,12 @@ input.btn.disabled,
 input.btn[disabled] {
     color: Grey;
     background-color: #dddddd;
+}
+
+code, pre {
+    color: #009;
+    background-color: inherit;
+    border: inherit;
 }
 
 /* Good looking green button in GitHub: class='button primary' color: #fff;
@@ -240,13 +247,17 @@ input.statusCode {
 
 /* Styles used by documents */
 
-div#documentPage code, div#documentPage pre {
-    color: Blue;
-    background-color: inherit;
+div#content a,  div#content a:active {
+    color: #0C0;
+}
+
+div#content a:visited,  div#content a:hover {
+    color: #009E60;
 }
 
 div#documentPage pre code {
-    color: #C00;
+    font-size: medium;
+    color: #009;
     background-color: transparent;
 }
 

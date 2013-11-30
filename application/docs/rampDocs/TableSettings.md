@@ -248,8 +248,7 @@ table, and the fields that the current and external tables have in
 common, such as a Person ID, or the module ID, section, and term fields
 for module offerings and assignments.
 
-<a name="viewing_sequences"></a>
-#### Viewing Sequences: ####
+<h4 id="viewing_sequences"> Viewing Sequences: </h4>
 
 It is possible to provide a set of table settings for a single table:
 one to be used for inserting new records, one for viewing records, one

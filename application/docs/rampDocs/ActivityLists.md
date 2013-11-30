@@ -18,7 +18,8 @@ activity:"`.
 ### ACTIVITY SCPECIFICATION LISTS: ###
 An activity specification list defines a list of activities, in
 the order in which they should appear, and specifications for those
-activities.
+activities.  The various types of activities that are supported are
+listed below in the [Activity Specifications](#specs) section.
 
 Activities may be added to an activity list by providing the full
 specification "in place", or by merely providing a reference to a
@@ -26,7 +27,7 @@ section elsewhere in the file that has the full activity specification
 (one activity specification per section).  In either case, each
 activity is given a name that is unique within the activity list.
 
-For example, a "comment" activity with the unique name "comment1"
+For example, a `comment` activity with the unique name `comment1`
 could be added to the list using either of the two styles below:
 
 > #### Style 1: ####
@@ -76,7 +77,7 @@ section whose name matches the name of the activity file (including
 the path from the application's activities directory, as specified in
 the initial configuration file).
 
-### ACTIVITY SPECIFICATIONS: ###
+<h3 id="specs"> ACTIVITY SPECIFICATIONS: </h3>
 Activity specifications, whether they occur "in place" as the activities
 are added to an activity list or in later sections, must always include
 a type property.  The valid types are:
@@ -136,18 +137,18 @@ type are:
 
 Finally, activities may also have an optional `inactive` property.  For
 most activity types, if the `inactive` property is provided and set to
-`true`, the corresponding button is disabled and its description
-"class" (used by style sheets) set to "disabled".  The actual look
+`true`, the corresponding button is disabled and the style class of
+its description set to "disabled".  The actual look
 of the button, title, and description may change, depending on the
 css styles set up for the application; for example, the button and
 description may be greyed out.  The `inactive` property has no effect
 on separator activity types; for comments, it merely changes the
-"class" of the comment used by style sheets from "comment" to
+style class of the comment from "comment" to
 "disabledComment", again allowing for a different presentation.
 
 ### EXAMPLES ###
 
-FULL SPECIFICATION EXAMPLE: Adds activity "cityPopulations" to activity
+FULL SPECIFICATION EXAMPLE: Adds activity `cityPopulations` to activity
 list, providing the activity specification "in place".
 
         activity.cityPopulations.type = "setting"
@@ -156,9 +157,9 @@ list, providing the activity specification "in place".
         activity.cityPopulations.description = "A sequence/setting file for a city population table"
         activity.nextActivity.type = ...
 
-DEFERRED SPECIFICATION EXAMPLE: Adds activity "shortComment" to
+DEFERRED SPECIFICATION EXAMPLE: Adds activity `shortComment` to
 activity list, deferring the specification to a section later in the
-file called "shortComment".  (The unique activity name and the
+file called `shortComment`.  (The unique activity name and the
 section name do not have to be the same.)
 
         activity.shortComment = "short comment"
@@ -175,7 +176,7 @@ additional settings, and a final separator to the activity list,
 deferring the specifications to sections later in the file.  The order
 of the activities in the list is determined by the assignments to the
 array of unnamed activities, not by the order of the specification
-sections.  The "horizRule" section is used twice.  
+sections.  The `horizRule` section is used twice.  
 
         activity[] = "short comment"
         activity[] = "horizRule"

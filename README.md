@@ -88,8 +88,7 @@ what to look for) in INSTALL.md before directing people off to that
 file.]
 Please see [INSTALL.md] [install].  (Under construction...)
 
-<a name="LICENSE"></a>
-### LICENSE ###
+<h3 id="LICENSE"> LICENSE INFORMATION </h3>
 
 The source files for Ramp/Smart are released under a BSD 2-Clause license.
 You can find a copy of this license in [LICENSE.md] [license].
