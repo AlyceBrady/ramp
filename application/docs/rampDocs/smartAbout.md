@@ -28,14 +28,17 @@ in turn, uses MySQL, PHP, and the Zend Framework.
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.2.  
-Released on November 24, 2013.
+RAMP/SMART Release 0.5.3.  
+Released on November 28, 2013.
 
 
 ### LICENSE ###
 
 The source files for Smart/Ramp are released under a BSD 2-Clause license.
 You can find a copy of this license in [LICENSE.txt] [license].
+
+See the [README][readme] file for more information about the Ramp/Smart
+license and the licenses of software on which Ramp/Smart is built.
 
 
 ### ACKNOWLEDGEMENTS ###
@@ -73,4 +76,5 @@ Individual contributors include:
 >   Riley Wetzel  
 
 [license]:  /LICENSE.txt
+[readme]:  /document/index/document/..%252F..%252FREADME.md
 
