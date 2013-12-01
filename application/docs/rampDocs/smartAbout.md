@@ -16,23 +16,6 @@ three broad categories:
  * Student records (e.g., courses of study, test scores, enrollment
    history)
 
-Smart allows a database administrator to create various views of
-the tables in the database, called "table settings." For any database
-table for which a table setting has been defined, Smart supports:
-
- * A search mechanism for finding records based on values in fields
-
- * A table view for viewing a set of table records with column headings
-
- * A list view for viewing table records (often just a defined
-   subset of columns, useful for selecting a single record from
-   a search that yielded multiple results)
-
- * A single-record view for viewing records in their entirety,
-   modifying them, or adding new records to the table; single-record
-   views may also contain links to other, related tables or
-   records if the relationships are defined in the table setting
-
 In time, the plan is to expand Smart to include customized activities
 specific to the academic records domain, such as student registration
 and generation of transcripts.

@@ -23,7 +23,7 @@ class Application_Model_SetTable
     // Constants representing table setting properties
     const TABLE_NAME            = "tableName";
     const TITLE                 = 'tableTitle';
-    const DESCRIPTION           = 'tableDescription';
+    const DESCRIPTION           = 'tableDescription';  // unused?
     const TABLE_FOOTNOTE        = 'tableFootnote';
     const CONNECTED_TBL         = 'tableConnection';
     const INIT_TBL_REF          = 'initTableRef';

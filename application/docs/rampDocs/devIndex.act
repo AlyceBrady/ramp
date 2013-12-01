@@ -3,13 +3,14 @@
 activityListHeading = "Choose a document:"
 
 activity[] = "About Ramp"
+activity[] = "About Smart"
 activity[] = "README"
 activity[] = "Ramp User Man"
+activity[] = "Smart User Man"
 activity[] = "horizRule"
 activity[] = "Admin User Man"
 activity[] = "Act Spec Doc"
 activity[] = "Table Settings"
-activity[] = "Sample INI"
 activity[] = "horizRule"
 activity[] = "Developer User Man"
 
@@ -25,41 +26,48 @@ title = "About Ramp"
 description = "About Ramp: Records and Activity Management Program"
 source = "rampDocs/rampAbout.md"
 
+[About Smart]
+
+type = "document"
+title = "About Smart"
+description = "About Smart: Software for Managing Academic Records and
+Transcripts"
+source = "rampDocs/smartAbout.md"
+
 [Ramp User Man]
 
 type = "document"
 title = "Ramp User Manual"
-description = "Vaporware: Will initially be a place to store notes for
-writing Ramp User Manual"
+description = "__Really__ preliminary! (just barely started)"
 source = "rampDocs/RampUserManual.md"
+
+[Smart User Man]
+
+type = "document"
+title = "Smart User Manual"
+description = "Vaporware: Will initially be a place to store notes for
+writing Smart User Manual"
+source = "rampDocs/SmartUserManual.md"
 
 [Admin User Man]
 
 type = "document"
 title = "Admin User Manual"
-description = "__Really__ preliminary! (just barely started)"
+description = "Ramp Administrative User Manual: Under Construction"
 source = "rampDocs/AdminUserManual.md"
 
 [Act Spec Doc]
 
 type = "document"
-title = "Activity Specs HowTo"
+title = "Creating Activity Files"
 description = "How to write Activity Specification files"
 source = "rampDocs/ActivityLists.md"
-
-[Sample INI]
-
-type = "document"
-title = "Table Settings Sample"
-description = "Table Settings sample/template"
-source = "rampDocs/sample.ini"
 
 [Table Settings]
 
 type = "document"
-title = "Table Settings HowTo"
-description = "Documentation about Table Settings (should be worked into
-a section of _Admin User Manual_?)"
+title = "Creating Table Settings"
+description = "How to write Table Settings files"
 source = "rampDocs/TableSettings.md"
 
 [README]

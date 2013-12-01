@@ -15,6 +15,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     const ADD_AND_EDIT = TestSettings::ADD_AND_EDIT ;
     const SEARCH_RES_ONLY = TestSettings::SEARCH_RES_ONLY ;
     const SEARCH_SPEC_ONLY = TestSettings::SEARCH_SPEC_ONLY;
+    const TABULAR_ONLY = TestSettings::TABULAR_ONLY;
     const REFERENCE_ONLY = TestSettings::REFERENCE_ONLY ;
 
     protected $_settingTests;
@@ -38,6 +39,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->_edit = $multSettings['editSetting'];
         $this->_searchSpec = $multSettings['searchSpecSetting'];
         $this->_searchRes = $multSettings['searchResultsSetting'];
+        $this->_tabular = $multSettings['tabularSetting'];
         $this->_reference = $multSettings['referenceSetting'];
     }
 
@@ -102,6 +104,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
         $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
@@ -149,6 +152,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
         $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
@@ -164,6 +168,24 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForViewing());
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
+        $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getReferenceSetTable());
+    }
+
+    public function testSeqWithOnlyTabularSettingSpecified()
+    {
+        // All should use Tabular.
+        $sequence =
+            new Application_Model_TableViewSequence(self::TABULAR_ONLY);
+
+        $setting = $sequence->getSetTableForTabularView();
+        $this->assertSame($this->_tabular, $setting->getSettingName());
+
+        $this->assertEquals($setting, $sequence->getSetTableForViewing());
+        $this->assertEquals($setting, $sequence->getSetTableForModifying());
+        $this->assertEquals($setting, $sequence->getSetTableForAdding());
+        $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
@@ -184,6 +206,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForViewing());
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
         $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
@@ -203,6 +226,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForViewing());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
     }
 
     public function testSeqWithReferenceSpecified()
@@ -219,6 +243,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
     }
 
     public function testSeqWithMainSettingSpecified()
@@ -233,6 +258,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
         $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 

@@ -45,6 +45,7 @@ class TestSettings
     const ADD_AND_EDIT = 'sequenceTests/editAndAddSeqs';
     const SEARCH_RES_ONLY = 'sequenceTests/searchResSeqOnly';
     const SEARCH_SPEC_ONLY = 'sequenceTests/searchSpecSeqOnly';
+    const TABULAR_ONLY = 'sequenceTests/tabularSeqOnly';
     const REFERENCE_ONLY = 'sequenceTests/referenceSeqOnly';
 
     private static $_basicTableSetting;
@@ -111,6 +112,7 @@ class TestSettings
             'editSetting' => 'ModifyingView',
             'searchSpecSetting' => 'DetailedView',
             'searchResultsSetting' => self::BASIC_SETTINGS_FILE,
+            'tabularSetting' => self::BASIC_SETTINGS_FILE,
             'referenceSetting' => self::BASIC_SETTINGS_FILE
         );
 

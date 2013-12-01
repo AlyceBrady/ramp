@@ -29,6 +29,7 @@ class Application_Model_TableViewSequence
     const ADD_SETTING               = "addSetting";
     const SEARCH_SPEC_SETTING       = "searchSpecSetting";
     const SEARCH_RES_SETTING        = "searchResultsSetting";
+    const TABULAR_SETTING           = "tabularSetting";
     const REFERENCE_SETTING         = "referenceSetting";
 
     const DISPLAY_ALL_FORMAT        = "displayAllFormat";
@@ -36,7 +37,7 @@ class Application_Model_TableViewSequence
     /* values used in sequence and table setting config files */
     const SEARCH                    = "search";
     const DISPLAY_ALL               = "displayAll";
-    const DEFAULT_START             = self::DISPLAY_ALL;
+    const DEFAULT_START             = self::SEARCH;
 
     /** @var string */
     protected $_tableName;           // shared table name (if any)
@@ -60,7 +61,7 @@ class Application_Model_TableViewSequence
     {
         return array(self::MAIN_SETTING, self::EDIT_SETTING, self::ADD_SETTING, 
                      self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
-                     self::REFERENCE_SETTING);
+                     self::TABULAR_SETTING, self::REFERENCE_SETTING);
     }
 
     /**
@@ -102,16 +103,18 @@ class Application_Model_TableViewSequence
     /**
      * Initializes the table setting names for displaying records 
      * and for displaying search results.
-     * If only one setting was provided there, set the other
-     * setting to be the same.
      * If the main setting is not provided, set it from the edit 
      * setting, the add setting, the search specification setting,
-     * or the search results setting (in that order).
-     * If any of the other four are not provided, use the main setting.
+     * the search results setting, or the tabular setting (in that order).
+     * If any of those five are not provided, use the main setting.
      * If no setting sequence was specified but
      * the imported properties included a table setting, assume
      * that that is the table setting that should be used for
      * all types of display.
+     *
+     * The table may also include a reference setting used when 
+     * resolving external references.  If a reference setting is not 
+     * provided, the add setting is used to resolve external references.
      *
      * @param $name     the name associated with this sequence
      * @param $sequence sequence-related properties from property gateway
@@ -126,6 +129,7 @@ class Application_Model_TableViewSequence
         $add = $this->_getKeyVal($sequence, self::ADD_SETTING);
         $search = $this->_getKeyVal($sequence, self::SEARCH_SPEC_SETTING);
         $searchRes = $this->_getKeyVal($sequence, self::SEARCH_RES_SETTING);
+        $tabular = $this->_getKeyVal($sequence, self::TABULAR_SETTING);
         $reference = $this->_getKeyVal($sequence, self::REFERENCE_SETTING);
 
 
@@ -133,7 +137,7 @@ class Application_Model_TableViewSequence
 	// table setting was defined in the property source, use
 	// that setting in all cases.
         if ( ! ( $main || $edit || $add ||
-                 $search || $searchRes || $reference ) )
+                 $search || $searchRes || $tabular || $reference ) )
         {
             if ( count($settingsReadIn) == 1 )
             {
@@ -150,17 +154,20 @@ class Application_Model_TableViewSequence
         // all, set the missing ones from the ones that were provided.
         $this->_settingNames = array();
         $main = $this->_settingNames[self::MAIN_SETTING] = $main ? :
-                                                           $reference ? :
-                                                           $edit ? :
-                                                           $add ? :
-                                                           $search ? :
-                                                           $searchRes;
+                                                           ($reference ? :
+                                                           ($edit ? :
+                                                           ($add ? :
+                                                           ($search ? :
+                                                           ($searchRes ? :
+                                                           $tabular)))));
         $edit = $this->_settingNames[self::EDIT_SETTING] = $edit ? : $main;
         $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $main;
         $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
                         $search ? : $main;
         $searchRes = $this->_settingNames[self::SEARCH_RES_SETTING] =
                         $searchRes ? : $main;
+        $tabular = $this->_settingNames[self::TABULAR_SETTING] =
+                        $tabular ? : $main;
         $reference = $this->_settingNames[self::REFERENCE_SETTING] =
                         $reference ? : $add;
         $this->_settings = array();
@@ -289,6 +296,17 @@ class Application_Model_TableViewSequence
     public function getSetTableForSearchResults()
     {
         return $this->getSetTable(self::SEARCH_RES_SETTING);
+    }
+
+    /**
+     * Gets the specified table setting for displaying multiple search 
+     * results in tabular format.
+     *
+     * @return Application_Model_SetTable
+     */
+    public function getSetTableForTabularView()
+    {
+        return $this->getSetTable(self::TABULAR_SETTING);
     }
 
     /**

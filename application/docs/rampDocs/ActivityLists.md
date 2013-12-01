@@ -1,24 +1,33 @@
 # Creating Activity Files #
 
-An activity file may contain a single activity specification, a list
+[ [Introduction](#intro) |
+  [Activity Specification Lists](#lists) |
+  [Activity Specifications](#specs) |
+  [Examples](#examples) ]
+
+<div id="intro"></div>
+
+Ramp supports the creation of "activity pages" as a way to group
+various tables or activities together,  providing a "home page" for
+that set of related activities.
+
+Activity pages are generated from activity files, each of which
+may contain a single activity specification, a list
 of activity specifications, or even multiple activity specification
-lists.  A single list, though, is the most common form of activity
-file.  The file may also contain an optional heading, such as
+lists.  A single list, corresponding to the contents of a single
+activity page, is the most common form of activity
+file.  Such a file may also contain an optional heading, such as
 
         activityListHeading = "Choose a table:"
-
-or
-
-        activityListHeading = "Choose a file or activity:"
 
 When no heading is provided, the heading will default to `"Choose an
 activity:"`.
 
 
-### ACTIVITY SCPECIFICATION LISTS: ###
+<h3 id="lists"> Activity Specification Lists </h3>
 An activity specification list defines a list of activities, in
 the order in which they should appear, and specifications for those
-activities.  The various types of activities that are supported are
+activities.  The various types of supported activities are
 listed below in the [Activity Specifications](#specs) section.
 
 Activities may be added to an activity list by providing the full
@@ -67,7 +76,7 @@ ordered list (all the unnamed activities will appear before the
 named activities).  If you want to mix deferred and not-deferred
 specifications in the same file, always use Styles 1 and 2.
 
-See the EXAMPLES section below for examples of full, "in place"
+See the [Examples](#examples) section below for examples of full, "in place"
 activities (Style 1), deferred specifications (Style 2), and unnamed
 specifications (Style 3).
 
@@ -77,7 +86,7 @@ section whose name matches the name of the activity file (including
 the path from the application's activities directory, as specified in
 the initial configuration file).
 
-<h3 id="specs"> ACTIVITY SPECIFICATIONS: </h3>
+<h3 id="specs"> Activity Specifications </h3>
 Activity specifications, whether they occur "in place" as the activities
 are added to an activity list or in later sections, must always include
 a type property.  The valid types are:
@@ -146,9 +155,10 @@ on separator activity types; for comments, it merely changes the
 style class of the comment from "comment" to
 "disabledComment", again allowing for a different presentation.
 
-### EXAMPLES ###
+<h3 id="examples"> Examples </h3>
 
-FULL SPECIFICATION EXAMPLE: Adds activity `cityPopulations` to activity
+##### Full Specification Example: #####
+Adds activity `cityPopulations` to activity
 list, providing the activity specification "in place".
 
         activity.cityPopulations.type = "setting"
@@ -157,7 +167,8 @@ list, providing the activity specification "in place".
         activity.cityPopulations.description = "A sequence/setting file for a city population table"
         activity.nextActivity.type = ...
 
-DEFERRED SPECIFICATION EXAMPLE: Adds activity `shortComment` to
+##### Deferred Specification Example: #####
+Adds activity `shortComment` to
 activity list, deferring the specification to a section later in the
 file called `shortComment`.  (The unique activity name and the
 section name do not have to be the same.)
@@ -171,12 +182,14 @@ section name do not have to be the same.)
         type = "comment"
         comment = "Example of a short comment"
 
-UNNAMED ACTIVITY EXAMPLE: Adds a comment, a separator, another comment, two
+##### Unnamed Activity Example: #####
+Adds a comment, a separator, another comment, two
 additional settings, and a final separator to the activity list,
 deferring the specifications to sections later in the file.  The order
 of the activities in the list is determined by the assignments to the
 array of unnamed activities, not by the order of the specification
-sections.  The `horizRule` section is used twice.  
+sections.  The `horizRule` section name appears twice in the list, although
+the section is defined only once.
 
         activity[] = "short comment"
         activity[] = "horizRule"
