@@ -4,6 +4,8 @@ activityListHeading = "Choose a table:"
 
 activity[] = "Programs Heading"
 activity[] = "Programs"
+; activity[] = "Admission Reqs"
+; activity[] = "Requirements"
 activity[] = "More about Programs"
 activity[] = horizRule
 activity[] = "Terms Heading"

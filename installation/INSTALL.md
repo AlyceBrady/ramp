@@ -61,10 +61,21 @@ library, and a subset of Twitter Bootstrap 2.  (See the Ramp [README]
 [readme] file for more information about these software dependencies and
 for license information about these components.)
 
+If you want to use Git to download Ramp (and future updates), 
+read this online [Getting Started - Installing Git][git] documentation.
+The [Set Up Git][git-setup] document is also helpful.
+
 
 ## Installing Ramp ##
 Once you have a server and a database, you must download the most
-recent version of RAMP from https://github.com/AlyceBrady/ramp.
+recent version of RAMP from https://github.com/AlyceBrady/ramp.  You can
+just download the zip file from there, or you can clone it.
+If you have Git installed, you can do this (I think) using
+    git://github.com/AlyceBrady/ramp.git
+(Is this different from a git clone?  Does it download the equivalent of
+a zip file?)
+If you want to do Git development, I believe you want to fork it first
+(to create your own repository) and then clone.
 
 Once you have downloaded the software, you may set up one of the two
 provided demo programs, set up a Ramp/Smart development environment, or
@@ -154,4 +165,6 @@ one server.)
 
 [readme]: /document/index/document/..%252F..%252FREADME.md
 [installdb]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_DB.md
+[git]: http://git-scm.com/book/en/Getting-Started-Installing-Git
+[git-setup]: https://help.github.com/articles/set-up-git#platform-all
 
