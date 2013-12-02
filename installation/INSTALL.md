@@ -139,7 +139,10 @@ file, incorporating new changes as appropriate.
 ### Setting up Ramp on Your Server ###
 [TODO: The following section is still under construction...]
 
-… [Write instructions for setting up vhosts.] … See the vhostExamples.conf
+- Note that the instructions below are to some extent machine-dependent.
+  On Debian-based systems, for example, the instructions and file names
+  are differnt.
+- [Write instructions for setting up vhosts.] … See the vhostExamples.conf
 file in the installation directory for examples on setting up virtual
 hosts on your machine for the demonstration and development/production
 databases.  You may need to first enable virtual hosting within

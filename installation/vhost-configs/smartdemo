@@ -1,0 +1,15 @@
+
+<VirtualHost *:80>
+      ServerName smartdemo
+      DocumentRoot /var/www/ramp/public
+      ErrorLog /var/log/ramp/error.log
+      CustomLog /var/log/ramp/access.log combined
+      SetEnv APPLICATION_ENV smartdemo
+      <Directory "/var/www/ramp/public">
+          Options MultiViews SymlinksIfOwnerMatch
+          AllowOverride All
+          Order allow,deny
+          Allow from all
+      </Directory>
+ </VirtualHost>
+

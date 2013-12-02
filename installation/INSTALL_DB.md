@@ -181,7 +181,13 @@ provided with the demos.
     the appropriate create[...]DemoMysqlAccts.sql file.  One of those
     accounts (the web-based Ramp/Smart access account) is also
     represented in the application.ini file, so its password must be
-    changed there as well.
+    changed there as well.  (If you already have MySQL accounts for the
+    DBA(s), you can comment out the statements that create those
+    accounts and comment out or change the user account name in the
+    GRANT statements for the DBA accounts.  Whether you comment those
+    lines out or change them to reflect the actual user account names
+    depends on whether those accounts already have the relevant
+    privileges.)
   - Set up virtual hosts in your web server's vhosts.conf file for the
     Ramp and/or Smart demos.  The vhostExamples.conf file in this
     directory shows examples for both demos.
