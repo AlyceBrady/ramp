@@ -1,22 +1,64 @@
 
-        RAMP/SMART Customization Instructions for the
-                    application.ini file
-        ---------------------------------------------
+<h1> RAMP/SMART Customization Instructions for the
+            <code>application.ini</code> file</h1>
 
-This file contains 
+[ [Introduction](#intro) | ... ]
 
-for Ramp
+<div id="intro"></div>
+
+This file contains instructions on creating and customizing the
+`application.ini` file used by 
+Ramp
 (Record and Activity Management Program) and Smart (Software for Managing
 Academic Records and Transcripts).
 
-1. Getting Ready:
------------------
+## Getting Started ##
 
 You should already have a list of databases you plan to set up (see
 INSTALL_DB.txt).  
 
-2. Addressing Security Concerns:
---------------------------------
+<h3 id="build">  Creating your application.ini file: </h3>
+
+In the `application/configs` directory, create an `application.ini`
+file that includes the contents of some combination of the
+following files, depending on what you are trying to set up:
+
+        ramp_basics.ini     Always needed; should come first
+
+        ramp_defaults.ini   Include if setting up the Ramp Demo or
+                              any other Ramp application environments
+        smart_defaults.ini  Include if setting up the Smart Demo, the
+                              "As-Is" Smart Development Environment, or
+                              any other Smart application environments
+
+        rampDemo.ini        Include after ramp_defaults for Ramp Demo
+        smartDemo.ini       Include after smart_defaults for Smart Demo
+        rampApplicationTemplate.ini
+                            Include after ramp_defaults if creating
+                              any other Ramp application environments
+        smartApplicationTemplate.ini
+                            Include after smart_defaults if creating
+                              any other Smart application environments
+
+Thus, to create an `application.ini` file that will work only with the
+Ramp Demo, include the contents of `ramp_basics.ini`, `ramp_defaults.ini`,
+and `rampDemo.ini`, in that order.
+In a UNIX or Linux environment, you can create the file easily:
+
+        cat ramp_basics.ini ramp_defaults.ini rampDemo.ini >application.ini
+
+To create an `application.ini` file
+to supply configuration information for the Ramp Demo, the Smart Demo,
+and production, testing, and staging environments for Smart, include
+the contents of `ramp_basics.ini`, `ramp_defaults.ini`, `rampDemo.ini`,
+`smart_defaults.ini`, `smartDemo.ini`, and `smartApplicationTemplate.ini`.
+
+Later sections of this document discuss how to customize your
+`application.ini` file; you will need to set the database password
+property to the correct password, at a minimum.
+
+
+<h3 id="security">  Addressing Security Concerns: </h3>
 
     * Ramp's application/configs/application.ini file should be
       protected, but must be readable by the web server.  The best
@@ -24,11 +66,14 @@ INSTALL_DB.txt).
       application.ini owned by the database administrator but part
       of the same group as the httpd web server (or vice versa).
 
+
+## Customizing your application.ini file ##
+
 Basics:
   -- Customize timezone if necessary (phpSettings.date.timezone).
   -- 
 
-4. Granting MySQL Accounts Access to Databases:
+2a. Granting MySQL Accounts Access to Databases:
 -----------------------------------------------
 
     * Make a section in the application.ini file for each database you
@@ -63,7 +108,7 @@ Basics:
       same username and password are use to access the development
       database as the production database.
 
-5. Setting Up Databases, Ramp/Smart User Accounts, and Authorization:
+2b. Setting Up Databases, Ramp/Smart User Accounts, and Authorization:
 ---------------------------------------------------------------------
 
     * Define Roles:

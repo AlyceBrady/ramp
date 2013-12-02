@@ -121,20 +121,22 @@ The pre-defined applications available to you are:
    the development environment.
 
 Ramp expects to find a file called `application.ini` in its
-`application/configs/` directory.  This file would normally
-contain Ramp configuration information, some of which may have to
-be customized for your environment.  To prevent the possibility
+`application/configs/` directory.  This file should
+contain Ramp configuration information, some of which you may have to
+customize for your environment.  To prevent the possibility
 that local customizations in an `application.ini` file might be
-overwritten by future Ramp updates, the Ramp download contains two
-files called `smartApplicationTemplate.ini` (for Smart application
-installations) and `rampApplicationTemplate.ini` (for any other use
-of Ramp) instead of providing `application.ini`.  For an initial
-installation, create a copy of whichever of the template files is
-more appropriate, call it `application.ini`, and edit it as explained
-in the [INSTALL_DB] [installdb] file.  Later, when installing a Ramp update,
-you will need to compare your `application.ini` file against the
-new `smartApplicationTemplate.ini` or `rampApplicationTemplate.ini`
-file, incorporating new changes as appropriate.
+overwritten by future Ramp updates, the Ramp download contains
+a set of small files containing uncustomized sections of a possible
+`application.ini` file, which can be put together in different ways
+depending on whether you are planning to set up a demo, the Smart
+development environment, a customized Smart application, or a customized
+application built on Ramp.  The [Customizing
+application.ini][custom_build] document provides more information on 
+building your `application.ini` file from the provided components.
+
+Later, when installing a Ramp update,
+you will need to compare your `application.ini` file against any
+updated component pieces and incorporate new changes as appropriate.
 
 ### Setting up Ramp on Your Server ###
 [TODO: The following section is still under construction...]
@@ -168,6 +170,8 @@ one server.)
 
 [readme]: /document/index/document/..%252F..%252FREADME.md
 [installdb]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_DB.md
+[custom]:  /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
+[custom_build]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md#build
 [git]: http://git-scm.com/book/en/Getting-Started-Installing-Git
 [git-setup]: https://help.github.com/articles/set-up-git#platform-all
 

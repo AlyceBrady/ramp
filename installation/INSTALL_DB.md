@@ -14,7 +14,7 @@ Academic Records and Transcripts).
 This section is meant to guide you through some planning stages in
 preparation for creating one or more Ramp/Smart databases.  Do not,
 however,  make changes to your MySQL database, the files in this
-directory, or your application.ini file in the application/configs
+directory, or your `application.ini` file in the `application/configs`
 directory before reading section 2, "Addressing Security Concerns."
 
 If you just want to set up the Ramp or Smart demos and are willing to
@@ -105,8 +105,8 @@ the following roles:
     dept_mgmt role has all hr_staff privileges and all regist_staff
         privileges (plus additional ones, perhaps)
 
-More detailed examples are provided in the `rampApplicationTemplate.ini`
-and `smartApplicationTemplate.ini` files in the `application/configs`
+More detailed examples are provided in the `ramp_defaults.ini`
+and `smart_defaults.ini` files in the `application/configs`
 directory. The "Setting Up Ramp/Smart User Accounts and Authorization"
 section below provides information on actually creating Ramp/Smart
 roles.
@@ -126,22 +126,27 @@ used by Ramp.
   You will edit this later to create your actual MySQL accounts.
   (Instructions for doing this are in the next section.)
   Change the permissions of your new file so that it can be
-  read only by the database administrator(s) responsible for
+  read only by yourself or whoever will be responsible for the
   initial installation.  (If you plan to setup and run one of
-  the Ramp/Smart demos, change the permissions of the corresponding
-  create[...]DemoMysqlAccounts.sql file in the RampDemoSetup or
-  SmartDemoSetup directory.)
+  the Ramp/Smart demos, you should copy the appropriate
+  create...MysqlAccountsTemplate.sql file in the RampDemoSetup or
+  SmartDemoSetup directory to a file with the same name
+  except without Template (e.g., create...MysqlAccounts.sql) and
+  then change the permissions of the new ...MysqlAccount.sql file
+  so that it can be read only by yourself or whatever database
+  administrator will be setting up the demo.)
 
 * The .mysql_history file for each database administrator should
   also be readable only by its owner.
 
-* Ramp's application/configs/application.ini file should also be
+* Ramp's `application/configs/application.ini` file should also be
   protected, but must be readable by the web server.  The best way
-  to achieve this could be, for example, to have the application.ini
+  to achieve this could be, for example, to have the `application.ini`
   owned by the database administrator but part of the same group as
-  the httpd web server (or vice versa).  (The CUSTOMIZE_APPL_INI.txt
+  the httpd web server (or vice versa).  (The
+  [Customizing application.ini][custom]
   file has additional information on using and customizing the
-  application.ini file.)
+  `application.ini` file.)
 
 * Once the database administrator MySQL accounts have been created
   below, each database administrator should create a MySQL option
@@ -167,20 +172,20 @@ the Ramp or Smart demos and are willing to use the database names,
 MySQL accounts, and Ramp/Smart usernames in the example setup files
 provided with the demos.
 
-  - In the application/configs directory, copy rampDemo.ini or
-    smartDemo.ini to application.ini.  (If you have already have
-    an application.ini file, make a copy of it first.)  If you want
-    to run both demos, copy the rampDemo.ini file to application.ini,
-    but then edit it to include the [smartdemo] section from
-    smartDemo.ini, putting the new section at the end.
+  -  In the `application/configs` directory, build an `application.ini`
+     using the sample components provided in that directory, as
+     described in the [Customizing application.ini][custom_build]
+     document.
+  - If you have not already done so, copy the appropriate
+    `create[...]MysqlAccountsTemplate.sql` to `create[...]MysqlAccounts.sql`
+    in the `RampDemoSetup` or `SmartDemoSetup` directory.
   - Next, take the protective security measures outlined above,
-    including changing the permissions of your application.ini file
-    and the permissions of the create[...]DemoMysqlAccounts.sql file
-    in the RampDemoSetup or SmartDemoSetup directory.
+    including changing the permissions of your `application.ini` file
+    and your new `create[...]DemoMysqlAccounts.sql` file.
   - Then, as a miminum precaution, change the MySQL passwords in
-    the appropriate create[...]DemoMysqlAccts.sql file.  One of those
+    the appropriate `create[...]DemoMysqlAccts.sql` file.  One of those
     accounts (the web-based Ramp/Smart access account) is also
-    represented in the application.ini file, so its password must be
+    represented in the `application.ini` file, so its password must be
     changed there as well.  (If you already have MySQL accounts for the
     DBA(s), you can comment out the statements that create those
     accounts and comment out or change the user account name in the
@@ -228,7 +233,7 @@ accounts, and setting up Ramp/Smart users.
   MySQL privileges, which is the next step.
 
 * Each of the database administrator and Ramp/Smart access
-  accounts need to be given appropriate permissions on each
+  accounts needs to be given appropriate permissions on each
   database you decide to create.  Database administrators will
   generally have ALL permissions granted to them.  The access
   account permissions, on the other hand, might vary from database
@@ -256,8 +261,8 @@ accounts, and setting up Ramp/Smart users.
 
 * In order for the Ramp/Smart software to know what MySQL accounts
   to use to access appropriate databases, follow the directions
-  in CUSTOMIZE_APPL_INI.txt to set the database, username, and
-  password properties in the application.ini file appropriately.
+  in [Customizing application.ini][custom] to set the database, username, and
+  password properties in the `application.ini` file appropriately.
 
 ### 3b. Setting Up Ramp/Smart User Accounts and Authorizations ###
 Ramp and Smart use two tables to keep track of eligible users and what
@@ -291,7 +296,8 @@ information vs. referencing such information from another table).
 * __Specify Internal or External Authentication__  
   In order for the Ramp/Smart software to know whether to use
   internal or external authentication, follow the directions
-  in CUSTOMIZE_APPL_INI.txt to set the authentication type and a
+  in [Customizing application.ini][custom] to set the authentication
+  type and a
   default password for new Ramp/Smart user accounts.
 
       ramp.authenticationType  (e.g., "internal")
@@ -300,17 +306,18 @@ information vs. referencing such information from another table).
 * __Define Roles__  
   Ramp/Smart has a built-in "guest" role that defines Ramp/Smart
   access that is allowed without logging in at all.  Other roles
-  must be specified in the application/configs/application.ini
-  file.  Follow the instructions in CUSTOMIZE_APPL_INI.txt to
-  update application.ini to specify the non-guest roles you
+  must be specified in the `application/configs/application.ini`
+  file.  Follow the instructions
+  in [Customizing application.ini][custom] to
+  update `application.ini` to specify the non-guest roles you
   want to define for each database.  Example roles are defined in
-  the rampApplicationTemplate.ini file in application/configs,
-  which is set up to configure a simple ramp_demo database, and
-  the smartApplicationTemplate.ini file, which provides more
-  complex examples.  Both include a ramp_dba role for database
+  the `rampApplicationTemplate.ini` file in `application/configs`,
+  which is set up to configure a simple `ramp_demo` database, and
+  the `smartApplicationTemplate.ini` file, which provides more
+  complex examples.  Both include a `ramp_dba` role for database
   administrators who have authorization to manage the Users and
   Authorizations tables.  You should define such a role, whether you
-  call it ramp_dba or something else.
+  call it `ramp_dba` or something else.
 
 * __Create and Populate the Users Table__  
   For each database you wish to set up, create the database if you
@@ -344,7 +351,7 @@ information vs. referencing such information from another table).
 
   If you are using internal authentication, the Users table
   should also include the user's password, which should initially
-  be set to the default value set in the application.ini file.
+  be set to the default value set in the `application.ini` file.
   When a new user tries to log in and the password is still set
   to the default password, Ramp/Smart will redirect the user to a
   Set Password screen that will encrypt the new password correctly.
@@ -402,15 +409,16 @@ information vs. referencing such information from another table).
   tables.  It should also include rules that provide access to
   the tables themselves.  The create_users_auths_example.sql
   file does all this.  (Alternatively, the same authorization
-  rules can be defined in the application.ini file.)
+  rules can be defined in the `application.ini` file.)
 
   NOTE: To provide database administrators the ability to run
   checks of the roles, resources, and rules that have been set
   up in Ramp/Smart, you need to also define authorization rules
   that provide access to the validate-roles and validate-acl-rules
   actions in the Authorization Controller.  This cannot be done
-  in the Authorizations table; it must be done in the application.ini
-  file.  See CUSTOMIZE_APPL_INI.txt for more information.
+  in the Authorizations table; it must be done in the `application.ini`
+  file.  See [Customizing application.ini][custom]
+  for more information.
 
 * __Defining Additional Users__  
   Additional users can be added to Ramp/Smart after the initial
@@ -461,18 +469,18 @@ new users and authorizations.  Your Authorizations table should
 carefully restrict access to the activities and table settings for
 managing users and authorizations to a very small number of trusted
 database administrators; this can be specified in the
-configs/application.ini file or in MySQL when the Authorizations
+`configs/application.ini` file or in MySQL when the Authorizations
 table is created.  (Note that if you specify the access control
 rule giving access to the activity directory (e.g., Admin) in the
-configs/application.ini file, you must also define that directory
+`configs/application.ini` file, you must also define that directory
 as a resource in the same file.)
 
 ### 4b. Public Activities and Table Settings ###
 You may also wish to allow "guest" users (those who are not logged in)
 access to certain activities or tables, such as the ability to read an
 About document or view public information in a particular table.
-The application/settings/PublicActivities directory provides an
-example of this.  application.ini defines this directory as a
+The `application/settings/PublicActivities` directory provides an
+example of this.  `application.ini` defines this directory as a
 resource (ramp.aclResources[] = "activity::index::PublicActivities")
 and provides an ACL rule that allows the guest role access to the
 activity files in the directory.
@@ -600,7 +608,7 @@ re-structure tables).
             smart_user_tests  'smartuser'@'localhost', 'smartuser'@'%'
             smart_automated_tests  'smartuser'@'localhost', 'smartuser'@'%'
 
-    * Update the application/configs/application.ini file to
+    * Update the `application/configs/application.ini` file to
       reflect the databases, web-access MySQL accounts, and passwords
       defined in createRampDatabases.sql and createSmartDatabases.sql.
 
@@ -611,9 +619,14 @@ single user to play multiple roles by creating a new role that
 inherits privileges from two or more existing roles.
 There is one
 role, 'guest', built into Ramp; other, more meaningful roles must
-be defined in Ramp's application/configs/application.ini file.
+be defined in Ramp's `application/configs/application.ini` file.
 (Examples are provided in rampApplicationTemplate.ini and
 smartApplicationTemplate.ini.)  A special table within a Ramp/Smart
 database, ramp_auth_users, associates users with their roles.  A
 second table, ramp_auth_auths, defines role-based access control
 rules to the activities and tables the comprise the Ramp application.
+
+
+[install]: /document/index/document/..%252F..%252Finstallation%252FINSTALL.md
+[custom]:  /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
+[custom_build]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md#build
