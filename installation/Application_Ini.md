@@ -40,6 +40,13 @@ following files, depending on what you are trying to set up:
                             Include after smart_defaults if creating
                               any other Smart application environments
 
+> Warning: Do not include the contents of both
+> `rampApplicationTemplate.ini` and `smartApplicationTemplate.ini` in
+> your file, since they both contain sections with the same names
+> `production`, `testing`, _etc._.  Or, if you do have a reason to
+> include both, change the section names to be unique, _e.g._,
+> `ramp_production`, `smart_production`, `ramp_testing`, _etc._.
+
 Thus, to create an `application.ini` file that will work only with the
 Ramp Demo, include the contents of `ramp_basics.ini`, `ramp_defaults.ini`,
 and `rampDemo.ini`, in that order.
@@ -55,7 +62,16 @@ the contents of `ramp_basics.ini`, `ramp_defaults.ini`, `rampDemo.ini`,
 
 Later sections of this document discuss how to customize your
 `application.ini` file; you will need to set the database password
-property to the correct password, at a minimum.
+property to the correct password, at a minimum.  In addition, if you
+included the contents of `rampApplicationTemplate.ini` or
+`smartApplicationTemplate.ini` in your file, each of which defines
+multiple sections, you may want to prune some of those sections away or
+rename them to reflect the environments you actual want to create.
+
+Note:  You will be creating named vhosts in a later step, one for each
+section in your `application.ini` file (other than the `ramp_basics` and
+`ramp/smart_defaults` sections, which merely define common settings used
+by other sections).
 
 
 <h3 id="security">  Addressing Security Concerns: </h3>
