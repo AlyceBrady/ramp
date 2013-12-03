@@ -21,7 +21,7 @@ class Ramp_RegistryFacade
 {
     const CONFIG_SETTINGS   = "rampConfigSettings";
 
-    const AUTH_TYPE         = "rampAuthenticationType";
+    const AUTH_TYPE         = "authenticationType";
     const INTERNAL_AUTH     = "internal";
 
     const DEFAULT_PW        = "defaultPassword";
@@ -103,7 +103,8 @@ class Ramp_RegistryFacade
      */
     public function getAuthenticationType()
     {
-        return $this->_configs[self::AUTH_TYPE] ? : self::INTERNAL_AUTH;
+        return isset($this->_configs[self::AUTH_TYPE])
+            ? $this->_configs[self::AUTH_TYPE] : self::INTERNAL_AUTH;
     }
 
     /**
@@ -112,7 +113,8 @@ class Ramp_RegistryFacade
      */
     public function getDefaultPassword()
     {
-        return $this->_configs[self::DEFAULT_PW] ? : null;
+        return isset($this->_configs[self::DEFAULT_PW])
+            ? $this->_configs[self::DEFAULT_PW] : null;
     }
 
     /**
@@ -128,7 +130,8 @@ class Ramp_RegistryFacade
      */
     public function getSessionTimeout()
     {
-        return $this->_configs[self::SESSION_TIMEOUT] ? : 0;
+        return isset($this->_configs[self::SESSION_TIMEOUT])
+            ? $this->_configs[self::SESSION_TIMEOUT] : 0;
     }
 
     /**
@@ -136,7 +139,8 @@ class Ramp_RegistryFacade
      */
     public function getAclRoles()
     {
-        return $this->_configs[self::ACL_ROLES] ? : null;
+        return isset($this->_configs[self::ACL_ROLES])
+            ? $this->_configs[self::ACL_ROLES] : null;
     }
 
     /**
@@ -145,7 +149,8 @@ class Ramp_RegistryFacade
      */
     public function getAclResources()
     {
-        return $this->_configs[self::ACL_RESOURCES] ? : null;
+        return isset($this->_configs[self::ACL_RESOURCES])
+            ? $this->_configs[self::ACL_RESOURCES] : null;
     }
 
     /**
@@ -153,7 +158,8 @@ class Ramp_RegistryFacade
      */
     public function getAclRules()
     {
-        return $this->_configs[self::ACL_RULES] ? : array();
+        return isset($this->_configs[self::ACL_RULES])
+            ? $this->_configs[self::ACL_RULES] : array();
     }
 
     /**
@@ -168,11 +174,16 @@ class Ramp_RegistryFacade
     public function getLookAndFeel()
     {
         $lookAndFeel = array();
-        $lookAndFeel['title'] = $this->_configs[self::TITLE] ? : null;
-        $lookAndFeel['subtitle'] = $this->_configs[self::SUBTITLE] ? : null;
-        $lookAndFeel['shortName'] = $this->_configs[self::SHORT_NAME] ? : null;
-        $lookAndFeel['icon'] = $this->_configs[self::ICON] ? : null;
-        $lookAndFeel['rampStyleSheet'] = $this->_configs[self::CSS] ? : null;
+        $lookAndFeel['title'] = isset($this->_configs[self::TITLE])
+            ? $this->_configs[self::TITLE] : null;
+        $lookAndFeel['subtitle'] = isset($this->_configs[self::SUBTITLE])
+            ? $this->_configs[self::SUBTITLE] : null;
+        $lookAndFeel['shortName'] = isset($this->_configs[self::SHORT_NAME])
+            ? $this->_configs[self::SHORT_NAME] : null;
+        $lookAndFeel['icon'] = isset($this->_configs[self::ICON])
+            ? $this->_configs[self::ICON] : null;
+        $lookAndFeel['rampStyleSheet'] = isset($this->_configs[self::CSS])
+            ? $this->_configs[self::CSS] : null;
         return $lookAndFeel;
     }
 
@@ -229,7 +240,8 @@ class Ramp_RegistryFacade
      */
     public function getActivitiesDirectory()
     {
-        $path = $this->_configs[self::ACTIVITIES_ROOT];
+        $path = isset($this->_configs[self::ACTIVITIES_ROOT])
+            ? $this->_configs[self::ACTIVITIES_ROOT] : null;;
         return empty($path) ? self::getSettingsDirectory() : $path;
     }
 
@@ -241,7 +253,8 @@ class Ramp_RegistryFacade
     public function getSettingsDirectory()
     {
         // Get the settings directory from Zend_Registry.
-        $path = $this->_configs[self::SETTINGS_ROOT];
+        $path = isset($this->_configs[self::SETTINGS_ROOT])
+            ? $this->_configs[self::SETTINGS_ROOT] : null;;
 
         // If no directory specified, come up with a default instead.
         if ( empty($path) )
@@ -258,7 +271,8 @@ class Ramp_RegistryFacade
      */
     public function getSettingsSuffix()
     {
-        return $this->_configs[self::SETTINGS_SUFFIX] ? : null;
+        return isset($this->_configs[self::SETTINGS_SUFFIX])
+            ? $this->_configs[self::SETTINGS_SUFFIX] : null;
     }
 
     /**
@@ -278,7 +292,8 @@ class Ramp_RegistryFacade
      */
     public function getDefaultInitialActivity()
     {
-        return $this->_configs[self::DEF_INIT_ACT] ? : null;
+        return isset($this->_configs[self::DEF_INIT_ACT])
+            ? $this->_configs[self::DEF_INIT_ACT] : null;
     }
 
     /**

@@ -29,9 +29,9 @@ and tutorials:
 >       (Works with Linux)
 
 Depending on the system you are using, you may need to update your `httpd`
-configuration (e.g., `/etc/apache2/httpd.conf`) to load the PHP module,
-turn on virtual hosting, and allow overrides to all in your
-`DocumentRoot` directory.
+configuration (e.g., `/etc/apache2/httpd.conf`) to load the
+Rewrite module, the PHP module, turn on virtual hosting, and allow
+overrides to all in your `DocumentRoot` directory.
 
 Ramp also includes dependencies on HTML 5, so the browsers used to
 interact with Ramp on your server must support HTML 5.

@@ -80,6 +80,8 @@ Zend Framework 1, the Markdown library, the `twitter-bootstrap-zf1`
 library, and a subset of Twitter Bootstrap 2.  (See the [License section]
 [license-section] for information about the licenses for those
 components.)
+See [INSTALL.md] [install] for more details about the software
+infrastructure on which Ramp depends, including specific Apache modules.
 
 ### INSTALLATION ###
 
