@@ -264,7 +264,7 @@ class TableController extends Zend_Controller_Action
      */
     public function tableViewAction()
     {
-        $setTable = $this->_tblViewingSeq->getSetTableForTablularView();
+        $setTable = $this->_tblViewingSeq->getSetTableForTabularView();
 
         // Is this the initial display or a callback from a button action?
         //    (Or an illegal callback that could allow password corruption?)
