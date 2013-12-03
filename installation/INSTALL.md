@@ -145,18 +145,31 @@ updated component pieces and incorporate new changes as appropriate.
   On Debian-based systems, for example, the instructions and file names
   are differnt.
 - [Write instructions for setting up vhosts.] … See the vhostExamples.conf
-file in the installation directory for examples on setting up virtual
-hosts on your machine for the demonstration and development/production
-databases.  You may need to first enable virtual hosting within
-`/etc/apache2/httpd.conf` by uncommenting the `Include` line for
-`httpd-vhosts.conf`.
+- On some machines, you may need to first enable virtual hosting within
+  `/etc/apache2/httpd.conf` by uncommenting the `Include` line for
+  `httpd-vhosts.conf`.
+- Define the virtual host(s) you are going to use.  Exactly how this is
+  done is machine-dependent.  For example, on some machines you will
+  edit a file in the apache directory structure (e.g.,
+  `/etc/apache2/extra/httpd-vhosts.conf) and add however many virtual
+  host definitions you want to that file.  On others (Debian, for
+  example), you will need to provide a separate file in a directory such
+  as /etc/apache2/sites-available for each virtual host.  The
+  `.../ramp/installation/vhost-configs` directory contains a set of
+  example files that could be used as templates for individual files on
+  Debian-based machines, or whose contents could be added to an
+  `httpd-vhosts.conf` file on other architectures.
+- Reload or restart the Apache server.  (On Debian, you first enable the
+  new virtual hosts using a2ensite and then reload apache.)
 
-If the server is being used on the local machine, you need
-to edit `/etc/hosts` and add lines that resolve the virtual server
-names from vhosts to the local machine.  For example,
+- Unless the new server name is being served by DNS, you will need to
+  make changes on the client machines to use the new virtual hosts.
+  For example, this might be a matter of editing `/etc/hosts` on the
+  client machine and adding lines that resolve the virtual server names
+  from the appropriate machine.  For example,
+        123.45.0.67     rampdemo
 
-        127.0.0.1       ramp.development
-
+[__Notes that need to be updated__]  
 If the server should be accessible to a limited, pre-defined set
 of machines, edit `/etc/hosts` files on those machines to resolve the
 virtual hostnames to the machine servicing Ramp.  If Ramp should

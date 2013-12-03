@@ -194,8 +194,9 @@ provided with the demos.
     depends on whether those accounts already have the relevant
     privileges.)
   - Set up virtual hosts in your web server's vhosts.conf file for the
-    Ramp and/or Smart demos.  The vhostExamples.conf file in this
-    directory shows examples for both demos.
+    Ramp and/or Smart demos.  The [INSTALL][install] document describes
+    more fully how to do this.  The `vhost-configs` directory contains
+    files with examples for both demos.
   - Finally, from within the appropriate demo directory, log in to
     MySQL as root or another user with the ability to create new
     users and new databases, and run the appropriate Setup script.

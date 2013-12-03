@@ -14,7 +14,7 @@
         $lenComment = $endP - ($begP + 3);
         $prefix = $begP == 0 ? "" : substr($content, 0, $begP - 1);
         $content = $lenComment > 0
-                    ? substr($content, $begp + 3, $lenComment) : "";
+                    ? substr($content, $begP + 3, $lenComment) : "";
         $content = $prefix . $content .  substr($content, $endP + 4);
     }
 

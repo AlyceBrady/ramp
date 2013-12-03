@@ -22,13 +22,13 @@
 #
 #
 
+# Production environment does not need SetEnv APPLICATION_ENV production
 <VirtualHost *:80>
-      ServerAdmin username@email.addr.edu
-      ServerName smartdemo.univ.edu.country
+      ServerName mycompany.com
+      ServerAlias www.smart.mycompany.com
       DocumentRoot /var/www/ramp/public
       ErrorLog /var/log/ramp/error.log
       CustomLog /var/log/ramp/access.log combined
-      SetEnv APPLICATION_ENV smartdemo
       <Directory "/var/www/ramp/public">
           Options MultiViews SymlinksIfOwnerMatch
           AllowOverride All
