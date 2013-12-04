@@ -134,7 +134,7 @@ class Ramp_Acl extends Zend_Acl
         $this->_addBasicResources();
 
         // Add resources defined in the Registry.
-        $aclResources = $registryFacade->getAclRoles();
+        $aclResources = $registryFacade->getAclResources();
         if ( ! empty($aclResources) )
         {
             $this->_addResources($aclResources);
@@ -266,6 +266,7 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('auth::reset-password'));
         $this->add(new Zend_Acl_Resource('auth::validate-roles'));
         $this->add(new Zend_Acl_Resource('auth::validate-acl-rules'));
+        $this->add(new Zend_Acl_Resource('auth::view-acl-info'));
 
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));

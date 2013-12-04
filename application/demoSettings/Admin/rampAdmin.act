@@ -10,6 +10,8 @@ activity[] = "Spacer"
 activity[] = "ValidateUserRoles"
 activity[] = "Spacer"
 activity[] = "ValidateACL"
+activity[] = "Spacer"
+activity[] = "ViewACL"
 
 
 [ Spacer ]
@@ -53,6 +55,15 @@ title = "Validate Auth Rules"
 description = "Validate the access control (authorization) rules"
 controller = "auth"
 action = "validate-acl-rules"
+parameter = ""
+
+[ ViewACL ]
+
+type = "controllerAction"
+title = "View ACL Info"
+description = "View ACL roles, resources, and rules"
+controller = "auth"
+action = "view-acl-info"
 parameter = ""
 
 [ ResetPassword ]

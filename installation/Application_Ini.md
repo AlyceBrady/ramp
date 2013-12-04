@@ -40,13 +40,6 @@ following files, depending on what you are trying to set up:
                             Include after smart_defaults if creating
                               any other Smart application environments
 
-> Warning: Do not include the contents of both
-> `rampApplicationTemplate.ini` and `smartApplicationTemplate.ini` in
-> your file, since they both contain sections with the same names
-> `production`, `testing`, _etc._.  Or, if you do have a reason to
-> include both, change the section names to be unique, _e.g._,
-> `ramp_production`, `smart_production`, `ramp_testing`, _etc._.
-
 Thus, to create an `application.ini` file that will work only with the
 Ramp Demo, include the contents of `ramp_basics.ini`, `ramp_defaults.ini`,
 and `rampDemo.ini`, in that order.
@@ -105,23 +98,23 @@ Basics:
       For example, you might have a "smart" production database and
       a "smart_dev" development database, with sections such as the
       following in your application.ini file:
-        [production]
+        [smart_production]
         ; ... Many properties defined here, including
         resources.db.params.username = smartuser
         resources.db.params.password = "a_real_passwd"
         resources.db.params.dbname = smart
-        [development: production]
+        [development: smart_production]
         resources.db.params.dbname = smart_dev
         ; ... A few other redefined properties go here ...
-      In this example, the section named "production" contains several
+      In this example, the section named "smart_production" contains several
       properties, including the database name ("...dbname = smart")
       and the username and password that Ramp/Smart uses to access
       the database.  The "development" section specifies that it
-      inherits properties from the "production" section ("[development:
-      production]"), but it also redefines some properties such
+      inherits properties from the "smart_production" section ("[development:
+      smart_production]"), but it also redefines some properties such
       as the database name ("...dbname = smart_dev").  It does not
       redefine the username and password, establishing that the
-      same username and password are use to access the development
+      same username and password are used to access the development
       database as the production database.
 
 2b. Setting Up Databases, Ramp/Smart User Accounts, and Authorization:

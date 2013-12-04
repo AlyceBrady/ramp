@@ -494,10 +494,10 @@ search, using the sequence or table setting specified with the
 `viewingSequence` property, for a Staff record whose "staffID" matches the
 "advisorID" in the current record.
 
-        externalTableRef.Student.title = "Staff"
-        externalTableRef.Student.viewingSequence = "Smart/Staff/Staff"
-        externalTableRef.Student.localField = "advisorID"
-        externalTableRef.Student.externalField = "staffID"
+        externalTableRef.Staff.title = "Staff"
+        externalTableRef.Staff.viewingSequence = "Smart/Staff/Staff"
+        externalTableRef.Staff.localField = "advisorID"
+        externalTableRef.Staff.externalField = "staffID"
 
 When displaying the external reference link at the bottom of the
 record-viewing screen, Ramp includes an icon indicating whether all

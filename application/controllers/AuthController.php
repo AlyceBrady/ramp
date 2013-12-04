@@ -316,6 +316,31 @@ class AuthController extends Zend_Controller_Action
         }
     }
 
+
+    /**
+     * View roles, resources, and resources that have been defined for
+     * Access Control Lists for debugging purposes.
+     */ 
+    public function viewAclInfoAction()
+    {
+        $acl = new Ramp_Acl();
+        $msg = "";
+        $msg .= "<h4>Roles:</h4>" . var_export($acl->getRoles(), true);
+        $msg .= "<h4>Resources:</h4>"
+                    . var_export($acl->getResources(), true);
+        // Too hard to return all rules, so just concentrate on rules 
+        // from Registry and Database.
+        $msg .= "<h4>Rules:</h4>"
+                    . "<h5>"
+                    . "<em>It's too hard to dig out and report on all rules "
+                    . "(and derived rules), so these are just rules from "
+                    . "Registry (application.ini) and Database.</em><br />"
+                    . "</h5>"
+                    . var_export($acl->getRules(), true);
+        $msg .= "</pre>";
+        $this->view->msg = $msg;
+    }
+
     /**
      * Returns true if the current request represents the initial 
      * display for the current action.  A return of false, therefore, 

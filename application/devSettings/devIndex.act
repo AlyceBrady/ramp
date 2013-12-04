@@ -36,7 +36,7 @@ comment = "### Admin Activities ###"
 [Admin Activities]
 
 type = "activityList"
-source = "Admin/rampAdmin.act"
+source = "Admin/smartAdmin.act"
 title = "Admin Activities"
 description = "Administer Ramp/Smart tables; execute other
 administrative activities"

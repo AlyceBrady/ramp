@@ -65,6 +65,8 @@ If you want to use Git to download Ramp (and future updates),
 read this online [Getting Started - Installing Git][git] documentation.
 The [Set Up Git][git-setup] document is also helpful.
 
+For development, should also download PHP unit tests (e.g., phpunit34).
+
 
 ## Installing Ramp ##
 Once you have a server and a database, you must download the most
@@ -181,7 +183,7 @@ rampdemo, smartdemo, etc.).  Without `vhosts`, though, it’s not
 as easy to have multiple Ramp/Smart database environments running on
 one server.)
 
-[readme]: /document/index/document/..%252F..%252FREADME.md
+[readme]: /document/index/document/..%252F..%252README.md
 [installdb]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_DB.md
 [custom]:  /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
 [custom_build]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md#build
