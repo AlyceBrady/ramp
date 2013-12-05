@@ -26,6 +26,8 @@ class DocumentController extends Zend_Controller_Action
     protected $_document;
     protected $_contents;
 
+    protected $_debugging = false;
+
     /**
      * Initializes attributes for this object.
      */
