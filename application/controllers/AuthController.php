@@ -101,14 +101,13 @@ class AuthController extends Zend_Controller_Action
     public function unauthorizedAction()
     {
         // See if specific information was passed as a parameter.
-        $resource = urldecode($this->_getParam(self::DETAILS, ""));
-        $resourceName = $this->_formatUnauthResourceName($resource);
+        $message = urldecode($this->_getParam(self::DETAILS, ""));
 
         $this->view->errorMsg =
                 'Sorry, you are not authorized to perform this action';
-        if ( $resourceName != "" )
+        if ( $message != "" )
         {
-            $this->view->errorMsg .= ' (' . $resourceName . ')';
+            $this->view->errorMsg .= ' (' . $message . ')';
         }
         $this->view->errorMsg .= '.';
     }
@@ -501,39 +500,6 @@ class AuthController extends Zend_Controller_Action
         {
             $this->_helper->redirector('index', 'index');
         }
-    }
-
-    /**
-     * Formats resource name from full resource specification.
-     *
-     * @param $resourceSpec  full resource specification
-     */
-    protected function _formatUnauthResourceName($resourceSpec)
-    {
-        // Get the various components of a full resource spec.  If it 
-        // doesn't have the expected components, return full spec.
-        $components = explode(Ramp_Acl::DELIM, $resourceSpec);
-        if ( count($components) != 3 )
-        {
-            return 'Resource: ' . $resourceSpec;
-        }
-
-        // Return the resource type plus either the second or third
-        // component, depending on the resource type.
-        if ( $components[0] == Ramp_Controller_KeyParameters::ACT_CONTROLLER )
-        {
-            return 'activities in ' . $components[2] . ' directory';
-        }
-        if ( $components[0] == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
-        {
-            return $components[2] . ' document';
-        }
-        if ( $components[0] == Ramp_Controller_KeyParameters::TBL_CONTROLLER ||
-             $components[0] == Ramp_Controller_KeyParameters::REP_CONTROLLER )
-        {
-            return $components[0] . ' in setting ' . $components[2];
-        }
-        return 'Resource: ' . $resourceSpec;
     }
 
     /**

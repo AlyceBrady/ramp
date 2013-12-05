@@ -60,6 +60,10 @@ class Application_Model_Field
     const IDENTITY      = 'IDENTITY';
     const LENGTH        = 'LENGTH';
 
+    // Constants to provide internal data structure.
+    const VALID_VAL_TBL     = 'table';
+    const VALID_VAL_FIELD   = 'field';
+
     /** @var string */
     protected $_name;           // field name
 
@@ -186,13 +190,17 @@ class Application_Model_Field
         $this->_importName = isset($settingInfo[self::ALIAS]) ?
                             $settingInfo[self::ALIAS] :
                             $this->_name;
-        $this->_legalValsSource = isset($settingInfo[self::LEGAL_VALUES]) ?
-                            $settingInfo[self::LEGAL_VALUES] :
-                            null;
         $this->_connectTbl = isset($settingInfo[self::LINK_TO_TBL]) ?
                             $settingInfo[self::LINK_TO_TBL] :
                             null;
         $this->_inTable = ! empty($metaInfo);
+
+        $this->_legalValsSource = null;
+        if ( isset($settingInfo[self::LEGAL_VALUES]) )
+        {
+            $info = $settingInfo[self::LEGAL_VALUES];
+            $this->_legalValsSource = $this->_validateLegalValsSource($info);
+        }
 
         return $this;
     }
@@ -350,7 +358,19 @@ class Application_Model_Field
      */
     public function validValsDefinedInExtTable()
     {
-        return $this->_legalValsSource !== null;
+        return ! empty($this->_legalValsSource);
+    }
+
+    /**
+     * Returns the table that is the source of valid values for this field.
+     *
+     * Precondition: $this->validValsDefinedInExtTable()
+     *
+     * @return string  tableName
+     */
+    public function getSourceOfValidVals()
+    {
+        return $this->_legalValsSource[self::VALID_VAL_TBL];
     }
 
     /**
@@ -363,17 +383,10 @@ class Application_Model_Field
      */
     public function getValidVals()
     {
-        if ( empty($this->_legalVals) )
+        if ( ! empty($this->_legalValsSource) )
         {
-            $components = explode('.', $this->_legalValsSource);
-            if ( count($components) != 2 )
-            {
-                throw new Exception("Error: " . $this->_legalValsSource .
-                    " does not have the required tableName.fieldName format.");
-            }
-
-            $table = $components[0];
-            $field = $components[1];
+            $table = $this->_legalValsSource[self::VALID_VAL_TBL];
+            $field = $this->_legalValsSource[self::VALID_VAL_FIELD];
             $source = new Application_Model_DbTable_ValidValuesSource($table);
             try {
                 $this->_legalVals = $source->getValidValues($field);
@@ -386,6 +399,30 @@ class Application_Model_Field
             }
         }
         return $this->_legalVals;
+    }
+
+    /**
+     * Returns the set of valid values for this field, obtained from
+     * an external table.
+     *
+     * Precondition: $this->validValsDefinedInExtTable()
+     *
+     * @return array   list of valid values
+     */
+    public function _validateLegalValsSource($sourceProvided)
+    {
+        $legalValsSource = array();
+        $components = explode('.', $sourceProvided);
+        if ( count($components) != 2 )
+        {
+            throw new Exception("Error: " . $sourceProvided .
+                " does not have the required tableName.fieldName format.");
+        }
+
+        $legalValsSource[self::VALID_VAL_TBL] = $components[0];
+        $legalValsSource[self::VALID_VAL_FIELD] = $components[1];
+
+        return $legalValsSource;
     }
 
     /**

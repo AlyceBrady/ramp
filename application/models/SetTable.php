@@ -102,6 +102,11 @@ class Application_Model_SetTable
     protected $_defaults = array();         // field default values
 
     /** @var array */
+    protected $_sourcesOfValidVals = array();  // tables that provide range
+                                               // of valid values for some
+                                               // fields
+
+    /** @var array */
     protected $_fieldsInitFromElsewhere = array();  // fields initialized from
                                                     // other tables
 
@@ -365,11 +370,15 @@ class Application_Model_SetTable
                                                  $metaInfo,
                                                  $this->_showColsByDefault);
 
-            // Add field to appropriate field lists.
+            // Add field (or its table) to appropriate field lists.
             if ( $field->isinDb() )
                 { $this->_categorizeField($colName, $field); }
             else
                 { $this->_undefinedFieldNames[] = $colName; }
+            if ( $field->validValsDefinedInExtTable() )
+            {
+                $this->_sourcesOfValidVals[] = $field->getSourceOfValidVals();
+            }
         }
     }
 
@@ -420,6 +429,29 @@ class Application_Model_SetTable
     public function getDbTableName()
     {
         return $this->_dbTableName;
+    }
+
+    /**
+     * Gets the names of dependent tables for which VIEW authorization
+     * is needed to do work with the current table setting.  These are:
+     *   - tables that provide the source of possible values for a field
+     *   - the tables from which one is importing data
+     *   - tables from which one is initializing data (only for ADD 
+     *     operations, so initTableReference and initFrom should only be 
+     *     for those settings
+     *  External tables settings, which are just links, do not need to 
+     *  be included.  Even the "complete, incomplete, empty" designation 
+     *  is essentially meta-information and does not require VIEW 
+     *  authorization.
+     */
+    public function getDependentTables()
+    {
+        $validValTbls = $this->_sourcesOfValidVals;
+        $importTbls = array_keys($this->_importAliases);
+        $initTbls  = array_keys($this->_initTblRefs);
+        $tables = array_unique(array_merge($validValTbls, $importTbls,
+                                           $initTbls));
+        return $tables;
     }
 
     /**

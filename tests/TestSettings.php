@@ -26,6 +26,7 @@ class TestSettings
     const MULT_SETTINGS_FILE = 'MultipleValidSettings';
     const FILE_SHOWING_COLS_BY_DEFAULT = 'ShowColsByDefault';
     const FILE_WITH_EXTERNAL_INIT = 'settingTests/InitTesting';
+    const FILE_WITH_EXTERNAL_FILES = 'settingTests/MultExtRefTypes';
     const EXT_REF_TARGET = 'settingTests/Users';
     const NO_TABLE_PROPS_SETTINGS_FILE = 'sectionWNoTableProps';
     const NO_TABLE_SETTINGS_FILE = 'noDbTable';
@@ -53,6 +54,7 @@ class TestSettings
     private static $_multSettingsTopLevel;
     private static $_sequenceSettings;
     private static $_settingNames;
+    private static $_dataSourceTables;
 
     private function __construct()
     {
@@ -120,6 +122,10 @@ class TestSettings
                                      'DetailedView', 'ModifyingView',
                                      'AddView', 'TableSetting3',
                                      self::MULT_SETTINGS_FILE);
+
+        self::$_dataSourceTables = array('Terms', 'Person', 'ModuleOfferings',
+                                      'Modules');
+
     }
 
     function getBasicSetting()
@@ -150,6 +156,11 @@ class TestSettings
     function getSearchResultsSettingTableName()
     {
         return self::$_basicTableSetting['tableName'];
+    }
+
+    function getDataSourceTables()
+    {
+        return self::$_dataSourceTables;
     }
 
 }

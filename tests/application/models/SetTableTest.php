@@ -21,6 +21,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     protected $_setTableWithInitAndExtRef;
     protected $_setTableWithBadInitAndExtRef;
     protected $_settingForPartialTable;
+    protected $_setTableWithDependentTables;
 
     public function setUp()
     {
@@ -63,6 +64,13 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $gateway = new Application_Model_TVSGateway($settingFileName);
         $this->_settingForPartialTable =
                     new Application_Model_SetTable($settingName, $gateway);
+
+        $settingFileName = TestSettings::FILE_WITH_EXTERNAL_FILES;
+        $settingName = 'TestSetting';
+        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $this->_setTableWithDependentTables =
+                    new Application_Model_SetTable($settingName, $gateway);
+
     }
 
     public function testSettingWithNoTableName()
@@ -153,6 +161,14 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Users', $ref->getTitle());
         $this->assertSame(array('userid' => 'id'),
                           $ref->getConnectionExpressions());
+    }
+
+    public function testGetDependentTables()
+    {
+        $table = $this->_setTableWithDependentTables;
+        $tbls = $table->getDependentTables();
+        $expTables = $this->_settingTests->getDataSourceTables();
+        $this->assertSame($expTables, $tbls);
     }
 
     public function testGetFieldsFromSimpleTable()

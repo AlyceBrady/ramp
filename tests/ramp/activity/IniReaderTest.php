@@ -55,7 +55,7 @@ class Ramp_Activity_Config_IniReaderTest extends PHPUnit_Framework_TestCase
 
     public function testGetSimpleFilenameWhenActDirIsNull()
     {
-        // ramp.activitiesDirectory in regressiontesting section of 
+        // ramp.activitiesDirectory in smart_regressiontesting section of 
         // application.ini is currently null.
         $filename = self::SIMPLE_TEST;
         $retrievedFilename =
