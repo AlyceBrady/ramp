@@ -12,7 +12,8 @@ $extSearchParams = array('controller' => 'table', 'action' => 'list-view');
 
 if ( ( $formType == Application_Form_TableRecordEntry::ADD ||
        $formType == Application_Form_TableRecordEntry::EDIT ) &&
-     $fields[$name]->isExternalTableLink() ) :
+     $fields[$name]->isExternalTableLink() )
+{
     // $tableName = $fields[$name]->getLinkedTableTitle();
     $setting = urlencode($fields[$name]->getLinkedTableSetting());
     $urlParams = $extSearchParams +
@@ -21,8 +22,10 @@ if ( ( $formType == Application_Form_TableRecordEntry::ADD ||
             "\" target=\"_blank\">";
     echo $elt->renderLabel();
     echo "</a>";
-else :
+}
+else
+{
     echo $elt->renderLabel();
-endif;
+}
 
 ?>

@@ -53,6 +53,9 @@ class TableController extends Zend_Controller_Action
     const CONFIRM               = "Confirm";
     const SAVE                  = "Save Changes";
 
+    /* values for processing search requests */
+    const SEARCH_VALS       = Application_Form_TableRecordEntry::FIELD_VALUES;
+
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
@@ -204,7 +207,11 @@ class TableController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
-                $nonNullData = $this->_getFilledFields($form->getValues());
+                $fullResults = $form->getSearchRequestValues();
+                $fieldVals = $fullResults[self::SEARCH_VALS];
+// throw new Exception("Hi Alyce" . print_r($fieldVals, true));
+                $nonNullData = $this->_getFilledFields($fieldVals);
+// throw new Exception(print_r($nonNullData, true));
 
                 // Adding new entry based on failed search?
                 if ( $this->_buttonAction == self::ADD )

@@ -42,7 +42,7 @@ $form = $this->dataEntryForm;               // Set in controller
 <!-- Display search form -->
 <div id='record-block' class='search'>
 <?php echo $this->partial("table/_tableEntryForm.phtml",
-        array('table' => $table, 'form' => $form)); ?>
+        array('table' => $table, 'form' => $form, 'search' => true)); ?>
 </div>
 
 </div>  <!-- End of "left-column" -->
