@@ -10,19 +10,18 @@
 
 [VERY EARLY, VERY DRAFTY NOTES]
 
-There are different types of administrative roles associated with Ramp.
-Need to 
-identify who will be playing which roles.  Might be the same small set
-of people fulfilling all of these roles, or there might be different people
-fulfilling each role.  For example,
-the DBA might also be the Ramp user adminstrator, or there might be
-people authorized to maintain Ramp accounts who have very little
-understanding of MySQL and the underlying database structure.  Similarly,
-the DBA might be involved
-in helping to implement changes to activity files and table settings,
-but the people who know best what activity files and table settings
-would be useful are likely to be domain experts rather than database
-experts.
+There are different types of administrative roles associated with
+Ramp, and an early task is to identify who will be playing which
+roles. Depending on the size and structure of the organization,
+there may be overlapping responsibilities, or there may not.
+For example, the database administrator (DBA) might also be the
+Ramp user administrator, or there might be people authorized to
+maintain Ramp accounts who have very little understanding of MySQL
+and the underlying database structure.  Similarly, the DBA might
+be involved in helping to implement changes to activity files and
+table settings, but the people who would best understand what
+activity files and table settings would be useful are likely to be
+domain experts rather than database experts.
 
 > ##### System Administration #####
 > System administration (sysadmin) responsibilities include looking after the
@@ -54,11 +53,12 @@ experts.
 > adding roles and authorizations, and removing "orphaned" locks.
 
 > ##### Activity File and Table Setting Development #####
-> Although it is possible to run the Ramp and Smart demos, and even a
-> very vanilla version of the Smart application, without defining any
-> new activity files or table settings, to use Ramp for any real
-> application will require creating and modifying such files.  This may
-> be the responsibility of the database administrator, but domain experts who
+> Although it is possible to run the Ramp and Smart demos, and even an
+> uncustomized version of the Smart application, without defining any
+> new activity files or table settings, to get the most benefit from
+> Smart will require creating and modifying such files to suit the needs
+> of the given context.  This may be the responsibility
+> of the database administrator, but domain experts who
 > understand the structure of the data and the needs of the users
 > accessing that data might also be involved in developing activity
 > files, menus, and table settings.  (This is a management and policy
@@ -66,12 +66,13 @@ experts.
 > The development and maintenance of user documents also falls under
 > this category.
 
-> (Who is responsible for generating the style sheets and (maybe, in the
+> A related question that may come up later in the system implementation is:
+> who is responsible for generating the style sheets and (maybe, in the
 > future) the SQL queries for reports: the DBA, the Ramp Admin,
 > Activity/Table Setting developers, or users with a certain amount of
 > experience?  Who has permissions to put them in place?  Does each one
 > require a new authorization rule (or set of rules) written by the Ramp
-> Admin?)
+> Admin?
 
 <h3 id="dba"> System and Database Administration </h3>
 
