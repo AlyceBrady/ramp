@@ -26,6 +26,8 @@ class DocumentController extends Zend_Controller_Action
     protected $_document;
     protected $_contents;
 
+    protected $_debugging = false;
+
     /**
      * Initializes attributes for this object.
      */
@@ -63,6 +65,29 @@ class DocumentController extends Zend_Controller_Action
 
         // Make the document contents available to the View Renderer.
         $this->view->pageContents = $this->_contents;
+
+// $this->_debugging = true;
+        $this->_debug();
+
+    }
+
+    /**
+     * Adds debugging information to the  basic view renderer information.
+     */
+    protected function _debug()
+    {
+        if ( $this->_debugging )
+        {
+            $errMsg = "<pre>DEBUGGING INFO:  Request params are: "
+                        . print_r($this->getRequest()->getParams(), true);
+            $acl = new Ramp_Acl();
+            $errMsg .= "<h5>Roles:</h5>" . var_export($acl->getRoles(), true);
+            $errMsg .= "<h5>Roles:</h5>"
+                        . var_export($acl->getResources(), true);
+            $errMsg .= "<h5>Roles:</h5>" . var_export($acl->getRules(), true);
+            $errMsg .= "</pre>";
+            $this->view->errMsg = $errMsg;
+        }
     }
 
     /**

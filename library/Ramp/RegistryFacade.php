@@ -53,8 +53,6 @@ class Ramp_RegistryFacade
 
     protected $_configs;   // configuration properties read in
 
-    protected $_activitiesDirectory;
-    protected $_settingsDirectory;
 
 
     // STATIC FUNCTIONS
@@ -84,16 +82,6 @@ class Ramp_RegistryFacade
             Zend_Registry::isRegistered(self::CONFIG_SETTINGS) ?
                 Zend_Registry::get(self::CONFIG_SETTINGS) :
                 array();
-        /*
-        $this->_activitiesDirectory =
-            Zend_Registry::isRegistered(self::ACTIVITIES_DIRECTORY) ?
-                Zend_Registry::get(self::ACTIVITIES_DIRECTORY) :
-                null;
-        $this->_settingsDirectory =
-            Zend_Registry::isRegistered(self::SETTINGS_DIRECTORY) ?
-                Zend_Registry::get(self::SETTINGS_DIRECTORY) :
-                null;
-         */
     }
 
     /**

@@ -220,8 +220,15 @@ div#activityPage .disabled, div#activityPage .disabledComment {
 }
 
 #record-block.edit input.recommended, #record-block.add input.recommended,
-#record-block.edit select.recommended, #record-block.add select.recommended {
+#record-block.edit select.recommended, #record-block.add select.recommended,
+#record-block.edit textarea.recommended, #record-block.add textarea.recommended
+{
         background-color:   #FFC;
+}
+
+div#record-block select.comparator
+{
+        background-color:   #F6FFF6;
 }
 
 input.readonly, select.readOnly,

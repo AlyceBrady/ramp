@@ -84,9 +84,7 @@ class ActivityController extends Zend_Controller_Action
     }
 
     /**
-     * Initializes basic view renderer information from the set table.
-     *
-     * @param Application_Model_SetTable  table: setting & db info
+     * Adds debugging information to the  basic view renderer information.
      */
     protected function _debug()
     {

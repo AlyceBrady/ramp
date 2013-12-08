@@ -16,7 +16,7 @@ set_include_path( '.' . PATH_SEPARATOR . LIBRARY_PATH
 // define('GENERIC_SALT', 'asdDSasd4asdAd1GH4sdWsd1');
  
 // Define application environment
-define('APPLICATION_ENV', 'regressiontesting');
+define('APPLICATION_ENV', 'smart_regressiontesting');
 
 // Zend_Application
 require_once 'Zend/Application.php';

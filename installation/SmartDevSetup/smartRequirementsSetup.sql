@@ -3,6 +3,8 @@
 --
 
 
+USE `smart_dev`;
+
 DROP TABLE IF EXISTS Requirements;
 
 CREATE TABLE Requirements (

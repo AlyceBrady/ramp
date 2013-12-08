@@ -3,6 +3,11 @@
 --
 
 
+USE `smart_dev`;
+
+-- Before dropping Student, need to drop table(s) that depend on it.
+SOURCE dropSmartStudentDependencies.sql
+
 DROP TABLE IF EXISTS Student;
 
 CREATE TABLE Student (

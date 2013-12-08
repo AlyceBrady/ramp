@@ -7,29 +7,14 @@ provides a mechanism for creating database views (called "table
 settings") that is meant to be accessible to domain experts (as
 opposed to database experts), and provides software for populating,
 viewing, and updating database tables through the table settings.
-For any database table for which a table setting has been
-defined, Ramp supports:
-
- * A search mechanism for finding records based on values in fields
-
- * A table view for viewing a set of table records with column headings
-
- * A list view for viewing table records (often just a defined
-   subset of columns, useful for selecting a single record from
-   a search that yielded multiple results)
-
- * A single-record view for viewing records in their entirety,
-   modifying them, or adding new records to the table; single-record
-   views may also contain links to other, related tables or
-   records if the relationships are defined in the table setting
 
 Ramp is set up to work with tables defined in a MySQL database,
 using the Zend Framework.
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.3.  
-Released on November 28, 2013.
+RAMP/SMART Release 0.5.4.  
+Released on December 7, 2013.
 
 
 ### LICENSE ###

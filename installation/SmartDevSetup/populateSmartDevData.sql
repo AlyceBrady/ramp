@@ -29,3 +29,5 @@ SOURCE smartModuleSetup.sql
 
 SOURCE smartStudentSetup.sql
 
+-- SOURCE smartRequirementsSetup.sql
+

@@ -25,21 +25,76 @@ class Application_Form_TableRecordEntry extends Zend_Form
     const EDIT   = TableController::EDIT;
     const SEARCH = TableController::SEARCH;
     const DEL    = TableController::DEL_BUTTON;
-    const ANY_VAL = Application_Model_SetTable::ANY_VAL;
+
     const ANY_VAL_LABEL = "ANY VALUE";
+    const ANY_VAL = Application_Model_SetTable::ANY_VAL;
+
     const AUTO_INCR_EXPL = "Auto-incremented by default";
     const REQUIRED_EXPL = "Required field";
     const RECOMMENDED_EXPL = "Recommended field";
     const REFERENCE_EXPL = "Reference to field in ";
     const EXTERNAL_REF_EXPL = "From %s table";
 
+    // Set of supported search comparators:
+    const CONTAINS          = 'HAS';
+    const EQUAL             = '=';
+    const LESS_THAN         = '<';
+    const LT_OR_EQUAL       = '<=';
+    const GREATER_THAN      = '>';
+    const GT_OR_EQUAL       = '>=';
+    const NOT_EQUAL         = '!=';
+    const SQL_IS_NULL       = 'IS NULL';
+    const SQL_NOT_NULL      = 'IS NOT NULL';
+    const LIKE              = 'LIKE';
+    const DEFAULT_COMPARATOR   = self::EQUAL;
+
+    // Keywords used to store search request information.
+    const FIELD_VALUES          = 'fieldVals';
+    const FULL_SEARCH_RESULTS   = 'fullSearchResults';
+    const VALUE                 = 'searchValue';
+    const COMP                  = 'comparator';
+
+    const SEARCH_COMP_SUFFIX = "_comparator";
+
+    const FIELD_WIDTH           = 'span3';
+    const COMPARATOR_CLASS_INFO = 'comparator span1';
+
     protected $_setTable;
     protected $_formSuffix;
     protected $_formType;
+    protected $_searchCompElts = array();
+    protected $_fieldElts = array();
+
+    /**
+     * Returns a list of the valid search comparators.
+     */
+    public static function validComparators()
+    {
+        return array(
+            self::CONTAINS => self::CONTAINS, self::EQUAL => self::EQUAL,
+            self::LESS_THAN => self::LESS_THAN,
+            self::LT_OR_EQUAL => self::LT_OR_EQUAL,
+            self::GREATER_THAN => self::GREATER_THAN,
+            self::GT_OR_EQUAL => self::GT_OR_EQUAL,
+            self::NOT_EQUAL => self::NOT_EQUAL,
+            self::SQL_IS_NULL => self::SQL_IS_NULL,
+            self::SQL_NOT_NULL => self::SQL_NOT_NULL,
+            self::LIKE => self::LIKE
+        );
+    }
+
+    /**
+     * Returns a list of the unary search comparator values;
+     */
+    public static function unaryComparators()
+    {
+        return array( self::SQL_IS_NULL, self::SQL_NOT_NULL);
+    }
 
     /**
      * Constructor
      *
+     * @param Application_Form_TableRecordEntry $setTable the table setting
      * @param Application_Model_TableSetting $setTable the table setting
      * @param bool   $formSuffix   a suffix to make form name unique on page
      *                             e.g., a row number
@@ -58,119 +113,32 @@ class Application_Form_TableRecordEntry extends Zend_Form
 
     public function init()
     {
-        // should add a filter specifying type
+        // TODO: Should add a filter specifying type.
 
         $this->setName('tableEntry' . $this->_rowNum);
-
-        $visibleFieldDecorators = array(
-            array(array('Elem' => 'ViewHelper'), array('separator' => '')),
-            array('Errors', array('separator' => '')),
-        );
-        $hiddenFieldDecParams =
-                    array('separator'=>'', 'tag'=>'div', 'class'=>'hidden');
-        $hiddenFieldDecorators = array(
-            array(array('Elem' => 'ViewHelper'), $hiddenFieldDecParams),
-            array('Label', $hiddenFieldDecParams),
-            array('Errors', $hiddenFieldDecParams),
-        );
 
         // Create the form elements for all visible and primary key fields.
         $fields = $this->_setTable->getRelevantFields();
         foreach ( $fields as $field )
         {
+            // Get name to use for new text element and determine label.
             $name = $field->getDbFieldName();
+            $label = $field->getLabel();
+
+            // Is this a visible field or a hidden primary key?
             if ( $field->isVisible() )
             {
-                // Get identity/required/recommended decorations.
-                $reqRecDecs = $this->_getReqRecDecorations($field);
-                $visibleFieldDecorators[] = $this->_getLabelDecs($field);
-
-                // Determine label and class/required/read-only attributes.
-                $label = $this->_getLabel($field, $reqRecDecs);
-                $class = $this->_getClass($field, $reqRecDecs);
-                $required = $this->_isRequired($class);
-                $readOnly = $this->_fieldIsReadOnly($field);
-
-                if ( $field->isEnum() && ! $readOnly )
-                {
-                    // If this is a search, add ability to search for any value
-                    $options = ( $this->_formType == self::SEARCH ) ?
-                                  array(self::ANY_VAL => self::ANY_VAL_LABEL) +
-                                        $field->getEnumValues() :
-                                  $field->getEnumValues();
-                    $fieldElement = new Zend_Form_Element_Select($name);
-                    $fieldElement->setLabel($label)
-                                 ->setMultiOptions($options)
-                                 ->setAttrib('class', $class)
-                                 ->setRequired('required', $required)
-                                 ->setDecorators($visibleFieldDecorators);
-                    $this->addElement($fieldElement);
-                }
-                else if ( $field->validValsDefinedInExtTable() && ! $readOnly )
-                {
-                    // If this is a search, add ability to search for any value
-                    $options = ( $this->_formType == self::SEARCH ) ?
-                                  array(self::ANY_VAL => self::ANY_VAL_LABEL) +
-                                        $field->getValidVals() :
-                                  $field->getValidVals();
-                    $fieldElement = new Zend_Form_Element_Select($name);
-                    $fieldElement->setLabel($label)
-                                 ->setMultiOptions($options)
-                                 ->setAttrib('class', $class)
-                                 ->setRequired('required', $required)
-                                 ->setDecorators($visibleFieldDecorators);
-                    $this->addElement($fieldElement);
-                }
-                else
-                {
-                    // Create text input.
-                    if ( $this->_isBlock($field->getDataType()) )
-                    {
-                        $this->addElement('textarea', $name, array(
-                            'class' => $class,
-                            'label' => $label,
-                            'required' => $required,
-                            'decorators' => $visibleFieldDecorators,
-                        ));
-                    }
-                    else
-                    {
-                        $this->addElement('text', $name, array(
-                            'class' => $class,
-                            'label' => $label,
-                            'required' => $required,
-                            'decorators' => $visibleFieldDecorators,
-                        ));
-                    }
-                    $fieldElement = $this->getElement($name);
-
-                    // Add appropriate filters.
-                    $fieldElement->addFilter('StripTags')
-                                 ->addFilter('StringTrim');
-                    if ( $this->_formType != self::SEARCH && ! $readOnly )
-                    {
-                        $fieldElement->addValidators(
-                                        $this->_getValidators($field));
-                    }
-                }
-
-                // Set conditional attributes.
-                if ( $readOnly )
-                    { $fieldElement->setAttrib('readOnly', 'readOnly'); }
-
-                $title = $this->_getTitle($field, $reqRecDecs);
-                if ( strlen($title) > 0 )
-                    { $fieldElement->setAttrib('title', $title); }
-
+                $fieldElement = $this->_createVisibleElement($field, $name,
+                                                             $label);
             }
             else    // Hidden primary key.
             {
-                $fieldElement = new Zend_Form_Element_Hidden($name);
-                $fieldElement->setLabel($field->getLabel())
-                             ->setAttrib('class', 'hidden')
-                             ->setDecorators($hiddenFieldDecorators);
-                $this->addElement($fieldElement);
+                $fieldElement = $this->_createHiddenElement($name, $label);
             }
+
+            // Add element to the form and to local list of field elements.
+            $this->addElement($fieldElement);
+            $this->_fieldElts[$name] = $fieldElement;
         }
 
         // Fill in defaults if this is a modifying form.
@@ -184,6 +152,205 @@ class Application_Form_TableRecordEntry extends Zend_Form
     public function getFormType()
     {
         return $this->_formType;
+    }
+
+    /**
+     * Gets the field elements included in this form.
+     */
+    public function getFieldElements()
+    {
+        return $this->_fieldElts;
+    }
+
+    /**
+     * Gets the search comparator elements included in this form (if any).
+     */
+    public function getComparatorElements()
+    {
+        return $this->_searchCompElts;
+    }
+
+    /**
+     * Gets the field values from this form.
+     */
+    public function getFieldValues()
+    {
+        $results = array();
+
+        foreach ( $this->_fieldElts as $name => $fieldElt )
+        {
+            $results[$name] = $fieldElt->getValue();
+        }
+
+        return $results;
+    }
+
+    /**
+     * Gets the search comparator choices from this form.
+     */
+    public function getComparators()
+    {
+        $results = array();
+
+        foreach ( $this->_fieldElts as $name => $fieldElt )
+        {
+            $results[$name] = $this->getComparatorFor($name);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Gets the chosen search comparator associated with the
+     * given field element.
+     *
+     * @param fieldElementName
+     */
+    public function getComparatorFor($fieldElementName)
+    {
+        if ( empty($this->_searchCompElts) ||
+             empty($this->_searchCompElts[$fieldElementName]) )
+        {
+            return self::DEFAULT_SEARCH_OP;
+        }
+        return $this->_searchCompElts[$fieldElementName]->getValue();
+    }
+
+    /**
+     * Creates a visible field element, with its label and, if this is a 
+     * search, with a drop-down menu of search comparator types.
+     */
+    protected function _createVisibleElement($field, $name, $label)
+    {
+        // Determine whether field is read-only or acquiring input.
+        $readOnly = $this->_fieldIsReadOnly($field);
+
+        // If this is a search, generate drop-down for search comparators.
+        if ( $this->_formType == self::SEARCH )
+        {
+            $this->_createComparatorDropDown($name);
+        }
+
+        // Should element be a drop-down menu?
+        if ( ! $readOnly && ( $field->isEnum() ||
+                              $field->validValsDefinedInExtTable() ) )
+        {
+            $fieldElement = $this->_createFieldDropDown($field, $name);
+        }
+        else        // Text input (textarea or text field)
+        {
+            $fieldElement = $this->_createTextElement($field, $name, $readOnly);
+        }
+
+        // Get class, title, labelTitle, and required attributes.
+        // They share some information.
+        $required = $this->_fieldShouldBeRequired($field);
+        $reqRecDecs = $this->_getReqRecDecorations($field, $required);
+        $class = $this->_buildClass($field, $readOnly, $reqRecDecs);
+        $title = $this->_buildTitle($field, $reqRecDecs);
+        $labelTitle = $this->_getLabelTitle($field);
+
+        $fieldElement->setLabel($label);
+        $fieldElement = $this->_buildDecorators($fieldElement, $labelTitle);
+
+        // Set conditional attributes.
+        if ( $readOnly )
+            { $fieldElement->readOnly = 'readOnly'; }
+        if ( $required )
+            { $fieldElement->setRequired($required); }
+        if ( ! empty($class) )
+            { $fieldElement->class = $class; }
+        if ( ! empty($title) )
+            { $fieldElement->title = $title; }
+
+
+        return $fieldElement;
+    }
+
+    /**
+     * Creates a drop-down menu of search comparator types.
+     */
+    protected function _createComparatorDropDown($name)
+    {
+        $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
+        $comparatorElement = new Zend_Form_Element_Select($ddName);
+        $comparatorOptions = self::validComparators();
+        $comparatorElement->setLabel($label)
+                          ->setMultiOptions($comparatorOptions);
+        $comparatorElement = $this->_buildDecorators($comparatorElement);
+        $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
+
+        // Add element to the form and to local list of
+        // elements representing search comparators.
+        $this->addElement($comparatorElement);
+        $this->_searchCompElts[$name] = $comparatorElement;
+    }
+
+    /**
+     * Creates a drop-down menu of search comparator types.
+     */
+    protected function _createComparatorDropDown2($name)
+    {
+        $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
+        $comparatorElement = new Zend_Form_Element_Select($ddName);
+        $comparatorOptions = self::validComparators();
+        $comparatorElement->setLabel($label)
+                          ->setMultiOptions($comparatorOptions);
+        $comparatorElement = $this->_buildDecorators($comparatorElement);
+        $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
+
+        // Add element to the form and to local list of
+        // elements representing search comparators.
+        $this->addElement($comparatorElement);
+        $this->_searchCompElts[$name] = $comparatorElement;
+    }
+
+    /**
+     * Creates a drop-down menu for fields with a defined set of values.
+     */
+    protected function _createFieldDropDown($field, $name)
+    {
+        // Get the set of values to choose from; if this is
+        // a search, include ability to search for any value.
+        $validVals = $field->isEnum() ? $field->getEnumValues()
+                                      : $field->getValidVals();
+        $options = $this->_formType == self::SEARCH
+                      ? array(self::ANY_VAL => self::ANY_VAL_LABEL) +
+                              $validVals
+                      : $validVals;
+
+        // Create drop-down menu with its options.
+        $fieldElement = new Zend_Form_Element_Select($name);
+        $fieldElement->setMultiOptions($options);
+
+        return $fieldElement;
+    }
+
+    /**
+     * Creates a text element (textarea or text field), with appropriate 
+     * validators if acquiring input.
+     */
+    protected function _createTextElement($field, $name, $readOnly)
+    {
+        // Create text input (textarea or text field).
+        if ( $this->_isBlock($field->getDataType()) )
+        {
+            $fieldElement = new Zend_Form_Element_Textarea($name);
+        }
+        else
+        {
+            $fieldElement = new Zend_Form_Element_Text($name);
+        }
+
+        // Add appropriate filters and validators.
+        $fieldElement->addFilter('StripTags')
+                     ->addFilter('StringTrim');
+        if ( $this->_formType != self::SEARCH && ! $readOnly )
+        {
+            $fieldElement->addValidators($this->_getValidators($field));
+        }
+
+        return $fieldElement;
     }
 
     /**
@@ -207,166 +374,64 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Gets appropriate label prefixes and class and title notations for 
-     * the given $field if it is an identity (auto-incremented field)
-     * or a required or recommended fields.
+     * Builds decorators for visible fields.
      *
-     * @param $field   the field needing decoration
-     * @returns array  an array with label, class, and title information
+     * @param element   the form element to which to add decorators
      */
-    protected function _getReqRecDecorations($field)
+    protected function _buildDecorators($element, $labelTitle = "")
     {
-        // Draw attention to required and recommended fields unless this 
-        // is a Search request.
-        $reqRecDecs['label'] = "";
-        $reqRecDecs['class'] = "";
-        $reqRecDecs['title'] = "";
+        // Add a ViewHelper decorator with the alias "Elem".
+        $element->addDecorator(array('Elem' => 'ViewHelper'),
+                               array('separator' => ''));
 
-        if ( $this->_formType == self::SEARCH )
-            { return $reqRecDecs; }
+        // Add a decorator for errors.
+        $element->addDecorator('Errors', array('separator' => ''));
 
-        if ( $field->isAutoIncremented() )
+        // Add a decorator for the label.
+        if ( ! empty($labelTitle) )
         {
-            $reqRecDecs['class'] = "discouraged";
-            $reqRecDecs['title'] = self::AUTO_INCR_EXPL;
-        }
-        elseif ( $this->_fieldShouldBeRequired($field) )
-        {
-            // $reqRecDecs['label'] .= "**";
-            $reqRecDecs['class'] = "required";
-            $reqRecDecs['title'] = self::REQUIRED_EXPL;
-        }
-        elseif ( $field->isRecommended() )
-        {
-            // $reqRecDecs['label'] .= ">";
-            $reqRecDecs['class'] = "recommended";
-            $reqRecDecs['title'] = self::RECOMMENDED_EXPL;
+            $element->addDecorator('Label', array('separator' => '',
+                                                  'title' => $labelTitle));
         }
 
-        if ( $field->isDiscouraged() )
-        {
-            $reqRecDecs['class'] = "discouraged";
-        }
-
-        return $reqRecDecs;
+        return $element;
     }
 
     /**
-     * Returns true if the given field should be required.
+     * Checks whether the given type is a large data type (e.g., "text"
+     * rather than "varchar").
      */
-    protected function _fieldShouldBeRequired($field)
+    protected function _isBlock($type)
     {
-        // "Required" fields do not have to be marked as required on 
-        // search forms, nor on modifying forms if a default is being 
-	// provided or if the field should be initialized by data from
-	// another table.
-        return $this->_formType != self::SEARCH &&
-               $field->isRequired() &&
-               $field->getDefault() == null && 
-               ! $field->initFromAnotherTable();
+        return $this->_endsIn($type, "blob") ||
+               $this->_endsIn($type, "text");
     }
 
     /**
-     * Returns true if the given field is required.
+     * Checks whether the given full string has the given end pattern at 
+     * the end, e.g., _endsIn("varchar", "char") is true.
      */
-    protected function _isRequired($class)
+    protected function _endsIn($fullString, $endPattern)
     {
-        return $class == "required";
-    }
-
-    /**
-     * Get's the field's label.
-     */
-    protected function _getLabel($field, $reqRecDecs)
-    {
-        // Get label for field.
-        return $reqRecDecs['label'] . $field->getLabel();
-    }
-
-    /**
-     * Get's the field's label decorators.
-     */
-    protected function _getLabelDecs($field)
-    {
-        $labelDecs['separator'] = '';
-
-        // Provide a tooltip title if field has a footnote, is a reference
-        // to an external table, or is imported from another table.
-        $title = "";
-        if ( $field->isExternalTableLink() )
-        {
-            $table = $field->getLinkedTableTitle();
-            $title = self::REFERENCE_EXPL . "$table";
-        }
-        $footnote = $field->getFieldFootnote();
-        if ( $footnote != "" )
-        {
-            if ( strlen($title) > 0 )
-                { $title .= ": "; }
-            $title .= $footnote;
-        }
-        if ( $field->isImported() )
-        {
-            $title = sprintf(self::EXTERNAL_REF_EXPL,
-                             $field->getImportTable());
-        }
-
-        // Add tooltip title to decorators.
-        if ( strlen($title) > 0 )
-        {
-            $labelDecs['title'] = $title;
-        }
-        return array('Label', $labelDecs);
-    }
-
-    /**
-     * Gets the class attribute for the field element.
-     */
-    protected function _getClass($field, $reqRecDecs)
-    {
-        $class = $reqRecDecs['class'];
-        if ( $this->_fieldIsReadOnly($field) )
-            { $class .= " readonly"; }
-        return $class;
-
-        if ( strlen($class) > 0 )
-            { $fieldElement->setAttrib('class', $class); }
-
-        return $fieldElement;
-    }
-
-    /**
-     * Gets the title attribute for the field element.
-     */
-    protected function _getTitle($field, $reqRecDecs)
-    {
-        $title = $reqRecDecs['title'];
-        $footnote = $field->getFieldFootnote();
-        if ( $footnote != "" )
-        {
-            if ( strlen($title) > 0 )
-                { $title .= ": "; }
-            $title .= $footnote;
-        }
-        return $title;
-
-        if ( strlen($title) > 0 )
-            { $fieldElement->setAttrib('title', $title); }
-
-        return $fieldElement;
+        return substr($fullString, -strlen($endPattern)) == $endPattern;
     }
 
     /**
      * Gets validator(s) depending on the field's data type.
+     *
      * TODO: Enforce the number of characters specified for integer
      *          types as a maximum, rather than just assuming the 
      *          number is a display hint.
+     *
      * TODO: Need to determine correct validators for other types:
      *          Fixed-Point, Floating Point, Bit-Value, Set
      *       Need to test Time and Year.
-     * (Don't need anything for enum, because handled with pull-down
-     * selections.)
-     * TODO: May want to add locale handling to date/int check.
+     *
+     * Don't need anything for enum, because handled with pull-down
+     * selections.
+     *
+     * Do not add locale handling to date/int check:  using yyyy-MM-dd
+     * allows for '<' and '>' comparisons.
      */
     protected function _getValidators($field)
     {
@@ -426,24 +491,140 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Checks whether the given full string has the given end pattern at 
-     * the end, e.g., _endsIn("varchar", "char") is true.
+     * Returns true if the given field should be required.
      */
-    protected function _endsIn($fullString, $endPattern)
+    protected function _fieldShouldBeRequired($field)
     {
-        return substr($fullString, -strlen($endPattern)) == $endPattern;
+        // "Required" fields do not have to be marked as required on 
+        // search forms, nor on modifying forms if a default is being 
+	// provided or if the field should be initialized by data from
+	// another table.
+        return $this->_formType != self::SEARCH &&
+               $field->valueNecessaryForAdd();
     }
 
     /**
-     * Checks whether the given type is a large data type (e.g., "text"
-     * rather than "varchar").
+     * Gets appropriate class and title notations for 
+     * the given $field if it is an identity (auto-incremented field)
+     * or a required or recommended field.
+     *
+     * @param $field      the field needing decoration
+     * @param $required   whether the field is required
+     * @returns array     an array with label, class, and title information
      */
-    protected function _isBlock($type)
+    protected function _getReqRecDecorations($field, $required)
     {
-        return $this->_endsIn($type, "blob") ||
-               $this->_endsIn($type, "text");
+        // Draw attention to required and recommended fields unless this 
+        // is a Search request.
+        $reqRecDecs['class'] = "";
+        $reqRecDecs['title'] = "";
+
+        if ( $this->_formType == self::SEARCH )
+            { return $reqRecDecs; }
+
+        if ( $field->isAutoIncremented() )
+        {
+            $reqRecDecs['class'] = "discouraged";
+            $reqRecDecs['title'] = self::AUTO_INCR_EXPL;
+        }
+        elseif ( $required )
+        {
+            $reqRecDecs['class'] = "required";
+            $reqRecDecs['title'] = self::REQUIRED_EXPL;
+        }
+        elseif ( $field->isRecommended() )
+        {
+            $reqRecDecs['class'] = "recommended";
+            $reqRecDecs['title'] = self::RECOMMENDED_EXPL;
+        }
+
+        if ( $field->isDiscouraged() )
+        {
+            $reqRecDecs['class'] = "discouraged";
+        }
+
+        return $reqRecDecs;
     }
 
+    /**
+     * Gets the class attribute for the field element.
+     */
+    protected function _buildClass($field, $readOnly, $reqRecDecs)
+    {
+        $class = self::FIELD_WIDTH . " " . $reqRecDecs['class'];
+        if ( $readOnly )
+            { $class .= " readonly"; }
+        return $class;
+    }
+
+    /**
+     * Gets the title attribute for the field element.
+     */
+    protected function _buildTitle($field, $reqRecDecs)
+    {
+        $title = $reqRecDecs['title'];
+        $footnote = $field->getFieldFootnote();
+        if ( $footnote != "" )
+        {
+            if ( strlen($title) > 0 )
+                { $title .= ": "; }
+            $title .= $footnote;
+        }
+        return $title;
+    }
+
+    /**
+     * Gets the label's title.
+     */
+    protected function _getLabelTitle($field)
+    {
+        // Provide a tooltip title if field is imported from another table,
+        // is a reference to an external table, or has a footnote,
+        $title = "";
+        if ( $field->isImported() )
+        {
+            $title = sprintf(self::EXTERNAL_REF_EXPL,
+                             $field->getImportTable());
+        }
+        if ( $field->isExternalTableLink() )
+        {
+            if ( strlen($title) > 0 )
+                { $title .= ": "; }
+            $title .= self::REFERENCE_EXPL . $field->getLinkedTableTitle();
+        }
+        $footnote = $field->getFieldFootnote();
+        if ( $footnote != "" )
+        {
+            if ( strlen($title) > 0 )
+                { $title .= ": "; }
+            $title .= $footnote;
+        }
+
+        return $title;
+    }
+
+    /**
+     * Creates a hidden field element, only needed for hidden primary keys.
+     */
+    protected function _createHiddenElement($name, $label)
+    {
+        $fieldElement = new Zend_Form_Element_Hidden($name);
+        $fieldElement->setLabel($label)
+                     ->setAttrib('class', 'hidden')
+                     ->setDecorators($hiddenFieldDecorators);
+
+        // Add a ViewHelper decorator with the alias "Elem", a decorator 
+        // for the label, and a decorator for errors.  These decorators 
+        // hide an element, its label, and errors.
+        $hiddenFieldDecParams =
+                    array('separator'=>'', 'tag'=>'div', 'class'=>'hidden');
+        $element->addDecorator(array('Elem' => 'ViewHelper'),
+                               $hiddenFieldDecPrams);
+        $element->addDecorator('Label', $hiddenFieldDecPrams);
+        $element->addDecorator('Errors', $hiddenFieldDecPrams);
+
+        return $fieldElement;
+    }
 
 }
 

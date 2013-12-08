@@ -35,7 +35,7 @@ USE `smart_dev`;
 -- with their roles, and (b) filling in the authorizations table.
 --
 -- This file, however, provides SQL code to create several generic
--- users so that the the developer database could be run "out of the box",
+-- test users for development test purposes straight "out of the box",
 -- without requiring the initial database administrator to create
 -- additional users.  (Real usernames for an actual Smart system should
 -- identify individuals, not be shared among offices or roles.)
@@ -48,9 +48,14 @@ USE `smart_dev`;
 -- password to be entered and encrypted correctly.  This should be done
 -- for the dba user account immediately after Ramp/Smart is set up.
 --
+-- The identification and contact information for the Ramp/Smart users
+-- is defined in the Person table, since all of the Ramp/Smart users are
+-- also, presumably, staff members.  For this reason, the domainID is
+-- specified as being NOT NULL.
+--
 -- The creation of these developer "users" assumes that the
--- 'smart_dba', 'hr_staff', and 'reg_staff' roles have been defined
--- in application.ini.
+-- 'smart_dba', 'hr_staff', 'reg_staff', and 'developer' roles have
+-- been defined in application.ini.
 
 
 DROP TABLE IF EXISTS `ramp_auth_users`;
@@ -61,7 +66,8 @@ CREATE TABLE `ramp_auth_users` (
   `role` varchar(100) NOT NULL DEFAULT 'guest' ,
   `first_name` varchar(100) DEFAULT NULL,
   `last_name` varchar(100) DEFAULT NULL,
-  `email` varchar(150) NOT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `domainID` int(11) NOT NULL,
   PRIMARY KEY (`username`)
 );
 
@@ -71,16 +77,13 @@ CREATE TABLE `ramp_auth_users` (
 --   offices or roles.)
 
 LOCK TABLES `ramp_auth_users` WRITE;
-INSERT INTO `ramp_auth_users`
-(username, active, role, first_name, last_name, email)
+INSERT INTO `ramp_auth_users` (username, active, role, domainID)
 VALUES
-('dba', 'TRUE', 'smart_dba', 'Firstname', 'Lastname', 'emailAddr@yahoo.com')
-, ('dba2', 'TRUE', 'smart_dba', 'SecondDB', 'Admin', 'emailAddr2@yahoo.com')
-, ('hr', 'TRUE', 'hr_staff', 'Generic', 'HR Person', 'hrstaff@gmail.com')
-, ('reg', 'TRUE', 'regist_staff', 'Generic', 'Regist Person',
-    'regstaff@gmail.com')
-, ('developer', 'TRUE', 'developer', 'Powerful', 'Developer',
-    'regstaff@gmail.com')
+('dba', 'TRUE', 'smart_dba', 2)
+, ('dba2', 'TRUE', 'smart_dba', 25)
+, ('hr', 'TRUE', 'hr_staff', 26)
+, ('reg', 'TRUE', 'regist_staff', 27)
+, ('developer', 'TRUE', 'developer', 1)
 ;
 UNLOCK TABLES;
 
@@ -100,11 +103,15 @@ UNLOCK TABLES;
 -- well.  The generic "hr" user may access activities and tables
 -- related to institutional staff records, while the generic "reg" user
 -- may access activities and tables related to student records.  The
--- database administrator may view the contents of the Users
--- table (ramp_auth_users) and view, add, modify, and delete resources
--- and access rules from the Authorizations table (ramp_auth_auths).
+-- database administrator may view the contents of the Users table
+-- (ramp_auth_users) and Person table and view, add, modify, and delete
+-- resources and access rules from the Authorizations table (ramp_auth_auths).
 -- The "developer" user is provided as a convenience for developers, and has
 -- access to everything that the "hr", "reg" and "dba" users do.
+--
+-- The creation of these developer "users" assumes that the
+-- 'smart_dba', 'hr_staff', 'reg_staff', and 'developer' roles have
+-- been defined in application.ini.
 
 DROP TABLE IF EXISTS `ramp_auth_auths`;
 CREATE TABLE `ramp_auth_auths` (
@@ -124,10 +131,15 @@ INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
 ('smart_dba','Activity','Admin','All')
 , ('smart_dba','Table','ramp_auth_users','View')
+, ('smart_dba','Table','ramp_auth_users','AddRecords')
+, ('smart_dba','Table','ramp_auth_users','ModifyRecords')
 , ('smart_dba','Table','ramp_auth_auths','All')
+, ('smart_dba','Table','Person','View')
+, ('smart_dba','Document','../..','All')
+, ('smart_dba','Document','../../installation','All')
 , ('guest','Activity','.','All')
 , ('guest','Activity','../docs/rampDocs','All')
-, ('guest','Document','../..','All')
+, ('guest','Document','.','All')
 , ('guest','Document','rampDocs','All')
 , ('guest','Activity','Smart','All')
 , ('guest','Activity','Smart/Curriculum','All')

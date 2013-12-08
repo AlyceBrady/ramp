@@ -3,6 +3,13 @@
 --
 
 
+USE `smart_dev`;
+
+-- Before dropping Terms, need to drop table(s) that depend on it.
+SOURCE dropTermModuleDependencies.sql
+
+DROP TABLE IF EXISTS Terms;
+
 CREATE TABLE Terms (
     term VARCHAR( 10 ) NOT NULL PRIMARY KEY,
     acadYear VARCHAR( 10 ),

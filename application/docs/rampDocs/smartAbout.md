@@ -3,18 +3,8 @@
 
 Smart is a program for managing records needed to support an academic
 institution.  It currently supports managing academic records in
-three broad categories:
-
- * Curriculum records dealing with courses of study (e.g.,
-   undergraduate mathematics), courses or modules (e.g., Calculus
-   I), and their individual offerings (e.g., the Spring 2012
-   offering of Calculus I)
-
- * Instructor records (e.g., contract start/end dates, courses or
-   modules taught)
-
- * Student records (e.g., courses of study, test scores, enrollment
-   history)
+three broad categories: curriculum records, instructor records, and
+student records.
 
 In time, the plan is to expand Smart to include customized activities
 specific to the academic records domain, such as student registration
@@ -28,8 +18,8 @@ in turn, uses MySQL, PHP, and the Zend Framework.
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.3.  
-Released on November 28, 2013.
+RAMP/SMART Release 0.5.4.  
+Released on December 7, 2013.
 
 
 ### LICENSE ###

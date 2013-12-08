@@ -246,6 +246,30 @@ VALUES
 EOT
         );
 
+        $db->query(<<<EOT
+DROP TABLE IF EXISTS ModuleAssignments;
+EOT
+        );
+
+        $db->query(<<<EOT
+CREATE TABLE ModuleAssignments (
+    pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    term VARCHAR ( 10 ) NOT NULL,
+    moduleID INT NOT NULL,
+    section VARCHAR ( 3 ),
+    staffID INT NOT NULL,
+    percentage INT NOT NULL DEFAULT 100,
+    classroomNumber VARCHAR ( 6 ),
+    classroomBuilding VARCHAR ( 20 ),
+    weeklySchedule VARCHAR ( 50 ),
+    startDate DATE,
+    endDate DATE,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+)
+EOT
+        );
+
         // still under construction
 
     }

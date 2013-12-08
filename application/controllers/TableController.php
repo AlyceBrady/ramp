@@ -35,13 +35,11 @@ class TableController extends Zend_Controller_Action
     const SEARCH_TYPE           = '_search';
     const ANY                   = Application_Model_SetTable::ANY;
     const ALL                   = Application_Model_SetTable::ALL;
-    const EXCLUDE               = Application_Model_SetTable::EXCLUDE;
 
     /* labels for forms and buttons */
     const SEARCH                = "Search";
     const MATCH_ALL             = "Search On All Fields";
     const MATCH_ANY             = "Match Against Any Field";
-    const MATCH_EXCLUDE         = "Exclude Fields";
     const DISPLAY_ALL           = "Display All Entries";
     const TABLE                 = "Tabular Display";
     const ADD                   = "Add New Entry";
@@ -53,10 +51,15 @@ class TableController extends Zend_Controller_Action
     const CONFIRM               = "Confirm";
     const SAVE                  = "Save Changes";
 
+    /* values for processing search requests */
+    const SEARCH_VALS       = Application_Form_TableRecordEntry::FIELD_VALUES;
+
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
     protected $_debugging = false;
+
+    protected $_displayAllView;
 
     protected $_controllerName;
 
@@ -64,17 +67,18 @@ class TableController extends Zend_Controller_Action
 
     protected $_tblViewingSeq;
 
-    protected $_buttonAction;
+    protected $_submittedButton;
 
     protected $_searchType;
 
     protected $_fieldsToMatch;
 
+    protected $_matchComparators;
+
     protected $_baseParams = null;
 
     protected $_matchAbbrevs = array(self::MATCH_ALL => self::ALL,
-                                     self::MATCH_ANY => self::ANY,
-                                     self::MATCH_EXCLUDE => self::EXCLUDE);
+                                     self::MATCH_ANY => self::ANY);
 
     /**
      * Initializes the attributes for this object as well as some
@@ -82,6 +86,9 @@ class TableController extends Zend_Controller_Action
      */
     public function init()
     {
+        // Set the default view for "Display All" actions.
+        $this->_displayAllView = "list-view";
+
         // Get the sequence information (types of table settings to use).
         $seqName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
@@ -90,9 +97,9 @@ class TableController extends Zend_Controller_Action
                 Application_Model_TVSFactory::getSequenceOrSetting($seqName);
 
         // Get and store other parameters for possible future use.
-        $this->_buttonAction = $this->_getParam(self::SUBMIT_BUTTON);
+        $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
         $this->_searchType = $this->_getParam(self::SEARCH_TYPE);
-        $this->_fieldsToMatch = $this->_getFieldsToMatch();
+        $this->_getFieldsToMatch();
 
         // Set the basic parameters to build on when going to other actions.
         $this->_controllerName = $this->getRequest()->getControllerName();
@@ -130,7 +137,6 @@ class TableController extends Zend_Controller_Action
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
         $this->view->buttonList = array(self::MATCH_ALL, self::MATCH_ANY,
-                                        self::MATCH_EXCLUDE,
                                         self::RESET_BUTTON, self::DISPLAY_ALL);
         $this->view->dataEntryForm = $form =
             new Application_Form_TableRecordEntry($setTable, 0, self::SEARCH);
@@ -141,7 +147,7 @@ class TableController extends Zend_Controller_Action
             // Have fields been provided?
             if ( ! empty($this->_fieldsToMatch) )
                 $this->_executeSearch($setTable, $this->_fieldsToMatch,
-                    self::MATCH_ALL);
+                    $this->_matchComparators, self::MATCH_ALL);
 
             // Otherwise, nothing to do except render view (done automatically).
         }
@@ -155,28 +161,30 @@ class TableController extends Zend_Controller_Action
      * Executes the search and goes to the appropriate display page.  
      * Only returns if the search failed.
      *
-     * @param $setTable   table setting for the table in which to search
-     * @param $data       column/value pairs on which to search
-     * @param $searchType whether to match any specified field (OR), all
-     *                    specified fields (AND), or no specified fields
+     * @param $setTable    table setting for the table in which to search
+     * @param $data        column/value pairs on which to search
+     * @param $comparators column/comparator pairs of search comparators
+     * @param $buttonLabel button specifying whether to match any specified
+     *                     field (OR) or all specified fields (AND)
      */
-    protected function _executeSearch($setTable, $data, $searchType)
+    protected function _executeSearch($setTable, $data, $comparators,
+                                      $buttonLabel)
     {
         // Execute the search and decide how to display the results.
-        $matchAbbrev = $this->_matchAbbrevs[$searchType];
-        $rows = $setTable->getTableEntries($data, $matchAbbrev);
+        $matchAbbrev = $this->_matchAbbrevs[$buttonLabel];
+        $rows = $setTable->getTableEntries($data, $comparators, $matchAbbrev);
         $numResults = count($rows);
         if ( $numResults == 1 )
         {
             // One match found.
-            $keyInfo = $setTable->getKeyInfo($data);
+            $keyInfo = $setTable->getKeyInfo($rows[0]);
             $this->_goTo('record-view', $keyInfo);
         }
         elseif ( $numResults > 1 )
         {
             // Multiple matches found.
-            $params = $data + array(self::SEARCH_TYPE => $matchAbbrev);
-            $this->_goTo('list-view', $params);
+            $this->_goTo($this->_displayAllView, $data, $comparators,
+                         $matchAbbrev);
         }
         else
         {
@@ -195,30 +203,33 @@ class TableController extends Zend_Controller_Action
      */
     protected function _processSearchCallBack($setTable, $form)
     {
-        if ( $this->_buttonAction == self::DISPLAY_ALL )
+        if ( $this->_submittedButton == self::DISPLAY_ALL )
         {
-            $this->_goTo('list-view');
+            $this->_goTo($this->_displayAllView);
         }
         else
         {
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
-                $nonNullData = $this->_getFilledFields($form->getValues());
+                $fieldVals = $form->getFieldValues();
+                $comparators = $form->getComparators();
+                $meaningfullData = $this->_getFilledFields($fieldVals,
+                                                           $comparators);
 
                 // Adding new entry based on failed search?
-                if ( $this->_buttonAction == self::ADD )
+                if ( $this->_submittedButton == self::ADD )
                 {
                     if ( $this->_illegalCallback($setTable) )
                         { return; }
 
-                    $this->_goTo('add', $nonNullData);
+                    $this->_goTo('add', $meaningfullData);
                 }
 
                 // Searching for any or all matches. Display based on 
                 // number of results.
-                $searchType = $this->_buttonAction;
-                $this->_executeSearch($setTable, $nonNullData, $searchType);
+                $this->_executeSearch($setTable, $meaningfullData,
+                                      $comparators, $this->_submittedButton);
 
                 // Will only get here if search failed.
             }
@@ -249,13 +260,14 @@ class TableController extends Zend_Controller_Action
                                             self::SEARCH);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_buttonAction == self::TABLE )
+        elseif ( $this->_submittedButton == self::TABLE )
         {
             // Re-display same data in table mode.
-            $this->_goTo('table-view', $this->_fieldsToMatch, true);
+            $this->_goTo('table-view', $this->_fieldsToMatch,
+                         $this->_matchComparators, $this->_searchType);
         }
         else
-            { $this->_goTo($this->_getUsualAction($this->_buttonAction)); }
+            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
 
     }
 
@@ -275,13 +287,13 @@ class TableController extends Zend_Controller_Action
             $this->view->buttonList = array(self::ADD, self::SEARCH);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_buttonAction == self::DISPLAY_ALL )
+        elseif ( $this->_submittedButton == self::DISPLAY_ALL )
         {
             // Re-display with all data in same table mode.
             $this->_goTo('table-view');
         }
         else
-            { $this->_goTo($this->_getUsualAction($this->_buttonAction)); }
+            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
 
     }
 
@@ -311,15 +323,15 @@ class TableController extends Zend_Controller_Action
             // Retrieve record based on provided fields / primary keys.
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
-        elseif ( $this->_buttonAction == self::CLONE_BUTTON )
+        elseif ( $this->_submittedButton == self::CLONE_BUTTON )
         {
             $this->_goTo('add',
                          $setTable->getCloneableFields($this->_fieldsToMatch));
         }
-        elseif ( $this->_buttonAction == self::EDIT )
+        elseif ( $this->_submittedButton == self::EDIT )
             { $this->_goTo('record-edit', $this->_fieldsToMatch); }
         else
-            { $this->_goTo($this->_getUsualAction($this->_buttonAction)); }
+            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
 
     }
 
@@ -346,7 +358,7 @@ class TableController extends Zend_Controller_Action
             // Retrieve record based on provided fields / primary keys.
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
-        elseif ( $this->_buttonAction == self::SAVE )
+        elseif ( $this->_submittedButton == self::SAVE )
         {
             // Process the filled-out form that has been posted:
             // if the changes are valid, update the database.
@@ -354,7 +366,7 @@ class TableController extends Zend_Controller_Action
             if ($form->isValid($formData))
             {
                 // Update the database and redisplay the record.
-                $setTable->updateTableEntry($form->getValues());
+                $setTable->updateTableEntry($form->getFieldValues());
                 $this->_goTo('record-view', $this->_fieldsToMatch);
             }
             else
@@ -365,7 +377,7 @@ class TableController extends Zend_Controller_Action
                 $form->populate($formData);
             }
         }
-        elseif ( $this->_buttonAction == self::DEL_BUTTON )
+        elseif ( $this->_submittedButton == self::DEL_BUTTON )
             { $this->_goTo('delete', $this->_fieldsToMatch); }
         else  // Cancel
             { $this->_goTo('record-view', $this->_fieldsToMatch); }
@@ -396,22 +408,21 @@ class TableController extends Zend_Controller_Action
                 $form->populate($this->_fieldsToMatch);
             }
         }
-        elseif ( $this->_buttonAction == self::SAVE )
+        elseif ( $this->_submittedButton == self::SAVE )
         {
             // Process the filled-out form that has been posted:
             // if the changes are valid, update the database.
             $formData = $this->getRequest()->getPost();
             if ($form->isValid($formData))
             {
-                // If some fields should be initialized from existing values, 
-                // fill them in.  Remove null fields.
+                // Determine fields are being added.  Remove null fields.
                 $addValues = $this->_fillInitValues($setTable,
-                                                    $form->getValues());
-                $nonNullData = $this->_getFilledFields($addValues);
+                                                    $form->getFieldValues());
+                $meaningfulData = $this->_getFilledFields($addValues);
 
                 // Update the database and redisplay the record.
-                $setTable->addTableEntry($nonNullData);
-                $this->_executeSearch($setTable, $nonNullData,
+                $setTable->addTableEntry($meaningfulData);
+                $this->_executeSearch($setTable, $meaningfulData, null,
                                       self::DISPLAY_ALL);
             }
             else
@@ -422,13 +433,13 @@ class TableController extends Zend_Controller_Action
                 $form->populate($formData);
             }
         }
-        elseif ( $this->_buttonAction == self::CANCEL )
+        elseif ( $this->_submittedButton == self::CANCEL )
         {
             $this->_goTo('index');
         }
         else
         {
-            $this->_goTo($this->_getUsualAction($this->_buttonAction));
+            $this->_goTo($this->_getUsualAction($this->_submittedButton));
         }
         
     }
@@ -459,7 +470,7 @@ class TableController extends Zend_Controller_Action
             // assign to view for confirmation.
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
-        elseif ( $this->_buttonAction == self::CANCEL )
+        elseif ( $this->_submittedButton == self::CANCEL )
         {
             $this->_goTo('record-view', $this->_fieldsToMatch);
         }
@@ -469,7 +480,7 @@ class TableController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
-                $rows = $setTable->deleteTableEntry($form->getValues());
+                $rows = $setTable->deleteTableEntry($form->getFieldValues());
                 // TODO: report to user that entry was deleted!
             }
 
@@ -562,12 +573,12 @@ class TableController extends Zend_Controller_Action
     protected function _illegalCallback($setTable)
     {
         // Get the appropriate table setting based on the button action.
-        if ( $this->_buttonAction == self::ADD ||
-             $this->_buttonAction == self::CLONE_BUTTON )
+        if ( $this->_submittedButton == self::ADD ||
+             $this->_submittedButton == self::CLONE_BUTTON )
         {
             $setTable = $this->_tblViewingSeq->getSetTableForAdding();
         }
-        elseif ( $this->_buttonAction == self::EDIT )
+        elseif ( $this->_submittedButton == self::EDIT )
         {
             $setTable = $this->_tblViewingSeq->getSetTableForModifying();
         }
@@ -601,6 +612,7 @@ class TableController extends Zend_Controller_Action
         $this->_initViewTableInfo($setTable);
         $this->view->dataToDisplay =
             $setTable->getTableEntries($this->_fieldsToMatch,
+                                       $this->_matchComparators,
                                        $this->_searchType);
         $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
         if ( $this->view->displayingSubset )
@@ -619,7 +631,8 @@ class TableController extends Zend_Controller_Action
     protected function _getUsualAction($buttonLabel)
     {
         $commonMapping = array(
-            self::SEARCH => 'search', self::DISPLAY_ALL => 'list-view',
+            self::SEARCH => 'search',
+            self::DISPLAY_ALL => $this->_displayAllView,
             self::ADD => 'add', self::EDIT => 'record-edit',
             self::DEL_BUTTON => 'delete', self::TABLE => 'table-view');
 
@@ -629,9 +642,8 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Gets the user data from request parameters as name=>value pairs
-     * to use in database queries.
-     *
-     * @return array    name=>value pairs passed as params
+     * to use in database queries and stores it in 
+     * $this->_fieldsToMatch.
      */
     protected function _getFieldsToMatch()
     {
@@ -647,14 +659,19 @@ class TableController extends Zend_Controller_Action
                                 self::SEARCH_TYPE => null);
 
         // Return an array that does not include those parameters.
-        $fieldsToMatch = array();
+        $this->_fieldsToMatch = array();
         $userParams = array_diff_key($request->getUserParams(),
                                      $paramsToRemove);
-        foreach ( $userParams as $key => $val )
+        foreach ( $userParams as $encodedKey => $encodedVal )
         {
-            $fieldsToMatch[urldecode($key)] = urldecode($val);
+            $key = urldecode($encodedKey);
+            $parts = explode('?', $encodedVal);
+            $this->_fieldsToMatch[$key] = urldecode($parts[0]);
+            if ( count($parts) > 1 )
+            {
+                $this->_matchComparators[$key] = urldecode($parts[1]);
+            }
         }
-        return $fieldsToMatch;
     }
 
     /**
@@ -663,22 +680,34 @@ class TableController extends Zend_Controller_Action
      *
      * @param string $nextAction     the name of the next action
      * @param array $matchingFields  fields and values to search/select for
-     * @param bool $includeSearchType  whether to pass search type as parameter
+     * @param array $comparators     search comparators to pass (if any)
+     * @param bool $searchType       search type to pass (if any)
      */
     protected function _goTo($nextAction, $matchingFields = null,
-                             $includeSearchType = false)
+                             $comparators = null, $searchType = null)
     {
         // Build up parameters to pass to next action.
         $params = array(self::SETTING_NAME => $this->_encodedSeqName);
-        if ( $includeSearchType )
+        if ( ! empty($searchType) )
         {
-            $params[self::SEARCH_TYPE] = $this->_searchType;
+            $params[self::SEARCH_TYPE] = $searchType;
         }
         if ( $matchingFields != null )
         {
-            foreach ( $matchingFields as $key => $val )
+            if ( empty($comparators) )
             {
-                $params[urlencode($key)] = urlencode($val);
+                foreach ( $matchingFields as $key => $val )
+                {
+                    $params[urlencode($key)] = urlencode($val);
+                }
+            }
+            else
+            {
+                foreach ( $matchingFields as $key => $val )
+                {
+                    $params[urlencode($key)] =
+                        urlencode($val) . '?' . urlencode($comparators[$key]);
+                }
             }
         }
 
@@ -687,23 +716,43 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
-     * Filters out fields for which no values were provided.
+     * Filters out fields for which no values were provided (unless the 
+     * field has a unary comparator and doesn't need a value).
      *
      * @param array $data   Column-value pairs
-     * @return array        Column-value pairs, with no empty values
+     * @param $comparators  Column/comparator pairs of search comparators
+     * @return array        Column-value pairs, with no empty values 
+     *                      (unless they are significant for a search)
      */
-    protected function _getFilledFields(array $data)
+    protected function _getFilledFields(array $data, $comparators = array())
     {
         // Remove column-value pairs with null values.
-        $nonNullData = array();
+        $meaningfullData = array();
         foreach ( $data as $field => $value )
         {
-            if ( $value !== null && $value != "" && $value != self::ANY_VAL )
+            if ( $this->_isUnaryComparator($field, $comparators) )
             {
-                $nonNullData[$field] = $value;
+                $meaningfullData[$field] = $value;
+            }
+            else if ( $value !== null && $value != "" &&
+                      $value != self::ANY_VAL )
+            {
+                $meaningfullData[$field] = $value;
             }
         }
-        return $nonNullData;
+        return $meaningfullData;
+    }
+
+    /**
+     * Determines whether a field is significant, despite not having a 
+     * value,  because it is tied to a unary comparator which does not 
+     * need a value.
+     */
+    protected function _isUnaryComparator($field, $comparators)
+    {
+        return isset($comparators[$field]) &&
+               in_array($comparators[$field],
+                       Application_Form_TableRecordEntry::unaryComparators());
     }
 
     /**

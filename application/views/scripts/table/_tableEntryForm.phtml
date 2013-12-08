@@ -12,19 +12,28 @@
 
 $fields = $this->table->getFields();
 $form = $this->form;
+$fieldElts = $form->getFieldElements();
+$searchOpElts = $form->getComparatorElements();
+$isSearch = isset($this->search) && $this->search;
+$suffix = Application_Form_TableRecordEntry::SEARCH_COMP_SUFFIX;
 ?>
 
-<div class="control-group">
-<?php foreach ( $form->getElements() as $name => $elt ) :
-    echo "<div id=\"$name-label\" class=\"control-label\">";
+<?php  /* <div class="control-group row"> */ ?>
+<?php foreach ( $fieldElts as $name => $elt ) :
+    echo "<div class='control-group'>\n";
+    echo "<div id='$name-label' class='control-label'>";
     echo $this->partial("table/_fieldLabel.phtml",
             array('formType'=>$form->getFormType(), 'fields'=>$fields,
                   'fieldName' => $name, 'elt'=>$elt));
     echo "</div>\n";
-    echo "<div id=\"$name-element\" class=\"controls btn-small\">\n";
+    echo "<div class='row controls'>\n";
+    if ( $isSearch ) :
+        $opSearchElt = $searchOpElts[$name];
+        echo $opSearchElt->renderElem() . "\n";
+    endif;
     echo $elt->renderElem() . "\n";
     echo $elt->renderErrors();
     echo "</div>\n";
+    echo "</div>\n";
 endforeach; ?>
-</div>
 

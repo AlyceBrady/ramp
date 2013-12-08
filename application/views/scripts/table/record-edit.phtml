@@ -6,8 +6,9 @@ $table = $this->tableInfo;                  // Set in controller
 $tableTitle = $table->getTitle();
 $headTitle = "Edit " . $tableTitle;
 $this->headTitle($headTitle);
-$titleAndMsgs['title'] = "Edit Mode";
-// $titleAndMsgs['title'] = $tableTitle . ": Edit";
+// $titleAndMsgs['title'] = $headTitle;
+// $titleAndMsgs['title'] = "Edit Mode";
+$titleAndMsgs['title'] = $tableTitle . ": Edit";
 
 // Determine instructions and messages specific to this page.
 $titleAndMsgs['instructions'] = "";

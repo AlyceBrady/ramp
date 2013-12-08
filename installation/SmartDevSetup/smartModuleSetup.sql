@@ -3,6 +3,11 @@
 --
 
 
+USE `smart_dev`;
+
+-- Before dropping Modules, need to drop table(s) that depend on it.
+SOURCE dropTermModuleDependencies.sql
+
 DROP TABLE IF EXISTS Modules;
 
 CREATE TABLE Modules (
@@ -89,6 +94,10 @@ VALUES
 , (70, 'WRIT', '100', 'Active', 'First-Year Sem.', 'First-Year Writing Seminar',
     '2000-01-01')
 ;
+
+
+-- Table(s) that depend on ModuleOfferings have already been dropped by
+-- dropTermModuleDependencies.sql, sourced above.
 
 DROP TABLE IF EXISTS ModuleOfferings;
 

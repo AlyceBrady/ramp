@@ -3,6 +3,12 @@
 --
 
 
+USE `smart_dev`;
+
+-- NOTE: Once the Requirements table & its relatives have been set up,
+-- dropping AcadProgram will require dropping some Requirements tables
+-- first.
+
 DROP TABLE IF EXISTS AcadProgram;
 
 CREATE TABLE AcadProgram (

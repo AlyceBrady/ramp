@@ -21,6 +21,10 @@
  */
 class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
 {
+    const DISPLAY_EXCEPTIONS = 'displayExceptions';
+    const VIEW = 'record-view';
+
+    protected $_displayExceptionDetails = 0;
 
     /**
      * Take care of any items to do before the actual dispatch:
@@ -35,64 +39,74 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+        $frontController = Zend_Controller_Front::getInstance();
+        $this->_displayExceptionDetails =
+            $frontController->getParam(self::DISPLAY_EXCEPTIONS);
+
         // Create a new Zend ACL object.
         $acl = new Ramp_Acl();
 
-        // Determine what resource is being requested.
-        $requestedResource = $this->_getResource($request, $acl);
+        // Determine what resources are being requested.
+        $requestedResources = $this->_getResources($request, $acl);
 
         // Store Zend redirector for use in errors.
         $zendRedirector = $this->_getRedirector();
 
         // Check whether the current user is authorized for the 
-        // requested resource.
-        if ( $acl->authorizesCurrentUser($requestedResource) )
+        // requested resources.
+        foreach ( $requestedResources as $reqResource )
         {
-            // Authorized!  Reset session timer and return.
-            Application_Model_SessionTimer::startSessionTimer();
-            return;
-        }
-        else
-        {
-            // Save the attempted destination.
-            $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
-            $mysession->destination_url = $request->getPathInfo();
+            if ( ! $acl->authorizesCurrentUser($reqResource) )
+            {
+                // Save the attempted destination.
+                $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
+                $mysession->destination_url = $request->getPathInfo();
 
-            $auth = Zend_Auth::getInstance();
-            if ( ! $auth->hasIdentity() || ! is_object($auth->getIdentity()) )
-            {
-                // Not an authenticated user -- need to log in.
-                return $zendRedirector->setGotoUrl('auth/login');
-            }
-            else
-            {
-                // Not authorized -- inform user.
-                $this->_reportUnauthorized($requestedResource);
+                $auth = Zend_Auth::getInstance();
+                if ( ! $auth->hasIdentity() ||
+                     ! is_object($auth->getIdentity()) )
+                {
+                    // Not an authenticated user -- need to log in.
+                    return $zendRedirector->setGotoUrl('auth/login');
+                }
+                else
+                {
+                    // Not authorized -- inform user.
+                    $msg = $this->_formatUnauthResourceName($reqResource);
+                    $this->_reportUnauthorized($msg);
+                }
             }
         }
+
+        // Authorized!  Reset session timer and return.
+        Application_Model_SessionTimer::startSessionTimer();
+        return;
 
     }
 
     /**
-     * Determine what resource is being requested.
+     * Determine what resources are being requested.
      *
      * @param Zend_Controller_Request_Abstract $request  the user request 
      *      that this dispatch loop is addressing
      * @param Zend_Acl $acl  the Access Control List
      */
-    protected function _getResource(Zend_Controller_Request_Abstract $request,
+    protected function _getResources(Zend_Controller_Request_Abstract $request,
                                     Zend_Acl $acl)
     {
+        $error_details = "";
+
         // Start with controller and action.
+        $resources = array();
         $controller = $request->getControllerName();
-        $resource = $controller . Ramp_Acl::DELIM . $request->getActionName();
+        $prefix = $controller . Ramp_Acl::DELIM . $request->getActionName();
 
         // Add activity, document, or table/report details.
         $param = Ramp_Controller_KeyParameters::getKeyParam($request);
         if ( $controller == Ramp_Controller_KeyParameters::ACT_CONTROLLER
             || $controller == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
         {
-            $resource .= Ramp_Acl::DELIM . dirname($param);
+            $resources[] = $prefix . Ramp_Acl::DELIM . dirname($param);
         }
         else if ( $controller == Ramp_Controller_KeyParameters::TBL_CONTROLLER
                || $controller == Ramp_Controller_KeyParameters::REP_CONTROLLER )
@@ -102,23 +116,86 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
                 $tblViewingSeq =
                     Application_Model_TVSFactory::getSequenceOrSetting($param);
                 $setTable = $tblViewingSeq->getSetTableForViewing();
-                $resource .= Ramp_Acl::DELIM . $setTable->getDbTableName();
+                $mainTable = $setTable->getDbTableName();
+                $resources[] = $prefix . Ramp_Acl::DELIM . $mainTable;
+                $tables = $setTable->getDependentTables();
+                foreach ( $tables as $table )
+                {
+                    $prefix2 = $controller . Ramp_Acl::DELIM . self::VIEW;
+                    $resources[] = $prefix2 . Ramp_Acl::DELIM . $table;
+                }
             }
             catch (Exception $e)
             {
-                $resource .= Ramp_Acl::DELIM . $param;
-                $this->_reportUnauthorized($resource);
+                $resourceIsSetting = true;
+                $badResource = $prefix . Ramp_Acl::DELIM . $param;
+                $error_details = $this->_displayExceptionDetails
+                            ? $e->getMessage()
+                            : $this->_formatUnauthResourceName($badResource,
+                                $resourceIsSetting);
+                $this->_reportUnauthorized($error_details);
+
+                // Should be unnecessary, but ...  (Exception handling 
+                // is being handled VERY WIERDLY by Zend.)
+                throw new Exception($error_details);
             }
+        }
+        else
+        {
+            // Default resource is just controller & action.
+            $resources[] = $prefix;
         }
 
         // Check that the requested resource is a defined resource.
-        if ( ! $acl->has($resource) )
+        foreach ( $resources as $resource )
         {
-            // Accessing an undefined resource is an unauthorized access.
-            $this->_reportUnauthorized($resource);
+            if ( ! $acl->has($resource) )
+            {
+                // Accessing an undefined resource is an unauthorized access.
+                $error_details = $this->_displayExceptionDetails
+                            ? $resource . " is not a defined resource"
+                            : $this->_formatUnauthResourceName($resource);
+                $this->_reportUnauthorized($error_details);
+            }
         }
 
-        return $resource;
+        return $resources;
+    }
+
+    /**
+     * Formats resource name from full resource specification.
+     *
+     * @param $resourceSpec  full resource specification
+     * @param $isSetting     for tables/reports, this the setting or table?
+     */
+    protected function _formatUnauthResourceName($resourceSpec,
+                                                 $isSetting = false)
+    {
+        // Get the various components of a full resource spec.  If it 
+        // doesn't have the expected components, return full spec.
+        $components = explode(Ramp_Acl::DELIM, $resourceSpec);
+        if ( count($components) != 3 )
+        {
+            return 'Resource: ' . $resourceSpec;
+        }
+
+        // Return the resource type plus either the second or third
+        // component, depending on the resource type.
+        if ( $components[0] == Ramp_Controller_KeyParameters::ACT_CONTROLLER )
+        {
+            return 'activities in ' . $components[2] . ' directory';
+        }
+        if ( $components[0] == Ramp_Controller_KeyParameters::DOC_CONTROLLER )
+        {
+            return $components[2] . ' document';
+        }
+        if ( $components[0] == Ramp_Controller_KeyParameters::TBL_CONTROLLER ||
+             $components[0] == Ramp_Controller_KeyParameters::REP_CONTROLLER )
+        {
+            $settingInfo = $isSetting ? ' in setting ' : ' ';
+            return $components[0] . $settingInfo . $components[2];
+        }
+        return 'Resource: ' . $resourceSpec;
     }
 
     /**
@@ -126,9 +203,9 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
      *
      * @param  resource  undefined resource or user is unauthorized to use it
      */
-    protected function _reportUnauthorized($resource)
+    protected function _reportUnauthorized($msg)
     {
-        $params = array('details' => urlencode($resource));
+        $params = array('details' => urlencode($msg));
         $zendRedirector = $this->_getRedirector();
         $zendRedirector->setGotoSimple('unauthorized', 'auth', null, $params);
     }

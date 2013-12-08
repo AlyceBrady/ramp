@@ -134,7 +134,7 @@ class Ramp_Acl extends Zend_Acl
         $this->_addBasicResources();
 
         // Add resources defined in the Registry.
-        $aclResources = $registryFacade->getAclRoles();
+        $aclResources = $registryFacade->getAclResources();
         if ( ! empty($aclResources) )
         {
             $this->_addResources($aclResources);
@@ -172,32 +172,45 @@ class Ramp_Acl extends Zend_Acl
      * Determines whether the current user is authorized to access
      * the requested  resource.
      *
-     * @param   $resource  the requested resource
+     * @param   $resource  the requested resource (single resource or
+     *                     array of resources)
      */
     public function authorizesCurrentUser($resource)
     {
-        // If the default role allows access to the requested resource, 
-        // that's good enough.
-        if ( $this->isAllowed(self::DEFAULT_ROLE, $resource) )
-        {
-            return true;
-        }
+        // Normalize, so that resource is always an array of resources 
+        // (the more general case).
+        $resources = is_array($resource) ? $resource : array($resource);
 
-        // Otherwise, must be an authenticated user whose role allows access.
-        $auth = Zend_Auth::getInstance();
-        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        foreach ( $resources as $one_resource )
         {
-            $user = $auth->getIdentity();
-
-            // Check the user role against the requested resource.
-            if ( $this->hasRole($user->role) && $this->has($resource)
-                   && $this->isAllowed($user->role, $resource) )
+            // If the default role allows access to the requested resource, 
+            // that's good.  Check next resource.
+            if ( $this->isAllowed(self::DEFAULT_ROLE, $resource) )
             {
-                return true;
+                continue;
             }
+
+            // Else must be an authenticated user whose role allows access.
+            $auth = Zend_Auth::getInstance();
+            if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+            {
+                $user = $auth->getIdentity();
+
+                // Check the user role against the requested resource.
+                if ( $this->hasRole($user->role) && $this->has($resource)
+                       && $this->isAllowed($user->role, $resource) )
+                {
+                    // Has authorization for this resource; go on to next.
+                    continue;
+                }
+            }
+
+            // Authorization was needed, but user wasn't authorized.
+            return false;
         }
 
-        return false;
+        // Was authorized for all resources!
+        return true;
     }
 
     /**
@@ -217,7 +230,10 @@ class Ramp_Acl extends Zend_Acl
     }
 
     /**
-     * DEBUGGING: Gets all rules.
+     * DEBUGGING: Gets all rules (well, a bunch, anyway).  It's 
+     * non-trivial to get rules out of the Zend Authorization black box, 
+     * so "merely" reports on the rules defined in the Registry and the 
+     * Database.
      */
     public function getRules()
     {
@@ -266,6 +282,7 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('auth::reset-password'));
         $this->add(new Zend_Acl_Resource('auth::validate-roles'));
         $this->add(new Zend_Acl_Resource('auth::validate-acl-rules'));
+        $this->add(new Zend_Acl_Resource('auth::view-acl-info'));
 
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));

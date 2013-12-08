@@ -326,6 +326,10 @@ table as the source and import the columns from the other table using an
 the Course Module Assignments table view includes information such as the
 instructor's name from the Person table.
 
+> Note: When Ramp/Smart checks to see whether a user is authorized to access
+> a table, the check also verifies that the user is authorized to access
+> any table from which data is being imported as well.
+
 In order for a table to "import" fields from another table, the table
 setting must establish the connection between the two tables.  For
 example, using the following setting specification, the `Student`
@@ -386,7 +390,8 @@ The table connection depends on the right data being provided when the
 dependent table entry is created.  For example,
 when adding a new Student record, the user must provide the correct
 Person id for the studentID field.
- > In theory, the `selectUsing` field
+
+ > Future work: In theory, the `selectUsing` field
  > setting allows the view to provide a link to the external table so that
  > the user can do a search and get the right id, but this is not currently
  > working!
@@ -460,6 +465,13 @@ fields both with and without an `initFromField` property.
         field.sTitle.initFrom = "Modules"
         field.sTitle.initFromField = "shortTitle"
 
+> Note: The `initTableRef` and `initFrom`/`initFromField` properties are
+> only meaningful when adding new records to the database.  You can improve
+> the efficiency of your authorization checks if you only include these
+> properties in your `addSetting` setting, since there is no need to
+> check that the user is authorized to access values from the source
+> table for initialization except when adding a record.
+
 ##### Comparing `importFrom` and `initFrom`: #####
 The `importFrom` and `initFrom` properties look deceptively similar, but
 represent very different behavior.  The `importFrom` property, which is
@@ -494,10 +506,10 @@ search, using the sequence or table setting specified with the
 `viewingSequence` property, for a Staff record whose "staffID" matches the
 "advisorID" in the current record.
 
-        externalTableRef.Student.title = "Staff"
-        externalTableRef.Student.viewingSequence = "Smart/Staff/Staff"
-        externalTableRef.Student.localField = "advisorID"
-        externalTableRef.Student.externalField = "staffID"
+        externalTableRef.Staff.title = "Staff"
+        externalTableRef.Staff.viewingSequence = "Smart/Staff/Staff"
+        externalTableRef.Staff.localField = "advisorID"
+        externalTableRef.Staff.externalField = "staffID"
 
 When displaying the external reference link at the bottom of the
 record-viewing screen, Ramp includes an icon indicating whether all

@@ -26,7 +26,7 @@
       DocumentRoot /home/abrady/git/ramp/public
       ErrorLog /var/log/ramp/error.log
       CustomLog /var/log/ramp/access.log combined
-      SetEnv APPLICATION_ENV development
+      SetEnv APPLICATION_ENV smart_development
       <Directory "/home/abrady/git/ramp/public">
           Options MultiViews SymlinksIfOwnerMatch
           AllowOverride All
