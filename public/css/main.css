@@ -145,8 +145,18 @@ div#table-notes p {             /* Table "footnotes" */
     font-style:     italic;
 }
 
-div#record-block, div#record-block input {
-    font-size: small;           /* Not doing anything? */
+div#record-block input {
+    font-size: 90%;
+}
+
+div#record-block select
+{
+    font-size: 90%;
+}
+
+div#record-block select.comparator
+{
+    font-size: 60%;
 }
 
 div#record-block textarea {

@@ -524,7 +524,7 @@ class Application_Model_Field
      * Returns the length of this field (only meaningful for some data 
      * types, such as varchar).
      *
-     * TODO: CHECK THIS!  The length in _metaInfo appears to be a strong 
+     * TODO: CHECK THIS!  The length in _metaInfo appears to be a string 
      * value, not an int, but forms/TableRecordEntry expects an int!
      *
      * @return int
