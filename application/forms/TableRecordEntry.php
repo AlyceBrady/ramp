@@ -35,7 +35,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
     const REFERENCE_EXPL = "Reference to field in ";
     const EXTERNAL_REF_EXPL = "From %s table";
 
-    // Set of supported search operations:
+    // Set of supported search comparators:
     const CONTAINS          = 'HAS';
     const EQUAL             = '=';
     const LESS_THAN         = '<';
@@ -44,26 +44,31 @@ class Application_Form_TableRecordEntry extends Zend_Form
     const GT_OR_EQUAL       = '>=';
     const NOT_EQUAL         = '!=';
     const SQL_IS_NULL       = 'IS NULL';
+    const SQL_NOT_NULL      = 'IS NOT NULL';
     const LIKE              = 'LIKE';
+    const DEFAULT_COMPARATOR   = self::EQUAL;
 
     // Keywords used to store search request information.
     const FIELD_VALUES          = 'fieldVals';
     const FULL_SEARCH_RESULTS   = 'fullSearchResults';
     const VALUE                 = 'searchValue';
-    const COMP                  = 'comparisonOperator';
+    const COMP                  = 'comparator';
 
-    const SEARCH_COMP_SUFFIX = "_searchcomp";
+    const SEARCH_COMP_SUFFIX = "_comparator";
+
+    const FIELD_WIDTH           = 'span3';
+    const COMPARATOR_CLASS_INFO = 'comparator span1';
 
     protected $_setTable;
     protected $_formSuffix;
     protected $_formType;
-    protected $_searchOpElts = array();
+    protected $_searchCompElts = array();
     protected $_fieldElts = array();
 
     /**
-     * Returns a list of the valid search operators.
+     * Returns a list of the valid search comparators.
      */
-    public static function validSearchComps()
+    public static function validComparators()
     {
         return array(
             self::CONTAINS => self::CONTAINS, self::EQUAL => self::EQUAL,
@@ -73,8 +78,17 @@ class Application_Form_TableRecordEntry extends Zend_Form
             self::GT_OR_EQUAL => self::GT_OR_EQUAL,
             self::NOT_EQUAL => self::NOT_EQUAL,
             self::SQL_IS_NULL => self::SQL_IS_NULL,
+            self::SQL_NOT_NULL => self::SQL_NOT_NULL,
             self::LIKE => self::LIKE
         );
+    }
+
+    /**
+     * Returns a list of the unary search comparator values;
+     */
+    public static function unaryComparators()
+    {
+        return array( self::SQL_IS_NULL, self::SQL_NOT_NULL);
     }
 
     /**
@@ -141,7 +155,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Gets the field elements included in this form;
+     * Gets the field elements included in this form.
      */
     public function getFieldElements()
     {
@@ -149,69 +163,72 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Gets the search operations elements included in this form (if any).
+     * Gets the search comparator elements included in this form (if any).
      */
-    public function getSearchOpElements()
+    public function getComparatorElements()
     {
-        return $this->_searchOpElts;
+        return $this->_searchCompElts;
     }
 
     /**
-     * Gets the field values from this form;
+     * Gets the field values from this form.
      */
-    public function getSearchRequestValues()
+    public function getFieldValues()
     {
-        $results = array(self::FIELD_VALUES => array(),
-                         self::FULL_SEARCH_RESULTS => array());
+        $results = array();
 
-        $values = $this->getValues();
-        foreach ( $values as $fieldName => $value )
+        foreach ( $this->_fieldElts as $name => $fieldElt )
         {
-            // Group field and comparison operation together under field 
-            // name.
-            if ( strrpos($fieldName, self::SEARCH_COMP_SUFFIX) === false )
-            {
-                // This is field value, not search comparison.
-
-                // Populate array of field values only.
-                $results[self::FIELD_VALUES][$fieldName] = $value;
-
-                // Populate array of field values and associated search 
-                // comparison choices.
-                $compEltName = "$fieldName" . self::SEARCH_COMP_SUFFIX;
-                $fullResults = array(self::VALUE => $value,
-                                     self::COMP => $values[$compEltName]);
-                $results[self::FULL_SEARCH_RESULTS][$fieldName] = $fullResults;
-            }
+            $results[$name] = $fieldElt->getValue();
         }
 
         return $results;
     }
 
     /**
-     * Gets the search operation element associated with the given field 
-     * element with the given name.
+     * Gets the search comparator choices from this form.
+     */
+    public function getComparators()
+    {
+        $results = array();
+
+        foreach ( $this->_fieldElts as $name => $fieldElt )
+        {
+            $results[$name] = $this->getComparatorFor($name);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Gets the chosen search comparator associated with the
+     * given field element.
      *
      * @param fieldElementName
      */
-    public function getSearchOpEltFor($fieldElementName)
+    public function getComparatorFor($fieldElementName)
     {
-        return $this->_searchOpElts[$fieldElementName];
+        if ( empty($this->_searchCompElts) ||
+             empty($this->_searchCompElts[$fieldElementName]) )
+        {
+            return self::DEFAULT_SEARCH_OP;
+        }
+        return $this->_searchCompElts[$fieldElementName]->getValue();
     }
 
     /**
      * Creates a visible field element, with its label and, if this is a 
-     * search, with a drop-down menu of search comparison types.
+     * search, with a drop-down menu of search comparator types.
      */
     protected function _createVisibleElement($field, $name, $label)
     {
         // Determine whether field is read-only or acquiring input.
         $readOnly = $this->_fieldIsReadOnly($field);
 
-        // If this is a search, generate drop-down for search operations.
+        // If this is a search, generate drop-down for search comparators.
         if ( $this->_formType == self::SEARCH )
         {
-            $this->_createSearchCompDropDown($name);
+            $this->_createComparatorDropDown($name);
         }
 
         // Should element be a drop-down menu?
@@ -234,12 +251,13 @@ class Application_Form_TableRecordEntry extends Zend_Form
         $labelTitle = $this->_getLabelTitle($field);
 
         $fieldElement->setLabel($label);
-        $fieldElement->setRequired($required);
         $fieldElement = $this->_buildDecorators($fieldElement, $labelTitle);
 
         // Set conditional attributes.
         if ( $readOnly )
             { $fieldElement->readOnly = 'readOnly'; }
+        if ( $required )
+            { $fieldElement->setRequired($required); }
         if ( ! empty($class) )
             { $fieldElement->class = $class; }
         if ( ! empty($title) )
@@ -250,21 +268,41 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Creates a drop-down menu of search comparison types.
+     * Creates a drop-down menu of search comparator types.
      */
-    protected function _createSearchCompDropDown($name)
+    protected function _createComparatorDropDown($name)
     {
         $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
-        $compsElement = new Zend_Form_Element_Select($ddName);
-        $compsOptions = self::validSearchComps();
-        $compsElement->setLabel($label)
-                     ->setMultiOptions($compsOptions);
-        $compsElement = $this->_buildDecorators($compsElement);
+        $comparatorElement = new Zend_Form_Element_Select($ddName);
+        $comparatorOptions = self::validComparators();
+        $comparatorElement->setLabel($label)
+                          ->setMultiOptions($comparatorOptions);
+        $comparatorElement = $this->_buildDecorators($comparatorElement);
+        $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
 
         // Add element to the form and to local list of
-        // elements representing search operations.
-        $this->addElement($compsElement);
-        $this->_searchOpElts[$name] = $compsElement;
+        // elements representing search comparators.
+        $this->addElement($comparatorElement);
+        $this->_searchCompElts[$name] = $comparatorElement;
+    }
+
+    /**
+     * Creates a drop-down menu of search comparator types.
+     */
+    protected function _createComparatorDropDown2($name)
+    {
+        $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
+        $comparatorElement = new Zend_Form_Element_Select($ddName);
+        $comparatorOptions = self::validComparators();
+        $comparatorElement->setLabel($label)
+                          ->setMultiOptions($comparatorOptions);
+        $comparatorElement = $this->_buildDecorators($comparatorElement);
+        $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
+
+        // Add element to the form and to local list of
+        // elements representing search comparators.
+        $this->addElement($comparatorElement);
+        $this->_searchCompElts[$name] = $comparatorElement;
     }
 
     /**
@@ -380,15 +418,20 @@ class Application_Form_TableRecordEntry extends Zend_Form
 
     /**
      * Gets validator(s) depending on the field's data type.
+     *
      * TODO: Enforce the number of characters specified for integer
      *          types as a maximum, rather than just assuming the 
      *          number is a display hint.
+     *
      * TODO: Need to determine correct validators for other types:
      *          Fixed-Point, Floating Point, Bit-Value, Set
      *       Need to test Time and Year.
-     * (Don't need anything for enum, because handled with pull-down
-     * selections.)
-     * TODO: May want to add locale handling to date/int check.
+     *
+     * Don't need anything for enum, because handled with pull-down
+     * selections.
+     *
+     * Do not add locale handling to date/int check:  using yyyy-MM-dd
+     * allows for '<' and '>' comparisons.
      */
     protected function _getValidators($field)
     {
@@ -457,9 +500,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
 	// provided or if the field should be initialized by data from
 	// another table.
         return $this->_formType != self::SEARCH &&
-               $field->isRequired() &&
-               $field->getDefault() == null && 
-               ! $field->initFromAnotherTable();
+               $field->valueNecessaryForAdd();
     }
 
     /**
@@ -510,7 +551,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
      */
     protected function _buildClass($field, $readOnly, $reqRecDecs)
     {
-        $class = $reqRecDecs['class'];
+        $class = self::FIELD_WIDTH . " " . $reqRecDecs['class'];
         if ( $readOnly )
             { $class .= " readonly"; }
         return $class;

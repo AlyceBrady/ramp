@@ -36,13 +36,17 @@ class Application_Model_SetTable
     const CONNECTION            = 'connection';
     const ALIAS                 = 'aliasFor';
 
-    // Constant representing an unspecified enum value for a search
-    const ANY_VAL               = '__any_search_value__';
+    // Constants representing search values and search operators.
+    const ANY_VAL         = '__any_search_value__';
+    const CONTAINS        = Application_Form_TableRecordEntry::CONTAINS;
+    const LIKE            = Application_Form_TableRecordEntry::LIKE;
+    const DEFAULT_COMPARATOR
+                = Application_Form_TableRecordEntry::DEFAULT_COMPARATOR;
 
     // Constants representing search types
     const ANY                   = 'any';
     const ALL                   = 'all';
-    const EXCLUDE               = 'exclude';
+    // const EXCLUDE               = 'exclude';
 
     // Status codes used for communicating whether the table has all 
     // recommended fields for a particular record.
@@ -656,21 +660,30 @@ class Application_Model_SetTable
      * Gets the row(s) with values matching the data provided
      * in the parameter.
      *
-     * @param array $data      Column-value pairs identifying entry to find
-     * @param bool $searchType ANY, ALL, or EXCLUDE
-     * @return array           Column-value data for the found rows
+     * @param array $data        Column-value pairs identifying entry to find
+     * @param array $comparators Column-comp pairs identifying comparators
+     *                           to use
+     * @param bool $searchType   ANY or ALL
+     * @return array             Column-value data for the found rows
      */
     public function getTableEntries(array $data = array(),
+                                    $comparators = array(),
                                     $searchType = self::ALL)
     {
-        // Remove column-value pairs with null values.
+        // Remove column-value pairs with null values (unless field has 
+        // a unary comparator and so is meaningful even without a value).
         foreach ( $data as $key => $value )
         {
+            if ( $this->_fieldWithUnaryComparator($key, $comparators) )
+            {
+                continue;  // column is significant; check next column
+            }
             if ( $value === null || $value == "" || $value == self::ANY_VAL )
             {
                 unset($data[$key]);
             }
         }
+// throw new Exception("after pruning null: " . print_r($data, true));
 
         // Construct SQL query.
         $db = $this->_dbModel->getAdapter();
@@ -704,19 +717,8 @@ class Application_Model_SetTable
             $select->joinLeft($table, $expression[self::CONNECTION], $fields);
         }
 
-        /* TODO: Support constraints on a query.
-            if ( $this->_tableQueryConstraint != "" )
-            {
-                // TODO: Quote the components of this constraint.
-                // $select = $select->where($this->_tableQueryConstraint);
-            }
-         */
-
         // Construct SQL WHERE clause based on data provided.
-        $method = ($searchType == self::ANY) ? "orwhere" : "where";
-        $op = ($searchType == self::EXCLUDE) ? "<>" : "=";
-        // $delim =  "";
-        // $whereClause = "";
+        $whereMethod = ($searchType == self::ANY) ? "orwhere" : "where";
         foreach ( $data as $fieldName => $value )
         {
             // Create "condition with placeholder" => $vaue pair.
@@ -730,17 +732,27 @@ class Application_Model_SetTable
                                 $fieldObj->getImportTable() :
                                 $this->_dbTableName;
             $realFieldName .= "." . $fieldObj->resolveAlias();
-            $select = $select->$method("$realFieldName " . $op . " ?", $value);
-            /*  // Need something like the following to support table query 
-                // constraints.
-                $whereClause .= $delim . $realFieldName . " = " .
-                                            $db->quoteIdentifier($value);
-                $delim =  $any ? " OR " : " AND ";
-            */
+
+            $op = ( empty($comparators) || empty($comparators[$fieldName]) )
+                        ? self::DEFAULT_COMPARATOR : $comparators[$fieldName];
+            if ( $op == self::CONTAINS )
+            {
+                $op = self::LIKE;
+                $value = "%$value%";
+            }
+
+            // Differentiate between comparisons with 0 or 1 arguments
+            if ( $this->_isUnaryComparator($op) )
+            {
+                $select = $select->$whereMethod("$realFieldName " . $op);
+            }
+            else
+            {
+                $select = $select->$whereMethod("$realFieldName " . $op .
+                                                " ?", $value);
+            }
+
         }
-        /* For table query constraints:
-         *     $select = $select->where($whereClause);
-         */
 
 // throw new Exception("query: " . print_r($select->__toString(), true));
 
@@ -896,6 +908,7 @@ class Application_Model_SetTable
     public function updateTableEntry(array $data)
     {
         // Construct SQL WHERE clause that specifies entry being updated.
+        $data = $this->_normalizeNulls($data);
         $where = $this->_constructUniquelyIdentifyingWhere($data);
 
         // Update the table.  (Will update 0 rows if no changes made.)
@@ -960,6 +973,27 @@ class Application_Model_SetTable
     }
 
     /**
+     * Determines whether a field is significant, despite not having a 
+     * value,  because it is tied to a unary comparator which does not 
+     * need a value.
+     */
+    protected function _fieldWithUnaryComparator($field, $comparators)
+    {
+        return isset($comparators[$field]) &&
+               $this->_isUnaryComparator($comparators[$field]);
+    }
+
+    /**
+     * Determines whether a comparator is a unary comparator, which
+     * does not need a value.
+     */
+    protected function _isUnaryComparator($comparator)
+    {
+        return in_array($comparator,
+                        Application_Form_TableRecordEntry::unaryComparators());
+    }
+
+    /**
      * Constructs a WHERE array based on primary key information
      * provided in the parameter to identify one row to modify.
      * If the array passed in also contains data associated 
@@ -992,6 +1026,21 @@ class Application_Model_SetTable
             $where[$cond] = $value;
         }
         return $where;
+    }
+
+    /**
+     * Normalizes fields with nulls and empty strings to use SQL NULL keyword.
+     */
+    protected function _normalizeNulls(array $data)
+    {
+        foreach ( $data as $fieldName => $value )
+        {
+            if ( $value == '' )
+            {
+                $data[$fieldName] = NULL;
+            }
+        }
+        return $data;
     }
 
     /**

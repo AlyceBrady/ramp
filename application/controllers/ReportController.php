@@ -25,6 +25,18 @@ class ReportController extends TableController
     protected $_controllerName = 'report';
 
     /**
+     * Initializes the attributes for this object as well as some
+     * values commonly used by the associated view scripts.
+     */
+    public function init()
+    {
+        parent::init();
+
+        // Set the default view for "Display All" actions.
+        $this->_displayAllView = "table-view";
+    }
+
+    /**
      * Reports always start with a search, from which Display All 
      * Entries is an option.
      *
@@ -40,14 +52,16 @@ class ReportController extends TableController
      *
      * @param $setTable   table setting for the table in which to search
      * @param $data       column/value pairs on which to search
-     * @param $searchType whether to match any specified field (OR), all
-     *                    specified fields (AND), or no specified fields
+     * @param $comparators column/comparator pairs of search comparators
+     * @param $buttonLabel button specifying whether to match any specified
+     *                     field (OR) or all specified fields (AND)
      */
-    protected function _executeSearch($setTable, $data, $searchType)
+    protected function _executeSearch($setTable, $data, $comparators,
+                                      $buttonLabel)
     {
         // Execute the search and decide how to display the results.
-        $matchAbbrev = $this->_matchAbbrevs[$searchType];
-        $rows = $setTable->getTableEntries($data, $matchAbbrev);
+        $matchAbbrev = $this->_matchAbbrevs[$buttonLabel];
+        $rows = $setTable->getTableEntries($data, $comparators, $matchAbbrev);
         $numResults = count($rows);
         if ( $numResults == 0 )
         {
@@ -58,20 +72,23 @@ class ReportController extends TableController
         else
         {
             // Matches found.
-            $params = $data + array(self::SEARCH_TYPE => $matchAbbrev);
-            $this->_goTo('table-view', $params);
+            $this->_goTo($this->_displayAllView, $data, $comparators,
+                         $matchAbbrev);
         }
     }
+
+
+    // ===> Redefining processSearchCallBack no longer necessary because 
+    //      now have _displayAllView instance variable?
 
     /**
      * Processes search call-back after a button has been pressed.
      *
      * @param $setTable   table setting for the table in which to search
      * @param $form       the form used for the search
-     */
     protected function _processSearchCallBack($setTable, $form)
     {
-        if ( $this->_buttonAction == self::DISPLAY_ALL )
+        if ( $this->_submittedButton == self::DISPLAY_ALL )
         {
             $this->_goTo('table-view');
         }
@@ -80,12 +97,13 @@ class ReportController extends TableController
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
-                $nonNullData = $this->_filledFields($form->getValues());
+                $fieldVals = $form->getFieldValues();
+                $nonNullData = $this->_getFilledFields($fieldVals);
 
                 // Searching for any or all matches. Display based on 
                 // number of results.
-                $searchType = $this->_buttonAction;
-                $this->_executeSearch($setTable, $nonNullData, $searchType);
+                $this->_executeSearch($setTable, $nonNullData,
+                            $form->getComparitors(), $this->_submittedButton);
 
                 // Will only get here if search failed.
             }
@@ -98,6 +116,7 @@ class ReportController extends TableController
             }
         }
     }
+     */
 
     /**
      * Provides a report view of table records (a table view with a
@@ -108,7 +127,9 @@ class ReportController extends TableController
      */
     public function tableViewAction()
     {
-        $setTable = $this->_tblViewingSeq->getSetTableForViewing();
+        $setTable = $this->_tblViewingSeq->getSetTableForTabularView();
+
+    // ===> Why is this necessary here but not in TableController?
         $this->view->sequenceName = str_replace("%2F", "_",
                                                 $this->_encodedSeqName);
 

@@ -89,11 +89,11 @@ div#content h3, div#content h4, div#content h5 {
     color: #039;
 }
 
-div#content a,  a:visited,  div#content a:active {
+div#content a,  div#content a:active {
     color: #00C;
 }
 
-div#content div#content a:hover {
+div#content a:visited,  div#content a:hover {
     color: #009;
 }
 
@@ -222,8 +222,15 @@ div#activityPage .disabled, div#activityPage .disabledComment {
 }
 
 #record-block.edit input.recommended, #record-block.add input.recommended,
-#record-block.edit select.recommended, #record-block.add select.recommended {
+#record-block.edit select.recommended, #record-block.add select.recommended,
+#record-block.edit textarea.recommended, #record-block.add textarea.recommended
+{
         background-color:   #FFC;
+}
+
+div#record-block select.comparator
+{
+        background-color:   #F6FFF6;
 }
 
 input.readonly, select.readOnly,
@@ -241,6 +248,14 @@ input.statusCode {
 
 #content h1, #content h1 small {
 	color:	#00C;       /* Amethyst = 96c */
+}
+
+div#content a,  div#content a:active {
+    color: #0C0;
+}
+
+div#content a:visited,  div#content a:hover {
+    color: #009E60;
 }
 
 div#documentPage pre code {
