@@ -14,7 +14,6 @@
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: TableController.php 1 2012-07-12 alyce $
  *
  */
 
@@ -214,8 +213,8 @@ class TableController extends Zend_Controller_Action
             {
                 $fieldVals = $form->getFieldValues();
                 $comparators = $form->getComparators();
-                $meaningfullData = $this->_getFilledFields($fieldVals,
-                                                           $comparators);
+                $meaningfulData = $this->_getFilledFields($fieldVals,
+                                                          $comparators);
 
                 // Adding new entry based on failed search?
                 if ( $this->_submittedButton == self::ADD )
@@ -223,12 +222,12 @@ class TableController extends Zend_Controller_Action
                     if ( $this->_illegalCallback($setTable) )
                         { return; }
 
-                    $this->_goTo('add', $meaningfullData);
+                    $this->_goTo('add', $meaningfulData);
                 }
 
                 // Searching for any or all matches. Display based on 
                 // number of results.
-                $this->_executeSearch($setTable, $meaningfullData,
+                $this->_executeSearch($setTable, $meaningfulData,
                                       $comparators, $this->_submittedButton);
 
                 // Will only get here if search failed.
@@ -266,8 +265,15 @@ class TableController extends Zend_Controller_Action
             $this->_goTo('table-view', $this->_fieldsToMatch,
                          $this->_matchComparators, $this->_searchType);
         }
+        elseif ( $this->_submittedButton == self::ADD )
+        {
+            // Adding new entry after a search/filter?
+            $this->_goTo('add', $this->_fieldsToMatch,
+                         $this->_matchComparators, $this->_searchType);
+        }
         else
             { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
+
 
     }
 
@@ -289,8 +295,14 @@ class TableController extends Zend_Controller_Action
         }
         elseif ( $this->_submittedButton == self::DISPLAY_ALL )
         {
-            // Re-display with all data in same table mode.
+            // Re-display with all data (not just some) in same table mode.
             $this->_goTo('table-view');
+        }
+        elseif ( $this->_submittedButton == self::ADD )
+        {
+            // Adding new entry after a search/filter?
+            $this->_goTo('add', $this->_fieldsToMatch,
+                         $this->_matchComparators, $this->_searchType);
         }
         else
             { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
@@ -311,7 +323,7 @@ class TableController extends Zend_Controller_Action
         $this->_initViewTableInfo($setTable);
         $this->view->buttonList = array(self::EDIT, self::ADD,
                                         self::CLONE_BUTTON, self::SEARCH,
-                                        self::DISPLAY_ALL);
+                                        self::DEL_BUTTON, self::DISPLAY_ALL);
         $this->view->dataEntryForm = $form =
                     new Application_Form_TableRecordEntry($setTable, 0);
 
@@ -330,6 +342,8 @@ class TableController extends Zend_Controller_Action
         }
         elseif ( $this->_submittedButton == self::EDIT )
             { $this->_goTo('record-edit', $this->_fieldsToMatch); }
+        elseif ( $this->_submittedButton == self::DEL_BUTTON )
+            { $this->_goTo('delete', $this->_fieldsToMatch); }
         else
             { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
 
@@ -415,7 +429,7 @@ class TableController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             if ($form->isValid($formData))
             {
-                // Determine fields are being added.  Remove null fields.
+                // Determine fields being added.  Remove null fields.
                 $addValues = $this->_fillInitValues($setTable,
                                                     $form->getFieldValues());
                 $meaningfulData = $this->_getFilledFields($addValues);
@@ -454,7 +468,7 @@ class TableController extends Zend_Controller_Action
      */
     public function deleteAction()
     {
-        $setTable = $this->_tblViewingSeq->getSetTableForModifying();
+        $setTable = $this->_tblViewingSeq->getSetTableForDeleting();
 
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
@@ -727,20 +741,20 @@ class TableController extends Zend_Controller_Action
     protected function _getFilledFields(array $data, $comparators = array())
     {
         // Remove column-value pairs with null values.
-        $meaningfullData = array();
+        $meaningfulData = array();
         foreach ( $data as $field => $value )
         {
             if ( $this->_isUnaryComparator($field, $comparators) )
             {
-                $meaningfullData[$field] = $value;
+                $meaningfulData[$field] = $value;
             }
             else if ( $value !== null && $value != "" &&
                       $value != self::ANY_VAL )
             {
-                $meaningfullData[$field] = $value;
+                $meaningfulData[$field] = $value;
             }
         }
-        return $meaningfullData;
+        return $meaningfulData;
     }
 
     /**

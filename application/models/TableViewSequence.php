@@ -14,7 +14,6 @@
  * @package    Ramp_Model
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_TableViewSequence.php 1 2012-07-12 alyce $
  *
  */
 
@@ -27,6 +26,7 @@ class Application_Model_TableViewSequence
     const MAIN_SETTING              = "setting";
     const EDIT_SETTING              = "editSetting";
     const ADD_SETTING               = "addSetting";
+    const DEL_SETTING               = "deleteSetting";
     const SEARCH_SPEC_SETTING       = "searchSpecSetting";
     const SEARCH_RES_SETTING        = "searchResultsSetting";
     const TABULAR_SETTING           = "tabularSetting";
@@ -38,6 +38,16 @@ class Application_Model_TableViewSequence
     const SEARCH                    = "search";
     const DISPLAY_ALL               = "displayAll";
     const DEFAULT_START             = self::SEARCH;
+
+    /* table actions associated with sequence properties */
+    const TBL_INDEX         = Ramp_Acl::TBL_INDEX;
+    const TBL_SEARCH        = Ramp_Acl::TBL_SEARCH;
+    const VIEW_LIST_RESULTS = Ramp_Acl::VIEW_LIST_RESULTS;
+    const VIEW_TABLE_FORMAT = Ramp_Acl::VIEW_TABLE_FORMAT;
+    const VIEW_RECORD       = Ramp_Acl::VIEW_RECORD;
+    const EDIT_RECORD       = Ramp_Acl::EDIT_RECORD;
+    const ADD_RECORD        = Ramp_Acl::ADD_RECORD;
+    const DELETE_RECORD     = Ramp_Acl::DELETE_RECORD;
 
     /** @var string */
     protected $_tableName;           // shared table name (if any)
@@ -59,7 +69,8 @@ class Application_Model_TableViewSequence
      */
     protected static function validSeqSettingProps()
     {
-        return array(self::MAIN_SETTING, self::EDIT_SETTING, self::ADD_SETTING, 
+        return array(self::MAIN_SETTING, self::EDIT_SETTING,
+                     self::ADD_SETTING, self::DEL_SETTING, 
                      self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
                      self::TABULAR_SETTING, self::REFERENCE_SETTING);
     }
@@ -127,6 +138,7 @@ class Application_Model_TableViewSequence
         $main = $this->_getKeyVal($sequence, self::MAIN_SETTING);
         $edit = $this->_getKeyVal($sequence, self::EDIT_SETTING);
         $add = $this->_getKeyVal($sequence, self::ADD_SETTING);
+        $delete = $this->_getKeyVal($sequence, self::DEL_SETTING);
         $search = $this->_getKeyVal($sequence, self::SEARCH_SPEC_SETTING);
         $searchRes = $this->_getKeyVal($sequence, self::SEARCH_RES_SETTING);
         $tabular = $this->_getKeyVal($sequence, self::TABULAR_SETTING);
@@ -154,14 +166,17 @@ class Application_Model_TableViewSequence
         // all, set the missing ones from the ones that were provided.
         $this->_settingNames = array();
         $main = $this->_settingNames[self::MAIN_SETTING] = $main ? :
-                                                           ($reference ? :
                                                            ($edit ? :
                                                            ($add ? :
                                                            ($search ? :
                                                            ($searchRes ? :
-                                                           $tabular)))));
+                                                           ($tabular ? :
+                                                           ($delete ? :
+                                                           $reference
+                                                           ))))));
         $edit = $this->_settingNames[self::EDIT_SETTING] = $edit ? : $main;
         $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $main;
+        $delete = $this->_settingNames[self::DEL_SETTING] = $delete ? : $main;
         $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
                         $search ? : $main;
         $searchRes = $this->_settingNames[self::SEARCH_RES_SETTING] =
@@ -248,6 +263,39 @@ class Application_Model_TableViewSequence
     }
 
     /**
+     * Gets the specified table setting for the given table action.
+     *
+     * @param $actionName   name of table action from TableController
+     *
+     * @return Application_Model_SetTable
+     */
+    public function getSetTableForAction($actionName)
+    {
+        switch ($actionName)
+        {
+            case self::TBL_INDEX:
+                    return $this->getSetTableForSearching(); break;
+            case self::TBL_SEARCH:
+                    return $this->getSetTableForSearching(); break;
+            case self::VIEW_LIST_RESULTS:
+                    return $this->getSetTableForSearchResults(); break;
+            case self::VIEW_TABLE_FORMAT:
+                    return $this->getSetTableForTabularView(); break;
+            case self::VIEW_RECORD:
+                    return $this->getSetTableForViewing(); break;
+            case self::EDIT_RECORD:
+                    return $this->getSetTableForModifying(); break;
+            case self::ADD_RECORD:
+                    return $this->getSetTableForAdding(); break;
+            case self::DELETE_RECORD:
+                    return $this->getSetTableForDeleting(); break;
+            default:
+                throw new Exception("Error: trying to get set table " .
+                    "for unknown table action: " . $actionName . ".");
+        }
+    }
+
+    /**
      * Gets the specified table setting for displaying table records.
      *
      * @return Application_Model_SetTable
@@ -275,6 +323,16 @@ class Application_Model_TableViewSequence
     public function getSetTableForAdding()
     {
         return $this->getSetTable(self::ADD_SETTING);
+    }
+
+    /**
+     * Gets the specified table setting for deleting table records.
+     *
+     * @return Application_Model_SetTable
+     */
+    public function getSetTableForDeleting()
+    {
+        return $this->getSetTable(self::DEL_SETTING);
     }
 
     /**

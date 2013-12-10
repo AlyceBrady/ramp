@@ -30,12 +30,23 @@ class Ramp_Acl extends Zend_Acl
     const USERS_TABLE = 'ramp_auth_users';
     const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';
 
+    // Table actions.
+    const TBL_INDEX         = 'index';
+    const TBL_SEARCH        = 'search';
+    const VIEW_LIST_RESULTS = 'list-view';
+    const VIEW_TABLE_FORMAT = 'table-view';
+    const VIEW_RECORD       = 'record-view';
+    const EDIT_RECORD       = 'record-edit';
+    const ADD_RECORD        = 'add';
+    const DELETE_RECORD     = 'delete';
+
     // ACL categories for Table actions.
     const VIEW = 'View';
     const ADD = 'AddRecords';
     const MOD = 'ModifyRecords';
     const DEL = 'DeleteRecords';
     const ALL = 'All';
+    const ALL_BUT_DEL = 'AllButDelete';
 
     protected $_authInfo;
     protected $_tableCategories;
@@ -56,18 +67,21 @@ class Ramp_Acl extends Zend_Acl
         // with lists of actions.  The 'index' action is part of the
         // VIEW category because it always forwards to either a search
         // or view action.
-        $viewActions = array('index', 'search', 'list-view', 'table-view',
-                             'record-view');
-        $addActions = array('add');
-        $modifyActions = array('record-edit');
-        $deleteActions = array('delete');
+        $viewActions = array(self::TBL_INDEX, self::TBL_SEARCH,
+                             self::VIEW_LIST_RESULTS, self::VIEW_TABLE_FORMAT,
+                             self::VIEW_RECORD);
+        $addActions = array(self::ADD_RECORD);
+        $modifyActions = array(self::EDIT_RECORD);
+        $allButDeleteActions = array_merge($viewActions, $addActions,
+                                           $modifyActions);
+        $deleteActions = array(self::DELETE_RECORD);
         $categoryConverter[self::VIEW] = $viewActions;
         $categoryConverter[self::ADD] = $addActions;
         $categoryConverter[self::MOD] = $modifyActions;
         $categoryConverter[self::DEL] = $deleteActions;
+        $categoryConverter[self::ALL_BUT_DEL] = $allButDeleteActions;
         $categoryConverter[self::ALL] =
-                            array_merge($viewActions, $addActions,
-                                        $modifyActions, $deleteActions);
+                            array_merge($allButDeleteActions, $deleteActions);
         return $categoryConverter;
     }
 

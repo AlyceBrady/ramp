@@ -99,7 +99,8 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         // Start with controller and action.
         $resources = array();
         $controller = $request->getControllerName();
-        $prefix = $controller . Ramp_Acl::DELIM . $request->getActionName();
+        $action = $request->getActionName();
+        $prefix = $controller . Ramp_Acl::DELIM . $action;
 
         // Add activity, document, or table/report details.
         $param = Ramp_Controller_KeyParameters::getKeyParam($request);
@@ -115,7 +116,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
             {
                 $tblViewingSeq =
                     Application_Model_TVSFactory::getSequenceOrSetting($param);
-                $setTable = $tblViewingSeq->getSetTableForViewing();
+                $setTable = $tblViewingSeq->getSetTableForAction($action);
                 $mainTable = $setTable->getDbTableName();
                 $resources[] = $prefix . Ramp_Acl::DELIM . $mainTable;
                 $tables = $setTable->getDependentTables();

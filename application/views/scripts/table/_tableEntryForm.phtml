@@ -10,21 +10,29 @@
  * Updated for Twitter-Bootstrap, Ashton Galloway, March 2013
  */
 
-$fields = $this->table->getFields();
+// Expected parameters.
 $form = $this->form;
+$fields = $this->table->getFields();
+$isSearch = isset($this->search) && $this->search;
+
+// Key information from form.
+$formType = $form->getFormType();
+$isModifyingForm = $formType == Application_Form_TableRecordEntry::ADD ||
+                   $formType == Application_Form_TableRecordEntry::EDIT;
 $fieldElts = $form->getFieldElements();
 $searchOpElts = $form->getComparatorElements();
-$isSearch = isset($this->search) && $this->search;
 $suffix = Application_Form_TableRecordEntry::SEARCH_COMP_SUFFIX;
+
+// How to set up field lookup link if field value comes from external table.
+$extSearchParams = array('controller' => 'table', 'action' => 'search');
+
 ?>
 
 <?php  /* <div class="control-group row"> */ ?>
 <?php foreach ( $fieldElts as $name => $elt ) :
     echo "<div class='control-group'>\n";
     echo "<div id='$name-label' class='control-label'>";
-    echo $this->partial("table/_fieldLabel.phtml",
-            array('formType'=>$form->getFormType(), 'fields'=>$fields,
-                  'fieldName' => $name, 'elt'=>$elt));
+    echo $elt->renderLabel() . "\n";
     echo "</div>\n";
     echo "<div class='row controls'>\n";
     if ( $isSearch ) :
@@ -33,6 +41,17 @@ $suffix = Application_Form_TableRecordEntry::SEARCH_COMP_SUFFIX;
     endif;
     echo $elt->renderElem() . "\n";
     echo $elt->renderErrors();
+    $field = $fields[$name];
+    if ( $isModifyingForm && $field->isExternalTableLink() &&
+         ! $form->fieldIsReadOnly($field) )
+    {
+        $setting = urlencode($field->getLinkedTableSetting());
+        $urlParams = $extSearchParams +
+                        array(TableController::SETTING_NAME => $setting);
+        echo "<a href=\"" . $this->url($urlParams, null, true) .
+                "\" target=\"_blank\" class='lookup'><i";
+        echo "   class='icon-search' title='Select'></i></a>\n";
+    }
     echo "</div>\n";
     echo "</div>\n";
 endforeach; ?>

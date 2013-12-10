@@ -59,10 +59,12 @@ The valid table properties are:
   * `tableShowColsByDefault`
   * `tableConnection`
      ([Importing data](#import) is an advanced feature described below.)
-  * `initTableRef`  (an advanced feature described in
-                        [separate section](#initFrom) below)
-  * `externalTableRef`  (an advanced feature described in
-                        [separate section](#external) below)
+  * `initTableRef`
+     ([Initializing (copying) fields from other tables](#initFrom) is an
+     advanced feature described below.)
+  * `externalTableRef`
+     ([External table references](#external) are an
+     advanced feature described below.)
 
 The general syntax for table properties, as seen in the [simple table setting
 example above](#simpleExample), is:
@@ -100,10 +102,11 @@ The valid field properties are:
   * `selectFrom`
   * `importedFrom` and `importedField`
      ([Importing data](#import) is an advanced feature described below.)
-  * `selectUsing`  (This property is also related to
+  * `selectUsing`  ([This property](#selectUsing) is also related to
      [importing data](#import).)
-  * `initFrom` and `initFromField`  (an advanced feature described in
-                        a [separate section](#initFrom) below)
+  * `initFrom` and `initFromField`
+     ([Initializing (copying) fields from other tables](#initFrom) is an
+     advanced feature described below.)
 
 The general syntax for field properties, as seen in the [simple
 example above](#simpleExample), is:
@@ -229,6 +232,7 @@ The valid sequence properties that can be defined are:
   * `searchSpecSetting`:  setting to use for specifying search criteria
   * `searchResultsSetting`:  setting to use to display records in list view
   * `tabularSetting`:  setting to use to display records in table view
+  * `deleteSetting`:  setting to use to confirm record deletion
   * `referenceSetting`:  setting to use to resolve external references
         (see [below](#external))
 
@@ -254,8 +258,9 @@ more specialized settings are not provided.  If the `setting` property
 is not defined but at least one of the specialized settings is,
 the main setting is set from the edit 
 setting, the add setting, the search specification setting,
-the search results setting, or the tabular setting (in that order).
-For any of those five that are not provided, Ramp uses the now-defined
+the search results setting, the tabular setting, or the deletion
+confirmation setting (in that order).
+For any of those that are not provided, Ramp uses the now-defined
 main setting as the default.
 
 A field may also include a reference setting, used when 
@@ -292,7 +297,7 @@ in Modify, even if A, B, C, D might have been more desirable, because D
 was initially introduced in the SharedProperties section.  The
 easiest way to get around this ordering problem is to introduce all the
 appropriate fields in the parent section and then hide fields you do not
-want in some settings.  In this case, the corrected ini file would be:
+want in some settings.  In this case, the improved ini file would be:
 
         [ SharedProperties ]
         tableName = "theTable"
@@ -386,15 +391,25 @@ syntax is:
         tableConnection.AliasName.aliasFor = "OtherTable"
         tableConnection.AliasName.connection = "Tbl.col = AliasName.its_col"
 
+<div id="selectUsing"></div>
 The table connection depends on the right data being provided when the
-dependent table entry is created.  For example,
-when adding a new Student record, the user must provide the correct
-Person id for the studentID field.
+dependent table entry is created.  For example,  when adding an advisor
+to a Student record, the user must provide the correct advisor ID
+number.  To make this easier, the table
+setting can add a `selectUsing` property to the field in the dependent
+table (the `advisorID` field in this case) that provides
+the link to the external table (the "foreign key").  This will create a 
+little magnifying glass (<i class='icon-search'></i>)
+next to the field which, when clicked,
+will open a new tab or window in which the user can search for the right
+record and then copy the "foreign key" field value back into the
+dependent table record being created.  For example, when setting the
+advisor field in the student record, the user might know the advisor's
+name rather than the advisor's ID number.  Following a `selectUsing`
+link allows the user to look up the advisor ID based on the name, copy
+the ID number, and then paste it back into the student record.
 
- > Future work: In theory, the `selectUsing` field
- > setting allows the view to provide a link to the external table so that
- > the user can do a search and get the right id, but this is not currently
- > working!
+        field.advisorID.selectUsing = "PersonTableSetting"
 
 <h4 id="initFrom">
 Duplicating information for historical reasons or efficiency:
@@ -488,22 +503,21 @@ External Table References:
 </h4>
 
 A table setting can provide references, or links, to other settings
-for viewing related records.  For example, when displaying a single
-record in a student/advisor relationship table, the setting could
-provide links that lead to the associated Student and Staff table
-records.
-
-Like the `initFrom` property, the `externalTableRef` property
+for viewing or creating related records.  For example, when displaying
+a single record in a student/advisor relationship table, the setting
+could provide links that lead to the associated Student and Staff
+table records.
+The `externalTableRef` property, like the `initFrom` property,
 establishes a relationship between a local field and an external
 field using an external table setting to retrieve the data.  The
-syntax, however, is different.
+purpose and syntax of the two are, however, different.
 
 The example below creates a link (external reference) titled `Staff`
 that will appear
 at the bottom of record-viewing pages that use this setting.  Following
 the link initiates a
 search, using the sequence or table setting specified with the
-`viewingSequence` property, for a Staff record whose "staffID" matches the
+`viewingSequence` property, for the Staff record whose "staffID" matches the
 "advisorID" in the current record.
 
         externalTableRef.Staff.title = "Staff"
@@ -517,6 +531,19 @@ recommended fields in the external record have been provided (<i
 class='icon-ok'></i>), whether some recommended fields are missing
 (<i class='icon-adjust'></i>),
 or whether the related record is blank (<i class='icon-minus'></i>).
+
+External references are also useful when creating related records.  For
+example, the full record for a staff member might include a Person
+record (with the person's name and other common information), a Staff
+record (with additional information specific to staff members), a Staff
+Contract record, and other, related records.  Creating a full record for
+a new staff member starts with creating the Person record.  If the table
+setting for viewing Person records includes an external reference to the
+Staff record (initially an empty related record
+(<i class='icon-minus'></i>)), the user can click on that
+external reference to start a search for the non-existent record and
+then choose to Add New Entry.  The person's ID, which was the basis for
+the failed search, will be filled in automatically.
 
 [TODO: What if you need more than one field for the search?  Does
 `externalTableRef` then use the same keyword syntax as `initTableRef`?

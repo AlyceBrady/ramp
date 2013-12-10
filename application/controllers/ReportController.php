@@ -16,7 +16,6 @@ require_once("TableController.php");
  * @package    Ramp_Controller
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: ReportController.php 1 2012-12-12 alyce $
  *
  */
 

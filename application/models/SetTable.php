@@ -14,7 +14,6 @@
  * @package    Ramp_Model
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_SetTable.php 1 2012-07-12 alyce $
  *
  */
 
@@ -46,7 +45,6 @@ class Application_Model_SetTable
     // Constants representing search types
     const ANY                   = 'any';
     const ALL                   = 'all';
-    // const EXCLUDE               = 'exclude';
 
     // Status codes used for communicating whether the table has all 
     // recommended fields for a particular record.
@@ -82,7 +80,10 @@ class Application_Model_SetTable
     protected $_inTable = array();  // all fields in local database table
 
     /** @var array */
-    protected $_allImportFields = array(); // fields from other tables
+    protected $_sourceTables = array(); // table names (not aliases)
+
+    /** @var array */
+    protected $_allImportFields = array();  // fields from other tables
 
     /** @var array */
     protected $_importAliases = array();    // aliases for fields from other
@@ -254,6 +255,7 @@ class Application_Model_SetTable
      */
     protected function _initConnections($allConnections)
     {
+        $this->_sourceTables = array();
         $this->_joinExpressions = array();
 
         // Return immediately if there are no connections to process.
@@ -265,6 +267,7 @@ class Application_Model_SetTable
         // Put all connections in fully-qualified format.
         foreach ( $allConnections as $table => $connection )
         {
+            $realTable = $table;            // $table might be real name
             if ( is_array($connection) )    // fully-qualified format
             {
                 if ( ! isset($connection[self::CONNECTION]) )
@@ -276,12 +279,18 @@ class Application_Model_SetTable
                         "\"LocalTbl.localField = ExtTable.extField\"");
                 }
                 $this->_joinExpressions[$table] = $connection;
+                if ( isset($connection[self::ALIAS]) )
+                {
+                    // $table is alias for table named in connection info
+                    $realTable = $connection[self::ALIAS];
+                }
             }
             else        // abbreviated format
             {
                 $this->_joinExpressions[$table][self::CONNECTION] = $connection;
             }
             $this->_importAliases[$table] = array();
+            $this->_sourceTables[$table] = $realTable;
         }
     }
 
@@ -451,7 +460,7 @@ class Application_Model_SetTable
     public function getDependentTables()
     {
         $validValTbls = $this->_sourcesOfValidVals;
-        $importTbls = array_keys($this->_importAliases);
+        $importTbls = array_values($this->_sourceTables);
         $initTbls  = array_keys($this->_initTblRefs);
         $tables = array_unique(array_merge($validValTbls, $importTbls,
                                            $initTbls));
