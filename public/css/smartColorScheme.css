@@ -251,6 +251,26 @@ input.statusCode {
         color: #999;
 }
 
+/* Did not work great... (Green too small, needs box around icon).
+#record-block .lookup
+{
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #99EC99;
+  *background-color: #90D890;
+  background-image: -moz-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#A1F9A1), to(#90D890));
+  background-image: -webkit-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: -o-linear-gradient(top, #A1F9A1, #90D890);
+  background-image: linear-gradient(to bottom, #A1F9A1, #90D890);
+  background-repeat: repeat-x;
+  border-color: #90D890 #90D890 #77A577;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffA1F9A1', endColorstr='#ff90D890', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+*/
+
 
 /* Styles used by documents */
 

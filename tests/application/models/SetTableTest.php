@@ -2,6 +2,10 @@
 require_once 'TestConfiguration.php';
 require_once 'TestSettings.php';
 
+// TODO: This test suite has not been updated to test search comarison 
+// operators other than (=) (equality checks).  Nor are there any methods
+// to test the getDependentTables method.
+
 class models_SetTableTest extends PHPUnit_Framework_TestCase
 {
     const BAD_TC_FORMAT_1 = 'settingTests/badTableConnectionFormat1';
@@ -396,18 +400,20 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $data = array('id' => 1,
                       'artist' => 'The Beatles');
-        $entries = $this->_basic_setTable->getTableEntries($data,
+        $entries = $this->_basic_setTable->getTableEntries($data, array(), 
                                         Application_Model_SetTable::ANY);
         $this->assertSame(3, count($entries));
     }
 
+    /*  The EXCLUDE match type has been removed.
     public function testGetTableEntriesMultRowsExcludeType()
     {
         $data = array("artist" => "The Beatles");
-        $entries = $this->_basic_setTable->getTableEntries($data,
+        $entries = $this->_basic_setTable->getTableEntries($data, null,
                                         Application_Model_SetTable::EXCLUDE);
         $this->assertSame(5, count($entries));
     }
+     */
 
     public function testGetTableEntriesNoRows()
     {

@@ -14,7 +14,6 @@
  * @package    Ramp_Model
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_TVSGateway.php 1 2012-07-12 alyce $
  *
  */
 

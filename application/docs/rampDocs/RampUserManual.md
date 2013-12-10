@@ -13,6 +13,9 @@
 
 [VERY EARLY, VERY DRAFTY NOTES]
 
+May be able to get quite a bit from the Word documents created for
+Njala, circa June 2012.
+
 Describe the major activities or types of pages within Ramp:
 
 Logging in and setting/changing your password.
@@ -82,6 +85,55 @@ single-record view pages.
 <h4 id="add"> Viewing, Adding, and Editing Single Records </h4>
 
 Will need lots of documentation on adding.
+
+Some of that might be on ways to create related records with "foreign
+keys" filled in or with ability to look up foreign keys.
+
+  - __"Drill-down" functionality:__
+Use External References to Staff and Student from Person to provide 
+a "drill-down" option with search.  If we have created a new Person
+entry and now need to make the person a Student, we click on Student
+Record external reference which will come up with no matches found 
+and then we can Add New Entry with the foreign key automagically 
+filled in.
+
+> From the Admin User Manual:
+External references are also useful when creating related records.  For
+example, the full record for a staff member might include a Person
+record (with the person's name and other common information), a Staff
+record (with additional information specific to staff members), a Staff
+Contract record, and other, related records.  Creating a full record for
+a new staff member starts with creating the Person record.  If the table
+setting for viewing Person records includes an external reference to the
+Staff record (initially an empty related record
+(<i class='icon-minus'></i>)), the user can click on that
+external reference to start a search for the non-existent record and
+then choose to Add New Entry.  The person's ID, which was the basis for
+the failed search, will be filled in automatically.
+
+
+  - __"Add-another" functionality:__
+When a list/table is a subset based on a search or filter, the new 
+entry will have the search/filter values automagically filled in.  (Can
+be changed if the new entry is not, in fact, related to the previous 
+search or filter.)  Example: clicking on the Module Offerings external 
+reference of a Module, or searching for that module's ID or code/number
+explicitly, results in a list of existing Offerings for that Module (or
+an empty list).  Choosing Add New Entry will create a new Module 
+Offering record with the Module ID already filled in.
+
+  - __"Look up key" functionality:__
+Use the magnifying glass next to text input field to open a new tab
+or window in which you can search for the key of a related record.
+> For example, a Student record might require an advisor's ID.  A
+> user might not know the ID, however, but might know the advisor's
+> name.  If there ia a
+little magnifying glass (<i class='icon-search'></i>)
+next to the field, the user can click on that to open a new tab or
+window that will contain a search page for the table that contains the
+advisor's ID.  The user can do the search, copy the ID number, and
+then paste it back into the student record.
+
 
 Editing may not need much, but can piggy-back on some of the explanation
 under adding of things like required, recommended, and discouraged

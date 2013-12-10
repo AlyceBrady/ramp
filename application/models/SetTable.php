@@ -14,7 +14,6 @@
  * @package    Ramp_Model
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_SetTable.php 1 2012-07-12 alyce $
  *
  */
 
@@ -46,7 +45,6 @@ class Application_Model_SetTable
     // Constants representing search types
     const ANY                   = 'any';
     const ALL                   = 'all';
-    // const EXCLUDE               = 'exclude';
 
     // Status codes used for communicating whether the table has all 
     // recommended fields for a particular record.
@@ -462,7 +460,7 @@ class Application_Model_SetTable
     public function getDependentTables()
     {
         $validValTbls = $this->_sourcesOfValidVals;
-        $importTbls = $this->_sourceTables;
+        $importTbls = array_values($this->_sourceTables);
         $initTbls  = array_keys($this->_initTblRefs);
         $tables = array_unique(array_merge($validValTbls, $importTbls,
                                            $initTbls));

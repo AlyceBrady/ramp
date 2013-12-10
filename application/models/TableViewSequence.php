@@ -14,7 +14,6 @@
  * @package    Ramp_Model
  * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
- * @version    $Id: Application_Model_TableViewSequence.php 1 2012-07-12 alyce $
  *
  */
 
@@ -167,14 +166,17 @@ class Application_Model_TableViewSequence
         // all, set the missing ones from the ones that were provided.
         $this->_settingNames = array();
         $main = $this->_settingNames[self::MAIN_SETTING] = $main ? :
-                                                           ($reference ? :
                                                            ($edit ? :
                                                            ($add ? :
                                                            ($search ? :
                                                            ($searchRes ? :
-                                                           $tabular)))));
+                                                           ($tabular ? :
+                                                           ($delete ? :
+                                                           $reference
+                                                           ))))));
         $edit = $this->_settingNames[self::EDIT_SETTING] = $edit ? : $main;
         $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $main;
+        $delete = $this->_settingNames[self::DEL_SETTING] = $delete ? : $main;
         $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
                         $search ? : $main;
         $searchRes = $this->_settingNames[self::SEARCH_RES_SETTING] =
@@ -286,7 +288,7 @@ class Application_Model_TableViewSequence
             case self::ADD_RECORD:
                     return $this->getSetTableForAdding(); break;
             case self::DELETE_RECORD:
-                    return $this->getSetTableForModifying(); break;
+                    return $this->getSetTableForDeleting(); break;
             default:
                 throw new Exception("Error: trying to get set table " .
                     "for unknown table action: " . $actionName . ".");

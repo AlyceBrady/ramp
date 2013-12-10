@@ -217,13 +217,33 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
+     * Returns true if the given field is read-only.
+     * Everything is read-only for viewing and deletion pages.
+     * Nothing is read-only for searches.
+     * Imported fields are read-only when adding new records.
+     * Imported fields, primary keys, and explicit read-only fields
+     *      are read-only for editing.
+     */
+    public function fieldIsReadOnly($field)
+    {
+        return $this->_formType == self::VIEW ||
+               $this->_formType == self::DEL ||
+               ( $field->isImported() && $this->_formType != self::SEARCH ) ||
+               ( $this->_formType == self::ADD && 
+                   $field->initFromAnotherTable() ) ||
+               ( $this->_formType == self::EDIT && 
+                   (  $field->isReadOnly() || $field->isPrimaryKey()  )
+               );
+    }
+
+    /**
      * Creates a visible field element, with its label and, if this is a 
      * search, with a drop-down menu of search comparator types.
      */
     protected function _createVisibleElement($field, $name, $label)
     {
         // Determine whether field is read-only or acquiring input.
-        $readOnly = $this->_fieldIsReadOnly($field);
+        $readOnly = $this->fieldIsReadOnly($field);
 
         // If this is a search, generate drop-down for search comparators.
         if ( $this->_formType == self::SEARCH )
@@ -351,26 +371,6 @@ class Application_Form_TableRecordEntry extends Zend_Form
         }
 
         return $fieldElement;
-    }
-
-    /**
-     * Returns true if the given field is read-only.
-     * Everything is read-only for viewing and deletion pages.
-     * Nothing is read-only for searches.
-     * Imported fields are read-only when adding new records.
-     * Imported fields, primary keys, and explicit read-only fields
-     *      are read-only for editing.
-     */
-    protected function _fieldIsReadOnly($field)
-    {
-        return $this->_formType == self::VIEW ||
-               $this->_formType == self::DEL ||
-               ( $field->isImported() && $this->_formType != self::SEARCH ) ||
-               ( $this->_formType == self::ADD && 
-                   $field->initFromAnotherTable() ) ||
-               ( $this->_formType == self::EDIT && 
-                   (  $field->isReadOnly() || $field->isPrimaryKey()  )
-               );
     }
 
     /**
@@ -610,18 +610,17 @@ class Application_Form_TableRecordEntry extends Zend_Form
     {
         $fieldElement = new Zend_Form_Element_Hidden($name);
         $fieldElement->setLabel($label)
-                     ->setAttrib('class', 'hidden')
-                     ->setDecorators($hiddenFieldDecorators);
+                     ->setAttrib('class', 'hidden');
 
         // Add a ViewHelper decorator with the alias "Elem", a decorator 
         // for the label, and a decorator for errors.  These decorators 
         // hide an element, its label, and errors.
         $hiddenFieldDecParams =
                     array('separator'=>'', 'tag'=>'div', 'class'=>'hidden');
-        $element->addDecorator(array('Elem' => 'ViewHelper'),
+        $fieldElement->addDecorator(array('Elem' => 'ViewHelper'),
                                $hiddenFieldDecPrams);
-        $element->addDecorator('Label', $hiddenFieldDecPrams);
-        $element->addDecorator('Errors', $hiddenFieldDecPrams);
+        $fieldElement->addDecorator('Label', $hiddenFieldDecPrams);
+        $fieldElement->addDecorator('Errors', $hiddenFieldDecPrams);
 
         return $fieldElement;
     }
