@@ -58,15 +58,22 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         {
             if ( ! $acl->authorizesCurrentUser($reqResource) )
             {
+                /* 
+                 * This was not working very well, but something similar 
+                 * might be useful for saving most recent search params 
+                 * or most recent key from certain "key" tables.
+                 *
                 // Save the attempted destination.
                 $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
                 $mysession->destination_url = $request->getPathInfo();
+                 */
 
                 $auth = Zend_Auth::getInstance();
                 if ( ! $auth->hasIdentity() ||
                      ! is_object($auth->getIdentity()) )
                 {
                     // Not an authenticated user -- need to log in.
+                    $this->_redirectToLogin($request);
                     return $zendRedirector->setGotoUrl('auth/login');
                 }
                 else
@@ -197,6 +204,22 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
             return $components[0] . $settingInfo . $components[2];
         }
         return 'Resource: ' . $resourceSpec;
+    }
+
+    /**
+     * Redirect to login screen.
+     *
+     * @param  request  original request
+     */
+    protected function _redirectToLogin($request)
+    {
+        $controller_attempt = '_' . Ramp_Activity_Specification::CONTROLLER;
+        $action_attempt = '_' . Ramp_Activity_Specification::ACTION;
+        $params = array($controller_attempt => $request->getControllerName(),
+                        $action_attempt => $request->getActionName());
+        $params = $params + $request->getParams(); 
+        $zendRedirector = $this->_getRedirector();
+        $zendRedirector->setGotoSimple('login', 'auth', null, $params);
     }
 
     /**

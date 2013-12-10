@@ -30,6 +30,8 @@ class AuthController extends Zend_Controller_Action
 
     /* Keywords related to passing parameters to actions in this controller. */
     const DETAILS           = 'details';
+    const CONTROLLER        = Ramp_Activity_Specification::CONTROLLER;
+    const ACTION            = Ramp_Activity_Specification::ACTION;
 
 
     public function init()
@@ -489,15 +491,23 @@ class AuthController extends Zend_Controller_Action
      */
     protected function _goToAttemptedDestOrHome()
     {
-        $mysession = new Zend_Session_Namespace('Ramp_actionAttempt');
-        if ( isset($mysession->destination_url) )
+        // Was there an attempted destination?
+        $controllerKeyword = '_' . self::CONTROLLER;
+        $actionKeyword = '_' . self::ACTION;
+        $dest_controller = $this->_getParam($controllerKeyword, "");
+        $dest_action = $this->_getParam($actionKeyword, "");
+        if ( !empty($dest_controller) && ! empty($dest_action) )
         {
-            $destinationAttempt = $mysession->destination_url;
-            unset($mysession->destination_url);
-            $this->_redirect($destinationAttempt);
+            // Redirect to attempted destination.
+            $dest_params = $this->getRequest()->getUserParams();
+            unset($dest_params[$controllerKeyword]);
+            unset($dest_params[$actionKeyword]);
+            $this->_helper->redirector($dest_action, $dest_controller,
+                                       null, $dest_params);
         }
         else
         {
+            // Redirect to "home" (initial activity).
             $this->_helper->redirector('index', 'index');
         }
     }
