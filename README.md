@@ -61,7 +61,8 @@ which is a completely redesigned version of the Zend Framework.
 Ramp also uses Michel Fortin's [PHP Markdown Lib 1.3] [md], which
 depends on PHP 5.3, for converting Markdown text to HTML, and
 [`twitter-bootstrap-zf1`] [tbz], a library to work with [Twitter
-Bootstrap 2] [tb] and Zend Framework 1.
+Bootstrap 2] [tb] and Zend Framework 1.  Ramp uses several of the Glyph
+icons provided in Twitter Bootstrap by [Glyphicons][glyphicons].
 
 Ramp also includes some dependencies on HTML 5.  Thus the full list of
 dependencies is:
@@ -164,4 +165,5 @@ Individual contributors include:
 [tb-license]: /document/index/document/..%252F..%252FLICENSE-bootstrap-2.3.2
 [tbz]: https://github.com/andreaswarnaar/twitter-bootstrap-zf1
 [tbz-license]: /document/index/document/..%252F..%252FREADME-twitter-bootstrap-zf1.md
+[glyphicons]: http://glyphicons.com/
 
