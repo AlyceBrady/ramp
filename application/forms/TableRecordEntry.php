@@ -211,7 +211,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
         if ( empty($this->_searchCompElts) ||
              empty($this->_searchCompElts[$fieldElementName]) )
         {
-            return self::DEFAULT_SEARCH_OP;
+            return self::DEFAULT_COMPARATOR;
         }
         return $this->_searchCompElts[$fieldElementName]->getValue();
     }
