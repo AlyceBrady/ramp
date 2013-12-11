@@ -370,6 +370,7 @@ class TableController extends Zend_Controller_Action
         if ( $this->_thisIsInitialDisplay() )
         {
             // Retrieve record based on provided fields / primary keys.
+            $this->_acquireLock($setTable, $this->_fieldsToMatch);
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
         elseif ( $this->_submittedButton == self::SAVE )
@@ -847,6 +848,58 @@ class TableController extends Zend_Controller_Action
         {
             return $matches[0];
         }
+    }
+
+    /**
+     * Acquires the lock for the given record in the specified table.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     */
+    protected function _acquireLock($setTable, $matchingFields)
+    {
+        // Get the locking table and key field name.
+        $lockRelationsTable = new Application_Model_DbTable_LockRelations();
+        $lookupInfo =
+                $lockRelationsTable->getLockInfo($setTable->getDbTableName());
+        $keyToLookup =
+            $lookupInfo[Application_Model_DbTable_LockRelations::LOCKING_KEY_NAME];
+
+        // Do the lookup based on the lookup information
+        $recordToLock = $setTable->getTableEntry($matchingFields);
+
+        // Get the user information.
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() )
+        {
+            $user = $auth->getIdentity()->username;
+        }
+        else
+        {
+            // Use DEFAULT_ROLE if user is not logged in.
+            $user = Ramp_Acl::DEFAULT_ROLE;
+        }
+
+        // Construct $lockInfo object.
+        $lockInfo = array();
+        $lockInfo[Application_Model_DbTable_Locks::LOCK_TABLE] =
+            $lookupInfo[Application_Model_DbTable_LockRelations::LOCK_TABLE];
+        $lockInfo[Application_Model_DbTable_Locks::LOCKING_KEY] =
+            $recordToLock[$keyToLookup];
+        $lockInfo[Application_Model_DbTable_Locks::USER] = $user;
+
+        // Get the lock (if possible).
+        $locksTable = new Application_Model_DbTable_Locks();
+        if ( ! $locksTable->acquireLock($lockInfo) )
+        {
+            // Notify user that lock is unavailable.
+            $params = array(Application_Model_DbTable_Locks::USER =>
+                            urlencode($user));
+            $this->_helper->redirector('unavailable-lock', 'lock', null,
+                                       $params);
+        }
+        return;
+
     }
 
 }

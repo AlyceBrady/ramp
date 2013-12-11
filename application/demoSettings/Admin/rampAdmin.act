@@ -12,6 +12,10 @@ activity[] = "Spacer"
 activity[] = "ValidateACL"
 activity[] = "Spacer"
 activity[] = "ViewACL"
+activity[] = "Spacer"
+activity[] = "LockRelations"
+activity[] = "Spacer"
+activity[] = "Locks"
 
 
 [ Spacer ]
@@ -74,4 +78,19 @@ description = "Reset a user's password"
 controller = "auth"
 action = "reset-password"
 parameter = ""
+
+[ LockRelations ]
+
+type = "setting"
+source = "Admin/ramp_lock_relations"
+title = "Lock Relations"
+description = "View or modify list of lock relations"
+
+[ Locks ]
+
+type = "setting"
+source = "Admin/ramp_lock_locks"
+title = "Locks"
+description = "View or modify list of locks"
+
 

@@ -39,6 +39,7 @@ class Ramp_Acl extends Zend_Acl
     const EDIT_RECORD       = 'record-edit';
     const ADD_RECORD        = 'add';
     const DELETE_RECORD     = 'delete';
+    const UNAVAILABLE_LOCK  = 'unavailable-lock';
 
     // ACL categories for Table actions.
     const VIEW = 'View';
@@ -298,6 +299,9 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('auth::validate-acl-rules'));
         $this->add(new Zend_Acl_Resource('auth::view-acl-info'));
 
+        // LOCK CONTROLLER: all actions
+        $this->add(new Zend_Acl_Resource('lock::unavailable-lock'));
+
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));
 
@@ -334,6 +338,8 @@ class Ramp_Acl extends Zend_Acl
         $this->allow(self::DEFAULT_ROLE, 'auth::login');
         $this->allow(self::DEFAULT_ROLE, 'auth::logout');
         $this->allow(self::DEFAULT_ROLE, 'auth::unauthorized');
+
+        $this->allow(self::DEFAULT_ROLE, 'lock::unavailable-lock');
 
         // All users should be able to set or change their password if 
         // Ramp is handling authentication internally.
