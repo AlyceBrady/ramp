@@ -39,6 +39,7 @@ class Ramp_Acl extends Zend_Acl
     const EDIT_RECORD       = 'record-edit';
     const ADD_RECORD        = 'add';
     const DELETE_RECORD     = 'delete';
+    const ENTER_BLOCK_DATA  = 'block-entry';
 
     // ACL categories for Table actions.
     const VIEW = 'View';

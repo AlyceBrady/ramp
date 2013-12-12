@@ -32,6 +32,7 @@ class TableController extends Zend_Controller_Action
     const SUBMIT_BUTTON         = 'submit';
     const SETTING_NAME          = '_setting';
     const SEARCH_TYPE           = '_search';
+    const BLOCK_ENTRY_CHOICE    = '_blockEntry';
     const ANY                   = Application_Model_SetTable::ANY;
     const ALL                   = Application_Model_SetTable::ALL;
 
@@ -43,6 +44,8 @@ class TableController extends Zend_Controller_Action
     const TABLE                 = "Tabular Display";
     const ADD                   = "Add New Entry";
     const CLONE_BUTTON          = "Clone This Entry";
+    const BLOCK_ENTRY_PREFIX    = "Add ";
+    const BLOCK_ENTRY_SUFFIX    = " in a Block";
     const EDIT                  = "Edit Entry";
     const DEL_BUTTON            = "Delete Entry";
     const RESET_BUTTON          = "Reset Fields";
@@ -321,9 +324,15 @@ class TableController extends Zend_Controller_Action
 
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
-        $this->view->buttonList = array(self::EDIT, self::ADD,
-                                        self::CLONE_BUTTON, self::SEARCH,
-                                        self::DEL_BUTTON, self::DISPLAY_ALL);
+        $buttonList = array(self::EDIT, self::ADD, self::CLONE_BUTTON);
+        if ( $this->_tblViewingSeq->allowsBlockEntry() )
+        {
+            $buttonList[] = self::BLOCK_ENTRY_PREFIX .
+                            $this->_tblViewingSeq->getBlockEntryFields() .
+                            self::BLOCK_ENTRY_SUFFIX;
+        }
+        $this->view->buttonList = array_merge($buttonList, 
+                    array(self::SEARCH, self::DEL_BUTTON, self::DISPLAY_ALL));
         $this->view->dataEntryForm = $form =
                     new Application_Form_TableRecordEntry($setTable, 0);
 
@@ -505,6 +514,77 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Controls the Table block entry action, presenting a new page in which
+     * to add multiple entries at once to a table.
+     */
+    public function blockEntryAction()
+    {
+        $seq = $this->_tblViewingSeq;
+        if ( ! $seq->allowsBlockEntry() )
+        {
+            throw new Exception("Table sequence " . $seq->getSeqName() .
+                        " does not have a valid blockEntry specification.");
+        }
+        $blockEntryChoice = $this->_getParam(self::BLOCK_ENTRY_CHOICE);
+        $blockEntrySeq = $seq->getBlockEntrySeq($blockEntryChoice);
+
+        $setTable = $blockEntrySeq->getSetTableForSummary();
+
+        /*
+        // Let the view renderer know the table, buttons, and data form to use.
+        $this->_initViewTableInfo($setTable);
+        $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
+                                        self::CANCEL, self::SEARCH);
+        $this->view->dataEntryForm = $form =
+                new Application_Form_TableRecordEntry($setTable, 0, self::ADD);
+
+        // Is this the initial display or the callback with fields provided?
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // If "starter" fields have been provided, fill them in.
+            if ( ! empty($this->_fieldsToMatch) )
+            {
+                $form->populate($this->_fieldsToMatch);
+            }
+        }
+        elseif ( $this->_submittedButton == self::SAVE )
+        {
+            // Process the filled-out form that has been posted:
+            // if the changes are valid, update the database.
+            $formData = $this->getRequest()->getPost();
+            if ($form->isValid($formData))
+            {
+                // Determine fields being added.  Remove null fields.
+                $addValues = $this->_fillInitValues($setTable,
+                                                    $form->getFieldValues());
+                $meaningfulData = $this->_getFilledFields($addValues);
+
+                // Update the database and redisplay the record.
+                $setTable->addTableEntry($meaningfulData);
+                $this->_executeSearch($setTable, $meaningfulData, null,
+                                      self::DISPLAY_ALL);
+            }
+            else
+            {
+                // Invalid entries: show them for editing.
+                $this->view->errMsgs[] =
+                        "Invalid data values.  Please correct.";
+                $form->populate($formData);
+            }
+        }
+        elseif ( $this->_submittedButton == self::CANCEL )
+        {
+            $this->_goTo('index');
+        }
+        else
+        {
+            $this->_goTo($this->_getUsualAction($this->_submittedButton));
+        }
+         */
+        
+    }
+
+    /**
      * Initializes basic view renderer information from the set table.
      *
      * @param Application_Model_SetTable  table: setting & db info
@@ -670,7 +750,9 @@ class TableController extends Zend_Controller_Action
                                 'module' => null,
                                 self::SETTING_NAME => null,
                                 self::SUBMIT_BUTTON => null,
-                                self::SEARCH_TYPE => null);
+                                self::SEARCH_TYPE => null,
+                                self::BLOCK_ENTRY_CHOICE => null,
+                            );
 
         // Return an array that does not include those parameters.
         $this->_fieldsToMatch = array();

@@ -47,12 +47,13 @@ class TestSettings
     const SEARCH_RES_ONLY = 'sequenceTests/searchResSeqOnly';
     const SEARCH_SPEC_ONLY = 'sequenceTests/searchSpecSeqOnly';
     const TABULAR_ONLY = 'sequenceTests/tabularSeqOnly';
-    const REFERENCE_ONLY = 'sequenceTests/referenceSeqOnly';
+    const BLOCK_ENTRY_ONLY = 'sequenceTests/blockEntryOnly';
 
     private static $_basicTableSetting;
     private static $_variantBasicTableSetting;
     private static $_multSettingsTopLevel;
     private static $_sequenceSettings;
+    private static $_fullSettingSet;
     private static $_settingNames;
     private static $_dataSourceTables;
 
@@ -112,10 +113,28 @@ class TestSettings
             'setting' => 'DetailedView',
             'addSetting' => 'AddView',
             'editSetting' => 'ModifyingView',
+            'deleteSetting' => 'ModifyingView',
             'searchSpecSetting' => 'DetailedView',
             'searchResultsSetting' => self::BASIC_SETTINGS_FILE,
             'tabularSetting' => self::BASIC_SETTINGS_FILE,
-            'referenceSetting' => self::BASIC_SETTINGS_FILE
+            'blockEntry' => 
+                array('block1' =>
+                    array(
+                        'identificationSetting' => self::BASIC_SETTINGS_FILE,
+                        'entrySetting' => self::BASIC_2_SETTINGS_FILE,
+                        'summarySetting' => 'AddView',
+                    )
+                )
+        );
+
+        self::$_fullSettingSet = array(
+            'initAction' => 'displayAll',
+            'setting' => 'DetailedView',
+            'addSetting' => 'AddView',
+            'editSetting' => 'ModifyingView',
+            'searchSpecSetting' => 'DetailedView',
+            'searchResultsSetting' => self::BASIC_SETTINGS_FILE,
+            'tabularSetting' => self::BASIC_SETTINGS_FILE,
         );
 
         self::$_settingNames = array('SharedProperties',
@@ -151,6 +170,11 @@ class TestSettings
     function getSeqSettingsInMultSettingsFile()
     {
         return self::$_sequenceSettings;
+    }
+
+    function getAllSettingsInMultSettingsFile()
+    {
+        return self::$_fullSettingSet;
     }
 
     function getSearchResultsSettingTableName()
