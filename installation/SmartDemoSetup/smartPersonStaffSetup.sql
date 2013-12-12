@@ -5,8 +5,14 @@
 --
 
 
+USE `smart_dev`;
+
 DROP TRIGGER IF EXISTS prefName_insert;
 DROP TRIGGER IF EXISTS prefName_update;
+
+-- Before dropping Person, need to drop table(s) that depend on it.
+SOURCE dropSmartPersonStaffDependencies.sql
+
 DROP TABLE IF EXISTS Person;
 
 CREATE TABLE Person (
@@ -20,7 +26,7 @@ CREATE TABLE Person (
     prefFirstName VARCHAR ( 30 ),
     previousName VARCHAR ( 40 ),
     gender ENUM('Unknown', 'M', 'F') NOT NULL DEFAULT 'Unknown',
-    prefEmail VARCHAR ( 30 ),
+    prefEmail VARCHAR ( 60 ),
     prefPhone VARCHAR ( 20 ),
     birthDate DATE NULL,
     deceasedDate DATE NULL,
@@ -52,13 +58,16 @@ INSERT INTO Person (id, title, firstname, middlename, lastname, specifiedPrefFNa
     previousName, gender, prefEmail, prefPhone, birthDate, citizenship, privacy)
 VALUES
 (1, 'Dr.', 'Jill', 'Alyce', 'Brady', 'Alyce', 'Faulstich', 'F', 'abrady@kzoo.edu', '123-456-7890', '1961-06-12', 'US', 'F')
-, (2, 'Mr.', 'Aly', 'Harry', 'Patrick', DEFAULT, 'Lisa', 'M', 'njala.reg@yahoo.com', '23276615200', '1959-03-14', 'Sierra Leone', 'F')
+, (2, 'Mr.', 'Daniel', DEFAULT, 'Chaytor', DEFAULT, DEFAULT, 'M', 'chaytor@usl.edu.sl', '23276615200', '1959-03-14', 'Sierra Leone', 'F')
 , (3, 'Mrs.', 'Beth', 'Anne', 'Stork', 'Beth Anne', 'Faulstich', 'F', 'bastork@pretend.com', '222-222-2222', '1963-01-27', 'US', 'F')
 , (4, 'Mr.', 'Paul', 'Stuart', 'Faulstich', DEFAULT, DEFAULT, 'M', 'psf@pretend.com', '333-333-3333', '1968-11-02', 'US', 'F')
 , (5, 'Sir', 'Walter', DEFAULT, 'Elliot', 'Sir Walter', DEFAULT, 'M', 'sir_walter@persuasion.com', '333-333-3333', '1968-11-02', 'UK', 'F')
 , (6, 'Mrs.', 'Mary', DEFAULT, 'Brady', DEFAULT, 'Filardi', 'F', 'mbrady@pretend.com', '444-444-4444', '1925-08-04', 'US', 'F')
 , (7, 'Mrs.', 'Mary', DEFAULT, 'Musgrove', DEFAULT, 'Elliot', 'F', 'mm@persuasion@com', '555-555-5555', DEFAULT, 'UK', 'F')
 , (24, 'Mr.', 'Henry', DEFAULT, 'Weston', NULL, DEFAULT, 'M', 'gk@emma.com', '555-555-5555', '1957-04-23', 'UK', 'F')
+, (25, 'Mr.', 'Thomas', DEFAULT, 'Songu', DEFAULT, DEFAULT, 'M', 'tsongu@njala.edu.sl', '23276615200', '1969-03-14', 'Sierra Leone', 'F')
+, (26, 'Ms.', 'Jane', DEFAULT, 'Eyre', DEFAULT, DEFAULT, 'M', 'jeyre@thornfield.hall.uk', '23276615200', '1964-01-26', 'UK', 'F')
+, (27, 'Mr.', 'Tom', DEFAULT, 'Sawyer', DEFAULT, DEFAULT, 'M', 'tsawyer@employee.management.com', '23276615200', '1974-09-04', 'US', 'F')
 ;
 
 INSERT INTO Person (id, firstname, lastname, specifiedPrefFName, gender,
@@ -100,6 +109,10 @@ CREATE TABLE Address (
         ON UPDATE CURRENT_TIMESTAMP
 );
 
+
+-- Table(s) that depend on Staff have already been dropped by
+-- dropSmartPersonStaffDependencies.sql, sourced above.
+
 DROP TABLE IF EXISTS Staff;
 
 CREATE TABLE Staff (
@@ -114,12 +127,15 @@ CREATE TABLE Staff (
 INSERT INTO Staff (staffID, officeNumber, officeBuilding)
 VALUES
 (1, '203G', 'Olds/Upton Hall')
-, (2, '1', 'Secretariat')
+, (2, '1', 'IPAM')
 , (3, '123', 'Greenville')
 , (4, '123', 'Olds/Upton Hall')
 , (5, DEFAULT, DEFAULT)
 , (6, '123', 'Olds/Upton Hall')
 , (24, '203B', 'Olds/Upton Hall')
+, (25, '1', 'Library')
+, (26, '1', 'Secretariat')
+, (27, '1', 'HR')
 ;
 
 DROP TABLE IF EXISTS StaffContract;
@@ -147,11 +163,14 @@ VALUES
 (1, 'Math/CS', 'Teaching', 'Asst. Prof. of Computer Science', 'Ended', '1994-09-26', '2001-03-15')
 , (1, 'Math/CS', 'Teaching', 'Assoc. Prof. of Computer Science', 'Ended', '2001-03-15', '2010-03-15')
 , (1, 'Math/CS', 'Teaching', 'Professor of Computer Science', 'Full-time', '2010-03-15', DEFAULT)
-, (2, 'Secretariat', 'Administrative', 'Asst. Registrar', 'Full-time', '2007-09-15', DEFAULT)
+, (2, 'ICT', 'Teaching', 'Lecturer', 'Full-time', '1994-09-15', DEFAULT)
 , (3, 'History', 'Teaching', 'Teacher', 'Full-time', '2001-08-15', DEFAULT)
 , (4, 'Lang. and Lit.', 'Teaching', 'Teacher', 'Full-time', '2001-08-15', DEFAULT)
 , (5, 'Gentry', 'Other', 'Narcissistic Baronet', 'Ended', '2000-08-15', '2010-08-15')
 , (6, 'Economics', 'Teaching', 'Teacher', 'Full-time', '2001-08-15', DEFAULT)
 , (24, 'Math/CS', 'Teaching', 'Asst. Prof. of Mathematics', 'Full-time', '2008-09-15', DEFAULT)
+, (25, 'ICT', 'Administrative', 'ICT Consultant', 'Full-time', '2012-03-15', DEFAULT)
+, (26, 'Secretariat', 'Administrative', 'Asst. Registrar', 'Full-time', '2007-09-15', DEFAULT)
+, (27, 'Secretariat', 'Administrative', 'Human Resource Staff', 'Full-time', '2007-09-15', DEFAULT)
 ;
 
