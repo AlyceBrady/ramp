@@ -382,7 +382,7 @@ class TableController extends Zend_Controller_Action
             {
                 // Update the database and redisplay the record.
                 $setTable->updateTableEntry($form->getFieldValues());
-                $this->releaseLock($setTable, $this->_fieldsToMatch);
+                $this->_releaseLock($setTable, $this->_fieldsToMatch);
                 $this->_goTo('record-view', $this->_fieldsToMatch);
             }
             else
@@ -395,12 +395,12 @@ class TableController extends Zend_Controller_Action
         }
         elseif ( $this->_submittedButton == self::DEL_BUTTON )
         {
-            $this->releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
             $this->_goTo('delete', $this->_fieldsToMatch);
         }
         else  // Cancel
         {
-            $this->releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
             $this->_goTo('record-view', $this->_fieldsToMatch);
         }
 
@@ -495,7 +495,7 @@ class TableController extends Zend_Controller_Action
         }
         elseif ( $this->_submittedButton == self::CANCEL )
         {
-            $this->releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
             $this->_goTo('record-view', $this->_fieldsToMatch);
         }
         else        // Delete has been confirmed.
@@ -504,8 +504,12 @@ class TableController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
+                // Get the lock information, including the key on which 
+                // the record was locked BEFORE deleting record!
+                $lockInfo = $this->_getLockInfo($setTable,
+                                                $this->_fieldsToMatch);
                 $rows = $setTable->deleteTableEntry($form->getFieldValues());
-                $this->releaseLock($setTable, $this->_fieldsToMatch);
+                $this->_releaseLock(null, null, $lockInfo);
                 // TODO: report to user that entry was deleted!
             }
 
@@ -885,14 +889,22 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Releases the lock for the given record in the specified table.
+     * Uses the $setTable and $matchingFields parameters to determine 
+     * the lock information unless the optional $lockInfo parameter is
+     * provided.
      *
      * @param Application_Model_SetTable $setTable    setting & db info
      * @param array $matchingFields  fields and values to search/select for
+     * @param $lockInfo  the information to use to lock (if already known)
      */
-    protected function _releaseLock($setTable, $matchingFields)
+    protected function _releaseLock($setTable, $matchingFields,
+                                    $lockInfo = null)
     {
         // Get the information needed to release a lock.
-        $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+        if ( $lockInfo == null )
+        {
+            $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+        }
 
         // Release the lock.
         $locksTable = new Application_Model_DbTable_Locks();
@@ -916,8 +928,9 @@ class TableController extends Zend_Controller_Action
         $keyToLookup =
             $lookupInfo[Application_Model_DbTable_LockRelations::LOCKING_KEY_NAME];
 
-        // Do the lookup based on the lookup information
+        // Get the key used for locking
         $recordToLock = $setTable->getTableEntry($matchingFields);
+        $lockingKey = $recordToLock[$keyToLookup];
 
         // Get the user information.
         $auth = Zend_Auth::getInstance();
@@ -935,8 +948,7 @@ class TableController extends Zend_Controller_Action
         $lockInfo = array();
         $lockInfo[Application_Model_DbTable_Locks::LOCK_TABLE] =
             $lookupInfo[Application_Model_DbTable_LockRelations::LOCK_TABLE];
-        $lockInfo[Application_Model_DbTable_Locks::LOCKING_KEY] =
-            $recordToLock[$keyToLookup];
+        $lockInfo[Application_Model_DbTable_Locks::LOCKING_KEY] = $lockingKey;
         $lockInfo[Application_Model_DbTable_Locks::USER] = $user;
 
         return $lockInfo;
