@@ -382,6 +382,7 @@ class TableController extends Zend_Controller_Action
             {
                 // Update the database and redisplay the record.
                 $setTable->updateTableEntry($form->getFieldValues());
+                $this->releaseLock($setTable, $this->_fieldsToMatch);
                 $this->_goTo('record-view', $this->_fieldsToMatch);
             }
             else
@@ -393,9 +394,15 @@ class TableController extends Zend_Controller_Action
             }
         }
         elseif ( $this->_submittedButton == self::DEL_BUTTON )
-            { $this->_goTo('delete', $this->_fieldsToMatch); }
+        {
+            $this->releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_goTo('delete', $this->_fieldsToMatch);
+        }
         else  // Cancel
-            { $this->_goTo('record-view', $this->_fieldsToMatch); }
+        {
+            $this->releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_goTo('record-view', $this->_fieldsToMatch);
+        }
 
     }
 
@@ -858,6 +865,47 @@ class TableController extends Zend_Controller_Action
      */
     protected function _acquireLock($setTable, $matchingFields)
     {
+        // Get the information needed to acquire a lock.
+        $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+
+        // Get the lock (if possible).
+        $locksTable = new Application_Model_DbTable_Locks();
+        if ( ! $locksTable->acquireLock($lockInfo) )
+        {
+            // Notify user that lock is unavailable.
+            $params = array(Application_Model_DbTable_Locks::USER =>
+                            urlencode($user));
+            $this->_helper->redirector('unavailable-lock', 'lock', null,
+                                       $params);
+        }
+    }
+
+    /**
+     * Releases the lock for the given record in the specified table.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     */
+    protected function _releaseLock($setTable, $matchingFields)
+    {
+        // Get the information needed to release a lock.
+        $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+
+        // Release the lock.
+        $locksTable = new Application_Model_DbTable_Locks();
+        $locksTable->releaseLock($lockInfo);
+    }
+
+    /**
+     * Gets the lock information for the lock to acquire or release 
+     * based on the given set table, the matching fields, and the Lock 
+     * Relations table.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     */
+    protected function _getLockInfo($setTable, $matchingFields)
+    {
         // Get the locking table and key field name.
         $lockRelationsTable = new Application_Model_DbTable_LockRelations();
         $lookupInfo =
@@ -888,17 +936,7 @@ class TableController extends Zend_Controller_Action
             $recordToLock[$keyToLookup];
         $lockInfo[Application_Model_DbTable_Locks::USER] = $user;
 
-        // Get the lock (if possible).
-        $locksTable = new Application_Model_DbTable_Locks();
-        if ( ! $locksTable->acquireLock($lockInfo) )
-        {
-            // Notify user that lock is unavailable.
-            $params = array(Application_Model_DbTable_Locks::USER =>
-                            urlencode($user));
-            $this->_helper->redirector('unavailable-lock', 'lock', null,
-                                       $params);
-        }
-        return;
+        return $lockInfo;
 
     }
 

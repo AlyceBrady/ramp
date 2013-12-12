@@ -38,5 +38,29 @@ class Application_Model_DbTable_Locks extends Zend_Db_Table_Abstract
         $this->getAdapter()->commit();
         return true;
     }
+
+    /**
+     * Releases the lock associated with the information in $lockInfo.
+     */
+    public function releaseLock($lockInfo)
+    {
+        $lock_table = $lockInfo[self::LOCK_TABLE];
+        $lock_key = $lockInfo[self::LOCKING_KEY];
+        $user = $lockInfo[self::USER];
+
+        // Lock the locks table to acquire the lock on $db_table.
+        $this->getAdapter()->beginTransaction();
+
+        // Release the lock.
+        $where = array((self::LOCK_TABLE . ' = ?') => $lock_table,
+                       (self::LOCKING_KEY . ' = ? ') => $lock_key,
+                       (self::USER . ' = ? ') => $user);
+        $numRows = $this->delete($where);
+
+        $this->getAdapter()->commit();
+        return;
+    }
+
+
 }
 
