@@ -13,8 +13,14 @@ SOURCE createSmartDemoMysqlAccts.sql;
 -- Define what "guest" users (those who are not logged in) are
 -- authorized to do, create a SMART administrator role, and define what
 -- administrative users with that role may do.
+-- For demo purposes, create several test users ("hr" and "reg")
+-- and define what those users may do.
 
 SOURCE createSmartDemoUsersAuths.sql;
+
+-- Create and populate the built-in tables used for record locking.
+
+SOURCE createSmartLocks.sql;
 
 -- Create and populate the demo Smart database.
 
