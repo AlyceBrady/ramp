@@ -469,10 +469,10 @@ class TableController extends Zend_Controller_Action
     /**
      * Controls the Table delete action, presenting a confirmation page
      * before deleting an existing entry from the table.
-     * TODO: Confirmation might be better handled on the client side, so 
-     * that only confirmed delete requests get to the server.  In that 
-     * case, processing of deletion requests would probably move to the 
-     * appropriate display or edit actions.
+     * TODO: Confirmation could be handled on the client side, in which
+     * case only confirmed delete requests would get to the server.  In
+     * that  case, processing of deletion requests would probably move
+     * to the  appropriate display or edit actions.
      */
     public function deleteAction()
     {
@@ -490,10 +490,12 @@ class TableController extends Zend_Controller_Action
         {
             // Retrieve the table entry to display based on the key(s);
             // assign to view for confirmation.
+            $this->_acquireLock($setTable, $this->_fieldsToMatch);
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
         elseif ( $this->_submittedButton == self::CANCEL )
         {
+            $this->releaseLock($setTable, $this->_fieldsToMatch);
             $this->_goTo('record-view', $this->_fieldsToMatch);
         }
         else        // Delete has been confirmed.
@@ -503,6 +505,7 @@ class TableController extends Zend_Controller_Action
             if ( $form->isValid($formData) )
             {
                 $rows = $setTable->deleteTableEntry($form->getFieldValues());
+                $this->releaseLock($setTable, $this->_fieldsToMatch);
                 // TODO: report to user that entry was deleted!
             }
 
