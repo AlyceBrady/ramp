@@ -30,28 +30,29 @@ $extSearchParams = array('controller' => 'table', 'action' => 'search');
 
 <?php  /* <div class="control-group row"> */ ?>
 <?php foreach ( $fieldElts as $name => $elt ) :
+    $field = $fields[$name];
     echo "<div class='control-group'>\n";
     echo "<div id='$name-label' class='control-label'>";
-    echo $elt->renderLabel() . "\n";
+    if ( $field->isVisible() ) :
+        echo $elt->renderLabel() . "\n";
+    endif;
     echo "</div>\n";
     echo "<div class='row controls'>\n";
-    if ( $isSearch ) :
+    if ( $field->isVisible() && $isSearch ) :
         $opSearchElt = $searchOpElts[$name];
         echo $opSearchElt->renderElem() . "\n";
     endif;
     echo $elt->renderElem() . "\n";
     echo $elt->renderErrors();
-    $field = $fields[$name];
     if ( $isModifyingForm && $field->isExternalTableLink() &&
-         ! $form->fieldIsReadOnly($field) )
-    {
+         ! $form->fieldIsReadOnly($field) ) :
         $setting = urlencode($field->getLinkedTableSetting());
         $urlParams = $extSearchParams +
                         array(TableController::SETTING_NAME => $setting);
         echo "<a href=\"" . $this->url($urlParams, null, true) .
                 "\" target=\"_blank\" class='lookup'><i";
         echo "   class='icon-search' title='Select'></i></a>\n";
-    }
+    endif;
     echo "</div>\n";
     echo "</div>\n";
 endforeach; ?>
