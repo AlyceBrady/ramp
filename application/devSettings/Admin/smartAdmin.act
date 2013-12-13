@@ -16,6 +16,8 @@ activity[] = "Spacer"
 activity[] = "LockRelations"
 activity[] = "Spacer"
 activity[] = "Locks"
+activity[] = "Spacer"
+activity[] = "FreeLock"
 
 
 [ Spacer ]
@@ -92,4 +94,13 @@ type = "setting"
 source = "Admin/ramp_lock_locks"
 title = "Locks"
 description = "View or modify list of locks"
+
+[ FreeLock ]
+
+type = "controllerAction"
+title = "Release Lock"
+description = "Release an orphaned or abandoned lock"
+controller = "lock"
+action = "free-lock"
+parameter = ""
 

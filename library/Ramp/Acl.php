@@ -40,6 +40,7 @@ class Ramp_Acl extends Zend_Acl
     const ADD_RECORD        = 'add';
     const DELETE_RECORD     = 'delete';
     const UNAVAILABLE_LOCK  = 'unavailable-lock';
+    const FREE_LOCK         = 'free-lock';
 
     // ACL categories for Table actions.
     const VIEW = 'View';
@@ -301,6 +302,7 @@ class Ramp_Acl extends Zend_Acl
 
         // LOCK CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('lock::unavailable-lock'));
+        $this->add(new Zend_Acl_Resource('lock::free-lock'));
 
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));

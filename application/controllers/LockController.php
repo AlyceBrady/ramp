@@ -45,5 +45,44 @@ class LockController extends Zend_Controller_Action
         $this->view->errorMsg = "This record is already locked$byWhom.";
     }
 
+    /**
+     * Prompt the user for information about the lock to release.
+     */ 
+    public function freeLockAction()
+    {
+        // Instantiate the form that asks what lock to release.
+        $form = new Application_Form_FreeLockForm();
+
+        // Initialize the error message to be empty.
+        $this->view->formResponse = '';
+
+        // For initial display, just render the form.  If this is the 
+        // callback after the form has been filled out, process the form.
+        if ( ! $this->getRequest()->isPost() )
+        {
+            // Render the view.
+            $this->view->form = $form;
+        }
+        else
+        {
+            // Process the filled-out form that has been posted:
+            // if the input values are valid, release the lock.
+            $formData = $this->getRequest()->getPost();
+            if ($form->isValid($formData))
+            {
+                $lockTable = new Application_Model_DbTable_Locks();
+                $lockTable->freeLock($formData);
+                $this->view->formResponse = 'Lock should now ' .
+                    'be released.';
+            }
+            else
+            {
+                // Render the view.
+                $this->view->form = $form;
+            }
+        }
+
+    }
+
 }
 
