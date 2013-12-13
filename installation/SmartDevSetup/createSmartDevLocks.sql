@@ -42,10 +42,28 @@ CREATE TABLE `ramp_lock_relations` (
 LOCK TABLES `ramp_lock_relations` WRITE;
 INSERT INTO `ramp_lock_relations` (`db_table`, `lock_table`, `locking_key_name`)
 VALUES
-('Person', 'Person', 'id')
+('ramp_auth_users', 'ramp_auth_users', 'username')
+, ('ramp_auth_auths', 'ramp_auth_auths', 'id')
+, ('ramp_lock_relations', 'ramp_lock_relations', 'db_table')
+, ('Term', 'Term', 'term')
+, ('Person', 'Person', 'id')
+, ('Address', 'Person', 'personID')
+, ('Staff', 'Person', 'staffID')
+, ('StaffContract', 'Person', 'staffID')
 , ('Student', 'Person', 'studentID')
+, ('Advising', 'Person', 'studentID')
+, ('StudentAcadProgram', 'Person', 'studentID')
+, ('StudentLeaves', 'Person', 'studentID')
+, ('StudentAnnotations', 'Person', 'studentID')
+, ('Enrollment', 'Person', 'studentID')
+, ('TermStanding', 'Person', 'studentID')
+, ('TestScores', 'Person', 'studentID')
 , ('Modules', 'Modules', 'moduleID')
-, ('ModuleOfferings', 'Modules', 'moduleID')
+, ('ModuleOfferings', 'ModuleOfferings', 'pk_id')
+, ('ModuleAssignments', 'ModuleOfferings', 'modOfferingID')
+, ('ModuleAttributes', 'ModuleAttributes', 'pk_id')
+, ('Attributes', 'Attributes', 'pk_id')
+, ('AcadProgram', 'AcadProgram', 'programID')
 ;
 UNLOCK TABLES;
 

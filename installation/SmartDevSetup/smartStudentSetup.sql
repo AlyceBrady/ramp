@@ -263,9 +263,7 @@ DROP TABLE IF EXISTS Enrollment;
 CREATE TABLE Enrollment (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
-    term VARCHAR ( 10 ) NOT NULL,
-    moduleID INT NOT NULL,
-    section VARCHAR ( 3 ) NOT NULL DEFAULT '01',
+    modOfferingID INT NOT NULL,
     status ENUM('Enrolled', 'Canceled', 'Dropped', 'Withdrawn', 'Completed')
         NOT NULL,
     registDate DATE NOT NULL,
@@ -276,11 +274,9 @@ CREATE TABLE Enrollment (
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (studentID) REFERENCES Student (studentID),
-    FOREIGN KEY (term, moduleID, section)
-        REFERENCES ModuleOfferings (term, moduleID, section),
+    FOREIGN KEY (modOfferingID) REFERENCES ModuleOfferings (pk_id),
     INDEX (studentID),
-    INDEX (term),
-    INDEX (moduleID)
+    INDEX (modOfferingID)
 );
 
 DROP FUNCTION IF EXISTS TermCensusDate;
@@ -288,20 +284,20 @@ DROP FUNCTION IF EXISTS ModOfferingEndDate;
 DROP PROCEDURE IF EXISTS CancelStudentReg;
 
 DELIMITER //
-CREATE FUNCTION TermCensusDate(inTerm VARCHAR(10))
+CREATE FUNCTION TermCensusDate(inOffering INT)
 RETURNS DATE DETERMINISTIC
-COMMENT 'Returns the census date for the specified term'
+COMMENT "Returns the census date for the module offering's term"
 BEGIN
 DECLARE
     retValue  DATE;
 BEGIN
-    SELECT censusDate INTO retValue FROM Terms WHERE `term` = inTerm;
+    SELECT term INTO @modTerm FROM ModuleOfferings WHERE `pk_id` = inOffering;
+    SELECT censusDate INTO retValue FROM Terms WHERE `term` = @modTerm;
     RETURN retValue;
 END;
 END; //
 
-CREATE FUNCTION ModOfferingEndDate(inTerm VARCHAR(10), inModID INT,
-                                   inSect VARCHAR(3))
+CREATE FUNCTION ModOfferingEndDate(inOffering INT)
 RETURNS DATE DETERMINISTIC
 COMMENT 'Returns the end date for the offering specified by the tri-part key'
 BEGIN
@@ -309,7 +305,7 @@ DECLARE
     modOffEndDate  DATE;
 BEGIN
     SELECT endDate INTO modOffEndDate FROM ModuleOfferings
-        WHERE `term` = inTerm AND `moduleID` = inModID AND `section` = inSect;
+        WHERE `pk_id` = inOffering;
     RETURN modOffEndDate;
 END;
 END; //
@@ -325,10 +321,9 @@ CREATE TRIGGER EnrollmentStatus_Insert BEFORE INSERT ON Enrollment
     SET NEW.status =
         IF ( NEW.status = 'Enrolled',
             IF ( NEW.endDate IS NOT NULL AND NEW.endDate <> 0,
-                IF (NEW.endDate < TermCensusDate(NEW.term),
+                IF (NEW.endDate < TermCensusDate(NEW.modOfferingID),
                     'Dropped',  -- End date is before census date
-                    IF (NEW.endDate < ModOfferingEndDate(NEW.term, NEW.moduleID,
-                                                         NEW.section),
+                    IF (NEW.endDate < ModOfferingEndDate(NEW.modOfferingID),
                         'Withdrawn',    -- End date is before module end date
                         'Completed')),  -- End date is same or after mod end
                 'Enrolled'),    -- End date is NULL or 0
@@ -341,10 +336,9 @@ CREATE TRIGGER EnrollmentStatus_Update BEFORE UPDATE ON Enrollment
     SET NEW.status =
         IF ( NEW.status = 'Enrolled',
             IF ( NEW.endDate IS NOT NULL AND NEW.endDate <> 0,
-                IF (NEW.endDate < TermCensusDate(NEW.term),
+                IF (NEW.endDate < TermCensusDate(NEW.modOfferingID),
                     'Dropped',  -- End date is before census date
-                    IF (NEW.endDate < ModOfferingEndDate(NEW.term, NEW.moduleID,
-                                                         NEW.section),
+                    IF (NEW.endDate < ModOfferingEndDate(NEW.modOfferingID),
                         'Withdrawn',    -- End date is before module end date
                         'Completed')),  -- End date is same or after mod end
                 'Enrolled'),    -- End date is NULL or 0
@@ -352,7 +346,7 @@ CREATE TRIGGER EnrollmentStatus_Update BEFORE UPDATE ON Enrollment
   END; //
 DELIMITER ;
 
-/*  NOT TESTED YET !!!
+/*  NOT TESTED YET !!!  Nor is it updated after change in primary key.
 DELIMITER //
 
 CREATE PROCEDURE CancelStudentReg (IN inTerm VARCHAR(10),
@@ -378,43 +372,43 @@ DELIMITER ;
 # */
 
 
-INSERT INTO Enrollment (studentID, term, moduleID, section, status, 
+INSERT INTO Enrollment (studentID, modOfferingID, status, 
     registDate, endDate, finalGrade)
 VALUES
-(8, '2011Q4', 70, '01', 'Completed', '2011-08-10', '2011-12-15', 'B')
-, (8, '2011Q4', 1, '01', 'Completed', '2011-08-10', '2011-12-15', 'B+')
-, (8, '2011Q4', 21, '01', 'Completed', '2011-08-10', DEFAULT, 'C')
-, (8, '2011Q4', 60, '01', DEFAULT, '2011-08-10', DEFAULT, 'A')
-, (8, '2012Q1', 3, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (8, '2012Q1', 40, '01', DEFAULT, '2011-12-01', '2012-01-02', DEFAULT)
-, (8, '2012Q1', 42, '01', DEFAULT, '2012-01-02', DEFAULT, DEFAULT)
-, (8, '2012Q1', 50, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (8, '2012Q1', 61, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (8, '2012Q2', 4, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (8, '2012Q2', 22, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (8, '2012Q2', 51, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (8, '2012Q2', 62, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (11, '2012Q1', 70, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (11, '2012Q1', 35, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (11, '2012Q1', 50, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (11, '2012Q1', 40, '01', 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
-, (11, '2012Q2', 21, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (11, '2012Q2', 2, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (11, '2012Q2', 51, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (11, '2012Q2', 43, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (11, '2012Q2', 43, '01', 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
-, (12, '2011Q4', 35, '01', DEFAULT, '2011-08-10', '2011-12-15', 'A')
-, (13, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'D')
-, (14, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'C')
-, (15, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'B')
-, (16, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'A')
-, (17, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'B')
-, (18, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'C')
-, (19, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'A')
-, (20, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'B')
-, (21, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'C')
-, (22, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'A')
-, (23, '2011Q4', 35, '01', 'Completed', '2011-08-10', '2011-12-15', 'B')
+(8, 6, 'Completed', '2011-08-10', '2011-12-15', 'B')
+, (8, 1, 'Completed', '2011-08-10', '2011-12-15', 'B+')
+, (8, 2, 'Completed', '2011-08-10', DEFAULT, 'C')
+, (8, 4, DEFAULT, '2011-08-10', DEFAULT, 'A')
+, (8, 8, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (8, 11, DEFAULT, '2011-12-01', '2012-01-02', DEFAULT)
+, (8, 12, DEFAULT, '2012-01-02', DEFAULT, DEFAULT)
+, (8, 13, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (8, 14, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (8, 18, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (8, 20, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (8, 22, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (8, 23, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (11, 16, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (11, 15, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (11, 13, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (11, 11, 'Enrolled', '2011-12-01', DEFAULT, DEFAULT)
+, (11, 19, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (11, 17, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (11, 22, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (11, 21, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (11, 21, 'Enrolled', '2012-03-01', DEFAULT, DEFAULT)
+, (12, 5, DEFAULT, '2011-08-10', '2011-12-15', 'A')
+, (13, 5, 'Completed', '2011-08-10', '2011-12-15', 'D')
+, (14, 5, 'Completed', '2011-08-10', '2011-12-15', 'C')
+, (15, 5, 'Completed', '2011-08-10', '2011-12-15', 'B')
+, (16, 5, 'Completed', '2011-08-10', '2011-12-15', 'A')
+, (17, 5, 'Completed', '2011-08-10', '2011-12-15', 'B')
+, (18, 5, 'Completed', '2011-08-10', '2011-12-15', 'C')
+, (19, 5, 'Completed', '2011-08-10', '2011-12-15', 'A')
+, (20, 5, 'Completed', '2011-08-10', '2011-12-15', 'B')
+, (21, 5, 'Completed', '2011-08-10', '2011-12-15', 'C')
+, (22, 5, 'Completed', '2011-08-10', '2011-12-15', 'A')
+, (23, 5, 'Completed', '2011-08-10', '2011-12-15', 'B')
 ;
 
 # /*

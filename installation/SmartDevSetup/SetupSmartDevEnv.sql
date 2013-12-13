@@ -20,7 +20,7 @@ SOURCE createSmartDevUsersAuths.sql;
 
 -- Create and populate the built-in tables used for record locking.
 
-SOURCE createSmartLocks.sql;
+SOURCE createSmartDevLocks.sql;
 
 -- Create and populate the Ramp/Smart developer database.
 
