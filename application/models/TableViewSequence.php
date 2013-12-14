@@ -30,7 +30,6 @@ class Application_Model_TableViewSequence
     const SEARCH_SPEC_SETTING       = "searchSpecSetting";
     const SEARCH_RES_SETTING        = "searchResultsSetting";
     const TABULAR_SETTING           = "tabularSetting";
-    const REFERENCE_SETTING         = "referenceSetting";
 
     const DISPLAY_ALL_FORMAT        = "displayAllFormat";
 
@@ -56,10 +55,10 @@ class Application_Model_TableViewSequence
     protected $_initialAction;       // start with a display or a search?
 
     /** @var array */
-    protected $_settingNames;        // names of settings
+    protected $_settingNames;        // names of settings referenced in seq.
 
     /** @var string */
-    protected $_settings;            // settings for dealing with records
+    protected $_settings;            // settings read in from gateway
 
     /** @var Application_Model_TVSGateway */
     protected $_propertyGateway;     // gateway for getting setting properties
@@ -71,24 +70,12 @@ class Application_Model_TableViewSequence
     /** @var array */
     protected $_error_msgs;          // errors encountered
 
-    /**
-     * Returns a list of the valid sequence setting properties.
-     */
-    protected static function validSeqSettingProps()
-    {
-        return array(self::MAIN_SETTING, self::EDIT_SETTING,
+    /** @var array */
+    protected static $_validSeqSettingProps =
+        array(self::MAIN_SETTING, self::EDIT_SETTING,
                      self::ADD_SETTING, self::DEL_SETTING, 
                      self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
-                     self::TABULAR_SETTING, self::REFERENCE_SETTING);
-    }
-
-    /**
-     * Returns a list of the valid sequence properties.
-     */
-    protected static function validSequenceProps()
-    {
-        return self::validSeqSettingProps() + array(self::INIT_ACTION);
-    }
+                     self::TABULAR_SETTING);
 
     /**
      * Checks syntax for the sequence of table views in the given
@@ -124,6 +111,18 @@ class Application_Model_TableViewSequence
      * viewing multiple records to searching, to viewing a single record,
      * to adding new records, and to editing or deleting records.
      *
+     * If the main setting is not provided, it is set from the edit 
+     * setting, the add setting, the search specification setting,
+     * the search results setting, the tabular setting, or the delete 
+     * confirmation setting (in that order).  If only one of the 
+     * modifying settings (add and edit) is provided, the other is set 
+     * from it.  If neither modifying setting is provided, or if any of 
+     * the other settings are missing, they are set from the main 
+     * setting.  If no setting sequence was specified but
+     * the imported properties included a table setting, assume
+     * that that is the table setting that should be used for
+     * all types of display.
+     *
      * @param string  $name     the name associated with this sequence
      * @param boolean $recordErrors  record local errors rather than
      *                               throwing exceptions
@@ -153,18 +152,6 @@ class Application_Model_TableViewSequence
     /**
      * Initializes the table setting names for displaying records 
      * and for displaying search results.
-     * If the main setting is not provided, set it from the edit 
-     * setting, the add setting, the search specification setting,
-     * the search results setting, or the tabular setting (in that order).
-     * If any of those five are not provided, use the main setting.
-     * If no setting sequence was specified but
-     * the imported properties included a table setting, assume
-     * that that is the table setting that should be used for
-     * all types of display.
-     *
-     * The table may also include a reference setting used when 
-     * resolving external references.  If a reference setting is not 
-     * provided, the add setting is used to resolve external references.
      *
      * @param $name     the name associated with this sequence
      * @param $sequence sequence-related properties from property gateway
@@ -174,6 +161,7 @@ class Application_Model_TableViewSequence
     protected function _initSettingsUsedInSequence($name, $sequence,
                                                    $settingsReadIn)
     {
+        // Get settings that were provided, set variables to null otherwise.
         $main = $this->_getKeyVal($sequence, self::MAIN_SETTING);
         $edit = $this->_getKeyVal($sequence, self::EDIT_SETTING);
         $add = $this->_getKeyVal($sequence, self::ADD_SETTING);
@@ -181,14 +169,13 @@ class Application_Model_TableViewSequence
         $search = $this->_getKeyVal($sequence, self::SEARCH_SPEC_SETTING);
         $searchRes = $this->_getKeyVal($sequence, self::SEARCH_RES_SETTING);
         $tabular = $this->_getKeyVal($sequence, self::TABULAR_SETTING);
-        $reference = $this->_getKeyVal($sequence, self::REFERENCE_SETTING);
 
 
 	// If no sequence table settings were specified but a single
 	// table setting was defined in the property source, use
 	// that setting in all cases.
-        if ( ! ( $main || $edit || $add ||
-                 $search || $searchRes || $tabular || $reference ) )
+        if ( ! ( $main || $edit || $add || $delete || $search ||
+                 $searchRes || $tabular ) )
         {
             if ( count($settingsReadIn) == 1 )
             {
@@ -214,11 +201,11 @@ class Application_Model_TableViewSequence
                                                            ($search ? :
                                                            ($searchRes ? :
                                                            ($tabular ? :
-                                                           ($delete ? :
-                                                           $reference
-                                                           ))))));
-        $edit = $this->_settingNames[self::EDIT_SETTING] = $edit ? : $main;
-        $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $main;
+                                                           $delete 
+                                                           )))));
+        $edit = $this->_settingNames[self::EDIT_SETTING] =
+                        $edit ? : ( $add ? : $main );
+        $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $edit;
         $delete = $this->_settingNames[self::DEL_SETTING] = $delete ? : $main;
         $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
                         $search ? : $main;
@@ -226,8 +213,8 @@ class Application_Model_TableViewSequence
                         $searchRes ? : $main;
         $tabular = $this->_settingNames[self::TABULAR_SETTING] =
                         $tabular ? : $main;
-        $reference = $this->_settingNames[self::REFERENCE_SETTING] =
-                        $reference ? : $add;
+
+        // No settings have actually been retrieved from gateway yet.
         $this->_settings = array();
     }
 
@@ -274,47 +261,6 @@ class Application_Model_TableViewSequence
     }
 
     /**
-     * Gets the specified table setting for displaying, modifying, or 
-     * searching for table records.
-     *
-     * @param $property   name of desired setting property (setting, 
-     *                      addSetting, etc.)
-     *
-     * @return Application_Model_SetTable
-     */
-    public function getSetTable($property)
-    {
-        if ( empty($property) )
-        {
-            $errorMsg = "Error: trying to get set table " .
-                "for empty setting property: $property.";
-            if ( $this->_recordErrors )
-                { $this->_error_msgs[] = $errorMsg; }
-            else
-                { throw new Exception($errorMsg); }
-        }
-        $validSeqSettingProps = self::validSeqSettingProps();
-        if ( ! in_array($property, $validSeqSettingProps) )
-        {
-            $errorMsg = "Error: trying to get set table " .
-                "for unknown setting property: $property.";
-            if ( $this->_recordErrors )
-                { $this->_error_msgs[] = $errorMsg; }
-            else
-                { throw new Exception($errorMsg); }
-        }
-        if ( ! isset($this->_settings[$property]) )
-        {
-            $name = $this->_settingNames[$property];
-            $this->_settings[$property] =
-                    new Application_Model_SetTable($name,
-                                                   $this->_propertyGateway,
-                                                   $this->_recordErrors);
-        }
-        return $this->_settings[$property];
-    }
-
-    /**
      * Gets the specified table setting for the given table action.
      *
      * @param $actionName   name of table action from TableController
@@ -352,85 +298,78 @@ class Application_Model_TableViewSequence
     }
 
     /**
-     * Gets the specified table setting for displaying table records.
+     * Gets the table setting for displaying table records.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForViewing()
     {
-        return $this->getSetTable(self::MAIN_SETTING);
+        return $this->_getSetTable(self::MAIN_SETTING);
     }
 
     /**
-     * Gets the specified table setting for modifying table records.
+     * Gets the table setting for modifying table records.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForModifying()
     {
-        return $this->getSetTable(self::EDIT_SETTING);
+        return $this->_getSetTable(self::EDIT_SETTING);
     }
 
     /**
-     * Gets the specified table setting for adding table records.
+     * Gets the table setting for adding table records.  This is a good 
+     * choice of table setting for determining the "completeness" status
+     * of individual records (whether a record's recommended fields are
+     * completely filled in, partially filled in, or not provided at all).
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForAdding()
     {
-        return $this->getSetTable(self::ADD_SETTING);
+        return $this->_getSetTable(self::ADD_SETTING);
     }
 
     /**
-     * Gets the specified table setting for deleting table records.
+     * Gets the table setting for deleting table records.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForDeleting()
     {
-        return $this->getSetTable(self::DEL_SETTING);
+        return $this->_getSetTable(self::DEL_SETTING);
     }
 
     /**
-     * Gets the specified table setting for searching for table records.
+     * Gets the table setting for searching for table records.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForSearching()
     {
-        return $this->getSetTable(self::SEARCH_SPEC_SETTING);
+        return $this->_getSetTable(self::SEARCH_SPEC_SETTING);
     }
 
     /**
-     * Gets the specified table setting for displaying multiple search 
+     * Gets the table setting for displaying multiple search 
      * results.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForSearchResults()
     {
-        return $this->getSetTable(self::SEARCH_RES_SETTING);
+        return $this->_getSetTable(self::SEARCH_RES_SETTING);
     }
 
     /**
-     * Gets the specified table setting for displaying multiple search 
+     * Gets the table setting for displaying multiple search 
      * results in tabular format.
      *
      * @return Application_Model_SetTable
      */
     public function getSetTableForTabularView()
     {
-        return $this->getSetTable(self::TABULAR_SETTING);
-    }
-
-    /**
-     * Gets the specified table setting for resolving external references.
-     *
-     * @return Application_Model_SetTable
-     */
-    public function getReferenceSetTable()
-    {
-        return $this->getSetTable(self::REFERENCE_SETTING);
+        return $this->_getSetTable(self::TABULAR_SETTING);
     }
 
     /**
@@ -510,6 +449,37 @@ class Application_Model_TableViewSequence
     protected function _getErrorMsgs()
     {
         return $this->_error_msgs;
+    }
+
+    /**
+     * Gets the specified table setting for displaying, modifying, or 
+     * searching for table records.
+     *
+     * @param $property   name of desired setting property (setting, 
+     *                      addSetting, etc.)
+     *
+     * @return Application_Model_SetTable
+     */
+    protected function _getSetTable($property)
+    {
+        if ( empty($property) )
+        {
+            throw new Exception("Error: trying to get set table " .
+                "for empty setting property name.");
+        }
+        if ( ! in_array($property, self::$_validSeqSettingProps) )
+        {
+            throw new Exception("Error: trying to get set table for " .
+                "unknown setting property: " . $property . ".");
+        }
+        if ( ! isset($this->_settings[$property]) )
+        {
+            $name = $this->_settingNames[$property];
+            $this->_settings[$property] =
+                    new Application_Model_SetTable($name,
+                                                   $this->_propertyGateway);
+        }
+        return $this->_settings[$property];
     }
 
 }

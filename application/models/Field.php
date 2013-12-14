@@ -436,8 +436,7 @@ class Application_Model_Field
     {
         $extTableSetting = Application_Model_TVSFactory::getSequenceOrSetting(
                                     $this->_connectTbl);
-        $setting = Application_Model_TableViewSequence::SEARCH_RES_SETTING;
-        return $extTableSetting->getSetTable($setting)->getTitle();
+        return $extTableSetting->getSetTableForSearching($setting)->getTitle();
     }
 
     /**
