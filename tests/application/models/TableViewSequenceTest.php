@@ -16,31 +16,31 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     const SEARCH_RES_ONLY = TestSettings::SEARCH_RES_ONLY ;
     const SEARCH_SPEC_ONLY = TestSettings::SEARCH_SPEC_ONLY;
     const TABULAR_ONLY = TestSettings::TABULAR_ONLY;
-    const REFERENCE_ONLY = TestSettings::REFERENCE_ONLY ;
 
     protected $_settingTests;
     protected $_main;
     protected $_add;
     protected $_edit;
+    protected $_delete;
     protected $_searchSpec;
     protected $_searchRes;
-    protected $_reference;
 
     public function setUp()
     {
         // Reset database to known state
         TestConfiguration::setupDatabase();
 
+        // Get various expected results
         $this->_settingTests = TestSettings::getInstance();
         $multSettings =
-                    $this->_settingTests->getSeqSettingsInMultSettingsFile();
+                    $this->_settingTests->getAllSettingsInMultSettingsFile();
         $this->_main = $multSettings['setting'];
         $this->_add = $multSettings['addSetting'];
+        $this->_delete = $multSettings['deleteSetting'];
         $this->_edit = $multSettings['editSetting'];
         $this->_searchSpec = $multSettings['searchSpecSetting'];
         $this->_searchRes = $multSettings['searchResultsSetting'];
         $this->_tabular = $multSettings['tabularSetting'];
-        $this->_reference = $multSettings['referenceSetting'];
     }
 
     public function testInvalidSettingSequenceFile()
@@ -102,10 +102,10 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
+        $this->assertEquals($setting, $sequence->getSetTableForDeleting());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testSeqWithAllSettingsExplicitlySpecified()
@@ -128,8 +128,6 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertSame($this->_searchSpec, $setting->getSettingName());
         $setting = $sequence->getSetTableForSearchResults();
         $this->assertSame($this->_searchRes, $setting->getSettingName());
-        $setting = $sequence->getReferenceSetTable();
-        $this->assertSame($this->_reference, $setting->getSettingName());
     }
 
     public function testSeqWithNoTopLevelTableName()
@@ -153,7 +151,6 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testSeqWithOnlySearchSpecSettingSpecified()
@@ -170,7 +167,6 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testSeqWithOnlyTabularSettingSpecified()
@@ -187,7 +183,6 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testSeqWithAddAndSearchResultSpecified()
@@ -207,40 +202,20 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testSeqWithEditAndAddSpecified()
     {
-        // Add and Reference settings should be the same (Add);
-        // all others should use Edit setting
+        // All settings except Add should use Edit setting.
         $sequence = new Application_Model_TableViewSequence(self::ADD_AND_EDIT);
 
         $setting = $sequence->getSetTableForAdding();
         $this->assertSame($this->_add, $setting->getSettingName());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
 
         $setting = $sequence->getSetTableForModifying();
         $this->assertSame($this->_edit, $setting->getSettingName());
 
         $this->assertEquals($setting, $sequence->getSetTableForViewing());
-        $this->assertEquals($setting, $sequence->getSetTableForSearching());
-        $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
-        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-    }
-
-    public function testSeqWithReferenceSpecified()
-    {
-        // All should use Reference setting
-        $sequence =
-                new Application_Model_TableViewSequence(self::REFERENCE_ONLY);
-
-        $setting = $sequence->getReferenceSetTable();
-        $this->assertSame($this->_reference, $setting->getSettingName());
-
-        $this->assertEquals($setting, $sequence->getSetTableForViewing());
-        $this->assertEquals($setting, $sequence->getSetTableForModifying());
-        $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
@@ -259,7 +234,6 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
-        $this->assertEquals($setting, $sequence->getReferenceSetTable());
     }
 
     public function testInitialActionIsSearch()
@@ -276,12 +250,13 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertSame('list-view', $sequence->getInitialAction());
     }
 
+    /*
     public function testGetSetTableWhenNameIsNull()
     {
         $this->setExpectedException('Exception',
                                 'set table for empty setting property:');
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
-        $setTable = $sequence->getSetTable(null);
+        $setTable = $sequence->_getSetTable(null);
     }
 
     public function testGetSetTableWhenNameIsEmpty()
@@ -289,22 +264,22 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                 'set table for empty setting property:');
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
-        $setTable = $sequence->getSetTable("");
+        $setTable = $sequence->_getSetTable("");
     }
 
     public function testGetSetTableForUnknownSettingName()
     {
         $this->setExpectedException('Exception', 'unknown setting property');
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
-        $setTable = $sequence->getSetTable('invalidSetting');
+        $setTable = $sequence->_getSetTable('invalidSetting');
     }
+     */
 
     public function testGetSetTableWhenAlreadyFound()
     {
         $sequence =
             new Application_Model_TableViewSequence(self::SEARCH_SPEC_ONLY);
-        $setTable = $sequence->getSetTable('setting');
-        $setTable = $sequence->getSetTable('setting');
+        $setTable = $sequence->getSetTableForViewing();
     }
 
 }
