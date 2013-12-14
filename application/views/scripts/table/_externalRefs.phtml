@@ -15,8 +15,10 @@ foreach ( $extRefs as $extTable => $refObj ) :
 
     // Determine the connection expression that establishes the 
     // connection with this external table reference.
+    // Get the ADD setting to determine the "completeness" of the 
+    // external record (all/some/no recommended fields filled in).
     $searchFields = $refObj->findConnectionFields($formData);
-    $externalTable = $refObj->getViewingSeq()->getReferenceSetTable();
+    $externalTable = $refObj->getViewingSeq()->getSetTableForAdding();
 
     $status = $externalTable->getStatusOfRecord($searchFields);
     echo "<li>";

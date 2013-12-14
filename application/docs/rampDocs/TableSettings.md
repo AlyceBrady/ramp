@@ -233,14 +233,8 @@ The valid sequence properties that can be defined are:
   * `searchResultsSetting`:  setting to use to display records in list view
   * `tabularSetting`:  setting to use to display records in table view
   * `deleteSetting`:  setting to use to confirm record deletion
-  * `referenceSetting`:  setting to use to resolve external references
-        (see [below](#external))
 
 All sequence properties are optional.
-If a table setting file does not specify a setting sequence but does
-provide table setting properties for a single table setting
-(as in the [initial example above](#simpleExample)), Ramp assumes
-that the table setting should be used for all table and record actions.
 
 The `initAction` property specifies whether the initial action
 associated with viewing the table should be to search for specific items
@@ -252,20 +246,22 @@ If there is no viewing sequence information in a table setting file,
 or there is but the `initAction` property is not provided, the default
 initial action is to start a search.
 
-The `setting` property specifies the setting to use to display single
-records, but is also the default setting to use for other actions if the
-more specialized settings are not provided.  If the `setting` property
-is not defined but at least one of the specialized settings is,
-the main setting is set from the edit 
-setting, the add setting, the search specification setting,
-the search results setting, the tabular setting, or the deletion
-confirmation setting (in that order).
-For any of those that are not provided, Ramp uses the now-defined
-main setting as the default.
+If a table setting file does not specify a setting sequence but does
+provide table setting properties for a single table setting
+(as in the [initial example above](#simpleExample)), Ramp assumes
+that the table setting should be used for all table and record actions.
 
-A field may also include a reference setting, used when 
-resolving external references.  If a reference setting is not 
-provided, the add setting is used to resolve external references.
+The `setting` property specifies the setting to use to display
+single records, but is also the default setting to use for other
+actions if the more specialized settings are not provided.  If the
+`setting` property is not defined but at least one of the specialized
+settings is, the main setting is set from the edit setting, the add
+setting, the search specification setting, the search results
+setting, the tabular setting, or the deletion confirmation setting
+(in that order).  If either the edit or add setting is specified,
+but not both, the missing edit/add setting is set from the provided
+one.  If neither is provided, or if there are any other settings
+missing, Ramp uses the now-defined main setting as the default.
 
 #### Reducing duplicated information: ####
 NOTE:  It is possible to use inheritance among sections in an `ini` file
