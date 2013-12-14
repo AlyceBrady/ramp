@@ -304,6 +304,9 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('lock::unavailable-lock'));
         $this->add(new Zend_Acl_Resource('lock::free-lock'));
 
+        // SYNTAX CHECK CONTROLLER: all actions
+        $this->add(new Zend_Acl_Resource('table-syntax::index'));
+
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));
 

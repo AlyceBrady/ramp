@@ -109,7 +109,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     public function testUnmatchedLocalField()
     {
         $this->setExpectedException('Exception',
-                        'not part of a valid external reference connection');
+                        'not a valid external reference connector');
         $refInfo = array("viewingSequence" => "Users",
                          "localField" => "album_id");
         $ref = new Application_Model_ExternalTableReference($refInfo);
@@ -118,7 +118,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     public function testUnmatchedExternalField()
     {
         $this->setExpectedException('Exception',
-                        'not part of a valid external reference connection');
+                        'not a valid external reference connector');
         $refInfo = array("viewingSequence" => "Users",
                          "externalField" => "id");
         $ref = new Application_Model_ExternalTableReference($refInfo);
@@ -127,7 +127,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     public function testInvalidTableConnection()
     {
         $this->setExpectedException('Exception',
-                        'not part of a valid external reference connection');
+                        'not a valid external reference connector');
         $refInfo = array("viewingSequence" => "Users",
                          "localField" => "album_id",
                          "extField" => "should_be_externalField");

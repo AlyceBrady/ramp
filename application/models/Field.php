@@ -125,7 +125,6 @@ class Application_Model_Field
      * @param array $metaInfo       field information from the database
      * @param bool $showColsByDefault true if the table setting 
      *                                specified showing columns by default
-     * @return void
      */
     public function __construct($fieldName,
                                 array $settingInfo = array(),
@@ -135,7 +134,7 @@ class Application_Model_Field
         $this->_name = $fieldName;
         $this->_metaInfo = $metaInfo;
 
-        $this->init($settingInfo, $metaInfo, $showColsByDefault);
+        $this->_init($settingInfo, $metaInfo, $showColsByDefault);
     }
 
     /**
@@ -148,7 +147,7 @@ class Application_Model_Field
      *                                specified showing columns by default
      * @return Application_Model_Field
      */
-    public function init(array $settingInfo, array $metaInfo,
+    protected function _init(array $settingInfo, array $metaInfo,
                          $showColsByDefault)
     {
 
@@ -192,14 +191,10 @@ class Application_Model_Field
         $this->_connectTbl = isset($settingInfo[self::LINK_TO_TBL]) ?
                             $settingInfo[self::LINK_TO_TBL] :
                             null;
+        $this->_legalValsSource = isset($settingInfo[self::LEGAL_VALUES]) ?
+                            $settingInfo[self::LEGAL_VALUES] :
+                            null;
         $this->_inTable = ! empty($metaInfo);
-
-        $this->_legalValsSource = null;
-        if ( isset($settingInfo[self::LEGAL_VALUES]) )
-        {
-            $info = $settingInfo[self::LEGAL_VALUES];
-            $this->_legalValsSource = $this->_validateLegalValsSource($info);
-        }
 
         return $this;
     }
@@ -369,7 +364,17 @@ class Application_Model_Field
      */
     public function getSourceOfValidVals()
     {
-        return $this->_legalValsSource[self::VALID_VAL_TBL];
+        if ( empty($this->_legalValsSource) )
+            { return null; }
+
+        $legalValsSource = array();
+        $components = explode('.', $this->_legalValsSource);
+        if ( count($components) != 2 )
+        {
+            throw new Exception("Error: " . $this->_legalValsSource .
+                " does not have the required tableName.fieldName format.");
+        }
+        return $components[0];
     }
 
     /**
@@ -382,46 +387,31 @@ class Application_Model_Field
      */
     public function getValidVals()
     {
-        if ( ! empty($this->_legalValsSource) )
-        {
-            $table = $this->_legalValsSource[self::VALID_VAL_TBL];
-            $field = $this->_legalValsSource[self::VALID_VAL_FIELD];
-            $source = new Application_Model_DbTable_ValidValuesSource($table);
-            try {
-                $this->_legalVals = $source->getValidValues($field);
-            }
-            catch (Exception $e)
-            {
-                throw new Exception('Error: "' . $table . '" and "' .
-                    $field .  '" in "' . $this->_legalValsSource .
-                    '" should be a valid table name and field name.');
-            }
-        }
-        return $this->_legalVals;
-    }
+        if ( empty($this->_legalValsSource) )
+            { return null; }
 
-    /**
-     * Returns the set of valid values for this field, obtained from
-     * an external table.
-     *
-     * Precondition: $this->validValsDefinedInExtTable()
-     *
-     * @return array   list of valid values
-     */
-    public function _validateLegalValsSource($sourceProvided)
-    {
         $legalValsSource = array();
-        $components = explode('.', $sourceProvided);
+        $components = explode('.', $this->_legalValsSource);
         if ( count($components) != 2 )
         {
-            throw new Exception("Error: " . $sourceProvided .
+            throw new Exception("Error: " . $this->_legalValsSource .
                 " does not have the required tableName.fieldName format.");
         }
 
-        $legalValsSource[self::VALID_VAL_TBL] = $components[0];
-        $legalValsSource[self::VALID_VAL_FIELD] = $components[1];
+        $table = $components[0];
+        $field = $components[1];
+        $source = new Application_Model_DbTable_ValidValuesSource($table);
+        try {
+            $this->_legalVals = $source->getValidValues($field);
+        }
+        catch (Exception $e)
+        {
+            throw new Exception('Error: "' . $table . '" and "' .
+                $field .  '" in "' . $this->_legalValsSource .
+                '" should be a valid table name and field name.');
+        }
 
-        return $legalValsSource;
+        return $this->_legalVals;
     }
 
     /**

@@ -2,28 +2,25 @@
 
 activityListHeading = "Choose an activity:"
 
+activity[] = "ResetPassword"
+activity[] = "FreeLock"
+activity[] = "Break"
 activity[] = "Smart View of Users"
 activity[] = "Auths"
-activity[] = "Spacer"
-activity[] = "ResetPassword"
-activity[] = "Spacer"
-activity[] = "ValidateUserRoles"
-activity[] = "Spacer"
-activity[] = "ValidateACL"
-activity[] = "Spacer"
-activity[] = "ViewACL"
-activity[] = "Spacer"
+activity[] = "Break"
 activity[] = "LockRelations"
-activity[] = "Spacer"
 activity[] = "Locks"
-activity[] = "Spacer"
-activity[] = "FreeLock"
+activity[] = "Break"
+activity[] = "ValidateUserRoles"
+activity[] = "ValidateACL"
+activity[] = "ViewACL"
+activity[] = "Break"
+activity[] = "CheckSyntax"
 
 
-[ Spacer ]
+[Break]
 
-type = "comment"
-comment = ""
+type = "separator"
 
 [ Add User ]
 
@@ -102,5 +99,14 @@ title = "Release Lock"
 description = "Release an orphaned or abandoned lock"
 controller = "lock"
 action = "free-lock"
+parameter = ""
+
+[ CheckSyntax ]
+
+type = "controllerAction"
+title = "Check Setting Syntax"
+description = "Check the syntax for a sequence or setting file"
+controller = "table-syntax"
+action = "index"
 parameter = ""
 

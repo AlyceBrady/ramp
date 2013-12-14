@@ -1,0 +1,11 @@
+<?php
+$this->title = "Syntax Checker";
+$this->headTitle($this->title);
+?>
+<h2>Setting/Sequence Syntax Checker</h2>
+<?php
+foreach ( $this->formMessages as $msg ) :
+    echo $msg . "<br />\n";
+endforeach;
+?>
+<?php echo $this->form; ?>

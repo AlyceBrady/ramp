@@ -62,6 +62,8 @@ class TableController extends Zend_Controller_Action
 
     protected $_controllerName;
 
+    protected $_actionName;
+
     protected $_encodedSeqName;
 
     protected $_tblViewingSeq;
@@ -88,28 +90,34 @@ class TableController extends Zend_Controller_Action
         // Set the default view for "Display All" actions.
         $this->_displayAllView = "list-view";
 
-        // Get the sequence information (types of table settings to use).
+        // Get the sequence parameter.
         $seqName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
         $this->_encodedSeqName = urlencode($seqName);
-        $this->_tblViewingSeq = $seq =
-                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+
+        // Set the basic parameters to build on when going to other actions.
+        $this->_controllerName = $this->getRequest()->getControllerName();
+        $this->_actionName = $this->getRequest()->getActionName();
+        $this->_baseParams = array('controller' => $this->_controllerName,
+                       self::SETTING_NAME => $this->_encodedSeqName);
 
         // Get and store other parameters for possible future use.
         $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
         $this->_searchType = $this->_getParam(self::SEARCH_TYPE);
         $this->_getFieldsToMatch();
 
-        // Set the basic parameters to build on when going to other actions.
-        $this->_controllerName = $this->getRequest()->getControllerName();
-        $this->_baseParams = array('controller' => $this->_controllerName,
-                       self::SETTING_NAME => $this->_encodedSeqName);
-
         // Initialize values that are passed to the view scripts.
         $this->view->seqSetting = $seqName;
         $this->view->baseParams = $this->_baseParams;
         $this->view->msgs = array();
         $this->view->errMsgs = array();
+
+        // Get the sequence information (types of table settings to use).
+        if ( $this->_actionName != "check-syntax" )
+        {
+            $this->_tblViewingSeq = 
+                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+        }
 
 // $this->_debugging = true;
 
@@ -520,6 +528,15 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Checks the syntax of a table setting/sequence file chosen by the 
+     * user.
+     */
+    public function checkSyntaxAction()
+    {
+        $this->view->formResponse = "This is a test."
+    }
+
+    /**
      * Initializes basic view renderer information from the set table.
      *
      * @param Application_Model_SetTable  table: setting & db info
@@ -803,6 +820,8 @@ class TableController extends Zend_Controller_Action
         // initialized from values in another table.
         $inputFieldNames = array_keys($data);
         $relevantFields = $this->view->tableInfo->getExternallyInitFields();
+        // Why wasn't this written as the simpler:   ?
+        // $relevantFields = $setTable->getExternallyInitFields();
         foreach ( $relevantFields as $newFieldName => $newField )
         {
             // Initialize from another table if data not already provided.

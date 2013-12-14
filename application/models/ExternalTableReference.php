@@ -100,8 +100,8 @@ class Application_Model_ExternalTableReference
             else
             {
                 throw new Exception("External reference error: " .
-                    $subProp . " is not part of a valid external " .
-                    "reference connection.");
+                    $subPropName . " is not a valid " .
+                    "external reference connector.");
             }
         }
     }

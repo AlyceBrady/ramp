@@ -279,7 +279,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testGetSetTableWhenNameIsNull()
     {
         $this->setExpectedException('Exception',
-                                'set table for empty setting property name');
+                                'set table for empty setting property:');
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
         $setTable = $sequence->getSetTable(null);
     }
@@ -287,7 +287,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testGetSetTableWhenNameIsEmpty()
     {
         $this->setExpectedException('Exception',
-                                'set table for empty setting property name');
+                                'set table for empty setting property:');
         $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
         $setTable = $sequence->getSetTable("");
     }
