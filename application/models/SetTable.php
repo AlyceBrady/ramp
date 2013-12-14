@@ -91,6 +91,7 @@ class Application_Model_SetTable
 
     /** @var string */
     protected $_joinExpressions;    // join expressions for importing fields 
+
     /** @var array */
     protected $_linkFields = array(); // fields providing links to other tables
 
@@ -121,6 +122,13 @@ class Application_Model_SetTable
     /** @var string */
     protected $_externalTblRefs;    // external table refs that look like fields
 
+    /** @var boolean */
+    protected $_recordErrors;        // whether to record errors rather than
+                                     // throw exceptions
+
+    /** @var array */
+    protected $_error_msgs;          // errors encountered
+
     /**
      * Returns a list of the valid sequence setting properties.
      */
@@ -143,10 +151,15 @@ class Application_Model_SetTable
      *
      * @param string $settingName   the name of the table setting
      * @param TVSGateway $propGateway  gateway to table setting properties
-     * @return void
+     * @param boolean $recordErrors  record local errors rather than
+     *                               throwing exceptions
      */
-    public function __construct($settingName, $propGateway)
+    public function __construct($settingName, $propGateway,
+                                $recordErrors = false)
     {
+        $this->_recordErrors = $recordErrors;
+        $this->_error_msgs = array();
+
         // Get the table setting properties.
         $settingProps = $propGateway->getSettingProps($settingName);
 
@@ -159,10 +172,13 @@ class Application_Model_SetTable
         else
         {
             // Table name is not present (nor inherited)
-            throw new Exception($settingName .
-                                " setting must include a key for '" .
-                                self::TABLE_NAME .
-                                "' that names the database table to use.");
+            $errorMsg = "$settingName setting must include a key for '" .
+                        self::TABLE_NAME .
+                        "' that names the database table to use.";
+            if ( $this->_recordErrors )
+                { $this->_error_msgs[] = $errorMsg; return; }
+            else
+                { throw new Exception($errorMsg); }
         }
         $this->_settingName = $settingName;
         $this->_dbModel =
@@ -171,8 +187,23 @@ class Application_Model_SetTable
         $settingsAsArray = ( $settingProps instanceof Zend_Config ) ?
                                    $settingProps->toArray() :
                                    $settingProps;
-        $this->_init($settingsAsArray,
-                     $this->_dbModel->info(Zend_Db_Table_Abstract::METADATA));
+        $allColMetaInfo = array();
+        try
+        {
+            $allColMetaInfo =
+                     $this->_dbModel->info(Zend_Db_Table_Abstract::METADATA);
+        }
+        catch (Exception $e)
+        {
+            if ( $recordErrors )
+            {
+                $this->_error_msgs[] = "Table " . $this->_dbTableName .
+                                       " does not exist in the database.";
+            }
+            else
+                { throw new Exception($e->getMessage()); }
+        }
+        $this->_init($settingsAsArray, $allColMetaInfo);
 
     }
 
@@ -272,11 +303,15 @@ class Application_Model_SetTable
             {
                 if ( ! isset($connection[self::CONNECTION]) )
                 {
-                    throw new Exception("Table connection for " . $table .
-                        " does not have the required format: \n     " .
-                        self::CONNECTED_TBL . "." . $table .
-                        ".connection =" .
-                        "\"LocalTbl.localField = ExtTable.extField\"");
+                    $errorMsg = "Table connection for " . $table .
+                            " does not have the required format: \n     " .
+                            self::CONNECTED_TBL . "." . $table .
+                            ".connection =" .
+                            "\"LocalTbl.localField = ExtTable.extField\"";
+                    if ( $this->_recordErrors )
+                        { $this->_error_msgs[] = $errorMsg; continue; }
+                    else
+                        { throw new Exception($errorMsg); }
                 }
                 $this->_joinExpressions[$table] = $connection;
                 if ( isset($connection[self::ALIAS]) )
@@ -304,7 +339,6 @@ class Application_Model_SetTable
      * join expressions as an association.
      *
      * @throws Exception if the join expression is badly formatted
-     */
     protected function _addJoinExpression($table, $expression)
     {
         $components = explode('=', $expression);
@@ -333,6 +367,7 @@ class Application_Model_SetTable
                 " " . $expression
                 );
     }
+     */
 
     /**
      * Initializes references to an external table.
@@ -348,9 +383,19 @@ class Application_Model_SetTable
 
         foreach ( $referenceInfo as $tableName => $refInfo )
         {
-            $refObjects[$tableName] =
-                new Application_Model_ExternalTableReference($refInfo,
+            try
+            {
+                $refObjects[$tableName] =
+                    new Application_Model_ExternalTableReference($refInfo,
                                                         $this->_settingName);
+            }
+            catch (Exception $e)
+            {
+                if ( $this->_recordErrors )
+                    { $this->_error_msgs[] = $e->getMessage(); }
+                else
+                    { throw new Exception($e->getMessage()); }
+            }
         }
 
         return $refObjects;
@@ -366,7 +411,6 @@ class Application_Model_SetTable
      */
     protected function _initFields($allFieldSettings, $allColMetaInfo)
     {
-
         // Loop through all fields in database and/or table setting...
         $allColNames = array_unique(array_merge(array_keys($allFieldSettings),
                                                 array_keys($allColMetaInfo)));
@@ -410,10 +454,14 @@ class Application_Model_SetTable
             $table = $field->getImportTable();
             if ( ! isset($this->_importAliases[$table]) )
             {
-                throw new Exception("Cannot import '$name' from " .
-                    "'$table' table; there is no '" .
-                    self::CONNECTED_TBL .
-                    "' clause for '$table.'");
+                $errorMsg = "Cannot import '$name' from " .
+                            "'$table' table; there is no '" .
+                            self::CONNECTED_TBL .
+                            "' clause for '$table.'";
+                if ( $this->_recordErrors )
+                    { $this->_error_msgs[] = $errorMsg; return; }
+                else
+                    { throw new Exception($errorMsg); }
             }
             $this->_importAliases[$table][$name] = $field->resolveAlias();
             $this->_allImportFields[$name] = $field;
@@ -451,7 +499,7 @@ class Application_Model_SetTable
      *   - the tables from which one is importing data
      *   - tables from which one is initializing data (only for ADD 
      *     operations, so initTableReference and initFrom should only be 
-     *     for those settings
+     *     for those settings)
      *  External tables settings, which are just links, do not need to 
      *  be included.  Even the "complete, incomplete, empty" designation 
      *  is essentially meta-information and does not require VIEW 
@@ -745,7 +793,7 @@ class Application_Model_SetTable
             {
                 $tempModel =
                     new Application_Model_DbTable_Table($realName);
-                $tempModel->info(Zend_Db_Table_Abstract::METADATA);
+                $cols = $tempModel->info(Zend_Db_Table_Abstract::COLS);
             }
             catch (Exception $e)
             {
@@ -755,6 +803,14 @@ class Application_Model_SetTable
 
             // Add Join information to the query.
             $fields = $this->_importAliases[$localName];
+            foreach ( $fields as $importedField )
+            {
+                if ( ! in_array($importedField, $cols) )
+                {
+                    throw new Exception("Error: $importedField is not a " .
+                        "valid field in table $realName.");
+                }
+            }
             $select->joinLeft($table, $expression[self::CONNECTION], $fields);
         }
 
@@ -1094,6 +1150,215 @@ class Application_Model_SetTable
     protected function _removeImports(array $data)
     {
         return array_diff_key($data, $this->_allImportFields);
+    }
+
+    /**
+     * Clears the error messages accumulated so far while
+     * doing syntax checking for this setting.
+     */
+    public function clearErrorMsgs()
+    {
+        $this->_error_msgs = array();
+    }
+
+    /**
+     * Gets the error messages accumulated when doing syntax checking.
+     */
+    public function getErrorMsgs()
+    {
+        return $this->_error_msgs;
+    }
+
+    /**
+     * Checks the syntax of a table setting and its connections to
+     * other tables.
+     */
+    public function summarizeSyntaxChecking()
+    {
+        $present = "<i class='icon-ok' title='present'> </i>";
+        $absent = "<i class='icon-remove' title='present'> </i>";
+
+        // Check that the table for this setting is a valid table.
+        $localCols = $this->_testTable($this->_dbTableName, true);
+
+        $this->_error_msgs[] = "title: " .
+            ($this->_title ? $this->_title :$absent);
+        $this->_error_msgs[] = "description: " .
+            ($this->_description ? $this->_description :$absent);
+        $this->_error_msgs[] = "tableFootnote: " .
+            ($this->_tableFootnote ? $this->_tableFootnote :$absent);
+        $this->_error_msgs[] = "showColsByDefault: " .
+            ($this->_showColsByDefault ? "true" : "false");
+
+        // Check for invalid field names.
+        $this->_error_msgs[] = "==> Checking for invalid fields... " .
+        $this->_testFields($this->_undefinedFieldNames, $localCols,
+                           $this->_dbTableName, "Local fields");
+
+        // Check table connections, importedFrom clauses.
+        if ( ! empty($this->_joinExpressions) )
+          foreach ( $this->_joinExpressions as $tableName => $expression )
+          {
+            $this->_error_msgs[] = "==> Checking table connections and " .
+                                   "imported fields for $tableName...";
+            $cols = null;
+            $prevErrMsgCount = count($this->_error_msgs);
+
+            // Get table's real name (not alias).
+            $realName = isset($expression[self::ALIAS])
+                              ? $expression[self::ALIAS] : $tableName;
+            if ( $realName != $tableName )
+            {
+                $this->_error_msgs[] = "$tableName is an alias for $realName.";
+            }
+
+            // Test if it is a valid table in the database.
+            $cols = $this->_testTable($realName, true);
+
+            if ( empty($this->_importAliases[$tableName]) )
+            {
+                $this->_error_msgs[] = "Table connection for $tableName " .
+                    "has no imported fields.";
+            }
+            else
+            {
+                // Test if field imports are valid.
+                $fieldAliases = $this->_importAliases[$tableName];
+                $aliasLocalNames = array_keys($fieldAliases);
+                $localFieldNames = array_keys($this->_visibleFields); 
+                $this->_testFields($aliasLocalNames, $localFieldNames,
+                                   $this->_settingName . " setting",
+                                   "Importing");
+                $this->_testFields($fieldAliases, $cols,
+                                   $realName, "Importing");
+            }
+          }
+
+        // Check initialize-from information.
+        $this->_error_msgs[] =
+                        "==> Checking initialization table references... ";
+        if ( ! empty($this->_initTblRefs) )
+        {
+            $this->_testExternalRefs($this->_initTblRefs, "initTableRef");
+        }
+        $this->_error_msgs[] = "==> Checking initFrom references... ";
+        foreach ( $this->_fieldsInitFromElsewhere as $fieldName => $field )
+        {
+            // Determine table name & field.  Are they valid?
+            $sourceTblName = $field->getInitTableName();
+            $sourceFieldName = $field->getInitField();
+            $cols = $this->_testTable($sourceTblName, true);
+            $this->_testFields(array($sourceFieldName), $cols, $sourceTblName,
+                                     "Initialization");
+        }
+
+        // Check external references.
+        $this->_error_msgs[] = "==> Checking external table references... ";
+        if ( ! empty($this->_fieldsInitFromElsewhere) )
+        {
+            $this->_testExternalRefs($this->_externalTblRefs,
+                                     "externalTableRef");
+        }
+
+        // Check selectFrom properties.
+        $this->_error_msgs[] = "==> Checking selectFrom properties... ";
+        $allFields = $this->_keys + $this->_visibleFields;
+        foreach ( $allFields as $field )
+        {
+            if ( $field->validValsDefinedInExtTable() )
+            {
+                try
+                    { $field->getValidVals(); }
+                catch (Exception $e)
+                {
+                    $this->_error_msgs[] = "selectFrom: " .
+                                           $e->getMessage();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Tests that the given table name represents an actual table in the 
+     * database.  Returns the columns for that table if so.  Adds an
+     * error message to the _error_msgs instance variable and returns an 
+     * empty array if the table was invalid.
+     */
+    protected function _testTable($tableName, $recordErrors = false)
+    {
+        $cols = array();
+        try
+        {
+            $tempModel = new Application_Model_DbTable_Table($tableName);
+            $cols = $tempModel->info(Zend_Db_Table_Abstract::COLS);
+        }
+        catch (Exception $e)
+        {
+            if ( $recordErrors )
+            {
+                $tableName = $tableName ? : "[no name]";
+                $this->_error_msgs[] = "Error: $tableName is not a table " .
+                    "in this database.";
+            }
+            else
+                { throw new Exception($e->getMessage()); }
+        }
+
+        return $cols;
+    }
+
+    /**
+     * Tests that all the fields in the given array of fields are
+     * represented in the array of actual table columns.
+     */
+    protected function _testFields($fieldNames, $tableCols,
+                                   $tableName, $prefix)
+    {
+        foreach ( $fieldNames as $fieldToCheck )
+        {
+            if ( ! in_array($fieldToCheck, $tableCols) )
+            {
+                $this->_error_msgs[] = "$prefix: $fieldToCheck is " .
+                    "not a valid visible field in $tableName.";
+            }
+        }
+    }
+
+    /**
+     * Tests a set of external references (for initializing data from or 
+     * for establishing links).
+     */
+    protected function _testExternalRefs($references, $type)
+    {
+        foreach ( $references as $keyword => $refInfo )
+        {
+            try
+            {
+                $sequence = $refInfo->getViewingSeq();
+                $setting = $sequence->getSetTableForAdding();
+            }
+            catch (Exception $e)
+            {
+                if ( $this->_recordErrors )
+                {
+                    $seqName = $refInfo->getViewingSeqName();
+                    $this->_error_msgs[] = "Error: $seqName is not a valid " .
+                        "table setting/sequence file.";
+                    return;
+                }
+                else
+                    { throw new Exception($e->getMessage()); }
+            }
+            $tableName = $setting->getDbTableName();
+            $cols = $this->_testTable($tableName, true);
+            $connections = $refInfo->getConnectionExpressions();
+            $localFields = array_keys($connections);
+            $localFieldNames = array_keys($this->_visibleFields); 
+            $this->_testFields($localFields, $localFieldNames,
+                               $this->_settingName . " setting", $type);
+            $this->_testFields($connections, $cols, $tableName, $type);
+        }
     }
 
 }

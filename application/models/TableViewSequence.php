@@ -64,6 +64,13 @@ class Application_Model_TableViewSequence
     /** @var Application_Model_TVSGateway */
     protected $_propertyGateway;     // gateway for getting setting properties
 
+    /** @var boolean */
+    protected $_recordErrors;        // whether to record errors rather than
+                                     // throw exceptions
+
+    /** @var array */
+    protected $_error_msgs;          // errors encountered
+
     /**
      * Returns a list of the valid sequence setting properties.
      */
@@ -84,6 +91,31 @@ class Application_Model_TableViewSequence
     }
 
     /**
+     * Checks syntax for the sequence of table views in the given
+     * filename.
+     */
+    public static function checkSyntax($filename)
+    {
+        $msgs[] = "==> Checking syntax for $filename...";
+        $sequence = new Application_Model_TableViewSequence($filename, true);
+
+        // Run through all the unique settings and try to get a SetTable 
+        // for each.
+        $settings = $sequence->_getUniqueSettingNames();
+        foreach ( $settings as $name => $property )
+        {
+            $msgs[] = "<hr />";
+            $msgs[] = "==> Checking syntax for getting Set Table $name...";
+            $sequence->_clearErrorMsgs();
+            $setTable = $sequence->getSetTable($property);
+            $setTable->summarizeSyntaxChecking();
+            $msgs = array_merge($msgs, $sequence->_getErrorMsgs(),
+                                $setTable->getErrorMsgs());
+        }
+        return $msgs;
+    }
+
+    /**
      * Class constructor
      *
      * Creates an object that represents a sequence for viewing pages 
@@ -92,11 +124,18 @@ class Application_Model_TableViewSequence
      * viewing multiple records to searching, to viewing a single record,
      * to adding new records, and to editing or deleting records.
      *
-     * @param string $name     the name associated with this sequence
-     * @return void
+     * @param string  $name     the name associated with this sequence
+     * @param boolean $recordErrors  record local errors rather than
+     *                               throwing exceptions
+     * @throws Exception if TVSGateway encounters an error (even if 
+     *                   $recordErrors is true) or if a local error is
+     *                   encountered (if $recordErrors is false)
      */
-    public function __construct($name)
+    public function __construct($name, $recordErrors = false)
     {
+        $this->_recordErrors = $recordErrors;
+        $this->_error_msgs = array();
+
         // Create a gateway to the raw table viewing properties imported 
         // from an external file.
         $this->_propertyGateway = new Application_Model_TVSGateway($name);
@@ -157,8 +196,12 @@ class Application_Model_TableViewSequence
             }
             else
             {
-                throw new Exception("Must specify a sequence or " .
-                    "one table setting in $name");
+                $errorMsg = "Must specify a sequence or " .
+                            "one table setting in $name";
+                if ( $this->_recordErrors )
+                    { $this->_error_msgs[] = $errorMsg; }
+                else
+                    { throw new Exception($errorMsg); }
             }
         }
 
@@ -243,21 +286,30 @@ class Application_Model_TableViewSequence
     {
         if ( empty($property) )
         {
-            throw new Exception("Error: trying to get set table " .
-                "for empty setting property name.");
+            $errorMsg = "Error: trying to get set table " .
+                "for empty setting property: $property.";
+            if ( $this->_recordErrors )
+                { $this->_error_msgs[] = $errorMsg; }
+            else
+                { throw new Exception($errorMsg); }
         }
         $validSeqSettingProps = self::validSeqSettingProps();
         if ( ! in_array($property, $validSeqSettingProps) )
         {
-            throw new Exception("Error: trying to get set table " .
-                "for unknown setting property: " . $property . ".");
+            $errorMsg = "Error: trying to get set table " .
+                "for unknown setting property: $property.";
+            if ( $this->_recordErrors )
+                { $this->_error_msgs[] = $errorMsg; }
+            else
+                { throw new Exception($errorMsg); }
         }
         if ( ! isset($this->_settings[$property]) )
         {
             $name = $this->_settingNames[$property];
             $this->_settings[$property] =
                     new Application_Model_SetTable($name,
-                                                   $this->_propertyGateway);
+                                                   $this->_propertyGateway,
+                                                   $this->_recordErrors);
         }
         return $this->_settings[$property];
     }
@@ -290,8 +342,12 @@ class Application_Model_TableViewSequence
             case self::DELETE_RECORD:
                     return $this->getSetTableForDeleting(); break;
             default:
-                throw new Exception("Error: trying to get set table " .
-                    "for unknown table action: " . $actionName . ".");
+                $errorMsg = "Error: trying to get set table " .
+                    "for unknown table action: " . $actionName . ".";
+                if ( $recordErrors )
+                    { $this->_error_msgs[] = $errorMsg; }
+                else
+                    { throw new Exception($errorMsg); }
         }
     }
 
@@ -396,9 +452,13 @@ class Application_Model_TableViewSequence
         if ( in_array($valueProvided, $validValues) )
             return $valueProvided;
 
-        throw new Exception("Error: $valueProvided is not a valid " .
-            "value for $property.  Must be one of (" .
-            implode(", ", $validValues) . ").");
+        $errorMsg = "Error: $valueProvided is not a valid value for " .
+                        "$property.  Must be one of (" . 
+                        implode(", ", $validValues) . ").";
+        if ( $this->_recordErrors )
+            { $this->_error_msgs[] = $errorMsg; }
+        else
+            { throw new Exception($errorMsg); }
     }
 
     /**
@@ -411,6 +471,45 @@ class Application_Model_TableViewSequence
     {
         return isset($theArray[$key]) && ! empty($theArray[$key])
                     ? $theArray[$key] : null;
+    }
+
+    /**
+     * Returns a set of setting names defined in this sequence, each 
+     * with a property that uses that setting.  For example, if a 
+     * sequence includes several setting properties that resolve to a 
+     * 'View' setting and several others that resolve to a 'Modify'
+     * setting,  this method might return:
+     *    'View' => 'setting'
+     *    'Modify' => 'addSetting'
+     */
+    protected function _getUniqueSettingNames()
+    {
+        $uniqueNames = array();
+        foreach ( $this->_settingNames as $property => $settingName )
+        {
+            if ( ! isset($uniqueNames[$settingName]) )
+            {
+                $uniqueNames[$settingName] = $property;
+            }
+        }
+        return $uniqueNames;
+    }
+
+    /**
+     * Clears the error messages accumulated so far while
+     * doing syntax checking for this sequence.
+     */
+    protected function _clearErrorMsgs()
+    {
+        $this->_error_msgs = array();
+    }
+
+    /**
+     * Gets the error messages accumulated when doing syntax checking.
+     */
+    protected function _getErrorMsgs()
+    {
+        return $this->_error_msgs;
     }
 
 }

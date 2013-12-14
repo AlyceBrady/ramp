@@ -3,23 +3,28 @@
 --
 
 
+USE `smart_dev`;
+
+-- Before dropping Student, need to drop table(s) that depend on it.
+SOURCE dropSmartStudentDependencies.sql
+
 DROP TABLE IF EXISTS Student;
 
 CREATE TABLE Student (
     studentID INT NOT NULL PRIMARY KEY,
-    advisor INT NULL DEFAULT NULL,
+    advisorID INT NULL DEFAULT NULL,
     transcriptName VARCHAR ( 60 ),
     campusAddress VARCHAR ( 20 ),
     primaryLanguage VARCHAR ( 20 ),
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (studentID) REFERENCES Person (id) ON UPDATE CASCADE,
-    FOREIGN KEY (advisor) REFERENCES Person (id) ON DELETE SET NULL
+    FOREIGN KEY (advisorID) REFERENCES Person (id) ON DELETE SET NULL
         ON UPDATE CASCADE,
-    INDEX (advisor)
+    INDEX (advisorID)
 );
 
-INSERT INTO Student (studentID, advisor, transcriptName, campusAddress,
+INSERT INTO Student (studentID, advisorID, transcriptName, campusAddress,
     primaryLanguage)
 VALUES
 (8, 1, 'Charles Brown', 'MU 248', 'English')

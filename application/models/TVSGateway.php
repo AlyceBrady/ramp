@@ -310,7 +310,8 @@ class Application_Model_TVSGateway
         return is_array($propDefs) &&
                array_key_exists(self::SEQ_KEYWORD, $propDefs) &&
                is_array($propDefs[self::SEQ_KEYWORD]) &&
-               ! array_key_exists(self::SEQ_KEYWORD, $propDefs[self::SEQ_KEYWORD]);
+               ! array_key_exists(self::SEQ_KEYWORD,
+                                  $propDefs[self::SEQ_KEYWORD]);
     }
 
     /**
@@ -337,15 +338,6 @@ class Application_Model_TVSGateway
         }
 
         return false;
-
-        /* Old function description included:
-         * ...  Since every table setting must include a 
-         * specification for the name of an associated database table,
-         * we just look for that.
-         */
-        // $dbNameIndex = self::TBL_NAME;
-        // return is_array($propDefs) &&
-               // array_key_exists($dbNameIndex, $propDefs);
     }
 
 }

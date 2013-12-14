@@ -2,22 +2,25 @@
 
 activityListHeading = "Choose an activity:"
 
+activity[] = "ResetPassword"
+activity[] = "FreeLock"
+activity[] = "Break"
 activity[] = "Smart View of Users"
 activity[] = "Auths"
-activity[] = "Spacer"
-activity[] = "ResetPassword"
-activity[] = "Spacer"
+activity[] = "Break"
+activity[] = "LockRelations"
+activity[] = "Locks"
+activity[] = "Break"
 activity[] = "ValidateUserRoles"
-activity[] = "Spacer"
 activity[] = "ValidateACL"
-activity[] = "Spacer"
 activity[] = "ViewACL"
+activity[] = "Break"
+activity[] = "CheckSyntax"
 
 
-[ Spacer ]
+[Break]
 
-type = "comment"
-comment = ""
+type = "separator"
 
 [ Add User ]
 
@@ -73,5 +76,37 @@ title = "Reset User Password"
 description = "Reset a user's password"
 controller = "auth"
 action = "reset-password"
+parameter = ""
+
+[ LockRelations ]
+
+type = "setting"
+source = "Admin/ramp_lock_relations"
+title = "Lock Relations"
+description = "View or modify list of lock relations"
+
+[ Locks ]
+
+type = "setting"
+source = "Admin/ramp_lock_locks"
+title = "Locks"
+description = "View or modify list of locks"
+
+[ FreeLock ]
+
+type = "controllerAction"
+title = "Release Lock"
+description = "Release an orphaned or abandoned lock"
+controller = "lock"
+action = "free-lock"
+parameter = ""
+
+[ CheckSyntax ]
+
+type = "controllerAction"
+title = "Check Setting Syntax"
+description = "Check the syntax for a sequence or setting file"
+controller = "table-syntax"
+action = "index"
 parameter = ""
 

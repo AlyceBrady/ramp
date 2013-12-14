@@ -65,6 +65,8 @@ class TableController extends Zend_Controller_Action
 
     protected $_controllerName;
 
+    protected $_actionName;
+
     protected $_encodedSeqName;
 
     protected $_tblViewingSeq;
@@ -91,28 +93,34 @@ class TableController extends Zend_Controller_Action
         // Set the default view for "Display All" actions.
         $this->_displayAllView = "list-view";
 
-        // Get the sequence information (types of table settings to use).
+        // Get the sequence parameter.
         $seqName =
             Ramp_Controller_KeyParameters::getKeyParam($this->getRequest());
         $this->_encodedSeqName = urlencode($seqName);
-        $this->_tblViewingSeq = $seq =
-                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+
+        // Set the basic parameters to build on when going to other actions.
+        $this->_controllerName = $this->getRequest()->getControllerName();
+        $this->_actionName = $this->getRequest()->getActionName();
+        $this->_baseParams = array('controller' => $this->_controllerName,
+                       self::SETTING_NAME => $this->_encodedSeqName);
 
         // Get and store other parameters for possible future use.
         $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
         $this->_searchType = $this->_getParam(self::SEARCH_TYPE);
         $this->_getFieldsToMatch();
 
-        // Set the basic parameters to build on when going to other actions.
-        $this->_controllerName = $this->getRequest()->getControllerName();
-        $this->_baseParams = array('controller' => $this->_controllerName,
-                       self::SETTING_NAME => $this->_encodedSeqName);
-
         // Initialize values that are passed to the view scripts.
         $this->view->seqSetting = $seqName;
         $this->view->baseParams = $this->_baseParams;
         $this->view->msgs = array();
         $this->view->errMsgs = array();
+
+        // Get the sequence information (types of table settings to use).
+        if ( $this->_actionName != "check-syntax" )
+        {
+            $this->_tblViewingSeq = 
+                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+        }
 
 // $this->_debugging = true;
 
@@ -379,6 +387,7 @@ class TableController extends Zend_Controller_Action
         if ( $this->_thisIsInitialDisplay() )
         {
             // Retrieve record based on provided fields / primary keys.
+            $this->_acquireLock($setTable, $this->_fieldsToMatch);
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
         elseif ( $this->_submittedButton == self::SAVE )
@@ -390,6 +399,7 @@ class TableController extends Zend_Controller_Action
             {
                 // Update the database and redisplay the record.
                 $setTable->updateTableEntry($form->getFieldValues());
+                $this->_releaseLock($setTable, $this->_fieldsToMatch);
                 $this->_goTo('record-view', $this->_fieldsToMatch);
             }
             else
@@ -401,9 +411,15 @@ class TableController extends Zend_Controller_Action
             }
         }
         elseif ( $this->_submittedButton == self::DEL_BUTTON )
-            { $this->_goTo('delete', $this->_fieldsToMatch); }
+        {
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_goTo('delete', $this->_fieldsToMatch);
+        }
         else  // Cancel
-            { $this->_goTo('record-view', $this->_fieldsToMatch); }
+        {
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
+            $this->_goTo('record-view', $this->_fieldsToMatch);
+        }
 
     }
 
@@ -470,10 +486,10 @@ class TableController extends Zend_Controller_Action
     /**
      * Controls the Table delete action, presenting a confirmation page
      * before deleting an existing entry from the table.
-     * TODO: Confirmation might be better handled on the client side, so 
-     * that only confirmed delete requests get to the server.  In that 
-     * case, processing of deletion requests would probably move to the 
-     * appropriate display or edit actions.
+     * TODO: Confirmation could be handled on the client side, in which
+     * case only confirmed delete requests would get to the server.  In
+     * that  case, processing of deletion requests would probably move
+     * to the  appropriate display or edit actions.
      */
     public function deleteAction()
     {
@@ -491,10 +507,12 @@ class TableController extends Zend_Controller_Action
         {
             // Retrieve the table entry to display based on the key(s);
             // assign to view for confirmation.
+            $this->_acquireLock($setTable, $this->_fieldsToMatch);
             $form->populate($setTable->getTableEntry($this->_fieldsToMatch));
         }
         elseif ( $this->_submittedButton == self::CANCEL )
         {
+            $this->_releaseLock($setTable, $this->_fieldsToMatch);
             $this->_goTo('record-view', $this->_fieldsToMatch);
         }
         else        // Delete has been confirmed.
@@ -503,7 +521,12 @@ class TableController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             if ( $form->isValid($formData) )
             {
+                // Get the lock information, including the key on which 
+                // the record was locked BEFORE deleting record!
+                $lockInfo = $this->_getLockInfo($setTable,
+                                                $this->_fieldsToMatch);
                 $rows = $setTable->deleteTableEntry($form->getFieldValues());
+                $this->_releaseLock(null, null, $lockInfo);
                 // TODO: report to user that entry was deleted!
             }
 
@@ -581,7 +604,6 @@ class TableController extends Zend_Controller_Action
             $this->_goTo($this->_getUsualAction($this->_submittedButton));
         }
          */
-        
     }
 
     /**
@@ -870,6 +892,8 @@ class TableController extends Zend_Controller_Action
         // initialized from values in another table.
         $inputFieldNames = array_keys($data);
         $relevantFields = $this->view->tableInfo->getExternallyInitFields();
+        // Why wasn't this written as the simpler:   ?
+        // $relevantFields = $setTable->getExternallyInitFields();
         foreach ( $relevantFields as $newFieldName => $newField )
         {
             // Initialize from another table if data not already provided.
@@ -929,6 +953,97 @@ class TableController extends Zend_Controller_Action
         {
             return $matches[0];
         }
+    }
+
+    /**
+     * Acquires the lock for the given record in the specified table.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     */
+    protected function _acquireLock($setTable, $matchingFields)
+    {
+        // Get the information needed to acquire a lock.
+        $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+
+        // Get the lock (if possible).
+        $locksTable = new Application_Model_DbTable_Locks();
+        if ( ! $locksTable->acquireLock($lockInfo) )
+        {
+            // Notify user that lock is unavailable.
+            $params = array(Application_Model_DbTable_Locks::USER =>
+                            urlencode($user));
+            $this->_helper->redirector('unavailable-lock', 'lock', null,
+                                       $params);
+        }
+    }
+
+    /**
+     * Releases the lock for the given record in the specified table.
+     * Uses the $setTable and $matchingFields parameters to determine 
+     * the lock information unless the optional $lockInfo parameter is
+     * provided.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     * @param $lockInfo  the information to use to lock (if already known)
+     */
+    protected function _releaseLock($setTable, $matchingFields,
+                                    $lockInfo = null)
+    {
+        // Get the information needed to release a lock.
+        if ( $lockInfo == null )
+        {
+            $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
+        }
+
+        // Release the lock.
+        $locksTable = new Application_Model_DbTable_Locks();
+        $locksTable->releaseLock($lockInfo);
+    }
+
+    /**
+     * Gets the lock information for the lock to acquire or release 
+     * based on the given set table, the matching fields, and the Lock 
+     * Relations table.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param array $matchingFields  fields and values to search/select for
+     */
+    protected function _getLockInfo($setTable, $matchingFields)
+    {
+        // Get the locking table and key field name.
+        $lockRelationsTable = new Application_Model_DbTable_LockRelations();
+        $lookupInfo =
+                $lockRelationsTable->getLockInfo($setTable->getDbTableName());
+        $keyToLookup =
+            $lookupInfo[Application_Model_DbTable_LockRelations::LOCKING_KEY_NAME];
+
+        // Get the key used for locking
+        $recordToLock = $setTable->getTableEntry($matchingFields);
+        $lockingKey = $recordToLock[$keyToLookup];
+
+        // Get the user information.
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() )
+        {
+            $user = $auth->getIdentity()->username;
+        }
+        else
+        {
+            // Use DEFAULT_ROLE if user is not logged in.
+            $user = Ramp_Acl::DEFAULT_ROLE;
+        }
+
+        // Construct $lockInfo object.
+        $lockInfo = array();
+        $lockInfo[Application_Model_DbTable_Locks::LOCK_TABLE] =
+            $lookupInfo[Application_Model_DbTable_LockRelations::LOCK_TABLE];
+        $lockInfo[Application_Model_DbTable_Locks::LOCKING_KEY] = $lockingKey;
+        $lockInfo[Application_Model_DbTable_Locks::USER] = $user;
+
+        return $lockInfo;
+
     }
 
 }
