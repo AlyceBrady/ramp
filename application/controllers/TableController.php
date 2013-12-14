@@ -528,15 +528,6 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
-     * Checks the syntax of a table setting/sequence file chosen by the 
-     * user.
-     */
-    public function checkSyntaxAction()
-    {
-        $this->view->formResponse = "This is a test."
-    }
-
-    /**
      * Initializes basic view renderer information from the set table.
      *
      * @param Application_Model_SetTable  table: setting & db info
