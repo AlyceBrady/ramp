@@ -28,6 +28,8 @@
 -- UNDER CONSTRUCTION!  (Most relations are not here yet!)
 
 
+USE `smart_dev`;
+
 DROP TABLE IF EXISTS `ramp_lock_relations`;
 CREATE TABLE `ramp_lock_relations` (
   `db_table` varchar(50) NOT NULL,
