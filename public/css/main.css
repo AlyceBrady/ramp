@@ -145,22 +145,15 @@ div#table-notes p {             /* Table "footnotes" */
     font-style:     italic;
 }
 
-div#record-block input {
-    font-size: 90%;
-}
-
-div#record-block select
+div#record-block .control-group
 {
-    font-size: 90%;
+    margin-top: 5px;    /* not doing anything? */
+    margin-bottom: 10px;
 }
 
 div#record-block select.comparator
 {
     font-size: 60%;
-}
-
-div#record-block textarea {
-    width: 95%
 }
 
 #record-table td.select, #record-list td.select,
@@ -174,6 +167,36 @@ div#record-block textarea {
     margin-left: 20px;
     float:left;
     list-style:none;
+}
+
+div#record-block.split-view .control-group
+{
+    margin-top:  2px;
+    margin-bottom:  2px;
+}
+
+div#record-block.split-view .control-label
+{
+    width: 100px;
+}
+
+div#record-block.split-view .controls
+{
+    margin-left: 120px;
+}
+
+div#record-block.split-view button,
+div#record-block.split-view input,
+div#record-block.split-view select,
+div#record-block.split-view textarea,
+div#record-block.split-view label,
+div#record-block.split-view
+{
+    font-size: 90%;
+    height: 100%;
+    line-height: 100%;
+    margin: 0 0 0 0;
+    padding: 3px 3px;
 }
 
 

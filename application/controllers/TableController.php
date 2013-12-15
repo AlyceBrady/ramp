@@ -12,7 +12,8 @@
  *
  * @category   Ramp
  * @package    Ramp_Controller
- * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
  *
  */
@@ -37,6 +38,7 @@ class TableController extends Zend_Controller_Action
     const ALL                   = Application_Model_SetTable::ALL;
 
     /* labels for forms and buttons */
+    const VIEW                  = 'View';       // used by Form
     const SEARCH                = "Search";
     const MATCH_ALL             = "Search On All Fields";
     const MATCH_ANY             = "Match Against Any Field";
@@ -349,7 +351,8 @@ class TableController extends Zend_Controller_Action
             $sharedViewSetting = $this->view->sharedViewSetting =
                 $setTable->createSubsetWithout(array_keys($different));
             $this->view->sharedDataEntryForm =
-                    new Application_Form_TableRecordEntry($sharedViewSetting);
+                new Application_Form_TableRecordEntry($sharedViewSetting,
+                                                      self::VIEW, true);
             $this->view->sharedDataEntryForm->populate($shared);
             $differentViewSetting = $this->view->differentViewSetting =
                 $setTable->createSubsetWithout(array_keys($shared));

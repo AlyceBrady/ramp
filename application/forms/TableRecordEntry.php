@@ -1,6 +1,24 @@
 <?php
 
 /**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Forms
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
+/*
  * FYI: Meta Info contains: 
  *      [SCHEMA_NAME]
  *      [TABLE_NAME]
@@ -20,7 +38,7 @@
 
 class Application_Form_TableRecordEntry extends Zend_Form
 {
-    const VIEW   = 'view';
+    const VIEW   = TableController::VIEW;
     const ADD    = TableController::ADD;
     const EDIT   = TableController::EDIT;
     const SEARCH = TableController::SEARCH;
@@ -58,10 +76,12 @@ class Application_Form_TableRecordEntry extends Zend_Form
 
     const FIELD_WIDTH           = 'span3';
     const COMPARATOR_CLASS_INFO = 'comparator span1';
+    const SMALL_FIELD_WIDTH     = 'span2';
 
     protected $_setTable;
     protected $_formSuffix;
     protected $_formType;
+    protected $_makeSmall;
     protected $_searchCompElts = array();
     protected $_fieldElts = array();
 
@@ -98,15 +118,18 @@ class Application_Form_TableRecordEntry extends Zend_Form
      * @param Application_Model_TableSetting $setTable the table setting
      * @param string $formType     specifies type of form (VIEW, ADD, 
      *                                  EDIT, or SEARCH)
+     * @param string $makeSmall    make buttons smaller
      * @param bool   $formSuffix   a suffix to make form name unique on page
      *                             e.g., a row number
      */
     public function __construct(Application_Model_SetTable $setTable,
-                                $formType = self::VIEW, $formSuffix = 0)
+                                $formType = self::VIEW, $makeSmall = false,
+                                $formSuffix = 0)
     {
         $this->_setTable = $setTable;
         $this->_formSuffix = $formSuffix;
         $this->_formType = $formType;
+        $this->_makeSmall = $makeSmall;
         parent::__construct();
     }
 
@@ -531,7 +554,9 @@ class Application_Form_TableRecordEntry extends Zend_Form
      */
     protected function _buildClass($field, $readOnly, $reqRecDecs)
     {
-        $class = self::FIELD_WIDTH . " " . $reqRecDecs['class'];
+        $class = $this->_makeSmall
+                    ? self::SMALL_FIELD_WIDTH : self::FIELD_WIDTH;
+        $class .= " " . $reqRecDecs['class'];
         if ( $readOnly )
             { $class .= " readonly"; }
         return $class;
