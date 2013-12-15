@@ -306,25 +306,6 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Creates a drop-down menu of search comparator types.
-     */
-    protected function _createComparatorDropDown2($name)
-    {
-        $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
-        $comparatorElement = new Zend_Form_Element_Select($ddName);
-        $comparatorOptions = self::validComparators();
-        $comparatorElement->setLabel($label)
-                          ->setMultiOptions($comparatorOptions);
-        $comparatorElement = $this->_buildDecorators($comparatorElement);
-        $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
-
-        // Add element to the form and to local list of
-        // elements representing search comparators.
-        $this->addElement($comparatorElement);
-        $this->_searchCompElts[$name] = $comparatorElement;
-    }
-
-    /**
      * Creates a drop-down menu for fields with a defined set of values.
      */
     protected function _createFieldDropDown($field, $name)
