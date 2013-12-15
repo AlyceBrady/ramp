@@ -485,6 +485,47 @@ class Application_Model_SetTable
     }
 
     /**
+     * Creates another set table that constitutes a "visual subset" of 
+     * this setting; all attributes are the same except that more of the 
+     * fields are hidden.
+     *
+     * @param array  $fieldsToHide   the fields to hide
+     */
+    public function createSubsetWithout($fieldsToHide)
+    {
+        $subset = clone $this;
+
+        // Hide each provided field.
+        foreach ( $fieldsToHide as $fieldName )
+        {
+            if ( isset($subset->_inTable[$fieldName]) )
+            {
+                $clone = clone $subset->_inTable[$fieldName];
+                $subset->_inTable[$fieldName] = $clone;
+            }
+            else if ( isset($subset->_allImportFields[$fieldName]) )
+            {
+                $clone = clone $subset->_allImportFields[$fieldName];
+                $subset->_allImportFields[$fieldName] = $clone;
+            }
+            else
+                { return; }
+
+            $clone->hide();
+            if ( isset($subset->_visibleFields[$fieldName]) )
+            {
+                unset($subset->_visibleFields[$fieldName]);
+            }
+            if ( isset($subset->_keys[$fieldName]) )
+            {
+                $subset->_keys[$fieldName] = $clone;
+            }
+        }
+
+        return $subset;
+    }
+
+    /**
      * Gets the name of the underlying table.
      */
     public function getDbTableName()

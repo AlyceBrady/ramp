@@ -1,16 +1,8 @@
 <?php
 
-require_once('Michelf/Markdown.php');
-use \Michelf\Markdown;
-
 $table = $this->tableInfo;
 
 // Get values from set table for data area.
-$seqSetting = $this->seqSetting;        // Set in controller
-$addSetting = $this->addSetting;        // Set in controller for getting
-                                        // filled-in status information
-$visibleFieldInfo = $table->getVisibleFields();
-$keyFields = $table->getPrimaryKeys();
 $tableValues = $this->dataToDisplay;    // Set in controller
 
 // Set page and window title.
@@ -34,11 +26,6 @@ $titleAndMsgs['footnoteAsTooltip'] = false;
 $titleBar['titleAndMsgs'] = $titleAndMsgs;
 $titleBar['buttonList'] = $this->buttonList;   // Set in controller
 
-// Construct core parameters to send to all actions.
-$commonParams = $this->baseParams;      // Set in controller
-$selectParams = $commonParams + array('action'=>'record-view');
-$deleteParams = $commonParams + array('action'=>'delete');
-
 ?>
 
 <div>
@@ -48,92 +35,24 @@ $deleteParams = $commonParams + array('action'=>'delete');
 <!-- Display title bar (title, messages, buttons) -->
 <?php echo $this->partial("table/_titleBar.phtml", $titleBar); ?>
 
-<!-- Display records -->
-
 <div id='record-table' class='row'>
 <table class='table table-striped table-hover table-condensed'>
 
-<!-- DISPLAY COLUMN HEADERS -->
-<thead>
-<tr>
-    <?php
-    foreach($visibleFieldInfo as $fieldName => $field) :
-        $footnote = $this->escape( $field->getFieldFootnote());
-        if ( ! empty($footnote) )
-        {
-            $footnote = Markdown::defaultTransform($footnote);
-            $footnote = $this->partial("table/_cleanIfSinglePar.phtml",
-                            array('content'=>$footnote));
-        }
-        $title = $footnote ? "title='$footnote'" : "";
-        echo "<th $title>";
-        $colHeading =
-            Markdown::defaultTransform($this->escape($field->getLabel()));
-        echo $this->partial("table/_cleanIfSinglePar.phtml",
-                array('content'=>$colHeading)) . "</th>";
-    endforeach;
-    ?>
-    <th> Actions </th>
-</tr>
-</thead>
+<!-- Display column headers -->
 
-<!-- DISPLAY RECORDS -->
-<tbody>
-<?php
-$rowNum = 0;
-foreach($tableValues as $recordValues) :
+<?php echo $this->partial("table/_colHeadingDisplay.phtml",
+                            array('table' => $table));
 ?>
 
-    <!-- Display table entries in rows... -->
-    <tr>
-    <?php
+<!-- Display records -->
 
-    // Determine fields to display and which fields to pass as
-    // parameters to select and delete requests.
-    $rowNum++;
-    $rowSpecParams = array();
-    foreach ( $keyFields as $keyFieldName => $ignoredFieldInfo ) :
-        $rowSpecParams[$keyFieldName] = $recordValues[$keyFieldName];
-    endforeach;
-    ?>
+<?php echo $this->partial("table/_multiRecordDisplay.phtml",
+                            array('table' => $table,
+                                  'addSetting' => $this->addSetting,
+                                  'tableValues' => $tableValues,
+                                  'baseParams' => $this->baseParams));
+?>
 
-    <!-- Display visible field values. -->
-    <?php
-    foreach($visibleFieldInfo as $fieldName => $field) :
-        $colHeading = $this->escape($field->getLabel());
-        $title = $this->escape( $field->getFieldFootnote());
-        $title = $title ? "$colHeading: $title" : $colHeading;
-        echo "<td title='$title'>";
-        echo $this->escape($recordValues[$fieldName]) . "</td>";
-    endforeach;
-    ?>
-
-    <!-- Display select/delete links -->
-    <td class='completionStatus'>
-        <?php
-        // Display indication of whether record has all recommended fields.
-        $status = $addSetting->getStatusOfRecord($rowSpecParams);
-        echo $this->partial("table/_externalRef.phtml",
-                            array('table' => $table->getDbTableName(),
-                                  'status' => $status));
-        ?>
-    </td>
-    <td class='delete'>
-        <a href="<?php echo $this->url(
-                        $deleteParams + $rowSpecParams, null, true); ?>"><i
-                            class='icon-remove' title='Delete'></i></a>
-    </td>
-    <td class='select'>
-        <a href="<?php echo $this->url(
-                        $selectParams + $rowSpecParams, null, true); ?>"><i
-                        class='icon-search' title='Select'></i></a>
-    <!-- Other possibilities: 'icon-zoom-in', 'icon-list', 'icon-list-alt' -->
-    </td>
-    </tr>
-
-<?php endforeach; ?>
-
-</tbody>
 </table>
 </div>  <!-- End of "record-table" -->
 

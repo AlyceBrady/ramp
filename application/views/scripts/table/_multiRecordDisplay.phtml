@@ -1,0 +1,75 @@
+<?php
+
+// Get parameters sent in.
+$table = $this->table;
+$addSetting = $this->addSetting;        // for getting completion status info
+$tableValues = $this->tableValues;
+$commonParams = $this->baseParams;
+
+// Get values from set table for data area.
+$visibleFieldInfo = $table->getVisibleFields();
+$keyFields = $table->getPrimaryKeys();
+
+// Construct core parameters to send to all actions.
+$selectParams = $commonParams + array('action'=>'record-view');
+$deleteParams = $commonParams + array('action'=>'delete');
+
+?>
+
+<!-- Display records -->
+
+<tbody>
+<?php
+foreach($tableValues as $recordValues) :
+?>
+
+    <!-- Display table entries in rows... -->
+    <tr>
+    <?php
+
+    // Determine fields to display and which fields to pass as
+    // parameters to select and delete requests.
+    $rowSpecParams = array();
+    foreach ( $keyFields as $keyFieldName => $ignoredFieldInfo ) :
+        $rowSpecParams[$keyFieldName] = $recordValues[$keyFieldName];
+    endforeach;
+    ?>
+
+    <!-- Display visible field values. -->
+    <?php
+    foreach($visibleFieldInfo as $fieldName => $field) :
+        $colHeading = $this->escape($field->getLabel());
+        $title = $this->escape( $field->getFieldFootnote());
+        $title = $title ? "$colHeading: $title" : $colHeading;
+        echo "<td title='$title'>";
+        echo $this->escape($recordValues[$fieldName]) . "</td>";
+    endforeach;
+    ?>
+
+    <!-- Display select/delete links -->
+    <td class='completionStatus'>
+        <?php
+        // Display indication of whether record has all recommended fields.
+        $status = $addSetting->getStatusOfRecord($rowSpecParams);
+        echo $this->partial("table/_externalRef.phtml",
+                            array('table' => $table->getDbTableName(),
+                                  'status' => $status));
+        ?>
+    </td>
+    <td class='delete'>
+        <a href="<?php echo $this->url(
+                        $deleteParams + $rowSpecParams, null, true); ?>"><i
+                            class='icon-remove' title='Delete'></i></a>
+    </td>
+    <td class='select'>
+        <a href="<?php echo $this->url(
+                        $selectParams + $rowSpecParams, null, true); ?>"><i
+                            class='icon-search' title='Select'></i></a>
+    <!-- Other possibilities: 'icon-zoom-in', 'icon-list', 'icon-list-alt' -->
+    </td>
+    </tr>
+
+<?php endforeach; ?>
+
+</tbody>
+

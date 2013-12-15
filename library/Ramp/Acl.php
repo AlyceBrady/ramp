@@ -35,6 +35,7 @@ class Ramp_Acl extends Zend_Acl
     const TBL_SEARCH        = 'search';
     const VIEW_LIST_RESULTS = 'list-view';
     const VIEW_TABLE_FORMAT = 'table-view';
+    const VIEW_SPLIT_FORMAT = 'split-view';
     const VIEW_RECORD       = 'record-view';
     const EDIT_RECORD       = 'record-edit';
     const ADD_RECORD        = 'add';
@@ -72,7 +73,7 @@ class Ramp_Acl extends Zend_Acl
         // or view action.
         $viewActions = array(self::TBL_INDEX, self::TBL_SEARCH,
                              self::VIEW_LIST_RESULTS, self::VIEW_TABLE_FORMAT,
-                             self::VIEW_RECORD);
+                             self::VIEW_SPLIT_FORMAT, self::VIEW_RECORD);
         $addActions = array(self::ADD_RECORD);
         $modifyActions = array(self::EDIT_RECORD);
         $allButDeleteActions = array_merge($viewActions, $addActions,

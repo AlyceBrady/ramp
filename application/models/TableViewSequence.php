@@ -30,6 +30,7 @@ class Application_Model_TableViewSequence
     const SEARCH_SPEC_SETTING       = "searchSpecSetting";
     const SEARCH_RES_SETTING        = "searchResultsSetting";
     const TABULAR_SETTING           = "tabularSetting";
+    const SPLIT_VIEW_SETTING        = "splitViewSetting";
 
     const DISPLAY_ALL_FORMAT        = "displayAllFormat";
 
@@ -43,6 +44,7 @@ class Application_Model_TableViewSequence
     const TBL_SEARCH        = Ramp_Acl::TBL_SEARCH;
     const VIEW_LIST_RESULTS = Ramp_Acl::VIEW_LIST_RESULTS;
     const VIEW_TABLE_FORMAT = Ramp_Acl::VIEW_TABLE_FORMAT;
+    const VIEW_SPLIT_FORMAT = Ramp_Acl::VIEW_SPLIT_FORMAT;
     const VIEW_RECORD       = Ramp_Acl::VIEW_RECORD;
     const EDIT_RECORD       = Ramp_Acl::EDIT_RECORD;
     const ADD_RECORD        = Ramp_Acl::ADD_RECORD;
@@ -75,7 +77,7 @@ class Application_Model_TableViewSequence
         array(self::MAIN_SETTING, self::EDIT_SETTING,
                      self::ADD_SETTING, self::DEL_SETTING, 
                      self::SEARCH_SPEC_SETTING, self::SEARCH_RES_SETTING,
-                     self::TABULAR_SETTING);
+                     self::TABULAR_SETTING, self::SPLIT_VIEW_SETTING);
 
     /**
      * Checks syntax for the sequence of table views in the given
@@ -169,13 +171,14 @@ class Application_Model_TableViewSequence
         $search = $this->_getKeyVal($sequence, self::SEARCH_SPEC_SETTING);
         $searchRes = $this->_getKeyVal($sequence, self::SEARCH_RES_SETTING);
         $tabular = $this->_getKeyVal($sequence, self::TABULAR_SETTING);
+        $splitView = $this->_getKeyVal($sequence, self::SPLIT_VIEW_SETTING);
 
 
 	// If no sequence table settings were specified but a single
 	// table setting was defined in the property source, use
 	// that setting in all cases.
         if ( ! ( $main || $edit || $add || $delete || $search ||
-                 $searchRes || $tabular ) )
+                 $searchRes || $tabular || $splitView ) )
         {
             if ( count($settingsReadIn) == 1 )
             {
@@ -201,18 +204,17 @@ class Application_Model_TableViewSequence
                                                            ($search ? :
                                                            ($searchRes ? :
                                                            ($tabular ? :
+                                                           ($splitView ? :
                                                            $delete 
-                                                           )))));
+                                                           ))))));
         $edit = $this->_settingNames[self::EDIT_SETTING] =
                         $edit ? : ( $add ? : $main );
-        $add = $this->_settingNames[self::ADD_SETTING] = $add ? : $edit;
-        $delete = $this->_settingNames[self::DEL_SETTING] = $delete ? : $main;
-        $search = $this->_settingNames[self::SEARCH_SPEC_SETTING] =
-                        $search ? : $main;
-        $searchRes = $this->_settingNames[self::SEARCH_RES_SETTING] =
-                        $searchRes ? : $main;
-        $tabular = $this->_settingNames[self::TABULAR_SETTING] =
-                        $tabular ? : $main;
+        $this->_settingNames[self::ADD_SETTING] = $add ? : $edit;
+        $this->_settingNames[self::DEL_SETTING] = $delete ? : $main;
+        $this->_settingNames[self::SEARCH_SPEC_SETTING] = $search ? : $main;
+        $this->_settingNames[self::SEARCH_RES_SETTING] = $searchRes ? : $main;
+        $this->_settingNames[self::TABULAR_SETTING] = $tabular ? : $main;
+        $this->_settingNames[self::SPLIT_VIEW_SETTING] = $splitView ? : $main;
 
         // No settings have actually been retrieved from gateway yet.
         $this->_settings = array();
@@ -279,6 +281,8 @@ class Application_Model_TableViewSequence
                     return $this->getSetTableForSearchResults(); break;
             case self::VIEW_TABLE_FORMAT:
                     return $this->getSetTableForTabularView(); break;
+            case self::VIEW_SPLIT_FORMAT:
+                    return $this->getSetTableForSplitView(); break;
             case self::VIEW_RECORD:
                     return $this->getSetTableForViewing(); break;
             case self::EDIT_RECORD:
@@ -370,6 +374,17 @@ class Application_Model_TableViewSequence
     public function getSetTableForTabularView()
     {
         return $this->_getSetTable(self::TABULAR_SETTING);
+    }
+
+    /**
+     * Gets the table setting for displaying a split view of
+     * multiple search results.
+     *
+     * @return Application_Model_SetTable
+     */
+    public function getSetTableForSplitView()
+    {
+        return $this->_getSetTable(self::SPLIT_VIEW_SETTING);
     }
 
     /**

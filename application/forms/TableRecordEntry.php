@@ -96,14 +96,13 @@ class Application_Form_TableRecordEntry extends Zend_Form
      *
      * @param Application_Form_TableRecordEntry $setTable the table setting
      * @param Application_Model_TableSetting $setTable the table setting
-     * @param bool   $formSuffix   a suffix to make form name unique on page
-     *                             e.g., a row number
      * @param string $formType     specifies type of form (VIEW, ADD, 
      *                                  EDIT, or SEARCH)
+     * @param bool   $formSuffix   a suffix to make form name unique on page
+     *                             e.g., a row number
      */
     public function __construct(Application_Model_SetTable $setTable,
-                                    $formSuffix = 0,
-                                    $formType = self::VIEW)
+                                $formType = self::VIEW, $formSuffix = 0)
     {
         $this->_setTable = $setTable;
         $this->_formSuffix = $formSuffix;

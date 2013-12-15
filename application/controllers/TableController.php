@@ -42,10 +42,11 @@ class TableController extends Zend_Controller_Action
     const MATCH_ANY             = "Match Against Any Field";
     const DISPLAY_ALL           = "Display All Entries";
     const TABLE                 = "Tabular Display";
+    const SPLIT_VIEW            = "Split View Display";
     const ADD                   = "Add New Entry";
     const CLONE_BUTTON          = "Clone This Entry";
-    const BLOCK_ENTRY_PREFIX    = "Add ";
-    const BLOCK_ENTRY_SUFFIX    = " in a Block";
+    // const BLOCK_ENTRY_PREFIX    = "Add ";
+    // const BLOCK_ENTRY_SUFFIX    = " in a Block";
     const EDIT                  = "Edit Entry";
     const DEL_BUTTON            = "Delete Entry";
     const RESET_BUTTON          = "Reset Fields";
@@ -58,6 +59,10 @@ class TableController extends Zend_Controller_Action
 
     // Constant representing an unspecified enum value for a search
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
+
+    // Constants to index the "same" and "different" fields for split views.
+    const SAME                  = "same";
+    const DIFFERENT             = "different";
 
     protected $_debugging = false;
 
@@ -149,7 +154,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::MATCH_ALL, self::MATCH_ANY,
                                         self::RESET_BUTTON, self::DISPLAY_ALL);
         $this->view->dataEntryForm = $form =
-            new Application_Form_TableRecordEntry($setTable, 0, self::SEARCH);
+            new Application_Form_TableRecordEntry($setTable, self::SEARCH);
 
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
@@ -265,25 +270,22 @@ class TableController extends Zend_Controller_Action
         if ( $this->_thisIsInitialDisplay() ||
              $this->_illegalCallback($setTable) )
         {
-            // Let view renderer know the table and data form to use.
-            $this->view->buttonList = array(self::ADD, self::TABLE,
-                                            self::SEARCH);
+            // Let view renderer know the table and data set to use.
+            $this->view->buttonList = array(self::ADD, self::SPLIT_VIEW,
+                                            self::TABLE, self::SEARCH);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_submittedButton == self::TABLE )
+        elseif ( $this->_submittedButton == self::SPLIT_VIEW ||
+                 $this->_submittedButton == self::TABLE  ||
+                 $this->_submittedButton == self::ADD )
         {
-            // Re-display same data in table mode.
-            $this->_goTo('table-view', $this->_fieldsToMatch,
+            // Go to a different view with the same data set.
+            $action = $this->_getButtonAction($this->_submittedButton);
+            $this->_goTo($action, $this->_fieldsToMatch,
                          $this->_matchComparators, $this->_searchType);
         }
-        elseif ( $this->_submittedButton == self::ADD )
-        {
-            // Adding new entry after a search/filter?
-            $this->_goTo('add', $this->_fieldsToMatch,
-                         $this->_matchComparators, $this->_searchType);
-        }
-        else
-            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
+        else    // SEARCH or DISPLAY-ALL
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
 
 
     }
@@ -300,23 +302,80 @@ class TableController extends Zend_Controller_Action
         if ( $this->_thisIsInitialDisplay() ||
              $this->_illegalCallback($setTable) )
         {
-            // Let view renderer know the table and data form to use.
-            $this->view->buttonList = array(self::ADD, self::SEARCH);
+            // Let view renderer know the table and data set to use.
+            $this->view->buttonList = array(self::ADD, self::SPLIT_VIEW,
+                                            self::SEARCH);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_submittedButton == self::DISPLAY_ALL )
+        elseif ( $this->_submittedButton == self::SPLIT_VIEW ||
+                 $this->_submittedButton == self::ADD )
         {
-            // Re-display with all data (not just some) in same table mode.
-            $this->_goTo('table-view');
-        }
-        elseif ( $this->_submittedButton == self::ADD )
-        {
-            // Adding new entry after a search/filter?
-            $this->_goTo('add', $this->_fieldsToMatch,
+            // Go to a different view with the same data set.
+            $action = $this->_getButtonAction($this->_submittedButton);
+            $this->_goTo($action, $this->_fieldsToMatch,
                          $this->_matchComparators, $this->_searchType);
         }
-        else
-            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
+        else    // SEARCH or DISPLAY-ALL
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
+
+    }
+
+    /**
+     * Provides a split view of table records.
+     */
+    public function splitViewAction()
+    {
+        $setTable = $this->_tblViewingSeq->getSetTableForSplitView();
+
+        // Is this the initial display or a callback from a button action?
+        //    (Or an illegal callback that could allow password corruption?)
+        if ( $this->_thisIsInitialDisplay() ||
+             $this->_illegalCallback($setTable) )
+        {
+            // Let view renderer know the table and data sets to use.
+            $this->view->buttonList = array(self::ADD,
+                                            self::TABLE, self::SEARCH);
+            $this->_multiRecordInitDisplayWithoutData($setTable);
+
+            // Get full data set and split into shared/different fields.
+            $fullDataSet = $setTable->getTableEntries($this->_fieldsToMatch,
+                                                      $this->_matchComparators,
+                                                      $this->_searchType);
+            $dataSplit = $this->_getSplitData($setTable, $fullDataSet);
+            $shared = $dataSplit[self::SAME];
+            $different = $dataSplit[self::DIFFERENT];
+
+            // Create settings and data sets for split views.
+            $sharedViewSetting = $this->view->sharedViewSetting =
+                $setTable->createSubsetWithout(array_keys($different));
+            $this->view->sharedDataEntryForm =
+                    new Application_Form_TableRecordEntry($sharedViewSetting);
+            $this->view->sharedDataEntryForm->populate($shared);
+            $differentViewSetting = $this->view->differentViewSetting =
+                $setTable->createSubsetWithout(array_keys($shared));
+            $this->view->differentDataToDisplay = $fullDataSet;
+
+    // $this->view->sharedFields = $dataSplit[self::SAME];
+    // $this->view->differentFields = $dataSplit[self::DIFFERENT];
+    // $this->view->sharedFields = $sharedViewSetting->getVisibleFields();
+    // $this->view->differentFields = $setTable->getVisibleFields();
+    // $fieldsToMatch = $this->_fieldsToMatch;
+    // $this->view->sharedDataToDisplay =
+    //    $sharedViewSetting->getTableEntries($fieldsToMatch,
+    //                                        $this->_matchComparators,
+    //                                        $this->_searchType);
+
+        }
+        elseif ( $this->_submittedButton == self::TABLE  ||
+                 $this->_submittedButton == self::ADD )
+        {
+            // Go to a different view with the same data set.
+            $action = $this->_getButtonAction($this->_submittedButton);
+            $this->_goTo($action, $this->_fieldsToMatch,
+                         $this->_matchComparators, $this->_searchType);
+        }
+        else    // SEARCH or DISPLAY-ALL
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
 
     }
 
@@ -333,16 +392,18 @@ class TableController extends Zend_Controller_Action
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
         $buttonList = array(self::EDIT, self::ADD, self::CLONE_BUTTON);
+        /*
         if ( $this->_tblViewingSeq->allowsBlockEntry() )
         {
             $buttonList[] = self::BLOCK_ENTRY_PREFIX .
                             $this->_tblViewingSeq->getBlockEntryFields() .
                             self::BLOCK_ENTRY_SUFFIX;
         }
+         */
         $this->view->buttonList = array_merge($buttonList, 
                     array(self::SEARCH, self::DEL_BUTTON, self::DISPLAY_ALL));
         $this->view->dataEntryForm = $form =
-                    new Application_Form_TableRecordEntry($setTable, 0);
+                    new Application_Form_TableRecordEntry($setTable);
 
         // Is this the initial display or a callback from a button action?
         //    (Or an illegal callback that could allow password corruption?)
@@ -362,7 +423,7 @@ class TableController extends Zend_Controller_Action
         elseif ( $this->_submittedButton == self::DEL_BUTTON )
             { $this->_goTo('delete', $this->_fieldsToMatch); }
         else
-            { $this->_goTo($this->_getUsualAction($this->_submittedButton)); }
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
 
     }
 
@@ -381,7 +442,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::DEL_BUTTON);
         $this->view->dataEntryForm = $form =
-              new Application_Form_TableRecordEntry($setTable, 0, self::EDIT);
+              new Application_Form_TableRecordEntry($setTable, self::EDIT);
 
         // Is this the initial display or the post-edit callback?
         if ( $this->_thisIsInitialDisplay() )
@@ -436,7 +497,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::SEARCH);
         $this->view->dataEntryForm = $form =
-                new Application_Form_TableRecordEntry($setTable, 0, self::ADD);
+                new Application_Form_TableRecordEntry($setTable, self::ADD);
 
         // Is this the initial display or the callback with fields provided?
         if ( $this->_thisIsInitialDisplay() )
@@ -473,13 +534,9 @@ class TableController extends Zend_Controller_Action
             }
         }
         elseif ( $this->_submittedButton == self::CANCEL )
-        {
-            $this->_goTo('index');
-        }
+            { $this->_goTo('index'); }
         else
-        {
-            $this->_goTo($this->_getUsualAction($this->_submittedButton));
-        }
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
         
     }
 
@@ -499,7 +556,7 @@ class TableController extends Zend_Controller_Action
         $this->_initViewTableInfo($setTable);
         $this->view->buttonList = array(self::CONFIRM, self::CANCEL);
         $this->view->dataEntryForm = $form =
-                    new Application_Form_TableRecordEntry($setTable, 0,
+                    new Application_Form_TableRecordEntry($setTable,
                                                           self::DEL_BUTTON);
 
         // Is this the initial display or the callback with confirmation?
@@ -559,7 +616,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::SEARCH);
         $this->view->dataEntryForm = $form =
-                new Application_Form_TableRecordEntry($setTable, 0, self::ADD);
+                new Application_Form_TableRecordEntry($setTable, self::ADD);
 
         // Is this the initial display or the callback with fields provided?
         if ( $this->_thisIsInitialDisplay() )
@@ -601,7 +658,7 @@ class TableController extends Zend_Controller_Action
         }
         else
         {
-            $this->_goTo($this->_getUsualAction($this->_submittedButton));
+            $this->_goTo($this->_getButtonAction($this->_submittedButton));
         }
          */
     }
@@ -724,33 +781,98 @@ class TableController extends Zend_Controller_Action
      */
     protected function _multiRecordInitDisplay($setTable)
     {
-        // Let view renderer know the table and data form to use.
-        $this->_initViewTableInfo($setTable);
+        $this->_multiRecordInitDisplayWithoutData($setTable);
+
+        // Let view renderer know the table and data set to use.
         $this->view->dataToDisplay =
             $setTable->getTableEntries($this->_fieldsToMatch,
                                        $this->_matchComparators,
                                        $this->_searchType);
+
+    }
+
+    /**
+     * Defines basic display parameters, not including the buttonList 
+     * nor the data to display.
+     */
+    protected function _multiRecordInitDisplayWithoutData($setTable)
+    {
+        $this->_initViewTableInfo($setTable);
+
+        // Let view renderer know whether this is a subset of the table.
         $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
         if ( $this->view->displayingSubset )
         {
             $this->view->buttonList[] = self::DISPLAY_ALL;
         }
 
-        // List will get filled-in status based on ADD setting.
+        // List items will get filled-in status based on ADD setting.
         $this->view->addSetting =
             $this->_tblViewingSeq->getSetTableForAdding();
     }
 
     /**
+     * Get two views of the data, one of which has only the fields that 
+     * have the same value for all rows (the other fields are there, but 
+     * hidden), and one of which has only the fields whose values are 
+     * different across rows (the shared fields are there, but hidden).
+     */
+    protected function _getSplitData($setTable, $fullDataSet)
+    {
+        $firstRow = $fullDataSet[0];
+
+        // Determine which fields go in "same" array, and which go in 
+        // "different".  (Empty fields are not considered "same".)
+        $data = array(self::SAME => array(), self::DIFFERENT => array());
+        $allVisibleFields = $setTable->getVisibleFields();
+        foreach ( $allVisibleFields as $fieldName => $field )
+        {
+            $whichArray = $this->_allRowsMatch($fullDataSet, $fieldName)
+                            ? self::SAME : self::DIFFERENT;
+            $data[$whichArray][$fieldName] = $field;
+        }
+
+        // For "same" array, replace Field objects with shared data.
+        foreach ( $data[self::SAME] as $fieldName => $field )
+        {
+            $data[self::SAME][$fieldName] = $firstRow[$fieldName];
+        }
+// throw new Exception("data['same']: " . print_r($data['same'], true) . "<br />data['diff']: " . print_r(array_keys($data['different']), true) .  "<br />firstRow: " . print_r($firstRow, true));
+
+        return $data;
+    }
+
+    /**
+     * Determines whether all rows have matching data for the given 
+     * field.
+     */
+    protected function _allRowsMatch($allData, $fieldName)
+    {
+        $firstRow = $allData[0];
+        array_shift($allData);
+        $matchVal = $firstRow[$fieldName];
+        if ( empty($matchVal) )
+            { return false; }
+
+        foreach ( $allData as $row )
+        {
+            if ( $row[$fieldName] != $matchVal )
+                { return false; }
+        }
+        return true;
+    }
+
+    /**
      * Gets the action usually associated with the given button.
      */
-    protected function _getUsualAction($buttonLabel)
+    protected function _getButtonAction($buttonLabel)
     {
         $commonMapping = array(
             self::SEARCH => 'search',
             self::DISPLAY_ALL => $this->_displayAllView,
             self::ADD => 'add', self::EDIT => 'record-edit',
-            self::DEL_BUTTON => 'delete', self::TABLE => 'table-view');
+            self::DEL_BUTTON => 'delete', self::TABLE => 'table-view',
+            self::SPLIT_VIEW => 'split-view');
 
         return isset($commonMapping[$buttonLabel]) ?
                 $commonMapping[$buttonLabel] : null;

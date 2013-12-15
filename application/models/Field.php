@@ -200,6 +200,14 @@ class Application_Model_Field
     }
 
     /**
+     * Makes the field an invisible field, if it wasn't already.
+     */
+    public function hide()
+    {
+        $this->_visible = false;
+    }
+
+    /**
      * Gets the name of the field in the database.
      *
      * return string    field name

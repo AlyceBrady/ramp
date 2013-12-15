@@ -1,0 +1,38 @@
+<?php
+
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+
+// Get parameters sent in.
+$table = $this->table;
+
+// Get values from set table for data area.
+$visibleFieldInfo = $table->getVisibleFields();
+
+?>
+
+<!-- Display column headers -->
+
+<thead>
+<tr>
+    <?php
+    foreach($visibleFieldInfo as $fieldName => $field) :
+        $footnote = $this->escape( $field->getFieldFootnote());
+        if ( ! empty($footnote) )
+        {
+            $footnote = Markdown::defaultTransform($footnote);
+            $footnote = $this->partial("table/_cleanIfSinglePar.phtml",
+                            array('content'=>$footnote));
+        }
+        $title = $footnote ? "title='$footnote'" : "";
+        echo "<th $title>";
+        $colHeading =
+            Markdown::defaultTransform($this->escape($field->getLabel()));
+        echo $this->partial("table/_cleanIfSinglePar.phtml",
+                array('content'=>$colHeading)) . "</th>";
+    endforeach;
+    ?>
+    <th colspan='3'> Actions </th>
+</tr>
+</thead>
+
