@@ -1062,7 +1062,7 @@ class TableController extends Zend_Controller_Action
         // user provided enough information to find it.
         $initRef = $setTable->getInitRefInfo($sourceTblName);
         $sourceTbl = $initRef->getViewingSeq()->getReferenceSetTable();
-        $searchKeys = $initRef->findConnectionFields($userData);
+        $searchKeys = $initRef->xlFieldValuePairs($userData);
         $matches = $sourceTbl->getTableEntries($searchKeys);
         if ( count($matches) != 1 )
         {

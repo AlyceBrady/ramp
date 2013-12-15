@@ -17,7 +17,7 @@ foreach ( $extRefs as $extTable => $refObj ) :
     // connection with this external table reference.
     // Get the ADD setting to determine the "completeness" of the 
     // external record (all/some/no recommended fields filled in).
-    $searchFields = $refObj->findConnectionFields($formData);
+    $searchFields = $refObj->xlFieldValuePairs($formData);
     $externalTable = $refObj->getViewingSeq()->getSetTableForAdding();
 
     $status = $externalTable->getStatusOfRecord($searchFields);

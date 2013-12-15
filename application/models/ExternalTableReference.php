@@ -85,8 +85,8 @@ class Application_Model_ExternalTableReference
         $this->_connections = array();
         if ( $this->_isOKConnection($refInfo) )
         {
-            $this->_connections[$refInfo[self::LOCAL]] =
-                                                $refInfo[self::EXTERNAL];
+            $this->_connections[$refInfo[self::EXTERNAL]] =
+                                                $refInfo[self::LOCAL];
             unset($refInfo[self::LOCAL]);
             unset($refInfo[self::EXTERNAL]);
         }
@@ -94,8 +94,8 @@ class Application_Model_ExternalTableReference
         {
             if ( count($subProp) == 2 && $this->_isOKConnection($subProp) )
             {
-                $this->_connections[$subProp[self::LOCAL]] =
-                                                $subProp[self::EXTERNAL];
+                $this->_connections[$subProp[self::EXTERNAL]] =
+                                                $subProp[self::LOCAL];
             }
             else
             {
@@ -166,11 +166,11 @@ class Application_Model_ExternalTableReference
      * @return array            fieldname-value pairs with same values
      *                          but field names from external table
      */
-    public function findConnectionFields(array $data)
+    public function xlFieldValuePairs(array $data)
     {
         $translatedData = array();
         $connectionExprs = $this->getConnectionExpressions();
-        foreach ( $connectionExprs as $local => $external )
+        foreach ( $connectionExprs as $external => $local )
         {
             if ( ! isset($data[$local]) )
             {

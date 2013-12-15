@@ -680,8 +680,8 @@ class Application_Model_SetTable
     /**
      * Gets field information (labels, footnotes, meta information 
      * from the database, etc.) for all fields relevant to a table or 
-     * record display, including primary keys and other, non-hidden 
-     * fields.
+     * record display, including visible fields, primary keys, and
+     * fields for which the setting provides external references.
      * If the table setting specifies to show all fields by default, 
      * then even fields that were not included in the table setting 
      * will be included.  In that case, the field names from the 
@@ -691,7 +691,21 @@ class Application_Model_SetTable
      */
     public function getRelevantFields()
     {
-        return $this->_visibleFields + $this->getPrimaryKeys();
+        $extTblConnections = array();
+        $extTblFields = array();
+        if ( ! empty($this->_externalTblRefs) )
+        {
+            foreach ( $this->_externalTblRefs as $name => $ref )
+            {
+                $extTblConnections = array_merge($extTblConnections, 
+                                    $ref->getConnectionExpressions());
+            }
+            foreach ( $extTblConnections as $ext => $local )
+            {
+                $extTblFields[$local] = $this->getFieldObject($local);
+            }
+        }
+        return $this->_visibleFields + $this->getPrimaryKeys() + $extTblFields;
     }
 
     /**
@@ -709,7 +723,7 @@ class Application_Model_SetTable
      */
     public function getLocalRelevantFields()
     {
-        return array_diff_key($this->_visibleFields + $this->getPrimaryKeys(),
+        return array_diff_key($this->getRelevantFields(),
                               $this->_allImportFields);
     }
 

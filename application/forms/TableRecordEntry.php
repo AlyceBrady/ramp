@@ -147,13 +147,13 @@ class Application_Form_TableRecordEntry extends Zend_Form
             $name = $field->getDbFieldName();
             $label = $field->getLabel();
 
-            // Is this a visible field or a hidden primary key?
+            // Is this a visible field or, for example, a hidden primary key?
             if ( $field->isVisible() )
             {
                 $fieldElement = $this->_createVisibleElement($field, $name,
                                                              $label);
             }
-            else    // Hidden primary key.
+            else    // Hidden field.
             {
                 $fieldElement = $this->_createHiddenElement($name, $label);
             }
@@ -609,7 +609,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
-     * Creates a hidden field element, only needed for hidden primary keys.
+     * Creates a hidden field element.
      */
     protected function _createHiddenElement($name, $label)
     {
@@ -623,9 +623,9 @@ class Application_Form_TableRecordEntry extends Zend_Form
         $hiddenFieldDecParams =
                     array('separator'=>'', 'tag'=>'div', 'class'=>'hidden');
         $fieldElement->addDecorator(array('Elem' => 'ViewHelper'),
-                               $hiddenFieldDecPrams);
-        $fieldElement->addDecorator('Label', $hiddenFieldDecPrams);
-        $fieldElement->addDecorator('Errors', $hiddenFieldDecPrams);
+                               $hiddenFieldDecParams);
+        $fieldElement->addDecorator('Label', $hiddenFieldDecParams);
+        $fieldElement->addDecorator('Errors', $hiddenFieldDecParams);
 
         return $fieldElement;
     }
