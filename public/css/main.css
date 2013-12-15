@@ -156,6 +156,12 @@ div#record-block select.comparator
     font-size: 60%;
 }
 
+table
+{
+    margin-left: 40px;      /* No idea why this is necessary */
+                            /* Nor why it pushes right margin to right */
+}
+
 #record-table td.select, #record-list td.select,
 #record-table td.delete, #record-list td.delete,
 #record-table td.completionStatus, #record-list td.completionStatus
@@ -269,7 +275,7 @@ div#documentPage #footer {
         vertical-align: top;
     }
 
-    .loggedInAs, div#menu-bar li, #tableActions, td.select, td.delete,
+    .loggedInAs, div#menu-bar li, th.tableActions, td.select, td.delete,
     td.completionStatus, .hidden, .noprint {
         display: none;
     }
