@@ -190,7 +190,7 @@ VALUES
     'COMP', '110', 'Intro Prog.', 'Introduction to Programming')
 , (9, 21, '2012Q1', '01', '2012-01-01', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (10, 22, '2012Q1', '01', '2012-01-01', 30,
+, (10, 22, '2012Q1', '02', '2012-01-01', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
 , (11, 40, '2012Q1', '01', '2012-01-01', 25,
     'HIST', '110', 'US History I', 'US History I')

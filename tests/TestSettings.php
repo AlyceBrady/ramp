@@ -47,7 +47,7 @@ class TestSettings
     const SEARCH_RES_ONLY = 'sequenceTests/searchResSeqOnly';
     const SEARCH_SPEC_ONLY = 'sequenceTests/searchSpecSeqOnly';
     const TABULAR_ONLY = 'sequenceTests/tabularSeqOnly';
-    const BLOCK_ENTRY_ONLY = 'sequenceTests/blockEntryOnly';
+    const SPLIT_VIEW_ONLY = 'sequenceTests/splitViewOnly';
 
     private static $_basicTableSetting;
     private static $_variantBasicTableSetting;
@@ -117,14 +117,7 @@ class TestSettings
             'searchSpecSetting' => 'DetailedView',
             'searchResultsSetting' => self::BASIC_SETTINGS_FILE,
             'tabularSetting' => self::BASIC_SETTINGS_FILE,
-            'blockEntry' => 
-                array('block1' =>
-                    array(
-                        'identificationSetting' => self::BASIC_SETTINGS_FILE,
-                        'entrySetting' => self::BASIC_2_SETTINGS_FILE,
-                        'summarySetting' => 'AddView',
-                    )
-                )
+            'splitViewSetting' => self::BASIC_SETTINGS_FILE,
         );
 
         self::$_fullSettingSet = array(

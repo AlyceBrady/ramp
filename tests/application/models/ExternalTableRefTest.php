@@ -21,16 +21,16 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         // $this->_init_tbl 
         $this->_match1 = array("localField" => "album_id",
                                "externalField" => "id");
-        $this->_connection1 = array("album_id" => "id");
+        $this->_connection1 = array("id" => "album_id");
         $this->_data1 = array("album_id" => 1);
         $this->_trans1 = array("id" => 1);
         $this->_match2 = array("localField" => "artist",
                                "externalField" => "last_name");
-        $this->_connection2 = array("artist" => "last_name");
+        $this->_connection2 = array("last_name" => "artist");
         $this->_data2 = array("artist" => 'Lennon');
         $this->_trans2 = array("last_name" => 'Lennon');
-        $this->_connection12 = array("album_id" => "id",
-                                    "artist" => "last_name");
+        $this->_connection12 = array("id" => "album_id",
+                                    "last_name" => "artist");
         $this->_data12 = array("album_id" => 1, "artist" => 'Lennon');
         $this->_trans12 = array("id" => 1, "last_name" => 'Lennon');
     }
@@ -60,7 +60,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $this->assertSame($this->_connection1,
                           $ref->getConnectionExpressions());
         $this->assertSame($this->_trans1,
-                          $ref->findConnectionFields($this->_data1));
+                          $ref->xlFieldValuePairs($this->_data1));
         return $ref;
     }
 
@@ -86,7 +86,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $this->assertSame($this->_connection1,
                           $ref->getConnectionExpressions());
         $this->assertSame($this->_trans1,
-                          $ref->findConnectionFields($this->_data1));
+                          $ref->xlFieldValuePairs($this->_data1));
         return $ref;
     }
 
@@ -102,7 +102,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $this->assertSame($this->_connection12,
                           $ref->getConnectionExpressions());
         $this->assertSame($this->_trans12,
-                          $ref->findConnectionFields($this->_data12));
+                          $ref->xlFieldValuePairs($this->_data12));
         return $ref;
     }
 
@@ -151,7 +151,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
                          "match2" => $this->_match2);
         $ref = new Application_Model_ExternalTableReference($refInfo);
         $this->assertSame($this->_trans2,
-                          $ref->findConnectionFields($this->_data2));
+                          $ref->xlFieldValuePairs($this->_data2));
         $this->assertTrue(false);
     }
 

@@ -28,12 +28,16 @@ class Application_Model_SetTable
     const INIT_TBL_REF          = 'initTableRef';
     const EXTERNAL_TBL          = 'externalTableRef';
     const SHOW_COLS_BY_DEFAULT  = 'tableShowColsByDefault';
+    const BLOCK_ENTRY           = 'blockEntry';
     const FIELDS                = 'field';
     // const TABLE_QUERY_CONSTRAINT= 'tableQueryConstraint';
 
-    // Sub-properties for table connections
+    // Sub-properties for table connections and block entry
     const CONNECTION            = 'connection';
     const ALIAS                 = 'aliasFor';
+    const BLOCK_ENTRY_LABEL     = 'label';
+    const BLOCK_ENTRY_FIELD     = 'field';
+    const BLOCK_ENTRY_COUNT     = 'count';
 
     // Constants representing search values and search operators.
     const ANY_VAL         = '__any_search_value__';
@@ -51,6 +55,9 @@ class Application_Model_SetTable
     const BLANK     = 'blank';
     const PARTIAL   = 'partial';
     const GOOD      = 'sufficient';
+
+    /** @var string */
+    protected $_origSettings;       // settings read from gateway
 
     /** @var string */
     protected $_dbTableName;        // name of table in the actual database
@@ -122,6 +129,9 @@ class Application_Model_SetTable
     /** @var string */
     protected $_externalTblRefs;    // external table refs that look like fields
 
+    /** @var string */
+    protected $_blockEntryField;    // field used for block entry (if allowed)
+
     /** @var boolean */
     protected $_recordErrors;        // whether to record errors rather than
                                      // throw exceptions
@@ -137,7 +147,8 @@ class Application_Model_SetTable
         return array(self::TABLE_NAME, self::TITLE, self::DESCRIPTION,
                      self::TABLE_FOOTNOTE, self::CONNECTED_TBL,
                      self::INIT_TBL_REF, self::EXTERNAL_TBL,
-                     self::SHOW_COLS_BY_DEFAULT, self::FIELDS
+                     self::SHOW_COLS_BY_DEFAULT, self::FIELDS,
+                     self::BLOCK_ENTRY,
                     );
     }
 
@@ -184,7 +195,7 @@ class Application_Model_SetTable
         $this->_dbModel =
                     new Application_Model_DbTable_Table($this->_dbTableName);
 
-        $settingsAsArray = ( $settingProps instanceof Zend_Config ) ?
+        $this->_origSettings = ( $settingProps instanceof Zend_Config ) ?
                                    $settingProps->toArray() :
                                    $settingProps;
         $allColMetaInfo = array();
@@ -203,7 +214,7 @@ class Application_Model_SetTable
             else
                 { throw new Exception($e->getMessage()); }
         }
-        $this->_init($settingsAsArray, $allColMetaInfo);
+        $this->_init($this->_origSettings, $allColMetaInfo);
 
     }
 
@@ -256,6 +267,12 @@ class Application_Model_SetTable
                             $settingInfo[self::EXTERNAL_TBL] :
                             array();
         $this->_externalTblRefs = $this->_initReferences($references);
+
+        // Initialize block entry information (if supported).
+        $blockEntry = isset($settingInfo[self::BLOCK_ENTRY]) ?
+                            $settingInfo[self::BLOCK_ENTRY] :
+                            array();
+        $this->_blockEntryField = $this->_initBlockEntry($blockEntry);
 
         // Create Field objects for all fields in database, providing 
         // table setting information when provided.  Add fields to 
@@ -402,6 +419,35 @@ class Application_Model_SetTable
     }
 
     /**
+     * Initializes references to an external table.
+     * @see Application_Model_ExternalTableReference
+     *
+     * @return array of Application_Model_ExternalTableReference objects
+     * @throws Exception if reference information is badly formatted
+     */
+    protected function _initBlockEntry($blockEntryInfo)
+    {
+        // If block entry information was provided, check that the 
+        // required sub-properties were also.
+        if ( ! empty($blockEntryInfo) && is_array($blockEntryInfo) )
+        {
+            if ( isset($blockEntryInfo[self::BLOCK_ENTRY_FIELD]) &&
+                 is_string($blockEntryInfo[self::BLOCK_ENTRY_FIELD]) )
+            {
+                return $blockEntryInfo;
+            }
+            else
+            {
+                throw new Exception("'" . self::BLOCK_ENTRY . "' property " .
+                    "does not have the required '" .  self::BLOCK_ENTRY_FIELD .
+                    "' sub-property.");
+            }
+        }
+
+        return array();
+    }
+
+    /**
      * Initializes field attributes from information provided by the 
      * table setting and the database.
      *
@@ -486,6 +532,33 @@ class Application_Model_SetTable
 
     /**
      * Creates another set table that constitutes a "visual subset" of 
+     * this setting with only the single given field visible; all other
+     * fields are hidden.  If the given field was previously hidden, it 
+     * is made visible in the "visual subset" setting.
+     *
+     * @param string  $fieldToKeep   the name of the field to keep visible
+     */
+    public function createSingleFieldSubset($fieldToKeep)
+    {
+        $subset = clone $this;
+
+        // Hide every field except the given one.
+        foreach ( $this->getVisibleFields() as $fieldName => $field )
+        {
+            // Make visible or invisible, depending on whether this is 
+            // the field to keep (or make) visible.
+            if ( $fieldName != $fieldToKeep )
+            {
+                $subset->_setVisibilityOfField($fieldName, false);
+            }
+        }
+        $subset->_setVisibilityOfField($fieldToKeep, true);
+
+        return $subset;
+    }
+
+    /**
+     * Creates another set table that constitutes a "visual subset" of 
      * this setting; all attributes are the same except that more of the 
      * fields are hidden.
      *
@@ -498,31 +571,52 @@ class Application_Model_SetTable
         // Hide each provided field.
         foreach ( $fieldsToHide as $fieldName )
         {
-            if ( isset($subset->_inTable[$fieldName]) )
-            {
-                $clone = clone $subset->_inTable[$fieldName];
-                $subset->_inTable[$fieldName] = $clone;
-            }
-            else if ( isset($subset->_allImportFields[$fieldName]) )
-            {
-                $clone = clone $subset->_allImportFields[$fieldName];
-                $subset->_allImportFields[$fieldName] = $clone;
-            }
-            else
-                { return; }
-
-            $clone->hide();
-            if ( isset($subset->_visibleFields[$fieldName]) )
-            {
-                unset($subset->_visibleFields[$fieldName]);
-            }
-            if ( isset($subset->_keys[$fieldName]) )
-            {
-                $subset->_keys[$fieldName] = $clone;
-            }
+            $subset->_setVisibilityOfField($fieldName, $false);  // Hide
         }
 
         return $subset;
+    }
+
+    /**
+     * Marks the field with the given name as visible or hidden (in multiple 
+     * ways) in this set table.
+     */
+    protected function _setVisibilityOfField($fieldName, $visible)
+    {
+        // Make a clone of the field with the correct visibility, and 
+        // put the clone in the inTable, allImportFields, and/or 
+        // keys lists, as appropriate.
+        if ( isset($this->_inTable[$fieldName]) )
+        {
+            $clone = clone $this->_inTable[$fieldName];
+            $this->_inTable[$fieldName] = $clone;
+        }
+        else if ( isset($this->_allImportFields[$fieldName]) )
+        {
+            $clone = clone $this->_allImportFields[$fieldName];
+            $this->_allImportFields[$fieldName] = $clone;
+        }
+        else
+            { return; }
+
+        if ( isset($this->_keys[$fieldName]) )
+        {
+            $this->_keys[$fieldName] = $clone;
+        }
+
+        $clone->setVisibility($visible);
+
+        // Add or remove the field from the list of visible fields.
+        if ( $visible && ! isset($this->_visibleFields[$fieldName]) )
+        {
+            $this->_visibleFields[$fieldName] = $clone;
+        }
+        else if ( ! $visible && isset($this->_visibleFields[$fieldName]) )
+        {
+            unset($this->_visibleFields[$fieldName]);
+        }
+
+        return this;
     }
 
     /**
@@ -781,6 +875,60 @@ class Application_Model_SetTable
     }
 
     /**
+     * Determines whether this set table supports block record 
+     * insertion.
+     *
+     * @return bool   true if block data entry is supported
+     */
+    public function supportsBlockEntry()
+    {
+        return ! empty($this->_blockEntryField);
+    }
+
+    /**
+     * Gets the field for which block entry is supported.
+     *
+     * Precondition:  isBlockEntrySupported() returns true
+     *
+     * @return string   field name
+     */
+    public function getBlockEntryField()
+    {
+        return $this->_blockEntryField[self::BLOCK_ENTRY_FIELD];
+    }
+
+    /**
+     * Gets the label describing the field for which block entry is 
+     * supported.
+     *
+     * Precondition:  isBlockEntrySupported() returns true
+     *
+     * @return string   the label
+     */
+    public function getBlockEntryLabel()
+    {
+        return isset($this->_blockEntryField[self::BLOCK_ENTRY_LABEL])
+                ? $this->_blockEntryField[self::BLOCK_ENTRY_LABEL]
+                : "Fields";
+    }
+
+    /**
+     * Gets the number of entry fields to include on the page (default 
+     * is 10, if this is not provided).
+     *
+     * Precondition:  isBlockEntrySupported() returns true
+     *
+     * @return int   the count
+     */
+    public function getBlockEntryCount()
+    {
+        // Coerce string value to integer; default is 10.
+        return isset($this->_blockEntryField[self::BLOCK_ENTRY_COUNT])
+                ? +($this->_blockEntryField[self::BLOCK_ENTRY_COUNT])
+                : 10;
+    }
+
+    /**
      * Gets the Field object for the given field name (useful when 
      * processing user input based on field names).  Returns null if the 
      * given field name does not correspond to a field object.
@@ -1020,7 +1168,20 @@ class Application_Model_SetTable
     public function getCloneableFields(array $searchFields)
     {
         $foundData = $this->getTableEntry($searchFields);
+        $foundData = $this->removeImports($foundData);
         return $this->filterPrimaryKeyInfo($foundData, false);
+    }
+
+    /**
+     * Filters out imported fields, returning a version of the parameter 
+     * array that contains only fields in the "local" table.
+     *
+     * @param array $data  Column-value pairs of local and/or imported fields
+     * @return array       Column-value pairs of local fields
+     */
+    public function removeImports(array $data)
+    {
+        return array_diff_key($data, $this->_allImportFields);
     }
 
     /**
@@ -1046,7 +1207,7 @@ class Application_Model_SetTable
             }
         }
 
-        return $this->_dbModel->insert($this->_removeImports($data));
+        return $this->_dbModel->insert($this->removeImports($data));
     }
 
     /**
@@ -1064,7 +1225,7 @@ class Application_Model_SetTable
         $where = $this->_constructUniquelyIdentifyingWhere($data);
 
         // Update the table.  (Will update 0 rows if no changes made.)
-        $count = $this->_dbModel->update($this->_removeImports($data), $where);
+        $count = $this->_dbModel->update($this->removeImports($data), $where);
         if ( $count > 1 )
         {
             throw new Exception("Error: Updated $count rows!");
@@ -1196,18 +1357,6 @@ class Application_Model_SetTable
     }
 
     /**
-     * Filters out imported fields, returning a version of the parameter 
-     * array that contains only fields in the "local" table.
-     *
-     * @param array $data  Column-value pairs of local and/or imported fields
-     * @return array       Column-value pairs of local fields
-     */
-    protected function _removeImports(array $data)
-    {
-        return array_diff_key($data, $this->_allImportFields);
-    }
-
-    /**
      * Clears the error messages accumulated so far while
      * doing syntax checking for this setting.
      */
@@ -1237,18 +1386,57 @@ class Application_Model_SetTable
         $localCols = $this->_testTable($this->_dbTableName, true);
 
         $this->_error_msgs[] = "title: " .
-            ($this->_title ? $this->_title :$absent);
+            ($this->_title ? $this->_title : $absent);
         $this->_error_msgs[] = "description: " .
-            ($this->_description ? $this->_description :$absent);
+            ($this->_description ? $this->_description : $absent);
         $this->_error_msgs[] = "tableFootnote: " .
-            ($this->_tableFootnote ? $this->_tableFootnote :$absent);
+            ($this->_tableFootnote ? $this->_tableFootnote : $absent);
         $this->_error_msgs[] = "showColsByDefault: " .
             ($this->_showColsByDefault ? "true" : "false");
 
+        // Check block entry information.
+        $msg = "blockEntry";
+        $blockEntryField = $this->_blockEntryField;
+        if ( empty($blockEntryField) )
+            { $msg .= ": not allowed"; }
+        else
+        {
+            $fieldName = $blockEntryField[self::BLOCK_ENTRY_FIELD];
+            $msg .= "." . self::BLOCK_ENTRY_FIELD . ":  $fieldName ";
+            $msg .= in_array($fieldName, array_keys($this->_inTable))
+                        ? $present
+                        : "is not a local field";
+        }
+        $this->_error_msgs[] = $msg;
+        if ( count($blockEntryField) > 2 ||
+             ( count($blockEntryField) == 2 &&
+             ! isset($blockEntryField[self::BLOCK_ENTRY_LABEL]) ) )
+        {
+            $this->_error_msgs[] = self::BLOCK_ENTRY . " has one or more " .
+                "undefined sub-properties.";
+        }
+
+        // Check for extraneous settings.
+        $this->_checkExtraneousSettings();
+
         // Check for invalid field names.
-        $this->_error_msgs[] = "==> Checking for invalid fields... " .
+        $this->_error_msgs[] = "==> Checking for invalid fields... ";
+        $prevNumErrorMsgs = count($this->_error_msgs);
         $this->_testFields($this->_undefinedFieldNames, $localCols,
                            $this->_dbTableName, "Local fields");
+        foreach ( $this->_inTable as $fieldName => $field )
+        {
+            if ( $field->valueNecessaryForAdd() &&
+                 ! isset($this->_visibleFields[$fieldName]) )
+            {
+                $this->_error_msgs[] = "$fieldName is required for ADD " .
+                    "but not visible (OK if this setting not used for ADD).";
+            }
+        }
+        if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+        {
+            $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+        }
 
         // Check table connections, importedFrom clauses.
         if ( ! empty($this->_joinExpressions) )
@@ -1256,6 +1444,7 @@ class Application_Model_SetTable
           {
             $this->_error_msgs[] = "==> Checking table connections and " .
                                    "imported fields for $tableName...";
+            $prevNumErrorMsgs = count($this->_error_msgs);
             $cols = null;
             $prevErrMsgCount = count($this->_error_msgs);
 
@@ -1287,16 +1476,26 @@ class Application_Model_SetTable
                 $this->_testFields($fieldAliases, $cols,
                                    $realName, "Importing");
             }
+            if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+            {
+                $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+            }
           }
 
         // Check initialize-from information.
         $this->_error_msgs[] =
                         "==> Checking initialization table references... ";
+        $prevNumErrorMsgs = count($this->_error_msgs);
         if ( ! empty($this->_initTblRefs) )
         {
             $this->_testExternalRefs($this->_initTblRefs, "initTableRef");
         }
+        if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+        {
+            $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+        }
         $this->_error_msgs[] = "==> Checking initFrom references... ";
+        $prevNumErrorMsgs = count($this->_error_msgs);
         foreach ( $this->_fieldsInitFromElsewhere as $fieldName => $field )
         {
             // Determine table name & field.  Are they valid?
@@ -1306,17 +1505,27 @@ class Application_Model_SetTable
             $this->_testFields(array($sourceFieldName), $cols, $sourceTblName,
                                      "Initialization");
         }
+        if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+        {
+            $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+        }
 
         // Check external references.
         $this->_error_msgs[] = "==> Checking external table references... ";
+        $prevNumErrorMsgs = count($this->_error_msgs);
         if ( ! empty($this->_fieldsInitFromElsewhere) )
         {
             $this->_testExternalRefs($this->_externalTblRefs,
                                      "externalTableRef");
         }
+        if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+        {
+            $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+        }
 
         // Check selectFrom properties.
         $this->_error_msgs[] = "==> Checking selectFrom properties... ";
+        $prevNumErrorMsgs = count($this->_error_msgs);
         $allFields = $this->_keys + $this->_visibleFields;
         foreach ( $allFields as $field )
         {
@@ -1330,6 +1539,10 @@ class Application_Model_SetTable
                                            $e->getMessage();
                 }
             }
+        }
+        if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+        {
+            $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
         }
 
     }
@@ -1413,6 +1626,19 @@ class Application_Model_SetTable
             $this->_testFields($localFields, $localFieldNames,
                                $this->_settingName . " setting", $type);
             $this->_testFields($connections, $cols, $tableName, $type);
+        }
+    }
+
+    protected function _checkExtraneousSettings()
+    {
+        $validProps = $this->validTableProps();
+        foreach ( $this->_origSettings as $propName => $prop )
+        {
+            if ( ! in_array($propName, $validProps) )
+            {
+                $this->_error_msgs[] = "$propName is an unused " .
+                                       "setting property.";
+            }
         }
     }
 

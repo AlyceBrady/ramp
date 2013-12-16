@@ -33,7 +33,7 @@ class TableController extends Zend_Controller_Action
     const SUBMIT_BUTTON         = 'submit';
     const SETTING_NAME          = '_setting';
     const SEARCH_TYPE           = '_search';
-    const BLOCK_ENTRY_CHOICE    = '_blockEntry';
+    // const BLOCK_ENTRY_CHOICE    = '_blockEntry';
     const ANY                   = Application_Model_SetTable::ANY;
     const ALL                   = Application_Model_SetTable::ALL;
 
@@ -47,8 +47,8 @@ class TableController extends Zend_Controller_Action
     const SPLIT_VIEW            = "Split View Display";
     const ADD                   = "Add New Entry";
     const CLONE_BUTTON          = "Clone This Entry";
-    // const BLOCK_ENTRY_PREFIX    = "Add ";
-    // const BLOCK_ENTRY_SUFFIX    = " in a Block";
+    const BLOCK_ENTRY_PREFIX    = "Add ";
+    const BLOCK_ENTRY_SUFFIX    = " in a Block";
     const EDIT                  = "Edit Entry";
     const DEL_BUTTON            = "Delete Entry";
     const RESET_BUTTON          = "Reset Fields";
@@ -59,12 +59,18 @@ class TableController extends Zend_Controller_Action
     /* values for processing search requests */
     const SEARCH_VALS       = Application_Form_TableRecordEntry::FIELD_VALUES;
 
-    // Constant representing an unspecified enum value for a search
+    // Constant representing an unspecified enum value for a search.
     const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
 
     // Constants to index the "same" and "different" fields for split views.
     const SAME                  = "same";
     const DIFFERENT             = "different";
+
+    // Constant representing a block entry property in the set table.
+    const BLOCK_ENTRY           = Application_Model_SetTable::BLOCK_ENTRY;
+
+    // Constant to use as a suffix on shared data elements.
+    const SHARED_DATA           = ".shared";
 
     protected $_debugging = false;
 
@@ -335,8 +341,15 @@ class TableController extends Zend_Controller_Action
              $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data sets to use.
-            $this->view->buttonList = array(self::ADD,
-                                            self::TABLE, self::SEARCH);
+            $buttonList = array(self::ADD);
+            if ( $setTable->supportsBlockEntry() )
+            {
+                $buttonList[] = self::BLOCK_ENTRY_PREFIX .
+                                $setTable->getBlockEntryLabel() .
+                                self::BLOCK_ENTRY_SUFFIX;
+            }
+            $this->view->buttonList = array_merge($buttonList, 
+                                            array(self::TABLE, self::SEARCH));
             $this->_multiRecordInitDisplayWithoutData($setTable);
 
             // Get full data set and split into shared/different fields.
@@ -348,29 +361,15 @@ class TableController extends Zend_Controller_Action
             $different = $dataSplit[self::DIFFERENT];
 
             // Create settings and data sets for split views.
-            $sharedViewSetting = $this->view->sharedViewSetting =
-                $setTable->createSubsetWithout(array_keys($different));
-            $this->view->sharedDataEntryForm =
-                new Application_Form_TableRecordEntry($sharedViewSetting,
-                                                      self::VIEW, true);
-            $this->view->sharedDataEntryForm->populate($shared);
-            $differentViewSetting = $this->view->differentViewSetting =
-                $setTable->createSubsetWithout(array_keys($shared));
-            $this->view->differentDataToDisplay = $fullDataSet;
+            $sharedViewSetting = $this->_createSharedView($setTable,
+                                                    $shared, $different);
 
-    // $this->view->sharedFields = $dataSplit[self::SAME];
-    // $this->view->differentFields = $dataSplit[self::DIFFERENT];
-    // $this->view->sharedFields = $sharedViewSetting->getVisibleFields();
-    // $this->view->differentFields = $setTable->getVisibleFields();
-    // $fieldsToMatch = $this->_fieldsToMatch;
-    // $this->view->sharedDataToDisplay =
-    //    $sharedViewSetting->getTableEntries($fieldsToMatch,
-    //                                        $this->_matchComparators,
-    //                                        $this->_searchType);
-
+            $differentViewSetting = $this->_createDifferentView($setTable,
+                                                        $fullDataSet, $shared);
         }
         elseif ( $this->_submittedButton == self::TABLE  ||
-                 $this->_submittedButton == self::ADD )
+                 $this->_submittedButton == self::ADD ||
+                 $this->_blockAdd($this->_submittedButton) )
         {
             // Go to a different view with the same data set.
             $action = $this->_getButtonAction($this->_submittedButton);
@@ -522,6 +521,7 @@ class TableController extends Zend_Controller_Action
                 $addValues = $this->_fillInitValues($setTable,
                                                     $form->getFieldValues());
                 $meaningfulData = $this->_getFilledFields($addValues);
+                $meaningfulData = $setTable->removeImports($meaningfulData);
 
                 // Update the database and redisplay the record.
                 $setTable->addTableEntry($meaningfulData);
@@ -537,10 +537,141 @@ class TableController extends Zend_Controller_Action
             }
         }
         elseif ( $this->_submittedButton == self::CANCEL )
-            { $this->_goTo('index'); }
+            { $this->_goTo('index', $this->_fieldsToMatch); }
         else
             { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
         
+    }
+
+    /**
+     * Controls the Table block-add action, presenting a page in which
+     * to create multiple new records by providing multiple keys.  
+     * (Useful with one-to-many relationship tables (or one side of 
+     * many-to-many relationship tables), e.g., adding multiple students
+     * to a class enrollment (class <--> student) table.)
+     */
+    public function blockAddAction()
+    {
+        $setTable = $this->_tblViewingSeq->getSetTableForAdding();
+        if ( ! $setTable->supportsBlockEntry() )
+        {
+            $this->view->errMsgs[] =
+                "The " . $setTable->getSettingName() . " setting does " .
+                "not have the required " . self::BLOCK_ENTRY . " property.";
+        }
+
+        // Let view renderer know the table and data sets to use.
+        $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
+                                        self::CANCEL, self::SEARCH);
+        $this->_multiRecordInitDisplayWithoutData($setTable);
+
+        // Get full data set and split into shared/different fields.
+        $fullDataSet = $setTable->getTableEntries($this->_fieldsToMatch,
+                                                  $this->_matchComparators,
+                                                  $this->_searchType);
+        $dataSplit = $this->_getSplitData($setTable, $fullDataSet);
+        $sharedData = $dataSplit[self::SAME];
+        $differentData = $dataSplit[self::DIFFERENT];
+
+        // Get settings for shared and entry data (needed for initial 
+        // display and callbacks).
+        $sharedViewSetting = $this->_createSharedView($setTable, $sharedData,
+                                                      $differentData);
+        $entryField = $setTable->getBlockEntryField();
+        $entrySetting = $this->view->entrySetting = 
+                            $setTable->createSingleFieldSubset($entryField);
+
+        // Create forms for block data entry. (Fatal error if the setting
+        // has any required fields other than the block entry field that
+        // are not already populated.)
+        $badReqFields = $this->_allRequiredFieldsOK($setTable, $sharedData,
+                                                    $entryField);
+        $this->view->entryForms = array();
+        if ( empty($badReqFields) )
+        {
+            $count = $setTable->getBlockEntryCount();
+            for ( $i = 0; $i < $count; $i++ )
+            {
+                $form = $this->view->entryForms[] =
+                    new Application_Form_TableRecordEntry($entrySetting,
+                                            self::ADD, true, "_" . $i);
+            }
+        }
+        else
+        {
+            $this->view->errMsgs[] = "Cannot do block entry.  " .
+                "Have too many values for required field(s): $badReqFields.";
+        }
+
+        // Is this the initial display or the callback with fields provided?
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // Get setting and data for summary display area.
+            $differentViewSetting = $this->_createDifferentView($setTable,
+                                                    $fullDataSet, $sharedData);
+        }
+        elseif ( $this->_submittedButton == self::SAVE )
+        {
+            // Get the new entry fields from the posted data.
+            $formData = $this->getRequest()->getPost();
+            unset($formData[self::SUBMIT_BUTTON]);
+            $rawEntryData = array_diff_key($formData,
+                                    $sharedViewSetting->getRelevantFields());
+
+            // Determine shared field values to include.
+            $localFields = $sharedViewSetting->getLocalRelevantFields();
+            unset($localFields[$entryField]);
+            $relevantSharedData =
+                            array_intersect_key($sharedData, $localFields);
+            $this->view->stuff[] = $relevantSharedData;
+
+            // Transform unstructured entry fields into records.
+            $allRecords = array();
+            foreach ( $rawEntryData as $encodedName => $data )
+            {
+                $recordIndicator = substr(strrchr($encodedName, '_'), 1);
+                $fieldName = substr($encodedName, 0, strlen($encodedName) -
+                                                strlen($recordIndicator) - 1);
+                if ( $fieldName == $entryField && $data != null )
+                {
+                    $allRecords[$recordIndicator] = $relevantSharedData;
+                    $allRecords[$recordIndicator][$entryField] = $data;
+                }
+            }
+
+            // Insert the new records into the database.
+            foreach ( $allRecords as $recordEntryData )
+            {
+                $setTable->addTableEntry($recordEntryData);
+            }
+
+            $this->_goTo('block-add', $this->_fieldsToMatch);
+        }
+
+    /*
+        // Where does the isValid check go?  And which form are we checking?
+        if ( $entryForm[$i]->isValid($formData)
+        {
+
+        }
+        else
+        {
+            // Get setting and data for summary display area.
+            $differentViewSetting = $this->_createDifferentView($setTable,
+                                                    $fullDataSet, $sharedData);
+
+            // Invalid entries: show them for editing.
+            $this->view->errMsgs[] =
+                    "Invalid data values.  Please correct.";
+            $form->populate($formData);
+        }
+    */
+
+        elseif ( $this->_submittedButton == self::CANCEL )
+            { $this->_goTo('block-view', $this->_fieldsToMatch); }
+        else
+            { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
+
     }
 
     /**
@@ -594,76 +725,6 @@ class TableController extends Zend_Controller_Action
             $this->_goTo('index');
         }
 
-    }
-
-    /**
-     * Controls the Table block entry action, presenting a new page in which
-     * to add multiple entries at once to a table.
-     */
-    public function blockEntryAction()
-    {
-        $seq = $this->_tblViewingSeq;
-        if ( ! $seq->allowsBlockEntry() )
-        {
-            throw new Exception("Table sequence " . $seq->getSeqName() .
-                        " does not have a valid blockEntry specification.");
-        }
-        $blockEntryChoice = $this->_getParam(self::BLOCK_ENTRY_CHOICE);
-        $blockEntrySeq = $seq->getBlockEntrySeq($blockEntryChoice);
-
-        $setTable = $blockEntrySeq->getSetTableForSummary();
-
-        /*
-        // Let the view renderer know the table, buttons, and data form to use.
-        $this->_initViewTableInfo($setTable);
-        $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
-                                        self::CANCEL, self::SEARCH);
-        $this->view->dataEntryForm = $form =
-                new Application_Form_TableRecordEntry($setTable, self::ADD);
-
-        // Is this the initial display or the callback with fields provided?
-        if ( $this->_thisIsInitialDisplay() )
-        {
-            // If "starter" fields have been provided, fill them in.
-            if ( ! empty($this->_fieldsToMatch) )
-            {
-                $form->populate($this->_fieldsToMatch);
-            }
-        }
-        elseif ( $this->_submittedButton == self::SAVE )
-        {
-            // Process the filled-out form that has been posted:
-            // if the changes are valid, update the database.
-            $formData = $this->getRequest()->getPost();
-            if ($form->isValid($formData))
-            {
-                // Determine fields being added.  Remove null fields.
-                $addValues = $this->_fillInitValues($setTable,
-                                                    $form->getFieldValues());
-                $meaningfulData = $this->_getFilledFields($addValues);
-
-                // Update the database and redisplay the record.
-                $setTable->addTableEntry($meaningfulData);
-                $this->_executeSearch($setTable, $meaningfulData, null,
-                                      self::DISPLAY_ALL);
-            }
-            else
-            {
-                // Invalid entries: show them for editing.
-                $this->view->errMsgs[] =
-                        "Invalid data values.  Please correct.";
-                $form->populate($formData);
-            }
-        }
-        elseif ( $this->_submittedButton == self::CANCEL )
-        {
-            $this->_goTo('index');
-        }
-        else
-        {
-            $this->_goTo($this->_getButtonAction($this->_submittedButton));
-        }
-         */
     }
 
     /**
@@ -750,7 +811,8 @@ class TableController extends Zend_Controller_Action
     {
         // Get the appropriate table setting based on the button action.
         if ( $this->_submittedButton == self::ADD ||
-             $this->_submittedButton == self::CLONE_BUTTON )
+             $this->_submittedButton == self::CLONE_BUTTON ||
+             $this->_blockAdd($this->_submittedButton) )
         {
             $setTable = $this->_tblViewingSeq->getSetTableForAdding();
         }
@@ -771,7 +833,8 @@ class TableController extends Zend_Controller_Action
         {
             $this->view->errMsgs[] =
                 "Table Setting Error: May not Add, Edit, or Clone records " .
-                "using forms that allow manipulation of encrypted passwords.";
+                "using settings that allow manipulation of encrypted " .
+                "passwords.";
             return true;
         }
 
@@ -840,7 +903,6 @@ class TableController extends Zend_Controller_Action
         {
             $data[self::SAME][$fieldName] = $firstRow[$fieldName];
         }
-// throw new Exception("data['same']: " . print_r($data['same'], true) . "<br />data['diff']: " . print_r(array_keys($data['different']), true) .  "<br />firstRow: " . print_r($firstRow, true));
 
         return $data;
     }
@@ -866,6 +928,66 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Creates a shared view for a split screen or block add, and 
+     * returns the table setting created for the shared view.
+     */
+    protected function _createSharedView($origSetTable, $sharedData,
+                                         $differentData)
+    {
+        // Get settings for shared and entry data (needed for initial 
+        // display and callbacks).
+        $sharedViewSetting = $this->view->sharedViewSetting =
+            $origSetTable->createSubsetWithout(array_keys($differentData));
+        $this->view->sharedDataEntryForm =
+            new Application_Form_TableRecordEntry($sharedViewSetting,
+                                                  self::VIEW, true);
+        $this->view->sharedDataEntryForm->populate($sharedData);
+
+        return $sharedViewSetting;
+    }
+
+    /**
+     * Creates a "different" (or summary) view of the data values that 
+     * vary for the records being displayed in a split screen or
+     * block add; returns the table setting created for the new view.
+     */
+    protected function _createDifferentView($origSetTable, $fullDataSet,
+                                            $sharedData)
+    {
+        $differentViewSetting = $this->view->differentViewSetting =
+            $origSetTable->createSubsetWithout(array_keys($sharedData));
+        $this->view->differentDataToDisplay = $fullDataSet;
+
+        return $differentViewSetting;
+    }
+
+    /**
+     * Block Add: Checks that all required fields (other than the block 
+     * entry field) have shared values.
+     */
+    protected function _allRequiredFieldsOK($origSetTable, $sharedData,
+                                            $blockEntryField)
+    {
+        // If the setting has any required fields (other than the block
+        // entry field) that are not already populated, that is a 
+        // fatal error.
+        $badFields = "";
+        $delim = "";
+        foreach ( $origSetTable->getVisibleFields() as $fieldName => $field )
+        {
+            if ( $fieldName != $blockEntryField &&
+                 $field->valueNecessaryForAdd() &&
+                 ! isset($sharedData[$fieldName]) )
+            {
+                $badFields .= $delim . $fieldName;
+                $delim = ", ";
+            }
+        }
+
+        return $badFields;
+    }
+
+    /**
      * Gets the action usually associated with the given button.
      */
     protected function _getButtonAction($buttonLabel)
@@ -877,8 +999,14 @@ class TableController extends Zend_Controller_Action
             self::DEL_BUTTON => 'delete', self::TABLE => 'table-view',
             self::SPLIT_VIEW => 'split-view');
 
-        return isset($commonMapping[$buttonLabel]) ?
-                $commonMapping[$buttonLabel] : null;
+        return isset($commonMapping[$buttonLabel])
+                    ? $commonMapping[$buttonLabel]
+                    : ( $this->_blockAdd($buttonLabel) ? 'block-add' : null );
+    }
+
+    protected function _blockAdd($buttonLabel)
+    {
+        return strpos($buttonLabel, self::BLOCK_ENTRY_SUFFIX) !== false;
     }
 
     /**
@@ -898,7 +1026,7 @@ class TableController extends Zend_Controller_Action
                                 self::SETTING_NAME => null,
                                 self::SUBMIT_BUTTON => null,
                                 self::SEARCH_TYPE => null,
-                                self::BLOCK_ENTRY_CHOICE => null,
+                                // self::BLOCK_ENTRY_CHOICE => null,
                             );
 
         // Return an array that does not include those parameters.

@@ -6,7 +6,8 @@
   [Viewing Sequences](#viewing_sequences) |
   [Importing Data](#import) |
   [Initializing From Other Tables](#initFrom) |
-  [External References](#external) ]
+  [External References](#external) ] |
+  [Block Record Entry](#blockEntry) ]
 
 <h4 id="intro"> Generic Code, Table-Specific "Table Settings" </h4>
 
@@ -64,6 +65,9 @@ The valid table properties are:
      advanced feature described below.)
   * `externalTableRef`
      ([External table references](#external) are an
+     advanced feature described below.)
+  * `blockEntry`
+     ([Block record entry](#blockEntry) is an
      advanced feature described below.)
 
 The general syntax for table properties, as seen in the [simple table setting
@@ -193,7 +197,7 @@ the example below.
 
 The syntax for the `selectFrom` property, as seen in this example, is:
 
-        field.fieldNameInDb.selectFrom = "otherDbTableName.dbColName"
+        field.fieldNameInDb.selectFrom = "OtherDbTableName.dbColName"
 
 <h3 id="viewing_sequences">
 Viewing Sequences
@@ -232,6 +236,8 @@ The valid sequence properties that can be defined are:
   * `searchSpecSetting`:  setting to use for specifying search criteria
   * `searchResultsSetting`:  setting to use to display records in list view
   * `tabularSetting`:  setting to use to display records in table view
+  * `splitViewSetting`:  setting to use for a split view of records with
+                         some data in common
   * `deleteSetting`:  setting to use to confirm record deletion
 
 All sequence properties are optional.
@@ -257,11 +263,12 @@ actions if the more specialized settings are not provided.  If the
 `setting` property is not defined but at least one of the specialized
 settings is, the main setting is set from the edit setting, the add
 setting, the search specification setting, the search results
-setting, the tabular setting, or the deletion confirmation setting
-(in that order).  If either the edit or add setting is specified,
-but not both, the missing edit/add setting is set from the provided
-one.  If neither is provided, or if there are any other settings
-missing, Ramp uses the now-defined main setting as the default.
+setting, the tabular setting, the split view setting, or the deletion
+confirmation setting (in that order).  If either the edit or add
+setting is specified, but not both, the missing edit/add setting
+is set from the provided one.  If neither is provided, or if there
+are any other settings missing, Ramp uses the now-defined main
+setting as the default.
 
 #### Reducing duplicated information: ####
 NOTE:  It is possible to use inheritance among sections in an `ini` file
@@ -307,15 +314,16 @@ want in some settings.  In this case, the improved ini file would be:
         [ Modify ]
         field.d.recommended = true
 
-A more realistic example is in `demoSettings/Smart/Student/Enrollment.ini`.
+A more realistic example is in
+`demoSettings/Smart/Student/StudentEnrollment.ini`.
 
-<h3 id="advanced">
+<h2 id="advanced">
 Advanced Table and Field Features
-</h3>
+</h2>
 
-<h4 id="import">
+<h3 id="import">
 Importing data from other tables:
-</h4>
+</h3>
 
 A table view can include data that actually comes from other
 tables.  For example, what appears to be a table of student ids, student
@@ -324,8 +332,8 @@ result of a database join between a table of ids and names and a table
 of ids and addresses.  The table setting would specify one database
 table as the source and import the columns from the other table using an
 `importedFrom` property.  For example, in a typical Smart application,
-the Course Module Assignments table view includes information such as the
-instructor's name from the Person table.
+the Course Module Assignments table view includes information, such as the
+instructor's name, from the Person table.
 
 > Note: When Ramp/Smart checks to see whether a user is authorized to access
 > a table, the check also verifies that the user is authorized to access
@@ -348,15 +356,28 @@ the `Person` table (using the field names from that table) as follows:
         field.lastname.label = "Last Name"
         field.lastname.importedFrom = "Person"
 
+If the field name in the original table is different, the name is
+specified with an `importedField` property.  For example, if the
+"last name" field is known as the `surname` in the `Person` table, then
+the example would be:
+
+        field.lastname.label = "Last Name"
+        field.lastname.importedFrom = "Person"
+        field.lastname.importedField = "surname"
+
+<h4>
+More advanced connections:
+</h4>
+
 The simplest syntax for the `tableConnection` specification, as modeled
 above, is:
 
         tableConnection.OtherTable = "ThisTable.col = OtherTable.its_col"
 
 If a connection is based on more than one column, the multiple
-connections can be linked with `and`:
+connections can be linked with `AND`:
 
-        tableConnection.Other="Table.col1 = Other.col1 AND Table.col2 = Other.col2"
+        tableConnection.Other = "Table.colA = Other.colA AND Table.colB = Other.colB"
 
 In some cases, an external table may be used to provide information
 for two (or more) different purposes, in which case defining one
@@ -379,10 +400,10 @@ use the alias name rather than the actual table name.
         field.advisorLastname.importedFrom = "Advisor"
         field.advisorLastname.importedField = "lastname"
 
-When a `tableConnection` includes an `aliasFor` property, the
+When a `tableConnection` includes an `aliasFor` sub-property, the
 statement establishing the connection through the relevant fields
-must use an explicit `connection` property, as seen above.  The
-syntax is:
+must use an explicit `connection` sub-property, as in the `Advisor`
+example  above.  The general syntax is:
 
         tableConnection.AliasName.aliasFor = "OtherTable"
         tableConnection.AliasName.connection = "Tbl.col = AliasName.its_col"
@@ -407,9 +428,9 @@ the ID number, and then paste it back into the student record.
 
         field.advisorID.selectUsing = "PersonTableSetting"
 
-<h4 id="initFrom">
+<h3 id="initFrom">
 Duplicating information for historical reasons or efficiency:
-</h4>
+</h3>
 
 A more unusual specification indicates that, on creation of a new
 record, a field should be duplicated from a record in another table.
@@ -461,14 +482,15 @@ Having established the connection to the external viewing sequence with
 the fields necessary to find the appropriate source record, the
 table setting uses the `initFrom` property to specify that a given
 field is being initialized from the other table.  [TODO: Check the
-next 2 statements!] If the local field name is the same as the
-associated field name in the extrnal table, or if the field is one
-of those specified in the `initTableRef` specification for searching
-purposes, then the `initFrom` property is sufficient.  If the field
-is a new one, then the additional `initFromField` property specifies
-the name of the field in the external table from which to initialize
-this field.  The example below illustrates the initialization of
-fields both with and without an `initFromField` property.
+2nd half of the next statement!] If the local field name is the
+same as the associated field name in the external table, or if the
+field is one of those specified in the `initTableRef` specification
+for searching purposes, then the `initFrom` property is sufficient.
+If the field is a new one, then the additional `initFromField`
+property specifies the name of the field in the external table from
+which to initialize this field.  The example below illustrates the
+initialization of fields both with and without an `initFromField`
+property.
 
         field.modCode.label = "Code"
         field.modCode.initFrom = "Modules"
@@ -494,9 +516,9 @@ the values from the original source table into the new record in
 the current table, so the values now exist separately in the two
 tables and may, over time, diverge.
 
-<h4 id="external">
+<h3 id="external">
 External Table References:
-</h4>
+</h3>
 
 A table setting can provide references, or links, to other settings
 for viewing or creating related records.  For example, when displaying
@@ -548,6 +570,57 @@ in the example above if only one field is necessary for the search?  The
 wording in the `initTableRef` section implies that a keyword (e.g.,
 "match") is always necessary.]
 
+<h3 id="blockEntry">
+Block Data Entry:
+</h3>
 
+In Ramp, it is possible to enter a number of records simultaneously to a
+"relationship" table from a split view of the table.  A split view is
+possible when there are multiple records in a list or table that have
+some, but not all, values in common.  For example, a typical Smart
+application might have tables with information about students and classes, and
+a separate "relationship" table, `Enrollment`, that establishes which
+students have taken which classes.  One can search through such a table
+for a given student and see the list of classes that student has taken
+(the student's enrollment history),
+or search for a given class and see which students took it (a class
+list).  In a list or table view, student enrollment histories and class
+lists are formatted the same, although different settings may list the
+fields in a different order.  In a split view, however, a student's
+enrollment history is noticeably different from a class list.  A split
+view shows a single copy of the fields with data in common above a
+list of the fields whose data is different. An enrollment history,
+therefore, would show the basic identifying information about the
+student above a list of classes that student has taken, while a class
+list would show the basic identifying information about the class above
+a list of students who enrolled in it.
+
+Once there are at least two records in a table corresponding to a
+particular relationship (_e.g.,_ at least two students enrolled in
+a given class), it is possible not only to see a split view of the
+table, but also to add new records as a group if a set of `blockEntry`
+properties has been provided in the split view and add table settings.
+For this example, the split view and add table settings might have:
+
+        blockEntry.field = studentID
+        blockEntry.label = "Students"
+        blockEntry.count = 8
+
+This would cause a new button labeled "Add Students in a Block" to
+appear on the split view, which would then bring up a variation of a
+split view with a set of 8 additional, empty text fields in which
+a group of student IDs could be entered as a group.  The only
+sub-property that is absolutely required for a `blockEntry` property
+is `field`, which indicates which field is being entered.  If the
+label is not provided, the button will default to "Add Fields in a
+Block."  If the count is not provided, Ramp will default to providing
+10 block entry text fields.
+
+> Note: This block record entry can be very useful, but only in
+> situations similar to this example.  The "common data" section of the
+> split view must provide all but one field necessary for new records in
+> the table.  Thus, if a table has four required fields, the split view
+> must represent a search that defines three of those field, while the
+> `blockEntry.field` property must identify the fourth.
 
 [md]:  http://daringfireball.net/projects/markdown/

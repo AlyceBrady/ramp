@@ -4,7 +4,10 @@ require_once 'TestSettings.php';
 
 // TODO: This test suite has not been updated to test search comarison 
 // operators other than (=) (equality checks).  Nor are there any methods
-// to test the getDependentTables method.
+// to test the getDependentTables method when there aren't dependent tables.
+//
+// TODO: Has not been updated to test handling of blockEntry.label, 
+// blockEntry.count, and blockEntry.field.
 
 class models_SetTableTest extends PHPUnit_Framework_TestCase
 {
@@ -135,7 +138,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $table = $this->_setTableWithInitAndExtRef;
         $ref = $table->getInitRefInfo('ramp_auth_users');
         $this->assertSame('Users', $ref->getViewingSeqName());
-        $this->assertSame(array('userid' => 'id'),
+        $this->assertSame(array('id' => 'userid'),
                           $ref->getConnectionExpressions());
     }
 
@@ -144,7 +147,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $table = $this->_setTableWithInitAndExtRef;
         $ref = $table->getInitRefInfo('albums');
         $this->assertSame('BasicTableSetting', $ref->getViewingSeqName());
-        $this->assertSame(array('album_id' => 'id', 'artist' => 'artist'),
+        $this->assertSame(array('id' => 'album_id', 'artist' => 'artist'),
                           $ref->getConnectionExpressions());
     }
 
@@ -163,7 +166,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $ref = $refs["ramp_auth_users"];
         $this->assertSame('Users', $ref->getViewingSeqName());
         $this->assertSame('Users', $ref->getTitle());
-        $this->assertSame(array('userid' => 'id'),
+        $this->assertSame(array('id' => 'userid'),
                           $ref->getConnectionExpressions());
     }
 

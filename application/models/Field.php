@@ -200,11 +200,14 @@ class Application_Model_Field
     }
 
     /**
-     * Makes the field an invisible field, if it wasn't already.
+     * Sets the visibility of the field.
+     *
+     * @param boolean $visibility  true if field should be visible; 
+     *                             false otherwise
      */
-    public function hide()
+    public function setVisibility($visibility)
     {
-        $this->_visible = false;
+        $this->_visible = $visibility;
     }
 
     /**
