@@ -1,0 +1,120 @@
+<?php
+
+/*  Used in table-view, but not here.
+require_once('Michelf/Markdown.php');
+use \Michelf\Markdown;
+ */
+
+// $table is the original full table setting; just used for title/subtitle.
+$table = $this->tableInfo;
+
+// Get values from set table for data area.
+$sharedTable = $this->sharedViewSetting;            // Set in controller
+// $sharedValues = $this->sharedDataToDisplay;         // Set in controller
+$sharedForm = $this->sharedDataEntryForm;           // Set in controller
+
+$differentTable = $this->differentViewSetting;      // Set in controller
+$differentValues = $this->differentDataToDisplay;   // Set in controller
+
+$entrySetting = $this->entrySetting;
+$entryForms = $this->entryForms;
+
+// Set page and window title.
+$tableTitle = $table->getTitle();
+$title = $tableTitle . " Block Entry";
+$this->headTitle($title);
+$titleAndMsgs['title'] = $title;
+
+// Determine instructions and messages specific to this page.
+$titleAndMsgs['instructions'] = "";
+$titleAndMsgs['msgs'] = $this->msgs;        // All msgs are set in controller
+$titleAndMsgs['msgs'][] = "Found " . count($differentValues) . " entries.";
+$titleAndMsgs['errormsgs'] = $this->errMsgs;
+$titleAndMsgs['errormsgs'][] = $this->undefinedFieldsErrorMsg;
+
+// Get other values from set table for title area.
+$titleAndMsgs['description'] = "";
+$titleAndMsgs['footnote'] = $table->getTableFootnote();
+$titleAndMsgs['footnoteAsTooltip'] = false;
+
+$titleBar['titleAndMsgs'] = $titleAndMsgs;
+$titleBar['buttonList'] = $this->buttonList;        // Set in controller
+
+?>
+
+<form id="record-page-form" enctype="application/x-www-form-urlencoded"
+    action="" method="post" class="form-horizontal">
+
+<div id="page">
+
+<div id="top-half">
+
+<div id="left-column" class="column span9">
+
+    <!-- Display title block and messages -->
+    <?php echo $this->partial("table/_titleblockAndMsgs.phtml",
+                              $titleAndMsgs); ?>
+
+    <!-- ======== -->
+
+    <!-- Display shared values &  entry fields  (4 columns) -->
+    <div id='record-block' class='view split-view'>
+
+    <div id="shared-values" class="column span3">
+        <?php
+        echo $this->partial("table/_tableEntryForm.phtml",
+            array('table' => $sharedTable, 'form' => $sharedForm));
+        ?>
+    </div>  <!-- End of "shared-values" column -->
+
+    <div id="entry-pane" class="span5">  <!-- Other 3 columns -->
+        <?php
+        echo $this->partial("table/_fieldEntryForm.phtml",
+            array('table' => $entrySetting, 'forms' => $entryForms));
+        ?>
+    </div>  <!-- End of "entry-pane" -->
+
+    </div>  <!-- End of "record-block" -->
+
+</div>  <!-- End of "left-column" -->
+
+
+<!-- Display buttons in sidebar -->
+<div id="button-sidebar" class="span3">
+    <?php echo $this->partial("table/_buttonList.phtml", $titleBar); ?>
+</div>  <!-- End of "button-sidebar" -->
+
+</div>  <!-- End of "top-half" -->
+
+<!-- ============================ -->
+
+<div id="different-values-view">
+
+    <div id='record-list' class='row'>
+    <table class='table table-striped table-hover table-condensed'>
+
+    <!-- Display column headers -->
+
+    <?php echo $this->partial("table/_colHeadingDisplay.phtml",
+                                array('table' => $differentTable));
+    ?>
+
+    <!-- Display records -->
+
+    <?php echo $this->partial("table/_multiRecordDisplay.phtml",
+                                array('table' => $differentTable,
+                                      'addSetting' => $this->addSetting,
+                                      'tableValues' => $differentValues,
+                                      'baseParams' => $this->baseParams));
+
+    ?>
+
+    </table>
+    </div>  <!-- End of "record-list" -->
+
+</div>  <!-- End of "different-values-view" -->
+
+</div>  <!-- End of "page" -->
+
+</form>
+

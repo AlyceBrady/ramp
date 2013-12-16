@@ -16,6 +16,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     const SEARCH_RES_ONLY = TestSettings::SEARCH_RES_ONLY ;
     const SEARCH_SPEC_ONLY = TestSettings::SEARCH_SPEC_ONLY;
     const TABULAR_ONLY = TestSettings::TABULAR_ONLY;
+    const SPLIT_VIEW_ONLY = TestSettings::TABULAR_ONLY;
 
     protected $_settingTests;
     protected $_main;
@@ -106,6 +107,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithAllSettingsExplicitlySpecified()
@@ -151,6 +153,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithOnlySearchSpecSettingSpecified()
@@ -167,6 +170,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithOnlyTabularSettingSpecified()
@@ -183,6 +187,25 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForAdding());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
+    }
+
+    public function testSeqWithOnlySplitViewSettingSpecified()
+    {
+        // All should use Split View.
+        $sequence =
+            new Application_Model_TableViewSequence(self::SPLIT_VIEW_ONLY);
+
+        $setting = $sequence->getSetTableForSplitView();
+        $this->assertSame($this->_tabular, $setting->getSettingName());
+
+        $this->assertEquals($setting, $sequence->getSetTableForViewing());
+        $this->assertEquals($setting, $sequence->getSetTableForModifying());
+        $this->assertEquals($setting, $sequence->getSetTableForAdding());
+        $this->assertEquals($setting, $sequence->getSetTableForSearching());
+        $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
+        $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithAddAndSearchResultSpecified()
@@ -202,6 +225,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForModifying());
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithEditAndAddSpecified()
@@ -219,6 +243,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testSeqWithMainSettingSpecified()
@@ -234,6 +259,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($setting, $sequence->getSetTableForSearching());
         $this->assertEquals($setting, $sequence->getSetTableForSearchResults());
         $this->assertEquals($setting, $sequence->getSetTableForTabularView());
+        $this->assertEquals($setting, $sequence->getSetTableForSplitView());
     }
 
     public function testInitialActionIsSearch()

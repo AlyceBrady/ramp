@@ -124,7 +124,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
      */
     public function __construct(Application_Model_SetTable $setTable,
                                 $formType = self::VIEW, $makeSmall = false,
-                                $formSuffix = 0)
+                                $formSuffix = null)
     {
         $this->_setTable = $setTable;
         $this->_formSuffix = $formSuffix;
@@ -137,14 +137,14 @@ class Application_Form_TableRecordEntry extends Zend_Form
     {
         // TODO: Should add a filter specifying type.
 
-        $this->setName('tableEntry' . $this->_rowNum);
+        $this->setName('tableEntry' . ($this->_formSuffix ? : ""));
 
         // Create the form elements for all visible and primary key fields.
         $fields = $this->_setTable->getRelevantFields();
         foreach ( $fields as $field )
         {
             // Get name to use for new text element and determine label.
-            $name = $field->getDbFieldName();
+            $name = $field->getDbFieldName() . ($this->_formSuffix ? : "");
             $label = $field->getLabel();
 
             // Is this a visible field or, for example, a hidden primary key?

@@ -39,6 +39,7 @@ class Ramp_Acl extends Zend_Acl
     const VIEW_RECORD       = 'record-view';
     const EDIT_RECORD       = 'record-edit';
     const ADD_RECORD        = 'add';
+    const BLOCK_ADD         = 'block-add';
     const DELETE_RECORD     = 'delete';
     const ENTER_BLOCK_DATA  = 'block-entry';
     const UNAVAILABLE_LOCK  = 'unavailable-lock';
@@ -74,7 +75,7 @@ class Ramp_Acl extends Zend_Acl
         $viewActions = array(self::TBL_INDEX, self::TBL_SEARCH,
                              self::VIEW_LIST_RESULTS, self::VIEW_TABLE_FORMAT,
                              self::VIEW_SPLIT_FORMAT, self::VIEW_RECORD);
-        $addActions = array(self::ADD_RECORD);
+        $addActions = array(self::ADD_RECORD, self::BLOCK_ADD);
         $modifyActions = array(self::EDIT_RECORD);
         $allButDeleteActions = array_merge($viewActions, $addActions,
                                            $modifyActions);

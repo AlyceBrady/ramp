@@ -33,9 +33,7 @@ $extSearchParams = array('controller' => 'table', 'action' => 'search');
     $field = $fields[$name];
     echo "<div class='control-group'>\n";
     echo "<div id='$name-label' class='control-label'>";
-    if ( $field->isVisible() ) :
-        echo $elt->renderLabel() . "\n";
-    endif;
+    echo $elt->renderLabel() . "\n";
     echo "</div>\n";
     echo "<div class='row controls'>\n";
     if ( $field->isVisible() && $isSearch ) :

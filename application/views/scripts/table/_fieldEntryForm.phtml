@@ -1,0 +1,72 @@
+<?php
+
+/* This helper script expects an array containing the set table
+ * object and a Zend_Form object containing field elements.
+ *
+ * Attribution: the structure of rendering label, element, and errors 
+ * separately, to allow the insertion of href links, came from:
+ * http://monzee.wordpress.com/2009/02/23/decorators-are-hard-lets-go-shopping/
+ *
+ * Updated for Twitter-Bootstrap, Ashton Galloway, March 2013
+ */
+
+// Expected parameters and key information from them.
+$formArray = $this->forms;
+$fields = $this->table->getFields();
+
+?>
+
+<div class='control-group'>
+<div id='entry-label' class='control-label'>
+    <?php
+    if ( ! empty($formArray) ) :
+        $firstFormElts = $formArray[0]->getFieldElements();
+        foreach ( $firstFormElts as $name => $elt ) :
+            $name = substr($name, 0, strlen($name) -
+                                        strlen(strrchr($name, '_')));
+            $field = $fields[$name];
+            if ( $field->isVisible() ) :
+                echo $elt->renderLabel() . "\n";
+            endif;
+        endforeach;
+    endif;
+    ?>
+</div>   <!-- End of "entry-label" (.control-label) -->
+
+<div class='row controls'>          <!-- Entry fields to right of label -->
+
+    <div id="entry-fields" class="row">
+    <fieldset id="left-entry-group" class="span3">
+    <?php
+    $count = count($formArray);
+    $leftColCount = floor(($count + 1) / 2);
+    for ( $i = 0; $i < $leftColCount; $i++ ) :
+        $form = $formArray[$i];
+        $fieldElts = $form->getFieldElements();
+        foreach ( $fieldElts as $name => $elt ) :
+            $field = $fields[$name];
+            echo $elt->renderElem();
+            echo $elt->renderErrors() . "\n";
+        endforeach;
+    endfor;
+    ?>
+    </fieldset>  <!-- End of "left-entry-group" -->
+
+    <fieldset id="right-entry-group" class="span2">
+    <?php
+    for ( ; $i < $count; $i++ ) :
+        $form = $formArray[$i];
+        $fieldElts = $form->getFieldElements();
+        foreach ( $fieldElts as $name => $elt ) :
+            echo $elt->renderElem();
+            echo $elt->renderErrors() . "\n";
+        endforeach;
+    endfor;
+    ?>
+    </fieldset>  <!-- End of "right-entry-group" -->
+    </div>  <!-- end of "entry-fields" (.row) -->
+
+</div>  <!-- End of "row controls" -->
+
+</div>  <!-- End of "control-group" -->
+

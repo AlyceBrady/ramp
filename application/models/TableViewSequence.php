@@ -48,6 +48,7 @@ class Application_Model_TableViewSequence
     const VIEW_RECORD       = Ramp_Acl::VIEW_RECORD;
     const EDIT_RECORD       = Ramp_Acl::EDIT_RECORD;
     const ADD_RECORD        = Ramp_Acl::ADD_RECORD;
+    const BLOCK_ADD         = Ramp_Acl::BLOCK_ADD;
     const DELETE_RECORD     = Ramp_Acl::DELETE_RECORD;
 
     /** @var string */
@@ -96,7 +97,7 @@ class Application_Model_TableViewSequence
             $msgs[] = "<hr />";
             $msgs[] = "==> Checking syntax for getting Set Table $name...";
             $sequence->_clearErrorMsgs();
-            $setTable = $sequence->getSetTable($property);
+            $setTable = $sequence->_getSetTable($property);
             $setTable->summarizeSyntaxChecking();
             $msgs = array_merge($msgs, $sequence->_getErrorMsgs(),
                                 $setTable->getErrorMsgs());
@@ -288,6 +289,8 @@ class Application_Model_TableViewSequence
             case self::EDIT_RECORD:
                     return $this->getSetTableForModifying(); break;
             case self::ADD_RECORD:
+                    return $this->getSetTableForAdding(); break;
+            case self::BLOCK_ADD:
                     return $this->getSetTableForAdding(); break;
             case self::DELETE_RECORD:
                     return $this->getSetTableForDeleting(); break;

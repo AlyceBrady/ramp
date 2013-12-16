@@ -265,8 +265,8 @@ CREATE TABLE Enrollment (
     studentID INT NOT NULL,
     modOfferingID INT NOT NULL,
     status ENUM('Enrolled', 'Canceled', 'Dropped', 'Withdrawn', 'Completed')
-        NOT NULL,
-    registDate DATE NOT NULL,
+        NOT NULL DEFAULT 'Enrolled',
+    registDate DATE,
     endDate DATE,
     midtermGrade VARCHAR ( 3 ),
     submittedTermGrade VARCHAR ( 3 ),
