@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Forms
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
 class Application_Form_LoginForm extends Zend_Form
 {
 
@@ -15,14 +33,9 @@ class Application_Form_LoginForm extends Zend_Form
 
         $password = new Zend_Form_Element_Password('password');
         $password->setLabel('Password')
-//                ->setRequired(true)
                 ->addFilter('StringTrim');
 
-        $submit = new Zend_Form_Element_Submit('submit');
-        $submit->setLabel('Login')
-                ->setAttrib('login','submitbutton');
-
-        $this->addElements(array($userid, $password, $submit));
+        $this->addElements(array($userid, $password));
     }
 
 }

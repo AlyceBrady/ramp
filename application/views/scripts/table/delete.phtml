@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Views
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
 $table = $this->tableInfo;                  // Set in controller
 
 // Set page and window title.
@@ -23,6 +41,7 @@ $titleAndMsgs['footnoteAsTooltip'] = true;
 
 $titleBar['titleAndMsgs'] = $titleAndMsgs;
 $buttons['buttonList'] = $this->buttonList; // Set in controller
+$buttons['firstButtonIsPrimary'] = false;
 
 // Get values from set table for data area.
 $form = $this->dataEntryForm;               // Set in controller

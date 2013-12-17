@@ -375,17 +375,8 @@ class Application_Model_Field
      */
     public function getSourceOfValidVals()
     {
-        if ( empty($this->_legalValsSource) )
-            { return null; }
-
-        $legalValsSource = array();
-        $components = explode('.', $this->_legalValsSource);
-        if ( count($components) != 2 )
-        {
-            throw new Exception("Error: " . $this->_legalValsSource .
-                " does not have the required tableName.fieldName format.");
-        }
-        return $components[0];
+        return Application_Model_DbTable_ValidValuesSource::
+                                        getTableIn($this->_legalValsSource);
     }
 
     /**
@@ -398,31 +389,8 @@ class Application_Model_Field
      */
     public function getValidVals()
     {
-        if ( empty($this->_legalValsSource) )
-            { return null; }
-
-        $legalValsSource = array();
-        $components = explode('.', $this->_legalValsSource);
-        if ( count($components) != 2 )
-        {
-            throw new Exception("Error: " . $this->_legalValsSource .
-                " does not have the required tableName.fieldName format.");
-        }
-
-        $table = $components[0];
-        $field = $components[1];
-        $source = new Application_Model_DbTable_ValidValuesSource($table);
-        try {
-            $this->_legalVals = $source->getValidValues($field);
-        }
-        catch (Exception $e)
-        {
-            throw new Exception('Error: "' . $table . '" and "' .
-                $field .  '" in "' . $this->_legalValsSource .
-                '" should be a valid table name and field name.');
-        }
-
-        return $this->_legalVals;
+        return Application_Model_DbTable_ValidValuesSource::
+                                getValidVals($this->_legalValsSource);
     }
 
     /**

@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Views
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
 require_once('Michelf/Markdown.php');
 use \Michelf\Markdown;
 
@@ -21,14 +39,14 @@ $visibleFieldInfo = $table->getVisibleFields();
         if ( ! empty($footnote) )
         {
             $footnote = Markdown::defaultTransform($footnote);
-            $footnote = $this->partial("table/_cleanIfSinglePar.phtml",
+            $footnote = $this->partial("_cleanIfSinglePar.phtml",
                             array('content'=>$footnote));
         }
         $title = $footnote ? "title='$footnote'" : "";
         echo "<th $title>";
         $colHeading =
             Markdown::defaultTransform($this->escape($field->getLabel()));
-        echo $this->partial("table/_cleanIfSinglePar.phtml",
+        echo $this->partial("_cleanIfSinglePar.phtml",
                 array('content'=>$colHeading)) . "</th>\n";
     endforeach;
     ?>

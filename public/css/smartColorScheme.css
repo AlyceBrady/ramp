@@ -40,6 +40,7 @@ h1.loggedInAs small {
 {
     color: #fff;
     background-color: #00C;
+    text-shadow: none;
 }
 
 /* Menu items during focus, hover, or when dropdown is showing */
@@ -113,6 +114,16 @@ input.btn.active {
     color: #000066;
     /* background-color: Lavender; /* Doesn't completely fill?  Ridiculous. */
     /* background-color: #B57EDC;  /* Doesn't completely fill?  Ridiculous. */
+}
+
+input.btn-primary {
+    color: white;
+}
+
+input.btn-primary:hover,
+input.btn-primary:active,
+input.btn-primary.active {
+    color: #eeeeee;
 }
 
 input.btn.disabled,

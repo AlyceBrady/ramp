@@ -1,5 +1,6 @@
 <?php
-$this->title = "Choose a table";
-$this->headTitle($this->title);
-echo $this->form;
+$this->title = "Choose a Table";
+$this->formID = "choose-table";
+
+echo $this->partial("_basicPage.phtml", $this);
 ?>

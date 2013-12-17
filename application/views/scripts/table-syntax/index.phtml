@@ -1,11 +1,7 @@
 <?php
 $this->title = "Syntax Checker";
-$this->headTitle($this->title);
+$this->prompt = "Setting/Sequence Syntax Checker";
+$this->formID = "syntax-checker";
+
+echo $this->partial("_basicPage.phtml", $this);
 ?>
-<h2>Setting/Sequence Syntax Checker</h2>
-<?php
-foreach ( $this->formMessages as $msg ) :
-    echo $msg . "<br />\n";
-endforeach;
-?>
-<?php echo $this->form; ?>

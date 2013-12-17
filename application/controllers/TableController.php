@@ -1189,7 +1189,7 @@ class TableController extends Zend_Controller_Action
         // Need to retrieve initializing record; check that
         // user provided enough information to find it.
         $initRef = $setTable->getInitRefInfo($sourceTblName);
-        $sourceTbl = $initRef->getViewingSeq()->getReferenceSetTable();
+        $sourceTbl = $initRef->getViewingSeq()->getSetTableForAdding();
         $searchKeys = $initRef->xlFieldValuePairs($userData);
         $matches = $sourceTbl->getTableEntries($searchKeys);
         if ( count($matches) != 1 )

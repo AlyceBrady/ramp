@@ -1,4 +1,23 @@
 <?php
+
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Views
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
 require_once('Michelf/Markdown.php');
 use \Michelf\Markdown;
 
@@ -64,7 +83,7 @@ if ( isset($this->activityList) && is_array($this->activityList) )
                 "name='$key' id='$key' class='btn btn-small' value='$title' " .
                 "$disabledOrNot>" .  "</p>\n";
             echo "<div class='$disabledOrNot description span10'>";
-            echo $this->partial("activity/_cleanIfSinglePar.phtml",
+            echo $this->partial("_cleanIfSinglePar.phtml",
                     array('content'=>$desc));
             echo "</div>\n";
             echo "</div>\n";

@@ -1,7 +1,7 @@
 <?php
 $this->title = "Log in";
-$this->headTitle($this->title);
+$this->prompt = "Please log in";
+$this->formID = "login-form";
+
+echo $this->partial("_basicPage.phtml", $this);
 ?>
-<h2>Please log in:</h2>
-<?php echo $this->formResponse; ?>
-<?php echo $this->form; ?>

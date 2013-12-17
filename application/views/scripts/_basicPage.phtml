@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Views
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
+// Set some defaults in case values are not provided...
+if ( ! isset($this->prompt) )
+    { $this->prompt = $this->title; }
+if ( ! isset($this->formID) )
+    { $this->formID = "ramp-form"; }
+if ( ! isset($this->messages) )
+    { $this->messages = array(); }
+
+$this->headTitle($this->title);
+
+echo "\n<h2>$this->prompt</h2>\n";
+
+if ( ! empty($this->errorMsg) )
+{
+    echo "<div class='alert alert-error'>";
+    echo $this->errorMsg;
+    echo "</div>\n";
+}
+
+if ( ! empty($this->formResponse) )
+{
+    echo "<div class='alert alert-error'>";
+    echo $this->formResponse;
+    echo "</div>\n";
+}
+
+if ( ! empty($this->msg) )
+{
+    echo "<div class='alert alert-info'>";
+    echo $this->msg;
+    echo "</div>\n";
+}
+
+foreach ( $this->messages as $msg ) :
+    echo $msg . "<br />\n";
+endforeach;
+
+echo "<form id='" . $this->formID .
+    "' enctype='application/x-www-form-urlencoded' " .
+    "action='' method='post' class='form-horizontal'>\n";
+
+echo "<div id='formElements'>\n";
+
+if ( ! empty($this->form) ) :
+    $fieldElts = $this->form->getElements();
+    foreach ( $fieldElts as $name => $elt ) :
+        echo $elt->render() . "\n";
+    endforeach;
+endif;
+
+echo "</div>\n";
+
+// Display buttons
+echo $this->partial("_horizButtonList.phtml", $this);
+
+echo "</form>\n";
+?>
+

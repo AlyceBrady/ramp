@@ -1,6 +1,24 @@
 <?php
 
-class Application_Form_SetPasswordForm extends Zend_Form
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Forms
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
+class Application_Form_SetPasswordForm extends Ramp_Form_FormWithHiddenElements
 {
 
     public function init()
@@ -8,7 +26,7 @@ class Application_Form_SetPasswordForm extends Zend_Form
 
         $this->setName('setPassword');
 
-        $userid = new Zend_Form_Element_Hidden('username');
+        $userid = $this->_createHiddenElement('username', 'username');
 
         $new_password = new Zend_Form_Element_Password('new_password');
         $new_password->setLabel('Password')
@@ -20,12 +38,7 @@ class Application_Form_SetPasswordForm extends Zend_Form
                 ->setRequired(true)
                 ->addFilter('StringTrim');
 
-        $submit = new Zend_Form_Element_Submit('submit');
-        $submit->setLabel('Save')
-                ->setAttrib('setPassword','submitbutton');
-
-        $this->addElements(array($userid, $new_password, $confirm_password,
-                                 $submit));
+        $this->addElements(array($userid, $new_password, $confirm_password));
     }
 
 }

@@ -1,7 +1,6 @@
 <?php
-$this->title = "Free Password";
-$this->headTitle($this->title);
+$this->title = "Free Lock";
+$this->formID = "release-lock-info";
+
+echo $this->partial("_basicPage.phtml", $this);
 ?>
-<h2>Free Lock</h2>
-<?php echo $this->formResponse; ?>
-<?php echo $this->form; ?>

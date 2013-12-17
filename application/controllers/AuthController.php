@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 /**
  * RAMP: Records and Activity Management Program
  *
@@ -33,10 +32,21 @@ class AuthController extends Zend_Controller_Action
     const CONTROLLER        = Ramp_Activity_Specification::CONTROLLER;
     const ACTION            = Ramp_Activity_Specification::ACTION;
 
+    /* Button labels */
+    const SUBMIT_BUTTON = 'submit';
+    const LOGIN         = 'Login';
+    const RESET_PW      = 'Reset Password';
+    const SAVE          = 'Save';
+    const DONE          = 'Done';
+    const CANCEL        = 'Cancel';
+
+
+    protected $_submittedButton;
 
     public function init()
     {
         // Initialize action controller here
+        $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
     }
 
     public function indexAction()
@@ -59,7 +69,11 @@ class AuthController extends Zend_Controller_Action
 
         // For initial display, just render the form.  If this is the 
         // callback after the form has been filled out, process the form.
-        if ( ! $this->_thisIsInitialDisplay() )
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // Form will be rendered when function returns
+        }
+        elseif ( $this->_submittedButton == self::LOGIN )
         {
             // Process the filled-out form that has been posted:
             // if the input values are valid, attempt to authenticate.
@@ -78,9 +92,14 @@ class AuthController extends Zend_Controller_Action
                     { $this->view->formResponse = 'Login failed'; }
             }
         }
+        else  // Cancel
+        {
+            $this->_redirect('/');  // Use this redirect when not logged in
+        }
 
         // Render the view.
         $this->view->form = $form;
+        $this->view->buttonList = array(self::LOGIN, self::CANCEL);
     }
 
     /**
@@ -92,7 +111,7 @@ class AuthController extends Zend_Controller_Action
     {
         $auth = Zend_Auth::getInstance();
         $auth->clearIdentity();
-        $this->_redirect('/');
+        $this->_redirect('/');  // Use this redirect when not logged in
     }
 
     /**
@@ -132,10 +151,11 @@ class AuthController extends Zend_Controller_Action
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
         {
-            $this->view->formResponse = 'Password has never been set.';
+            $this->view->formResponse = 'Password must be initialized.';
         }
-        else    // Process the filled-out form that has been posted.
+        elseif ( $this->_submittedButton == self::SAVE )
         {
+            // Process the filled-out form that has been posted.
             $formData = $this->getRequest()->getPost();
             if ($form->isValid($formData))
             {
@@ -161,9 +181,14 @@ class AuthController extends Zend_Controller_Action
                 $this->view->formResponse = 'Invalid input; please try again.';
             }
         }
+        else  // Cancel
+        {
+            $this->_redirect('/');  // Use this redirect when not logged in
+        }
 
         // Render the view.
         $this->view->form = $form;
+        $this->view->buttonList = array(self::SAVE, self::CANCEL);
     }
 
     /**
@@ -186,7 +211,11 @@ class AuthController extends Zend_Controller_Action
         $this->view->formResponse = "";
 
         // Initial display, or ready to process filled-out form?
-        if ( ! $this->_thisIsInitialDisplay() )
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // Form will be rendered when function returns
+        }
+        elseif ( $this->_submittedButton == self::SAVE )
         {
             $formData = $this->getRequest()->getPost();
             if ($form->isValid($formData))
@@ -209,15 +238,18 @@ class AuthController extends Zend_Controller_Action
             else
             { $this->view->formResponse = 'Invalid input; please try again.'; }
         }
+        else  // Cancel
+        {
+            $this->_helper->redirector('index', 'index'); // Still logged in
+        }
 
         // Render the view.
         $this->view->form = $form;
+        $this->view->buttonList = array(self::SAVE, self::CANCEL);
     }
 
     /**
      * Resets a user's password.
-     * Modified from Zend Framework in Action by Allen, Lo, and Brown,
-     *      2009, p. 134, and the Zend Manual's zend.form.quickstart.
      */ 
     public function resetPasswordAction()
     {
@@ -229,7 +261,11 @@ class AuthController extends Zend_Controller_Action
 
         // For initial display, just render the form.  If this is the 
         // callback after the form has been filled out, process the form.
-        if ( ! $this->_thisIsInitialDisplay() )
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // Form will be rendered when function returns
+        }
+        elseif ( $this->_submittedButton == self::RESET_PW )
         {
             // Process the filled-out form that has been posted:
             // if the input values are valid, reset the password.
@@ -255,6 +291,7 @@ class AuthController extends Zend_Controller_Action
 
         // Render the view.
         $this->view->form = $form;
+        $this->view->buttonList = array(self::RESET_PW, self::CANCEL);
     }
 
     /**
@@ -325,21 +362,21 @@ class AuthController extends Zend_Controller_Action
     public function viewAclInfoAction()
     {
         $acl = new Ramp_Acl();
-        $msg = "";
-        $msg .= "<h4>Roles:</h4>" . var_export($acl->getRoles(), true);
-        $msg .= "<h4>Resources:</h4>"
+        $msgs = array();
+        $msgs[] = "";
+        $msgs[] = "<h4>Roles:</h4>" . var_export($acl->getRoles(), true);
+        $msgs[] = "<h4>Resources:</h4>"
                     . var_export($acl->getResources(), true);
         // Too hard to return all rules, so just concentrate on rules 
         // from Registry and Database.
-        $msg .= "<h4>Rules:</h4>"
+        $msgs[] = "<h4>Rules:</h4>"
                     . "<h5>"
                     . "<em>It's too hard to dig out and report on all rules "
                     . "(and derived rules), so these are just rules from "
                     . "Registry (application.ini) and Database.</em><br />"
                     . "</h5>"
                     . var_export($acl->getRules(), true);
-        $msg .= "</pre>";
-        $this->view->msg = $msg;
+        $this->view->messages = $msgs;
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
-$this->title = "Choose an activity list";
-$this->headTitle($this->title);
-echo $this->form;
+$this->title = "Choose Activity";
+$this->prompt = "Choose an activity list";
+$this->formID = "choose-activity";
+
+echo $this->partial("_basicPage.phtml", $this);
 ?>

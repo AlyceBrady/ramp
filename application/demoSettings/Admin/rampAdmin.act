@@ -2,26 +2,25 @@
 
 activityListHeading = "Choose an activity:"
 
+activity[] = "ResetPassword"
+activity[] = "FreeLock"
+activity[] = "Break"
 activity[] = "Smart View of Users"
 activity[] = "Auths"
-activity[] = "Spacer"
-activity[] = "ResetPassword"
-activity[] = "Spacer"
-activity[] = "ValidateUserRoles"
-activity[] = "Spacer"
-activity[] = "ValidateACL"
-activity[] = "Spacer"
-activity[] = "ViewACL"
-activity[] = "Spacer"
-activity[] = "LockRelations"
-activity[] = "Spacer"
+activity[] = "Break"
 activity[] = "Locks"
+activity[] = "LockRelations"
+activity[] = "Break"
+activity[] = "CheckSyntax"
+activity[] = "Break"
+activity[] = "ValidateUserRoles"
+activity[] = "ValidateACL"
+activity[] = "ViewACL"
 
 
-[ Spacer ]
+[Break]
 
-type = "comment"
-comment = ""
+type = "separator"
 
 [ Add User ]
 
@@ -33,14 +32,14 @@ set URL to hostname/auth/add-user"
 
 type = "setting"
 source = "Admin/ramp_auth_users"
-title = "View Users"
+title = "Manage Users List"
 description = "View or modify list of users"
 
 [ Auths ]
 
 type = "setting"
 source = "Admin/ramp_auth_auths"
-title = "View Auths"
+title = "Manage Auths"
 description = "View or modify list of access control rules"
 
 [ ValidateUserRoles ]
@@ -83,14 +82,33 @@ parameter = ""
 
 type = "setting"
 source = "Admin/ramp_lock_relations"
-title = "Lock Relations"
+title = "Manage Lock Relations"
 description = "View or modify list of lock relations"
 
 [ Locks ]
 
 type = "setting"
 source = "Admin/ramp_lock_locks"
-title = "Locks"
-description = "View or modify list of locks"
+title = "View Locks"
+description = "View list of locks (must use Release Lock to modify)"
+
+[ FreeLock ]
+
+type = "controllerAction"
+title = "Release Lock"
+description = "Release an orphaned or abandoned lock"
+controller = "lock"
+action = "free-lock"
+parameter = ""
+
+[ CheckSyntax ]
+
+type = "controllerAction"
+title = "Check Setting Syntax"
+description = "Check the syntax for a sequence or setting file"
+controller = "table-syntax"
+action = "index"
+parameter = ""
+
 
 

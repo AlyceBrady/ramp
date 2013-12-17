@@ -12,12 +12,19 @@
  *
  * @category   Ramp
  * @package    Ramp_Controller
- * @copyright  Copyright (c) 2012 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
+ * @copyright  Copyright (c) 2013 Alyce Brady (http://www.cs.kzoo.edu/~abrady)
  * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
  *
  */
 class LockController extends Zend_Controller_Action
 {
+    const SUBMIT_BUTTON = 'submit';
+    const FIND_LOCKS    = 'Find Locks';
+    const RELEASE_LOCK  = 'Free Lock';
+    const DONE          = 'Done';
+    const CANCEL        = 'Cancel';
+    const USER          = Application_Model_DbTable_Locks::USER;
+    const LOCKS         = Application_Form_FreeLock::LOCKS;
 
     public function init()
     {
@@ -50,38 +57,56 @@ class LockController extends Zend_Controller_Action
      */ 
     public function freeLockAction()
     {
-        // Instantiate the form that asks what lock to release.
-        $form = new Application_Form_FreeLockForm();
+        // Determine what action to take next.
+        $submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
 
         // Initialize the error message to be empty.
         $this->view->formResponse = '';
 
-        // For initial display, just render the form.  If this is the 
-        // callback after the form has been filled out, process the form.
+        // This action proceeds in two phases.  In the first phase, the 
+        // administrator chooses the user who holds the lock that needs 
+        // to be freed.  In the second phase, the administrator frees a 
+        // particular lock held by that user.
+
         if ( ! $this->getRequest()->isPost() )
         {
-            // Render the view.
+            // Start Phase 1: Choose the user holding the errant lock(s).
+            $form = new Application_Form_ChooseLockUser();
+
+            // Render the correct form.
+            $this->view->form = $form;
+            $this->view->buttonList = array(self::FIND_LOCKS, self::CANCEL);
+        }
+        elseif ( $submittedButton == self::FIND_LOCKS )
+        {
+            // Process Phase 1:  Get the chosen user.
+            $form = new Application_Form_ChooseLockUser();
+            $formData = $this->getRequest()->getPost();
+            $user = $formData[self::USER];
+
+            // Start Phase 2: Choose the lock to release.
+            $form = new Application_Form_FreeLock($user);
+            $this->view->buttonList = array(self::RELEASE_LOCK, self::CANCEL);
+
+            // Render the correct form.
             $this->view->form = $form;
         }
-        else
+        elseif ( $submittedButton == self::RELEASE_LOCK )
         {
-            // Process the filled-out form that has been posted:
-            // if the input values are valid, release the lock.
+            // Process Phase 2: Release the chosen lock.
             $formData = $this->getRequest()->getPost();
-            if ($form->isValid($formData))
-            {
-                $lockTable = new Application_Model_DbTable_Locks();
-                $lockTable->freeLock($formData);
-                $this->view->formResponse = 'Lock should now ' .
-                    'be released.';
-            }
-            else
-            {
-                // Render the view.
-                $this->view->form = $form;
-            }
+            $lockInfo = $formData[self::LOCKS];
+            $components = explode('.', $lockInfo);
+            $lockTable = new Application_Model_DbTable_Locks();
+            $lockTable->freeLock($components[0], $components[1]);
+            $this->view->formResponse = 'Lock should now ' .
+                'be released.';
+            $this->view->buttonList = array(self::DONE);
         }
-
+        else  // Done or Cancel
+        {
+            $this->_helper->redirector('index', 'index');
+        }
     }
 
 }

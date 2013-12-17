@@ -24,25 +24,42 @@
 // Technique for turning button labels into valid name identifiers taken
 // from Zend_Form_Element.
 $charset = '^a-zA-Z0-9_\x7f-\xff';
+
+if ( ! isset($this->buttonList) )
+{
+    $this->buttonList = array();
+}
+
 ?>
 
-<fieldset id="button-list">
-<div id='tableActions' class="btn-group btn-group-vertical pull-right">
+<!-- Display buttons -->
+<div id='actions' class="btn-toolbar">
 
+<!-- Put primary button in a group by itself -->
+<div id='primary_button' class="btn-group">
 <?php
-$class = $this->firstButtonIsPrimary ? 'btn btn-primary' : 'btn';
-foreach ( $this->buttonList as $buttonLabel ) :
-    $buttonType = ( $buttonLabel == TableController::RESET_BUTTON ) ?
-                        "reset" : "submit";
+if ( ! empty($this->buttonList) ) :
+    $buttonLabel = $this->buttonList[0];
     $buttonLabel = $this->escape($buttonLabel);
     $buttonId = $this->escape(preg_replace('/[' . $charset . ']/', '', 
                                     (string) $buttonLabel));
-    echo "<input type='$buttonType' name='submit' id='$buttonId'
-            value='$buttonLabel' class='$class' />\n";
-    $class = 'btn';
+    echo "<input type='submit' name='submit' id='$buttonId'
+            value='$buttonLabel' class='btn btn-primary' />\n";
+    array_shift($this->buttonList);
+endif;
+?>
+</div>
+
+<div id='other_buttons' class="btn-group">
+<?php
+foreach ( $this->buttonList as $buttonLabel ) :
+    $buttonLabel = $this->escape($buttonLabel);
+    $buttonId = $this->escape(preg_replace('/[' . $charset . ']/', '', 
+                                    (string) $buttonLabel));
+    echo "<input type='submit' name='submit' id='$buttonId'
+            value='$buttonLabel' class='btn' />\n";
 endforeach;
 ?>
-
 </div>
-</fieldset>
 
+</div>   <!-- end of "btn-toolbar" -->

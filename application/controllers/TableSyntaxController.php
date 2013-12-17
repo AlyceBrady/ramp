@@ -19,7 +19,16 @@
 
 class TableSyntaxController extends Zend_Controller_Action
 {
+    /* Button labels */
+    const SUBMIT_BUTTON = 'submit';
+    const DO_IT         = 'Check Syntax';
+    const CHECK_ANOTHER = 'Check Another Setting';
+    const CANCEL        = 'Cancel';
+    const DONE          = 'Done';
+
     const FILENAME = Application_Form_GetSettingName::SETTING_NAME;
+
+    protected $_submittedButton;
 
     /**
      * Initializes the attributes for this object as well as some
@@ -28,6 +37,7 @@ class TableSyntaxController extends Zend_Controller_Action
     public function init()
     {
         // Initialize action controller here
+        $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
     }
 
     /**
@@ -41,43 +51,40 @@ class TableSyntaxController extends Zend_Controller_Action
         $this->view->form = $form;
 
         // Initialize the error message to be empty.
-        $this->view->formMessages = array();
+        $this->view->messages = array();
+        $this->view->buttonList = array(self::DO_IT, self::CANCEL);
 
         // For initial display, just render the form.  If this is the 
         // callback after the form has been filled out, process the form.
-        if ( $this->getRequest()->isPost() )
+        if ( ! $this->getRequest()->isPost() ||
+             $this->_submittedButton == self::CHECK_ANOTHER )
+        {
+            // Form will be rendered when function returns
+        }
+        elseif ( $this->_submittedButton == self::DO_IT )
         {
             // Get the filename from the filled-out form.
             $formData = $this->getRequest()->getPost();
             if ($form->isValid($formData))
             {
-                $filename = $formData[self::FILENAME];
+                $file = $formData[self::FILENAME];
 
                 $this->view->form = null;
-                $this->view->formMessages =
-                    Application_Model_TableViewSequence::checkSyntax($filename);
+                $this->view->messages =
+                    Application_Model_TableViewSequence::checkSyntax($file);
+                $this->view->messages[] = "";
 
-$this->view->formMessages[] = "";
-$this->view->formMessages[] = "Should have a button to check another file.";
-                /*
-                if ( $userTable->resetPassword($username) )
-                {
-                    $this->view->formResponse = 'Password for ' . $username .
-                        ' has been reset to the default password.';
-                }
-                else
-                {
-                    $this->view->formResponse = "Password for " . $username .
-                        " was not reset ('" . $username . "' is not a valid" .
-                        " user or the password was already the default).";
-                }
-                $form->populate(array(self::USERNAME => ''));
-                 */
+                $this->view->buttonList = array(self::CHECK_ANOTHER,
+                                                self::DONE);
             }
             else
             {
-                $this->view->formMessages[] = "Invalid input";
+                $this->view->errorMsg = "Invalid input";
             }
+        }
+        else  // Cancel
+        {
+            $this->_helper->redirector('index', 'index'); // Still logged in
         }
 
     }

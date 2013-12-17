@@ -8,14 +8,14 @@ activity[] = "Break"
 activity[] = "Smart View of Users"
 activity[] = "Auths"
 activity[] = "Break"
-activity[] = "LockRelations"
 activity[] = "Locks"
+activity[] = "LockRelations"
+activity[] = "Break"
+activity[] = "CheckSyntax"
 activity[] = "Break"
 activity[] = "ValidateUserRoles"
 activity[] = "ValidateACL"
 activity[] = "ViewACL"
-activity[] = "Break"
-activity[] = "CheckSyntax"
 
 
 [Break]
@@ -32,14 +32,14 @@ set URL to hostname/auth/add-user"
 
 type = "setting"
 source = "Admin/smart_auth_users"
-title = "View Users"
+title = "Manage Users List"
 description = "View or modify list of users"
 
 [ Auths ]
 
 type = "setting"
 source = "Admin/ramp_auth_auths"
-title = "View Auths"
+title = "Manage Auths"
 description = "View or modify list of access control rules"
 
 [ ValidateUserRoles ]
@@ -82,15 +82,15 @@ parameter = ""
 
 type = "setting"
 source = "Admin/ramp_lock_relations"
-title = "Lock Relations"
+title = "Manage Lock Relations"
 description = "View or modify list of lock relations"
 
 [ Locks ]
 
 type = "setting"
 source = "Admin/ramp_lock_locks"
-title = "Locks"
-description = "View or modify list of locks"
+title = "View Locks"
+description = "View list of locks (must use Release Lock to modify)"
 
 [ FreeLock ]
 
