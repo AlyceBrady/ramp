@@ -46,7 +46,7 @@ class AuthController extends Zend_Controller_Action
     public function init()
     {
         // Initialize action controller here
-        $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
+        $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON, '');
     }
 
     public function indexAction()
@@ -151,7 +151,7 @@ class AuthController extends Zend_Controller_Action
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
         {
-            $this->view->formResponse = 'Password must be initialized.';
+            $this->view->msg = 'Password must be initialized.';
         }
         elseif ( $this->_submittedButton == self::SAVE )
         {
@@ -196,6 +196,13 @@ class AuthController extends Zend_Controller_Action
      */ 
     public function changePasswordAction()
     {
+        // If user has been logged out below and now wants to login, go 
+        // directly there without checking authentication, etc.
+        if ( $this->_submittedButton == self::LOGIN )
+        {
+            $this->_helper->redirector('login', 'auth');
+        }
+
         // Get the logged in user's username.
         $auth = Zend_Auth::getInstance();
         if ( ! $auth->hasIdentity() )
@@ -209,6 +216,10 @@ class AuthController extends Zend_Controller_Action
         $form = new Application_Form_ChangePasswordForm();
         $form->populate(array(self::USERNAME => $username));
         $this->view->formResponse = "";
+
+        // Specify the view that will be rendered when the function returns.
+        $this->view->form = $form;
+        $this->view->buttonList = array(self::SAVE, self::CANCEL);
 
         // Initial display, or ready to process filled-out form?
         if ( $this->_thisIsInitialDisplay() )
@@ -233,7 +244,13 @@ class AuthController extends Zend_Controller_Action
                     }
                 }
                 else
-                { $this->view->formResponse = 'Old password is not correct'; }
+                {
+                    $this->view->formResponse =
+                        'Old password is not correct.  ' .
+                        'You have been logged out.';
+                    $this->view->form = null;
+                    $this->view->buttonList = array(self::LOGIN, self::CANCEL);
+                }
             }
             else
             { $this->view->formResponse = 'Invalid input; please try again.'; }
@@ -243,21 +260,21 @@ class AuthController extends Zend_Controller_Action
             $this->_helper->redirector('index', 'index'); // Still logged in
         }
 
-        // Render the view.
-        $this->view->form = $form;
-        $this->view->buttonList = array(self::SAVE, self::CANCEL);
     }
+
+    // The remaining actions are administrative actions.
 
     /**
      * Resets a user's password.
      */ 
     public function resetPasswordAction()
     {
-        // Instantiate the form that asks whose password to reset
+        // Instantiate the form that asks whose password to reset.
         $form = new Application_Form_ResetPasswordForm();
 
-        // Initialize the error message to be empty.
+        // Initialize the messages to be empty.
         $this->view->formResponse = '';
+        $this->view->msg = '';
 
         // For initial display, just render the form.  If this is the 
         // callback after the form has been filled out, process the form.
@@ -276,7 +293,7 @@ class AuthController extends Zend_Controller_Action
                 $userTable = new Application_Model_DbTable_Users();
                 if ( $userTable->resetPassword($username) )
                 {
-                    $this->view->formResponse = 'Password for ' . $username .
+                    $this->view->msg = 'Password for ' . $username .
                         ' has been reset to the default password.';
                 }
                 else

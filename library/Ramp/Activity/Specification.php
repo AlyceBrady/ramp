@@ -152,7 +152,7 @@ class Ramp_Activity_Specification
                     $this->_confirmProperty(self::DESCRIPTION, $specAsArray);
                 $this->_source = $this->_confirmProperty(self::SOURCE,
                                                          $specAsArray);
-                $this->_setController();
+                $this->_setDefaultController();
                 $this->_action = self::DEFAULT_ACTION;
                 break;
             case self::CONTROLLER_ACTION_TYPE:
@@ -211,9 +211,9 @@ class Ramp_Activity_Specification
     }
 
     /**
-     * Sets the controller associated with this activity.
+     * Sets the default controller associated with this activity.
      */
-    protected function _setController()
+    protected function _setDefaultController()
     {
         switch ( $this->_type )
         {
@@ -446,7 +446,8 @@ class Ramp_Activity_Specification
                     "' activity with title '" . $this->getTitle() .
                     "' has a badly-formatted parameter property.");
             }
-            $params[$item[0]] = urlencode($item[1]);
+            $params[trim($item[0])] = urlencode(trim($item[1]));
+// throw new Exception("params: " . print_r($params, true));
         } 
         return $params;
     }

@@ -2,6 +2,7 @@
 
 activityListHeading = "Choose an activity:"
 
+activity[] = "AddUser"
 activity[] = "ResetPassword"
 activity[] = "FreeLock"
 activity[] = "Break"
@@ -22,11 +23,14 @@ activity[] = "ViewACL"
 
 type = "separator"
 
-[ Add User ]
+[ AddUser ]
 
-type = "comment"
-comment = "Or, to go directly to add new users using a different page,
-set URL to hostname/auth/add-user"
+type = "controllerAction"
+title = "Add New User"
+description = "View or modify list of users"
+controller = "admin-table"
+action = "add"
+parameter = '_setting = Admin/smart_auth_users'
 
 [ Smart View of Users ]
 

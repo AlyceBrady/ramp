@@ -19,12 +19,13 @@
  */
 class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract
 {
-    const USERNAME = 'username';
-    const PASSWORD = 'password';
-    const ROLE_COL = 'role';
-    const DB_DEFAULT  = 'DEFAULT';
+    const TABLE_NAME    = 'ramp_auth_users';
+    const USERNAME      = 'username';
+    const PASSWORD      = 'password';
+    const ROLE_COL      = 'role';
+    const DB_DEFAULT    = 'DEFAULT';
 
-    protected $_name='ramp_auth_users';
+    protected $_name=self::TABLE_NAME;
 
     protected $_roles = null;
 

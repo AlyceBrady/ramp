@@ -25,8 +25,6 @@
 -- initialized here with known table relations (as it is for this
 -- Smart development environment).
 
--- UNDER CONSTRUCTION!  (Most relations are not here yet!)
-
 
 USE `smart_dev`;
 
@@ -79,7 +77,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `ramp_lock_locks`;
 CREATE TABLE `ramp_lock_locks` (
   `lock_table` varchar(50) NOT NULL,
-  `locking_key` INT NOT NULL,
+  `locking_key` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   `lock_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,

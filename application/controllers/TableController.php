@@ -162,7 +162,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::MATCH_ALL, self::MATCH_ANY,
                                         self::RESET_BUTTON, self::DISPLAY_ALL);
         $this->view->dataEntryForm = $form =
-            new Application_Form_TableRecordEntry($setTable, self::SEARCH);
+                                $this->_getForm($setTable, self::SEARCH);
 
         // Is this the initial display or a callback from a button action?
         if ( $this->_thisIsInitialDisplay() )
@@ -404,8 +404,7 @@ class TableController extends Zend_Controller_Action
          */
         $this->view->buttonList = array_merge($buttonList, 
                     array(self::SEARCH, self::DEL_BUTTON, self::DISPLAY_ALL));
-        $this->view->dataEntryForm = $form =
-                    new Application_Form_TableRecordEntry($setTable);
+        $this->view->dataEntryForm = $form = $this->_getForm($setTable);
 
         // Is this the initial display or a callback from a button action?
         //    (Or an illegal callback that could allow password corruption?)
@@ -444,7 +443,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::DEL_BUTTON);
         $this->view->dataEntryForm = $form =
-              new Application_Form_TableRecordEntry($setTable, self::EDIT);
+                                  $this->_getForm($setTable, self::EDIT);
 
         // Is this the initial display or the post-edit callback?
         if ( $this->_thisIsInitialDisplay() )
@@ -499,7 +498,7 @@ class TableController extends Zend_Controller_Action
         $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
                                         self::CANCEL, self::SEARCH);
         $this->view->dataEntryForm = $form =
-                new Application_Form_TableRecordEntry($setTable, self::ADD);
+                                    $this->_getForm($setTable, self::ADD);
 
         // Is this the initial display or the callback with fields provided?
         if ( $this->_thisIsInitialDisplay() )
@@ -596,8 +595,7 @@ class TableController extends Zend_Controller_Action
             for ( $i = 0; $i < $count; $i++ )
             {
                 $form = $this->view->entryForms[] =
-                    new Application_Form_TableRecordEntry($entrySetting,
-                                            self::ADD, true, "_" . $i);
+                    $this->_getForm($entrySetting, self::ADD, true, "_" . $i);
             }
         }
         else
@@ -692,9 +690,8 @@ class TableController extends Zend_Controller_Action
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
         $this->view->buttonList = array(self::CONFIRM, self::CANCEL);
-        $this->view->dataEntryForm = $form =
-                    new Application_Form_TableRecordEntry($setTable,
-                                                          self::DEL_BUTTON);
+        $this->view->dataEntryForm = $form = $this->_getForm($setTable,
+                                                             self::DEL_BUTTON);
 
         // Is this the initial display or the callback with confirmation?
         if ( $this->_thisIsInitialDisplay() )
@@ -783,6 +780,25 @@ class TableController extends Zend_Controller_Action
             }
         }
         return $msg;
+    }
+
+    /**
+     * Creates a form with the given parameters.  (Abstracted into a 
+     * method so that it can be redefined in subclasses.)
+     *
+     * @param Application_Model_TableSetting $setTable the table setting
+     * @param string $formType     specifies type of form (VIEW, ADD, 
+     *                                  EDIT, or SEARCH)
+     * @param string $makeSmall    make buttons smaller
+     * @param bool   $formSuffix   a suffix to make form name unique on page
+     *                             e.g., a row number
+     */
+    protected function _getForm(Application_Model_SetTable $setTable,
+                                $formType = self::VIEW, $makeSmall = false,
+                                $formSuffix = null)
+    {
+        return new Application_Form_TableRecordEntry($setTable, $formType,
+                                                     $makeSmall, $formSuffix);
     }
 
     /**
@@ -941,9 +957,8 @@ class TableController extends Zend_Controller_Action
         // display and callbacks).
         $sharedViewSetting = $this->view->sharedViewSetting =
             $origSetTable->createSubsetWithout(array_keys($differentData));
-        $this->view->sharedDataEntryForm =
-            new Application_Form_TableRecordEntry($sharedViewSetting,
-                                                  self::VIEW, true);
+        $this->view->sharedDataEntryForm = $this->_getForm($sharedViewSetting,
+                                                           self::VIEW, true);
         $this->view->sharedDataEntryForm->populate($sharedData);
 
         return $sharedViewSetting;
@@ -1207,52 +1222,6 @@ class TableController extends Zend_Controller_Action
             return $matches[0];
         }
     }
-
-    /**
-     * Fill in initial values based on information in setting.
-     *
-     * @param Application_Model_SetTable  table: setting & db info
-     * @param array $data   Column-value pairs representing provided data
-    protected function _fillInitValues($setTable, array $data)
-    {
-        $storedSourceRecs = array();
-        $searchData = $data;
-        $initializedData = $data;
-
-        // Loop through fields in this table to see if any should be 
-        // initialized from values in another table.
-        $relevantFields = $setTable->getExternallyInitFields();
-        foreach ( $relevantFields as $newFieldName => $newField )
-        {
-            // Initialize from another table if data not already provided.
-            if ( $data[$newFieldName] == null )
-            {
-                // Determine initializing table; see if source record 
-                // has already been retrieved.
-                $sourceTblName = $newField->getInitTableName();
-                if ( ! isset($storedSourceRecs[$sourceTblName]) )
-                {
-throw new Exception("Wanting to initialize fields from " . print_r($sourceTblName, true) . " using set table " . $setTable->getSettingName() . " and data " . print_r($data, true));
-                    $sourceRecord =
-                            $this->_getSourceRecord($setTable, $sourceTblName,
-                                                    $data);
-                    if ( $sourceRecord == null )
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        $storedSourceRecs[$sourceTblName] = $sourceRecord;
-                    }
-                }
-                $sourceRecord = $storedSourceRecs[$sourceTblName];
-                $initializedData[$newFieldName] = $sourceRecord[$newFieldName];
-            }
-        }
-
-        return $initializedData;
-    }
-     */
 
     /**
      * Acquires the lock for the given record in the specified table.

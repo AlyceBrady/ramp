@@ -2,269 +2,131 @@
 
 class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 {
-    const DELIM = Ramp_Controller_KeyParameters::DELIM;
-    const ACTIVITY_PREFIX = Ramp_Controller_KeyParameters::ACTIVITY_PREFIX;
-    const DOCUMENT_PREFIX = Ramp_Controller_KeyParameters::DOCUMENT_PREFIX;
-    const TABLE_RES_TYPE = 'Table';            // Table resource type
-    const REPORT_RES_TYPE = 'Report';          // Table resource type
+    const DELIM          = Ramp_Acl::DELIM;
+    const DEFAULT_ACTION = Ramp_ACL::DEFAULT_ACTION;
 
     protected $_name='ramp_auth_auths';
     protected $_rowClass = 'Application_Model_DbTable_AccessRule';
 
-    protected $_activityAccessRules = null;
-    protected $_tableAccessRules = null;
-    protected $_documentAccessRules = null;
+    protected $_resources = null;
+    protected $_accessRules = null;
 
     /**
-     * Get all activity, table, and document resources defined in the database.
+     * Get all Resources.
+     *
      */
     public function getResources()
     {
-        // Get all the activity and table resources.
-        $actResources = $this->getActivityResources();
-        $tableResources = $this->getTableResources();
-        $docResources = $this->getDocumentResources();
-
-        return array_merge($actResources, $tableResources, $docResources);
-    }
-
-    /**
-     * Get all Activity-related Resources.
-     *
-     */
-    public function getActivityResources()
-    {
-        // Get all the activity access rules (if not already retrieved).
-        if ( empty($this->_activityAccessRules) )
+        // If the resources have already been retrieved, just return them.
+        if ( ! empty($this->_resources) )
         {
-            $delim = self::DELIM;
-            $this->_activityAccessRules = $this->getActivityAccessRules();
+            return $this->_resources;
+        }
+
+        // Get all the access rules (if not already retrieved).
+        if ( empty($this->_accessRules) )
+        {
+            $this->_accessRules = $this->getAccessRules();
         }
 
         // Dig the resource information out from inside the rules.
-        return $this->_getRawResources($this->_activityAccessRules);
+        $this->_resources = $this->_getResourcesFrom($this->_accessRules);
+        return $this->_resources;
     }
 
     /**
-     * Get all Table-related Resources (and Report-related Resources,
-     * which are table-related resources with different formatting).
-     *
-     */
-    public function getTableResources()
-    {
-        // Get all the table access rules (if not already retrieved).
-        if ( empty($this->_tableAccessRules) )
-        {
-            $this->_tableAccessRules = $this->getTableAccessRules();
-        }
-
-        // Dig the resource information out from inside the rules.
-        return $this->_getRawResources($this->_tableAccessRules);
-    }
-
-    /**
-     * Get all Document-related Resources.
-     *
-     */
-    public function getDocumentResources()
-    {
-        // Get all the table access rules (if not already retrieved).
-        if ( empty($this->_documentAccessRules) )
-        {
-            $this->_documentAccessRules = $this->getDocumentAccessRules();
-        }
-
-        // Dig the resource information out from inside the rules.
-        return $this->_getRawResources($this->_documentAccessRules);
-    }
-
-    /**
-     * Get all activity, table, and document access rules defined in the
-     * database.
+     * Get all Access Control List rules defined in the database.
      */
     public function getAccessRules()
     {
-        // Get all the activity access rules (if not already retrieved).
-        if ( empty($this->_activityAccessRules) )
-        {
-            $this->_activityAccessRules = $this->getActivityAccessRules();
-        }
-
-        // Get all the table access rules (if not already retrieved).
-        if ( empty($this->_tableAccessRules) )
-        {
-            $this->_tableAccessRules = $this->getTableAccessRules();
-        }
-
-        // Get all the document access rules (if not already retrieved).
-        if ( empty($this->_documentAccessRules) )
-        {
-            $this->_documentAccessRules = $this->getDocumentAccessRules();
-        }
-
-        return array_merge($this->_activityAccessRules,
-                           $this->_tableAccessRules,
-                           $this->_documentAccessRules);
-    }
-
-    /**
-     * Get all Access Control List rules related to the Activity resource
-     * type.
-     *
-     */
-    public function getActivityAccessRules()
-    {
         // If the rules have already been retrieved, just return them.
-        if ( ! empty($this->_activityAccessRules) )
+        if ( ! empty($this->_accessRules) )
         {
-            return $this->_activityAccessRules;
+            return $this->_accessRules;
         }
 
-        $rules = array();
-
-        // Get the Activity access rules from the database.
-        $where = array('resource_type = ?' => 'Activity');
-        $rawActivityAccessRules = $this->fetchAll($where);
+        // Get the access rules from the database.
+        $rawAccessRules = $this->fetchAll();
 
         // Build the full set of access rules from the rules in the database.
-        foreach ( $rawActivityAccessRules as $rule )
+        $this->_accessRules = array();
+        $actionCategories = Ramp_Acl::createCategoryConverter();
+        foreach ( $rawAccessRules as $rule )
         {
+            // All rules must include a role, resource type, and resource name.
             if ( ! isset($rule->role) ||
+                 ! isset($rule->resource_type) ||
                  ! isset($rule->resource_name) )
             {
                 throw new Exception("Access control list table contains " .
                             "an invalid rule (rule " .  $rule->id . ").");
             }
+            $controller = strtolower($rule->resource_type);
+            if ( $this->_isASettingController($controller) )
+            {
+                // Rules for setting-using controllers need an action also.
+                if ( ! isset($rule->action) ||
+                     ! isset($actionCategories[$rule->action]) )
+                {
+                    throw new Exception("Access control list table contains " .
+                                        "a missing or invalid action (rule " .
+                                        $rule->id . ").");
+                }
 
-            // Build up the resource name.
-            $prefix = self::ACTIVITY_PREFIX;
-            $delim = self::DELIM;
-            $rules[] = array($rule->role =>
-                             $prefix . $delim . $rule->resource_name);
+                // That action may represent a group of related actions.
+                $relatedActions = $actionCategories[$rule->action];
+                foreach ( $relatedActions as $action ) 
+                {
+                    // Build up the resource name.
+                    $rules[] = $this->_buildRule($rule->role, $controller,
+                                             $action, $rule->resource_name);
+                }
+            }
+            else
+            {
+                $rules[] = $this->_buildRule($rule->role, $controller,
+                                 self::DEFAULT_ACTION, $rule->resource_name);
+            }
+
         }
 
-        $this->_activityAccessRules = $rules;
+        $this->_accessRules = $rules;
         return $rules;
     }
 
     /**
-     * Get all Access Control List rules related to the Document resource
-     * type.
-     *
+     * Determines whether the given controller is one that works with
+     * table settings.
      */
-    public function getDocumentAccessRules()
+    protected function _isASettingController($controller)
     {
-        // If the rules have already been retrieved, just return them.
-        if ( ! empty($this->_documentAccessRules) )
-        {
-            return $this->_documentAccessRules;
-        }
-
-        $rules = array();
-
-        // Get the Document access rules from the database.
-        $where = array('resource_type = ?' => 'Document');
-        $rawDocumentAccessRules = $this->fetchAll($where);
-
-        // Build the full set of access rules from the rules in the database.
-        foreach ( $rawDocumentAccessRules as $rule )
-        {
-            if ( ! isset($rule->role) ||
-                 ! isset($rule->resource_name) )
-            {
-                throw new Exception("Access control list table contains " .
-                            "an invalid rule (rule " .  $rule->id . ").");
-            }
-
-            // Build up the resource name.
-            $prefix = self::DOCUMENT_PREFIX;
-            $delim = self::DELIM;
-            $rules[] = array($rule->role =>
-                             $prefix . $delim . $rule->resource_name);
-        }
-
-        $this->_documentAccessRules = $rules;
-        return $rules;
+        return
+            Ramp_Controller_KeyParameters::isASettingController($controller);
     }
 
     /**
-     * Get all Access Control List rules related to accessing tables
-     * (include report-related rules, which access tables with 
-     * customized formatting).
-     *
+     * Builds the access rule up out of its constituent parts.
      */
-    public function getTableAccessRules()
+    protected function _buildRule($role, $controller, $action, $resource)
     {
-        // If the rules have already been retrieved, just return them.
-        if ( ! empty($this->_tableAccessRules) )
-        {
-            return $this->_tableAccessRules;
-        }
-
-        $this->_tableAccessRules = array();
-        $actCategories = Ramp_Acl::createCategoryConverter();
-
-        // Get the Table and Report access rules from the database.
-        $this->_getTableAccessRulesFor(self::TABLE_RES_TYPE, $actCategories);
-        $this->_getTableAccessRulesFor(self::REPORT_RES_TYPE, $actCategories);
-        return $this->_tableAccessRules;
+        $delim = self::DELIM;
+        $fullResource = $controller . $delim .  $action . $delim .  $resource;
+        return array($role => $fullResource);
     }
 
     /**
-     * Get all Access Control List rules for the specified controller
-     * related to accessing tables.
-     *
-     * @param $controller capitalized name of controller, as it exists
-     *                    in Access Control Lists
-     * @param $actionCategories categories of actions that might appear
-     *                          in Access Control Lists
-     *
-     */
-    protected function _getTableAccessRulesFor($controller, $actionCategories)
-    {
-        // Get the Table access rules from the database.
-        $where = array('resource_type = ?' => $controller);
-        $rawTableAccessRules = $this->fetchAll($where);
-
-        // Build the full set of access rules from the rules in the database.
-        foreach ( $rawTableAccessRules as $rule )
-        {
-            // An access rule "action" in the database may actually refer
-            // to a category of related actions.
-            if ( ! isset($rule->role) ||
-                 ! isset($rule->resource_name) ||
-                 ! isset($rule->action) ||
-                 ! isset($actionCategories[$rule->action]) )
-            {
-                throw new Exception("Access control list table contains " .
-                            "an invalid rule (rule " .  $rule->id . ").");
-            }
-            $relatedActions = $actionCategories[$rule->action];
-            foreach ( $relatedActions as $action ) 
-            {
-                // Build up the resource name.
-                $prefix = strtolower($controller);
-                $delim = self::DELIM;
-                $this->_tableAccessRules[] =
-                            array($rule->role =>
-                                  $prefix . $delim . $action
-                                          . $delim . $rule->resource_name);
-            }
-        }
-    }
-
-    /**
-     * Get all specified raw Resources.
+     * Gets Resources embedded in the given access rules.
      *
      * @param $accessRules rules containing resource information
      */
-    protected function _getRawResources($accessRules)
+    protected function _getResourcesFrom($accessRules)
     {
         // Dig the resource information out from inside the rules.
         $resources = array();
         foreach ( $accessRules as $rule )
         {
-            // Each rule is an array of 1 element; add its value to $resources.
+            // Each rule has a role as the first element; the resource 
+            // is made up of the other elements.
             $resources[] = array_shift($rule);
         }
         return array_unique($resources);

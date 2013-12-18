@@ -22,11 +22,10 @@
 
 -- If the relationships among different tables is known when the
 -- database is being created, the lock relations table can be
--- initialized here with known table relations (as it is for this
--- Smart demo environment).
+-- initialized here with known table relations.
 
--- UNDER CONSTRUCTION!  (Most relations are not here yet!)
 
+USE `ramp_demo`;
 
 DROP TABLE IF EXISTS `ramp_lock_relations`;
 CREATE TABLE `ramp_lock_relations` (
@@ -38,14 +37,19 @@ CREATE TABLE `ramp_lock_relations` (
 
 
 -- Create Initial Lock Relations:
+--      (Not necessary unless roles are created for the demo that
+--       have authorization to edit or delete.)
 
 LOCK TABLES `ramp_lock_relations` WRITE;
 INSERT INTO `ramp_lock_relations` (`db_table`, `lock_table`, `locking_key_name`)
 VALUES
-('Person', 'Person', 'id')
-, ('Student', 'Person', 'studentID')
-, ('Modules', 'Modules', 'moduleID')
-, ('ModuleOfferings', 'Modules', 'moduleID')
+('ramp_auth_users', 'ramp_auth_users', 'username')
+, ('ramp_auth_auths', 'ramp_auth_auths', 'id')
+, ('ramp_lock_relations', 'ramp_lock_relations', 'db_table')
+, ('albums', 'albums', 'id')
+, ('places', 'places', 'id')
+, ('reviews', 'reviews', 'id')
+, ('reviewers', 'reviewers', 'id')
 ;
 UNLOCK TABLES;
 
@@ -59,7 +63,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `ramp_lock_locks`;
 CREATE TABLE `ramp_lock_locks` (
   `lock_table` varchar(50) NOT NULL,
-  `locking_key` INT NOT NULL,
+  `locking_key` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   `lock_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,

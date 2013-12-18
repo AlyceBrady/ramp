@@ -41,8 +41,8 @@ class Application_Model_RampIniReader
         $settingsFile = $dir .  DIRECTORY_SEPARATOR .  $name . $suffix;
         if ( ! file_exists($settingsFile) )
         {
-            throw new Exception('Missing settings file for ' . $name .
-                ' (no "' . $settingsFile . '")');
+            throw new Exception("Missing settings file for '" . $name .
+                "' (no '" . $settingsFile . "')");
         }
 
         // Read in the configuration information.

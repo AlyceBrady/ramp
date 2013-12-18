@@ -114,7 +114,6 @@ class Application_Form_TableRecordEntry extends Zend_Form
     /**
      * Constructor
      *
-     * @param Application_Form_TableRecordEntry $setTable the table setting
      * @param Application_Model_TableSetting $setTable the table setting
      * @param string $formType     specifies type of form (VIEW, ADD, 
      *                                  EDIT, or SEARCH)
@@ -274,8 +273,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
         }
 
         // Should element be a drop-down menu?
-        if ( ! $readOnly && ( $field->isEnum() ||
-                              $field->validValsDefinedInExtTable() ) )
+        if ( ! $readOnly && $this->_valRangeDefinedExternally($field) )
         {
             $fieldElement = $this->_createFieldDropDown($field, $name);
         }
@@ -310,6 +308,14 @@ class Application_Form_TableRecordEntry extends Zend_Form
     }
 
     /**
+     * Determines whether the field's range of values is defined externally.
+     */
+    protected function _valRangeDefinedExternally($field)
+    {
+        return $field->isEnum() || $field->validValsDefinedInExtTable();
+    }
+
+    /**
      * Creates a drop-down menu of search comparator types.
      */
     protected function _createComparatorDropDown($name)
@@ -335,8 +341,7 @@ class Application_Form_TableRecordEntry extends Zend_Form
     {
         // Get the set of values to choose from; if this is
         // a search, include ability to search for any value.
-        $validVals = $field->isEnum() ? $field->getEnumValues()
-                                      : $field->getValidVals();
+        $validVals = $this->_getValueRange($field);
         $options = $this->_formType == self::SEARCH
                       ? array(self::ANY_VAL => self::ANY_VAL_LABEL) +
                               $validVals
@@ -347,6 +352,15 @@ class Application_Form_TableRecordEntry extends Zend_Form
         $fieldElement->setMultiOptions($options);
 
         return $fieldElement;
+    }
+
+    /**
+     * Gets the field's externally-defined range of values.
+     */
+    protected function _getValueRange($field)
+    {
+        return $field->isEnum() ? $field->getEnumValues()
+                                : $field->getValidVals();
     }
 
     /**

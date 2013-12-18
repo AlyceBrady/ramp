@@ -18,22 +18,31 @@
  */
 class Ramp_Controller_KeyParameters
 {
-    /* Controller names */
+    /* Controller names of controllers whose keyword is not '_setting' */
     const ACT_CONTROLLER = 'activity';
     const DOC_CONTROLLER = 'document';
     const REP_CONTROLLER = 'report';
     const TBL_CONTROLLER = 'table';
+    const ADMIN_CONTROLLER = 'admin-table';
 
     /* Key parameter names */
-    const ACT_KEY_PARAM         = 'activity';  
+    const ACT_KEY_PARAM        = 'activity';  
     const DOC_KEY_PARAM        = 'document';
-    const SETTING_PARAM         = '_setting';
+    const SETTING_PARAM        = '_setting';
 
-    const DELIM = '::';              // Delimiter separating resource sections
-    const ACTIVITY_PREFIX = 'activity::index'; // Start of Activity resources
-    const DOCUMENT_PREFIX = 'document::index'; // Start of Document resources
+    // STATIC (CLASS) VARIABLES
+
+    protected static $_settingControllerTypes = array(
+            self::TBL_CONTROLLER,
+            self::REP_CONTROLLER, self::ADMIN_CONTROLLER,
+        );
 
     // STATIC (CLASS) FUNCTIONS
+
+    public static function isASettingController($controllerName)
+    {
+        return in_array($controllerName, self::$_settingControllerTypes);
+    }
 
     /**
      * Gets the key parameter (activity, document, setting, etc) 
@@ -46,20 +55,12 @@ class Ramp_Controller_KeyParameters
     {
         $controller = $request->getControllerName();
         $keyParam = "";
-        if ( $controller == self::ACT_CONTROLLER )
+        $keyword = self::getKeyParamKeyword($controller);
+        $keyParam = $request->getUserParam($keyword, '');
+        if ( $controller == self::DOC_CONTROLLER )
         {
-            $keyParam = $request->getUserParam(self::ACT_KEY_PARAM);
-        }
-        else if ( $controller == self::DOC_CONTROLLER )
-        {
-            $keyParam = $request->getUserParam(self::DOC_KEY_PARAM, '');
             $keyParam = $keyParam ? :
                            $request->getUserParam(self::ACT_KEY_PARAM, '');
-        }
-        else if ( $controller == self::TBL_CONTROLLER ||
-                  $controller == self::REP_CONTROLLER )
-        {
-            $keyParam = $request->getUserParam(self::SETTING_PARAM);
         }
 
         return urldecode($keyParam);
@@ -73,18 +74,20 @@ class Ramp_Controller_KeyParameters
      */
     public static function getKeyParamKeyword($controller)
     {
-        switch ($controller)
+        if ( $controller == self::ACT_CONTROLLER )
         {
-            case self::ACT_CONTROLLER:
-                return self::ACT_KEY_PARAM;
-
-            case self::DOC_CONTROLLER:
-                return self::DOC_KEY_PARAM;
-
-            case self::TBL_CONTROLLER:
-            case self::REP_CONTROLLER:
-                return self::DOC_KEY_PARAM;
+            return self::ACT_KEY_PARAM;
         }
+        else if ( $controller == self::DOC_CONTROLLER )
+        {
+            return self::DOC_KEY_PARAM;
+        }
+        else if ( self::isASettingController($controller) )
+        {
+            return self::SETTING_PARAM;
+        }
+
+        return "";
     }
 
 }

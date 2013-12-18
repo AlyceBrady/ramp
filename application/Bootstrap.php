@@ -3,9 +3,6 @@
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
     const ACT_CONTROLLER = Ramp_Controller_KeyParameters::ACT_CONTROLLER;
-    const DOC_CONTROLLER = Ramp_Controller_KeyParameters::DOC_CONTROLLER;
-    const REP_CONTROLLER = Ramp_Controller_KeyParameters::REP_CONTROLLER;
-    const TBL_CONTROLLER = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
 
     const ACT_DEFAULT_ACTION = 'index';
 

@@ -116,8 +116,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         {
             $resources[] = $prefix . Ramp_Acl::DELIM . dirname($param);
         }
-        else if ( $controller == Ramp_Controller_KeyParameters::TBL_CONTROLLER
-               || $controller == Ramp_Controller_KeyParameters::REP_CONTROLLER )
+        else if ( $this->_isSettingController($controller) )
         {
             try
             {
@@ -171,6 +170,16 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
     }
 
     /**
+     * Determines whether the given controller is one that works with
+     * table settings.
+     */
+    protected function _isSettingController($controller)
+    {
+        return
+            Ramp_Controller_KeyParameters::isASettingController($controller);
+    }
+
+    /**
      * Formats resource name from full resource specification.
      *
      * @param $resourceSpec  full resource specification
@@ -197,11 +206,12 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         {
             return $components[2] . ' document';
         }
-        if ( $components[0] == Ramp_Controller_KeyParameters::TBL_CONTROLLER ||
-             $components[0] == Ramp_Controller_KeyParameters::REP_CONTROLLER )
+        if ( $this->_isSettingController($components[0]) )
         {
-            $settingInfo = $isSetting ? ' in setting ' : ' ';
-            return $components[0] . $settingInfo . $components[2];
+            if ( $isSetting )
+            {
+                return $components[0] . ' in setting ' . $components[2];
+            }
         }
         return 'Resource: ' . $resourceSpec;
     }

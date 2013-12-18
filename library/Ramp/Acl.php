@@ -22,13 +22,18 @@
  */
 class Ramp_Acl extends Zend_Acl
 {
+    // Tables with essential authorization information.
+    const USERS_TABLE = 'ramp_auth_users';              // source of roles
+    const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';     // source of auths
+
+    // Delimiter between resource components.
+    const DELIM = '::';
+
+    // Default role for users who are not logged in.
     const DEFAULT_ROLE = 'guest';
 
-    const DELIM = Ramp_Controller_KeyParameters::DELIM;
-                                            // Separates resource sections
-
-    const USERS_TABLE = 'ramp_auth_users';
-    const AUTHORIZATIONS_TABLE = 'ramp_auth_auths';
+    // Default action for controllers.
+    const DEFAULT_ACTION = 'index';
 
     // Table actions.
     const TBL_INDEX         = 'index';
@@ -42,8 +47,6 @@ class Ramp_Acl extends Zend_Acl
     const BLOCK_ADD         = 'block-add';
     const DELETE_RECORD     = 'delete';
     const ENTER_BLOCK_DATA  = 'block-entry';
-    const UNAVAILABLE_LOCK  = 'unavailable-lock';
-    const FREE_LOCK         = 'free-lock';
 
     // ACL categories for Table actions.
     const VIEW = 'View';
@@ -307,14 +310,14 @@ class Ramp_Acl extends Zend_Acl
         $this->add(new Zend_Acl_Resource('lock::unavailable-lock'));
         $this->add(new Zend_Acl_Resource('lock::free-lock'));
 
-        // SYNTAX CHECK CONTROLLER: all actions
-        $this->add(new Zend_Acl_Resource('table-syntax::index'));
-
         // ERROR CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('error::error'));
 
         // DOCUMENT CONTROLLER: all actions
         $this->add(new Zend_Acl_Resource('document::index'));
+
+        // SYNTAX CHECK CONTROLLER: all actions
+        $this->add(new Zend_Acl_Resource('table-syntax::index'));
 
         // BUILT-IN TABLES:
         // Get a list of all Table controller actions.
@@ -322,6 +325,8 @@ class Ramp_Acl extends Zend_Acl
         foreach ( $actions[self::ALL] as $action )
         {
             $resourceName = "table::$action::" . self::USERS_TABLE;
+            $this->add(new Zend_Acl_Resource($resourceName));
+            $resourceName = "admin-table::$action::" . self::USERS_TABLE;
             $this->add(new Zend_Acl_Resource($resourceName));
             $resourceName = "table::$action::" . self::AUTHORIZATIONS_TABLE;
             $this->add(new Zend_Acl_Resource($resourceName));

@@ -22,8 +22,11 @@
 
 -- If the relationships among different tables is known when the
 -- database is being created, the lock relations table can be
--- initialized here with known table relations.
+-- initialized here with known table relations (as it is for this
+-- Smart demo environment).
 
+
+USE `smart_demo`;
 
 DROP TABLE IF EXISTS `ramp_lock_relations`;
 CREATE TABLE `ramp_lock_relations` (
@@ -36,16 +39,33 @@ CREATE TABLE `ramp_lock_relations` (
 
 -- Create Initial Lock Relations:
 
--- LOCK TABLES `ramp_lock_relations` WRITE;
--- INSERT INTO `ramp_lock_relations`
---    (`db_table`, `lock_table`, `locking_key_name`)
--- VALUES
--- ('Person', 'Person', 'id')
--- , ('Student', 'Person', 'studentID')
--- , ('Modules', 'Modules', 'moduleID')
--- , ('ModuleOfferings', 'Modules', 'moduleID')
--- ;
--- UNLOCK TABLES;
+LOCK TABLES `ramp_lock_relations` WRITE;
+INSERT INTO `ramp_lock_relations` (`db_table`, `lock_table`, `locking_key_name`)
+VALUES
+('ramp_auth_users', 'ramp_auth_users', 'username')
+, ('ramp_auth_auths', 'ramp_auth_auths', 'id')
+, ('ramp_lock_relations', 'ramp_lock_relations', 'db_table')
+, ('Term', 'Term', 'term')
+, ('Person', 'Person', 'id')
+, ('Address', 'Person', 'personID')
+, ('Staff', 'Person', 'staffID')
+, ('StaffContract', 'Person', 'staffID')
+, ('Student', 'Person', 'studentID')
+, ('Advising', 'Person', 'studentID')
+, ('StudentAcadProgram', 'Person', 'studentID')
+, ('StudentLeaves', 'Person', 'studentID')
+, ('StudentAnnotations', 'Person', 'studentID')
+, ('Enrollment', 'Person', 'studentID')
+, ('TermStanding', 'Person', 'studentID')
+, ('TestScores', 'Person', 'studentID')
+, ('Modules', 'Modules', 'moduleID')
+, ('ModuleOfferings', 'ModuleOfferings', 'pk_id')
+, ('ModuleAssignments', 'ModuleOfferings', 'modOfferingID')
+, ('ModuleAttributes', 'ModuleAttributes', 'pk_id')
+, ('Attributes', 'Attributes', 'pk_id')
+, ('AcadProgram', 'AcadProgram', 'programID')
+;
+UNLOCK TABLES;
 
 
 --
@@ -57,7 +77,7 @@ CREATE TABLE `ramp_lock_relations` (
 DROP TABLE IF EXISTS `ramp_lock_locks`;
 CREATE TABLE `ramp_lock_locks` (
   `lock_table` varchar(50) NOT NULL,
-  `locking_key` INT NOT NULL,
+  `locking_key` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   `lock_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,

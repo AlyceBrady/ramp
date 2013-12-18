@@ -112,7 +112,8 @@ DROP TABLE IF EXISTS `ramp_auth_auths`;
 CREATE TABLE `ramp_auth_auths` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role` varchar(100) NOT NULL,
-  `resource_type` enum('Activity','Document','Report','Table') NOT NULL,
+  `resource_type` enum('Activity','Document','Report','Table',
+        'Admin-Table') NOT NULL,
   `resource_name` varchar(100) NOT NULL,
   `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords')
         NOT NULL DEFAULT 'View'
@@ -126,6 +127,8 @@ INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
 ('smart_dba','Activity','Admin','All')
 , ('smart_dba','Table','ramp_auth_users','View')
+, ('smart_dba','Admin-Table','ramp_auth_users','View')
+, ('smart_dba','Admin-Table','ramp_auth_users','Add')
 , ('smart_dba','Table','ramp_auth_auths','All')
 , ('smart_dba','Table','ramp_lock_relations','All')
 , ('smart_dba','Table','ramp_lock_locks','View')
