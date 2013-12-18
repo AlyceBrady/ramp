@@ -1379,6 +1379,7 @@ class Application_Model_SetTable
      */
     public function summarizeSyntaxChecking()
     {
+        $this->_recordErrors = true;
         $present = "<i class='icon-ok' title='present'> </i>";
         $absent = "<i class='icon-remove' title='present'> </i>";
 
@@ -1440,47 +1441,56 @@ class Application_Model_SetTable
 
         // Check table connections, importedFrom clauses.
         if ( ! empty($this->_joinExpressions) )
-          foreach ( $this->_joinExpressions as $tableName => $expression )
-          {
-            $this->_error_msgs[] = "==> Checking table connections and " .
-                                   "imported fields for $tableName...";
-            $prevNumErrorMsgs = count($this->_error_msgs);
-            $cols = null;
-            $prevErrMsgCount = count($this->_error_msgs);
+        {
+            foreach ( $this->_joinExpressions as $tableName => $expression )
+            {
+                $this->_error_msgs[] = "==> Checking table connections " .
+                                       "for $tableName...";
+                $prevNumErrorMsgs = count($this->_error_msgs);
+                $cols = null;
+                $prevErrMsgCount = count($this->_error_msgs);
 
-            // Get table's real name (not alias).
-            $realName = isset($expression[self::ALIAS])
-                              ? $expression[self::ALIAS] : $tableName;
-            if ( $realName != $tableName )
-            {
-                $this->_error_msgs[] = "$tableName is an alias for $realName.";
-            }
+                // Get table's real name (not alias).
+                $realName = isset($expression[self::ALIAS])
+                                  ? $expression[self::ALIAS] : $tableName;
+                if ( $realName != $tableName )
+                {
+                    $this->_error_msgs[] =
+                                    "$tableName is an alias for $realName.";
+                }
 
-            // Test if it is a valid table in the database.
-            $cols = $this->_testTable($realName, true);
+                // Test if it is a valid table in the database.
+                $cols = $this->_testTable($realName, true);
+                if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+                {
+                    $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+                }
 
-            if ( empty($this->_importAliases[$tableName]) )
-            {
-                $this->_error_msgs[] = "Table connection for $tableName " .
-                    "has no imported fields.";
+                $this->_error_msgs[] = "==> Checking importFrom references... ";
+                $prevNumErrorMsgs = count($this->_error_msgs);
+                if ( empty($this->_importAliases[$tableName]) )
+                {
+                    $this->_error_msgs[] = "Table connection for $tableName " .
+                        "has no imported fields.";
+                }
+                else
+                {
+                    // Test if field imports are valid.
+                    $fieldAliases = $this->_importAliases[$tableName];
+                    $aliasLocalNames = array_keys($fieldAliases);
+                    $localFieldNames = array_keys($this->_visibleFields); 
+                    $this->_testFields($aliasLocalNames, $localFieldNames,
+                                       $this->_settingName . " setting",
+                                       "Importing");
+                    $this->_testFields($fieldAliases, $cols,
+                                       $realName, "Importing");
+                }
+                if ( $prevNumErrorMsgs == count($this->_error_msgs) )
+                {
+                    $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
+                }
             }
-            else
-            {
-                // Test if field imports are valid.
-                $fieldAliases = $this->_importAliases[$tableName];
-                $aliasLocalNames = array_keys($fieldAliases);
-                $localFieldNames = array_keys($this->_visibleFields); 
-                $this->_testFields($aliasLocalNames, $localFieldNames,
-                                   $this->_settingName . " setting",
-                                   "Importing");
-                $this->_testFields($fieldAliases, $cols,
-                                   $realName, "Importing");
-            }
-            if ( $prevNumErrorMsgs == count($this->_error_msgs) )
-            {
-                $this->_error_msgs[] = "&nbsp;&nbsp;&nbsp;&nbsp;$present";
-            }
-          }
+        }
 
         // Check initialize-from information.
         $this->_error_msgs[] =
@@ -1488,7 +1498,20 @@ class Application_Model_SetTable
         $prevNumErrorMsgs = count($this->_error_msgs);
         if ( ! empty($this->_initTblRefs) )
         {
-            $this->_testExternalRefs($this->_initTblRefs, "initTableRef");
+            $locFields = $this->_testExternalRefs($this->_initTblRefs,
+                                                  "initTableRef");
+            // Are the fields used for the init reference search required?
+            foreach ( $locFields as $searchField )
+            {
+                $field = $this->getFieldObject($searchField);
+                if ( ! $field->valueNecessaryForAdd() )
+                {
+                    $this->_error_msgs[] = "$searchField is required for " .
+                        "initialization of other fields but has not been " .
+                        "marked 'required'.  (OK if this setting not used " .
+                        "for ADD).";
+                }
+            }
         }
         if ( $prevNumErrorMsgs == count($this->_error_msgs) )
         {
@@ -1504,6 +1527,14 @@ class Application_Model_SetTable
             $cols = $this->_testTable($sourceTblName, true);
             $this->_testFields(array($sourceFieldName), $cols, $sourceTblName,
                                      "Initialization");
+            // Is there a relevant initTableReference property for the field?
+            $initRef = $this->getInitRefInfo($sourceTblName);
+            if ( $initRef == null )
+            {
+                $this->_error_msgs[] =
+                    "There is no 'initTableRef` information provided " .
+                    "for $sourceFieldName" . ".initFrom = $sourceTblName";
+            }
         }
         if ( $prevNumErrorMsgs == count($this->_error_msgs) )
         {
@@ -1549,9 +1580,9 @@ class Application_Model_SetTable
 
     /**
      * Tests that the given table name represents an actual table in the 
-     * database.  Returns the columns for that table if so.  Adds an
-     * error message to the _error_msgs instance variable and returns an 
-     * empty array if the table was invalid.
+     * database.  Returns the columns for that table if so.  Throws an 
+     * exception or adds an error message to the _error_msgs instance
+     * variable and returns an empty array if the table was invalid.
      */
     protected function _testTable($tableName, $recordErrors = false)
     {
@@ -1563,6 +1594,8 @@ class Application_Model_SetTable
         }
         catch (Exception $e)
         {
+            // Could be used by getTableEntries in future, so allow the 
+            // possibility of throwing an exception.
             if ( $recordErrors )
             {
                 $tableName = $tableName ? : "[no name]";
@@ -1599,6 +1632,7 @@ class Application_Model_SetTable
      */
     protected function _testExternalRefs($references, $type)
     {
+        $allLocalConnFields = array();
         foreach ( $references as $keyword => $refInfo )
         {
             try
@@ -1608,25 +1642,23 @@ class Application_Model_SetTable
             }
             catch (Exception $e)
             {
-                if ( $this->_recordErrors )
-                {
-                    $seqName = $refInfo->getViewingSeqName();
-                    $this->_error_msgs[] = "Error: $seqName is not a valid " .
-                        "table setting/sequence file.";
-                    return;
-                }
-                else
-                    { throw new Exception($e->getMessage()); }
+                $seqName = $refInfo->getViewingSeqName();
+                $this->_error_msgs[] = "Error: $seqName is not a valid " .
+                    "table setting/sequence file.";
+                return;
             }
             $tableName = $setting->getDbTableName();
             $cols = $this->_testTable($tableName, true);
             $connections = $refInfo->getConnectionExpressions();
-            $localFields = array_keys($connections);
-            $localFieldNames = array_keys($this->_visibleFields); 
-            $this->_testFields($localFields, $localFieldNames,
+            $localConnectionFields = array_keys($connections);
+            $allLocalConnFields = array_merge($allLocalConnFields,
+                                              $localConnectionFields);
+            $allLocalFieldNames = array_keys($this->_visibleFields); 
+            $this->_testFields($localConnectionFields, $allLocalFieldNames,
                                $this->_settingName . " setting", $type);
             $this->_testFields($connections, $cols, $tableName, $type);
         }
+        return $allLocalConnFields;
     }
 
     protected function _checkExtraneousSettings()

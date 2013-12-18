@@ -520,13 +520,16 @@ class TableController extends Zend_Controller_Action
                 // Determine fields being added.  Remove null fields.
                 $addValues = $this->_fillInitValues($setTable,
                                                     $form->getFieldValues());
-                $meaningfulData = $this->_getFilledFields($addValues);
-                $meaningfulData = $setTable->removeImports($meaningfulData);
+                if ( $addValues != null )
+                {
+                    $meaningfulData = $this->_getFilledFields($addValues);
+                    $meaningfulData = $setTable->removeImports($meaningfulData);
 
-                // Update the database and redisplay the record.
-                $setTable->addTableEntry($meaningfulData);
-                $this->_executeSearch($setTable, $meaningfulData, null,
-                                      self::DISPLAY_ALL);
+                    // Update the database and redisplay the record.
+                    $setTable->addTableEntry($meaningfulData);
+                    $this->_executeSearch($setTable, $meaningfulData, null,
+                                          self::DISPLAY_ALL);
+                }
             }
             else
             {
@@ -1128,13 +1131,88 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Fill in initial values based on information in setting.
-     * TODO: Is there any need to consider cases where the 
-     * "external table" is this table, so one field is being
-     * initialized  from another that is not in the database yet?
      *
      * @param Application_Model_SetTable  table: setting & db info
      * @param array $data   Column-value pairs representing provided data
      */
+    protected function _fillInitValues($setTable, array $data)
+    {
+        $storedSourceRecs = array();
+        $initializedData = $data;
+
+        // Loop through fields in this table to see if any should be 
+        // initialized from values in another table.
+        $relevantFields = $setTable->getExternallyInitFields();
+        foreach ( $relevantFields as $newFieldName => $newField )
+        {
+            // Get table reference used by this field.
+            $sourceTblName = $newField->getInitTableName();
+
+            // Has the relevant record been read from that table?
+            if ( ! isset($storedSourceRecs[$sourceTblName]) )
+            {
+                // Use viewing sequence to search for appropriate record.
+                $sourceRecord = $this->_getSourceRecord($setTable,
+                                                        $sourceTblName, $data);
+                if ( $sourceRecord == null )
+                {
+                    return null;
+                }
+                else
+                {
+                    $storedSourceRecs[$sourceTblName] = $sourceRecord;
+                }
+            }
+            $sourceRecord = $storedSourceRecs[$sourceTblName];
+            $initializedData[$newFieldName] = $sourceRecord[$newFieldName];
+        }
+
+        return $initializedData;
+    }
+
+    /**
+     * Gets the record with the initializing information.
+     *
+     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param string $sourceTblName  name of table with initializing info
+     * @param array $userData        fields with user-supplied data
+     */
+    protected function _getSourceRecord($setTable, $sourceTblName, $userData)
+    {
+        // Need to retrieve initializing record; check that
+        // user provided enough information to find it.
+        $initRef = $setTable->getInitRefInfo($sourceTblName);
+        if ( $initRef == null )
+        {
+            $this->view->errMsgs[] = 
+                "Cannot initialize fields from $sourceTblName -- " .
+                "no 'initTableRef` information provided.";
+            return null;
+        }
+        $sourceTbl = $initRef->getViewingSeq()->getSetTableForAdding();
+        $searchKeys = $initRef->xlFieldValuePairs($userData);
+        $matches = $sourceTbl->getTableEntries($searchKeys);
+        if ( count($matches) != 1 )
+        {
+            // Cannot initialize with info provided; proceed 
+            // directly to next field.
+            $this->view->errMsgs[] =
+                "Cannot initialize fields from $sourceTblName -- " .
+                "insufficient primary key information to find unique " .
+                "source record.";
+            return null;
+        }
+        else
+        {
+            return $matches[0];
+        }
+    }
+
+    /**
+     * Fill in initial values based on information in setting.
+     *
+     * @param Application_Model_SetTable  table: setting & db info
+     * @param array $data   Column-value pairs representing provided data
     protected function _fillInitValues($setTable, array $data)
     {
         $storedSourceRecs = array();
@@ -1143,10 +1221,7 @@ class TableController extends Zend_Controller_Action
 
         // Loop through fields in this table to see if any should be 
         // initialized from values in another table.
-        $inputFieldNames = array_keys($data);
-        $relevantFields = $this->view->tableInfo->getExternallyInitFields();
-        // Why wasn't this written as the simpler:   ?
-        // $relevantFields = $setTable->getExternallyInitFields();
+        $relevantFields = $setTable->getExternallyInitFields();
         foreach ( $relevantFields as $newFieldName => $newField )
         {
             // Initialize from another table if data not already provided.
@@ -1157,6 +1232,7 @@ class TableController extends Zend_Controller_Action
                 $sourceTblName = $newField->getInitTableName();
                 if ( ! isset($storedSourceRecs[$sourceTblName]) )
                 {
+throw new Exception("Wanting to initialize fields from " . print_r($sourceTblName, true) . " using set table " . $setTable->getSettingName() . " and data " . print_r($data, true));
                     $sourceRecord =
                             $this->_getSourceRecord($setTable, $sourceTblName,
                                                     $data);
@@ -1176,37 +1252,7 @@ class TableController extends Zend_Controller_Action
 
         return $initializedData;
     }
-
-    /**
-     * Gets the record with the initializing information.
-     *
-     * @param Application_Model_SetTable $setTable    setting & db info
-     * @param string $sourceTblName  name of table with initializing info
-     * @param array $userData        fields with user-supplied data
      */
-    protected function _getSourceRecord($setTable, $sourceTblName, $userData)
-    {
-        // Need to retrieve initializing record; check that
-        // user provided enough information to find it.
-        $initRef = $setTable->getInitRefInfo($sourceTblName);
-        $sourceTbl = $initRef->getViewingSeq()->getSetTableForAdding();
-        $searchKeys = $initRef->xlFieldValuePairs($userData);
-        $matches = $sourceTbl->getTableEntries($searchKeys);
-        if ( count($matches) != 1 )
-        {
-            // Cannot initialize with info provided; proceed 
-            // directly to next field.
-            $this->view->errMsgs[] =
-                "Cannot initialize $newFieldName from " .
-                "$sourceTblName -- insufficient primary " .
-                "key information to find source record.";
-            return null;
-        }
-        else
-        {
-            return $matches[0];
-        }
-    }
 
     /**
      * Acquires the lock for the given record in the specified table.

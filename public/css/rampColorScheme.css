@@ -249,9 +249,11 @@ input.statusCode {
         background-color: #FAFFFA;  /* was #efe; Could be F6FFF6 */
 }
 
-#record-block.edit input.readonly {
+#record-block.edit input.readonly,
+#record-block.add input.readonly
+{
         background-color: #FAFFFA;  /* was #efe; Could be #F6FFF6 */
-        color: #999;
+        color: #aaa;
 }
 
 
