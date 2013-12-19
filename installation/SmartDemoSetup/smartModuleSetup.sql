@@ -102,6 +102,7 @@ VALUES
 DROP TABLE IF EXISTS ModuleOfferings;
 
 CREATE TABLE ModuleOfferings (
+    pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     term VARCHAR ( 10 ) NOT NULL,
     moduleID INT NOT NULL,
     section VARCHAR ( 3 ) NOT NULL,
@@ -121,16 +122,18 @@ CREATE TABLE ModuleOfferings (
     studentsAtCompletion INT,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (term, moduleID, section),
+    UNIQUE (term, moduleID, section),
     FOREIGN KEY (term) REFERENCES Terms (term),
-    FOREIGN KEY (moduleID) REFERENCES Modules (moduleID)
+    FOREIGN KEY (moduleID) REFERENCES Modules (moduleID),
+    INDEX (term),
+    INDEX (moduleID)
 );
 
 DELIMITER |
 CREATE TRIGGER CancelStudentReg_Update AFTER UPDATE ON ModuleOfferings
   FOR EACH ROW BEGIN
     IF NEW.status = 'Cancelled' AND NEW.status <> OLD.status THEN
-            CALL CancelStudentReg(NEW.term, NEW.moduleID, NEW.section);
+            CALL CancelStudentReg(NEW.pk_id);
     END IF;
   END;
 |
@@ -166,54 +169,54 @@ DELIMITER ;
 # ASSIGNMENTS.
 # */
 
-INSERT INTO ModuleOfferings (moduleID, term, section, startDate, capacity,
+INSERT INTO ModuleOfferings (pk_id, moduleID, term, section, startDate, capacity,
     modCode, modNumber, shortTitle, longTitle)
 VALUES
-(1, '2011Q4', '01', '2011-09-10', 30,
+(1, 1, '2011Q4', '01', '2011-09-10', 30,
     'COMP', '105', 'Intro to CS', 'Introduction to Computer Sci.')
-, (21, '2011Q4', '01', '2011-09-10', 30,
+, (2, 21, '2011Q4', '01', '2011-09-10', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (21, '2011Q4', '02', '2011-09-10', 30,
+, (3, 21, '2011Q4', '02', '2011-09-10', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (60, '2011Q4', '01', '2011-09-10', 18,
+, (4, 60, '2011Q4', '01', '2011-09-10', 18,
     'FREN', '101', 'French I', 'French Lang. and Lit. I')
-, (35, '2011Q4', '01', '2011-09-10', 25,
+, (5, 35, '2011Q4', '01', '2011-09-10', 25,
     'ENGL', '210', 'Brit. Lit.', "British Lit: Austen's Novels")
-, (70, '2011Q4', '01', '2011-09-10', 15,
+, (6, 70, '2011Q4', '01', '2011-09-10', 15,
     'WRIT', '100', 'First-Year Sem.', 'First-Year Writing Seminar')
-, (70, '2011Q4', '02', '2011-09-10', 15,
+, (7, 70, '2011Q4', '02', '2011-09-10', 15,
     'WRIT', '100', 'First-Year Sem.', 'First-Year Writing Seminar')
-, (3, '2012Q1', '01', '2012-01-01', 30,
+, (8, 3, '2012Q1', '01', '2012-01-01', 30,
     'COMP', '110', 'Intro Prog.', 'Introduction to Programming')
-, (21, '2012Q1', '01', '2012-01-01', 30,
+, (9, 21, '2012Q1', '01', '2012-01-01', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (22, '2012Q1', '01', '2012-01-01', 30,
+, (10, 22, '2012Q1', '02', '2012-01-01', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (40, '2012Q1', '01', '2012-01-01', 25,
+, (11, 40, '2012Q1', '01', '2012-01-01', 25,
     'HIST', '110', 'US History I', 'US History I')
-, (42, '2012Q1', '01', '2012-01-01', 25,
+, (12, 42, '2012Q1', '01', '2012-01-01', 25,
     'HIST', '210', 'West Afr. Hist I', 'West African History I')
-, (50, '2012Q1', '01', '2012-01-01', 35,
+, (13, 50, '2012Q1', '01', '2012-01-01', 35,
     'ECON', '105', 'Microeconomics', 'Intro. to Microeconomics')
-, (61, '2012Q1', '01', '2012-01-01', 18,
+, (14, 61, '2012Q1', '01', '2012-01-01', 18,
     'FREN', '102', 'French II', 'French Lang. and Lit. II')
-, (35, '2012Q1', '01', '2012-01-01', 25,
+, (15, 35, '2012Q1', '01', '2012-01-01', 25,
     'ENGL', '210', 'Brit. Lit.', "British Lit: Austen's Novels")
-, (70, '2012Q1', '01', '2012-01-01', 15,
+, (16, 70, '2012Q1', '01', '2012-01-01', 15,
     'WRIT', '100', 'First-Year Sem.', 'First-Year Writing Seminar')
-, (2, '2012Q2', '01', '2012-04-01', 30,
+, (17, 2, '2012Q2', '01', '2012-04-01', 30,
     'COMP', '107', 'Multimedia Prog', 'Multimedia Programming')
-, (4, '2012Q2', '01', '2012-04-01', 20,
+, (18, 4, '2012Q2', '01', '2012-04-01', 20,
     'COMP', '210', 'Data Struct.', 'Data Structures')
-, (21, '2012Q2', '01', '2012-04-01', 30,
+, (19, 21, '2012Q2', '01', '2012-04-01', 30,
     'MATH', '112', 'Calculus I', 'Calculus I')
-, (22, '2012Q2', '01', '2012-04-01', 30,
+, (20, 22, '2012Q2', '01', '2012-04-01', 30,
     'MATH', '113', 'Calculus II', 'Calculus II')
-, (43, '2012Q2', '01', '2012-04-01', 25,
+, (21, 43, '2012Q2', '01', '2012-04-01', 25,
     'HIST', '211', 'West Afr. Hist II', 'West African History II')
-, (51, '2012Q2', '01', '2012-04-01', 35,
+, (22, 51, '2012Q2', '01', '2012-04-01', 35,
     'ECON', '106', 'Macroeconomics', 'Intro. to Macroeconomics')
-, (62, '2012Q2', '01', '2012-04-01', 18,
+, (23, 62, '2012Q2', '01', '2012-04-01', 18,
     'FREN', '103', 'French III', 'French Lang. and Lit. III')
 ;
 
@@ -251,9 +254,7 @@ DROP TABLE IF EXISTS ModuleAssignments;
 
 CREATE TABLE ModuleAssignments (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-    term VARCHAR ( 10 ) NOT NULL,
-    moduleID INT NOT NULL,
-    section VARCHAR ( 3 ),
+    modOfferingID INT NOT NULL,
     staffID INT NOT NULL,
     percentage INT NOT NULL DEFAULT 100,
     classroomNumber VARCHAR ( 6 ),
@@ -263,36 +264,36 @@ CREATE TABLE ModuleAssignments (
     endDate DATE,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (term, moduleID, section) REFERENCES ModuleOfferings (term, moduleID, section),
+    FOREIGN KEY (modOfferingID) REFERENCES ModuleOfferings (pk_id),
     FOREIGN KEY (staffID) REFERENCES Staff (staffID)
 );
 
-INSERT INTO ModuleAssignments (term, moduleID, section, staffID,
+INSERT INTO ModuleAssignments (modOfferingID, staffID,
     classroomBuilding, classroomNumber, weeklySchedule)
 VALUES
-('2011Q4', 1, '01', 1, "Olds/Upton", "312", "MWF 1:15-2:30")
-, ('2011Q4', 21, '01', 24, "Olds/Upton", "304", "MWF 8:30-9:45")
-, ('2011Q4', 21, '02', 24, "Olds/Upton", "304", "MWF 8:30-9:45")
-, ('2011Q4', 60, '01', 4, "Dewing", "206", "MWF 8:30-9:45")
-, ('2011Q4', 35, '01', 4, "Humphrey House", "206", "MWF 1:15-2:30")
-, ('2011Q4', 70, '01', 6, "Humphrey House", "Lounge", "MWF 11:50-1:05")
-, ('2011Q4', 70, '02', 6, "Dewing", "114", "MWF 1:15-2:30")
-, ('2012Q1', 3, '01', 1, "Olds/Upton", "312", "MWF 1:15-2:30")
-, ('2012Q1', 21, '01', 24, "Olds/Upton", "304", "MWF 8:30-9:45")
-, ('2012Q1', 22, '01', 24, "Olds/Upton", "304", "MWF 2:40-3:55")
-, ('2012Q1', 40, '01', 3, "Dewing", "302", "TTh 9:00-11:00")
-, ('2012Q1', 42, '01', 3, "Dewing", "302", "TTh 1:00-3:00")
-, ('2012Q1', 50, '01', 6, "Dewing", "316", "MWF 2:40-3:55")
-, ('2012Q1', 61, '01', 4, "Dewing", "206", "MWF 8:30-9:45")
-, ('2012Q1', 35, '01', 4, "Humphrey House", "206", "MWF 1:15-2:30")
-, ('2012Q1', 70, '01', 6, "Humphrey House", "Lounge", "MWF 11:50-1:05")
-, ('2012Q2', 2, '01', 1, DEFAULT, DEFAULT, "MWF 1:15-2:30")
-, ('2012Q2', 4, '01', 1, DEFAULT, DEFAULT, "MWF 10:00-11:15")
-, ('2012Q2', 21, '01', 24, DEFAULT, DEFAULT, "MWF 8:30-9:45")
-, ('2012Q2', 22, '01', 24, DEFAULT, DEFAULT, "MWF 2:40-3:55")
-, ('2012Q2', 43, '01', 3, DEFAULT, DEFAULT, "TTh 9:00-11:00")
-, ('2012Q2', 51, '01', 6, DEFAULT, DEFAULT, "MWF 2:40-3:55")
-, ('2012Q2', 62, '01', 4, DEFAULT, DEFAULT, "MWF 8:30-9:45")
+(1, 1, "Olds/Upton", "312", "MWF 1:15-2:30")
+, (2, 24, "Olds/Upton", "304", "MWF 8:30-9:45")
+, (3, 24, "Olds/Upton", "304", "MWF 8:30-9:45")
+, (4, 4, "Dewing", "206", "MWF 8:30-9:45")
+, (5, 4, "Humphrey House", "206", "MWF 1:15-2:30")
+, (6, 6, "Humphrey House", "Lounge", "MWF 11:50-1:05")
+, (7, 6, "Dewing", "114", "MWF 1:15-2:30")
+, (8, 1, "Olds/Upton", "312", "MWF 1:15-2:30")
+, (9, 24, "Olds/Upton", "304", "MWF 8:30-9:45")
+, (10, 24, "Olds/Upton", "304", "MWF 2:40-3:55")
+, (11, 3, "Dewing", "302", "TTh 9:00-11:00")
+, (12, 3, "Dewing", "302", "TTh 1:00-3:00")
+, (13, 6, "Dewing", "316", "MWF 2:40-3:55")
+, (14, 4, "Dewing", "206", "MWF 8:30-9:45")
+, (15, 4, "Humphrey House", "206", "MWF 1:15-2:30")
+, (16, 6, "Humphrey House", "Lounge", "MWF 11:50-1:05")
+, (17, 1, DEFAULT, DEFAULT, "MWF 1:15-2:30")
+, (18, 1, DEFAULT, DEFAULT, "MWF 10:00-11:15")
+, (19, 24, DEFAULT, DEFAULT, "MWF 8:30-9:45")
+, (20, 24, DEFAULT, DEFAULT, "MWF 2:40-3:55")
+, (21, 3, DEFAULT, DEFAULT, "TTh 9:00-11:00")
+, (22, 6, DEFAULT, DEFAULT, "MWF 2:40-3:55")
+, (23, 4, DEFAULT, DEFAULT, "MWF 8:30-9:45")
 ;
 
 # /*

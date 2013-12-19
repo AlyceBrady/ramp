@@ -29,6 +29,8 @@ SOURCE populateSmartDevData.sql;
 -- Grant the MySQL accounts created in createSmartDevMysqlAccts.sql
 -- the ability to execute functions and procedures that allow the
 -- database to do some of its own consistency maintenance.
+--
+--      IS THIS NECESSARY?
 
 -- SOURCE grant_func_proc_privs.sql;
 

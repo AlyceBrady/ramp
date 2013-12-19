@@ -21,7 +21,7 @@ SOURCE createRampDemoUsersAuths.sql;
 
 -- Create and populate the built-in tables used for record locking.
 
-SOURCE createRampLocks.sql;
+SOURCE createRampDemoLocks.sql;
 
 -- Create and populate two sample tables for in the demo database.
 

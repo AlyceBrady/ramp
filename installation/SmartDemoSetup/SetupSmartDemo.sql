@@ -20,7 +20,7 @@ SOURCE createSmartDemoUsersAuths.sql;
 
 -- Create and populate the built-in tables used for record locking.
 
-SOURCE createSmartLocks.sql;
+SOURCE createSmartDemoLocks.sql;
 
 -- Create and populate the demo Smart database.
 
