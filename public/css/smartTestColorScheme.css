@@ -163,7 +163,7 @@ div#activityPage .disabled, div#activityPage .disabledComment {
     background-color: #FFF0F5;   /* #F6FFF6; */
 }
 
-#record-table td.select, #record-list td.select
+#record-list td.select, #record-table td.select, #record-split-table td.select
 {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -181,7 +181,9 @@ div#activityPage .disabled, div#activityPage .disabledComment {
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
-#record-table td.select:hover, #record-list td.select:hover
+#record-list td.select:hover,
+#record-table td.select:hover,
+#record-split-table td.select:hover
 {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -199,7 +201,9 @@ div#activityPage .disabled, div#activityPage .disabledComment {
   filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 }
 
-#record-table td.delete:hover, #record-list td.delete:hover
+#record-list td.delete:hover,
+#record-table td.delete:hover,
+#record-split-table td.delete:hover
 {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);

@@ -60,8 +60,8 @@ class LockController extends Zend_Controller_Action
         // Determine what action to take next.
         $submittedButton = $this->_getParam(self::SUBMIT_BUTTON);
 
-        // Initialize the error message to be empty.
-        $this->view->formResponse = '';
+        // Initialize the information message to be empty.
+        $this->view->msg = '';
 
         // This action proceeds in two phases.  In the first phase, the 
         // administrator chooses the user who holds the lock that needs 
@@ -99,8 +99,7 @@ class LockController extends Zend_Controller_Action
             $components = explode('.', $lockInfo);
             $lockTable = new Application_Model_DbTable_Locks();
             $lockTable->freeLock($components[0], $components[1]);
-            $this->view->formResponse = 'Lock should now ' .
-                'be released.';
+            $this->view->msg = 'Lock should now be released.';
             $this->view->buttonList = array(self::DONE);
         }
         else  // Done or Cancel

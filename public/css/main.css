@@ -156,16 +156,48 @@ div#record-block select.comparator
     font-size: 60%;
 }
 
-table
+#record-list table
 {
-    margin-left: 40px;      /* No idea why this is necessary */
-                            /* Nor why it pushes right margin to right */
+    margin-left:    auto;
+    margin-right:   auto;
+    width:          auto;
 }
 
-#record-table td.select, #record-list td.select,
-#record-table td.delete, #record-list td.delete,
-#record-table td.completionStatus, #record-list td.completionStatus
+#record-table table, #record-split-table table
 {
+    margin-left:    auto;
+    margin-right:   auto;
+    width:          90%;
+}
+
+#record-list td, #record-list th,
+#record-table td, #record-table th,
+#record-split-table td, #record-split-table th
+{
+    line-height:    16px;
+    padding-top:    5px;
+    padding-bottom: 5px;
+}
+
+#record-list td, #record-list th
+{
+    padding-left:   20px;
+    padding-right:  20px;
+}
+
+th.center
+{
+    text-align:     center;
+}
+
+#record-list td.select, #record-table td.select, #record-split-table td.select,
+#record-list td.delete, #record-table td.delete, #record-split-table td.delete,
+#record-list td.completionStatus, #record-table td.completionStatus, 
+#record-split-table td.completionStatus
+{
+    width:          10px;
+    padding-left:   10px;
+    padding-right:  10px;
     text-align:     center;
 }
 

@@ -9,15 +9,15 @@ Smart is a program for managing records needed to support an academic
 institution.  It currently supports managing academic records in
 three broad categories:
 
- * Curriculum records dealing with courses of study (e.g.,
+ * __Curriculum records__ dealing with courses of study (e.g.,
    undergraduate mathematics), courses or modules (e.g., Calculus
    I), and their individual offerings (e.g., the Spring 2012
    offering of Calculus I)
 
- * Instructor records (e.g., contract start/end dates, courses or
+ * __Instructor records__ (e.g., contract start/end dates, courses or
    modules taught)
 
- * Student records (e.g., courses of study, test scores, enrollment
+ * __Student records__ (e.g., courses of study, test scores, enrollment
    history)
 
 Smart allows a database administrator to create various views of

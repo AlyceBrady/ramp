@@ -279,12 +279,12 @@ class TableController extends Zend_Controller_Action
              $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data set to use.
-            $this->view->buttonList = array(self::ADD, self::SPLIT_VIEW,
-                                            self::TABLE, self::SEARCH);
+            $this->view->buttonList = array(self::ADD, self::TABLE,
+                                            self::SPLIT_VIEW, self::SEARCH);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_submittedButton == self::SPLIT_VIEW ||
-                 $this->_submittedButton == self::TABLE  ||
+        elseif ( $this->_submittedButton == self::TABLE ||
+                 $this->_submittedButton == self::SPLIT_VIEW  ||
                  $this->_submittedButton == self::ADD )
         {
             // Go to a different view with the same data set.

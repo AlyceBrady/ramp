@@ -4,6 +4,7 @@ activityListHeading = "Choose a document:"
 
 activity[] = "About Ramp"
 activity[] = "About Smart"
+activity[] = "horizRule"
 activity[] = "Ramp User Man"
 activity[] = "Smart User Man"
 activity[] = "horizRule"
@@ -35,24 +36,22 @@ source = "rampDocs/smartAbout.md"
 
 type = "document"
 title = "Ramp User Manual"
-description = "__Really__ preliminary! (just barely started)"
+description = "How to Use Activity Pages and View/Modify/Add Data in
+Ramp Tables"
 source = "rampDocs/RampUserManual.md"
-inactive = true
 
 [Smart User Man]
 
 type = "document"
 title = "Smart User Manual"
-description = "Vaporware: Will initially be a place to store notes for
-writing Smart User Manual"
+description = "How to Use Smart to Maintain an Academic Records Database"
 source = "rampDocs/SmartUserManual.md"
-inactive = true
 
 [Admin User Man]
 
 type = "document"
 title = "Admin User Manual"
-description = "Ramp Administrative User Manual: Under Construction"
+description = "Ramp Administrative User Manual"
 source = "rampDocs/AdminUserManual.md"
 
 [Act Spec Doc]

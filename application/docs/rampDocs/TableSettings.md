@@ -337,7 +337,7 @@ instructor's name, from the Person table.
 
 > Note: When Ramp/Smart checks to see whether a user is authorized to access
 > a table, the check also verifies that the user is authorized to access
-> any table from which data is being imported as well.
+> any table from which data is being imported or initialized as well.
 
 In order for a table to "import" fields from another table, the table
 setting must establish the connection between the two tables.  For
@@ -498,12 +498,13 @@ property.
         field.sTitle.initFrom = "Modules"
         field.sTitle.initFromField = "shortTitle"
 
-> Note: The `initTableRef` and `initFrom`/`initFromField` properties are
-> only meaningful when adding new records to the database.  You can improve
+> Note: When Ramp/Smart checks to see whether a user is authorized to access
+> a table, the check also verifies that the user is authorized to access
+> any table from which data is being imported or initialized as well.
+> Since the `initTableRef` and `initFrom`/`initFromField` properties are
+> only meaningful when adding new records to the database, you can improve
 > the efficiency of your authorization checks if you only include these
-> properties in your `addSetting` setting, since there is no need to
-> check that the user is authorized to access values from the source
-> table for initialization except when adding a record.
+> properties in your `addSetting` setting.
 
 ##### Comparing `importFrom` and `initFrom`: #####
 The `importFrom` and `initFrom` properties look deceptively similar, but
