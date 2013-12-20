@@ -35,7 +35,7 @@ $fields = $this->table->getFields();
 ?>
 
 <div class='control-group'>
-<div id='entry-label' class='control-label'>
+<div id='entry-label' class='control-label span2'>
     <?php
     if ( ! empty($formArray) ) :
         $firstFormElts = $formArray[0]->getFieldElements();
@@ -54,7 +54,7 @@ $fields = $this->table->getFields();
 <div class='row controls'>          <!-- Entry fields to right of label -->
 
     <div id="entry-fields" class="row">
-    <fieldset id="left-entry-group" class="span3">
+    <fieldset id="left-entry-group" class="span2">
     <?php
     $count = count($formArray);
     $leftColCount = floor(($count + 1) / 2);

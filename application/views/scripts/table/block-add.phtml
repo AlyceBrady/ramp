@@ -71,8 +71,8 @@ $titleBar['firstButtonIsPrimary'] = true;
 
     <!-- ======== -->
 
-    <!-- Display shared values &  entry fields  (4 columns total) -->
-    <div id='record-block' class='view split-view'>
+    <!-- Display shared values &  entry fields  -->
+    <div id='record-block' class='view split-view row'>
 
     <div id="shared-values" class="column span3">
         <?php
@@ -81,12 +81,10 @@ $titleBar['firstButtonIsPrimary'] = true;
         ?>
     </div>  <!-- End of "shared-values" column -->
 
-    <div id="entry-pane" class="span5">  <!-- Other 3 columns -->
-        <?php
-        echo $this->partial("table/_fieldEntryForm.phtml",
-            array('table' => $entrySetting, 'forms' => $entryForms));
-        ?>
-    </div>  <!-- End of "entry-pane" -->
+    <?php
+    echo $this->partial("table/_fieldEntryForm.phtml",
+        array('table' => $entrySetting, 'forms' => $entryForms));
+    ?>
 
     </div>  <!-- End of "record-block" -->
 
