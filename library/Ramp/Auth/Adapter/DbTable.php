@@ -20,6 +20,8 @@
  */
 class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
 {
+    const ACTIVE            = Application_Model_DbTable_Users::ACTIVE;
+    const IS_ACTIVE         = Application_Model_DbTable_Users::IS_ACTIVE;
 
     protected $_notValidIdentity = false;   // Assume this is a valid identity
     protected $_pw_not_set_yet = false;     // Assume there is a password
@@ -35,17 +37,14 @@ class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
      * needsPassword() after calling setCredential() to determine
      * whether the password is empty.
      *
-     * TODO: Would be even better to get the default password (if any) 
-     * from the table's meta information rather than from application.ini.
-     *
      * @param  string $credential
      * @return Zend_Auth_Adapter_DbTable Provides a fluent interface
      */
     public function setCredential($credential)
     {
         // Determine the default password if there is one.
-        $configs = Ramp_RegistryFacade::getInstance();
-        $defaultPassword = $configs->getDefaultPassword() ? : '';
+        $userTable = new Application_Model_DbTable_Users();
+        $defaultPassword = $userTable->getDefaultPassword();
 
         // Store the GIVEN credential while determining the salt.
         $this->_credential = $credential;
@@ -56,7 +55,7 @@ class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
         // handled in the _authenticate() function.)
         $this->_authenticateSetup();
         $dbGetCredSelect = $this->_authCreateCredSelect();
-        $dbGetCredSelect->where('active = "TRUE"');
+        $dbGetCredSelect->where(self::ACTIVE . ' = ?', self::IS_ACTIVE);
         $resultIdentities = $this->_authenticateQuerySelect($dbGetCredSelect);
         if ( count($resultIdentities) == 0 )
         {

@@ -24,8 +24,6 @@ class Ramp_RegistryFacade
     const AUTH_TYPE         = "authenticationType";
     const INTERNAL_AUTH     = "internal";
 
-    const DEFAULT_PW        = "defaultPassword";
-
     const SESSION_TIMEOUT   = "sessionTimeout";
 
     const ACL_ROLES         = "aclNonGuestRole";
@@ -93,16 +91,6 @@ class Ramp_RegistryFacade
     {
         return isset($this->_configs[self::AUTH_TYPE])
             ? $this->_configs[self::AUTH_TYPE] : self::INTERNAL_AUTH;
-    }
-
-    /**
-     * Gets the default password (used when a user has not yet set their 
-     * password).
-     */
-    public function getDefaultPassword()
-    {
-        return isset($this->_configs[self::DEFAULT_PW])
-            ? $this->_configs[self::DEFAULT_PW] : null;
     }
 
     /**

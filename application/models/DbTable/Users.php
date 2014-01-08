@@ -22,12 +22,15 @@ class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract
     const TABLE_NAME    = 'ramp_auth_users';
     const USERNAME      = 'username';
     const PASSWORD      = 'password';
+    const ACTIVE        = 'active';
+    const IS_ACTIVE     = 'TRUE';
     const ROLE_COL      = 'role';
     const DB_DEFAULT    = 'DEFAULT';
 
     protected $_name=self::TABLE_NAME;
 
     protected $_roles = null;
+    protected $_default_pw = null;
 
     /**
      * Gets all roles used in the Users table.
@@ -52,6 +55,56 @@ class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract
     }
 
     /**
+     * Gets the default password from the table's meta-data.
+     */
+    public function getDefaultPassword()
+    {
+        // Get the default password if it hasn't already been retrieved.
+        if ( empty($this->_default_pw) )
+        {
+            $defaultValues = $this->info(Zend_Db_Table_Abstract::METADATA);
+            $this->_default_pw =
+                    $defaultValues[self::PASSWORD][self::DB_DEFAULT];
+        }
+        return $this->_default_pw;
+    }
+
+    /**
+     * Gets the authentication, authorization, and optional identifying
+     * information for a particular user.
+     *
+     * @return stdClass   basic user information, not including the password
+     */
+    public function getUserInfo($username)
+    {
+        // Create WHERE condition for username = $username.
+        $where = array(self::USERNAME . ' = ?' => $username);
+
+        // Get the user information.
+        $results = $this->fetchAll($where);
+        if ( count($results) == 0 )
+        {
+            throw new Exception("Error: $username is not in " .
+                                $this->_name . " table!");
+        }
+        elseif ( count($results) > 1 )
+        {
+            throw new Exception("Error: there are multiple entries for " .
+                                "$username in " .  $this->_name . " table!");
+        }
+
+        $userInfo = new stdClass();
+        foreach ( $results[0] as $column => $value )
+        {
+            if ( $column != self::PASSWORD )
+            {
+                $userInfo->{$column} = $value;
+            }
+        }
+        return $userInfo;
+    }
+
+    /**
      * Resets the password for the specified user in the Users table to 
      * the default value.
      *
@@ -64,8 +117,7 @@ class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract
         $where = array(self::USERNAME . ' = ?' => $username);
 
         // Get the default password.
-        $defaultValues = $this->info(Zend_Db_Table_Abstract::METADATA);
-        $password = $defaultValues[self::PASSWORD][self::DB_DEFAULT];
+        $password = $this->getDefaultPassword();
 
         $data = array(self::USERNAME => $username,
                       self::PASSWORD => $password);
@@ -85,7 +137,6 @@ class Application_Model_DbTable_Users extends Zend_Db_Table_Abstract
     {
         // Create WHERE condition for username = $username.
         $where = array(self::USERNAME . ' = ?' => $username);
-        //$where = array('username = ?' => $username);
 
         // Encrypt the password before adding it to the database.
         $password = crypt($password, $this->_getSalt());

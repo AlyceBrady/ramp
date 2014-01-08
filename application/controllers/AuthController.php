@@ -19,9 +19,11 @@ class AuthController extends Zend_Controller_Action
 {
 
     /* Keywords related to accessing the Users table and related form. */
-    const USERS_TABLE       = Ramp_Acl::USERS_TABLE;
+    const USERS_TABLE       = Application_Model_DbTable_Users::TABLE_NAME;
     const USERNAME          = Application_Model_DbTable_Users::USERNAME;
     const PASSWORD          = Application_Model_DbTable_Users::PASSWORD;
+    const ACTIVE            = Application_Model_DbTable_Users::ACTIVE;
+    const IS_ACTIVE         = Application_Model_DbTable_Users::IS_ACTIVE;
 
     /* Form keywords related to initializing a password. */
     const NEW_PW            = 'new_password';
@@ -134,8 +136,8 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Prompts user to initialize the password (for internal authentication
-     * only).
+     * Prompts user to initialize the password.
+     *     (Internal authentication only!)
      */ 
     public function initPasswordAction()
     {
@@ -192,12 +194,12 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Allows user to change their password.
+     * Allows user to change their password.  (Internal authentication only!)
      */ 
     public function changePasswordAction()
     {
-        // If user has been logged out below and now wants to login, go 
-        // directly there without checking authentication, etc.
+        // If user has been logged out below (incorrect password) and now wants
+        // to login, go directly there.
         if ( $this->_submittedButton == self::LOGIN )
         {
             $this->_helper->redirector('login', 'auth');
@@ -265,7 +267,7 @@ class AuthController extends Zend_Controller_Action
     // The remaining actions are administrative actions.
 
     /**
-     * Resets a user's password.
+     * Resets a user's password.  (Internal authentication only!)
      */ 
     public function resetPasswordAction()
     {
@@ -424,24 +426,26 @@ class AuthController extends Zend_Controller_Action
         if ( $authAdapter == null )
             { return false; }
 
-        // Add check for user being active.
-        $select = $authAdapter->getDbSelect();
-        $select->where('active = "TRUE"');
-
-        // do the authentication
+        // Do the authentication.
         $auth = Zend_Auth::getInstance();
         $result = $auth->authenticate($authAdapter);
         if ( $result->isValid() )
         {
-            // Get everything except the password, and save it as
-            // persistent identity.  Apply other identity-related 
-            // customizations.
-            $data = $authAdapter->getResultRowObject(null, self::PASSWORD);
-            $this->_saveUserSessionInfo($auth, $data);
+            // Get user information to save as persistent identity.
+            $userTable = new Application_Model_DbTable_Users();
+            $userInfo = $userTable->getUserInfo($username);
+            if ( $userInfo->{self::ACTIVE} == self::IS_ACTIVE )
+            {
+                $this->_saveUserSessionInfo($auth, $userInfo);
 
-            // Set session timeout.
-            Application_Model_SessionTimer::startSessionTimer();
-            return true;
+                // Set session timeout.
+                Application_Model_SessionTimer::startSessionTimer();
+                return true;
+            }
+            else
+            {
+                $auth->clearIdentity();
+            }
         }
 
         return false;
@@ -457,7 +461,7 @@ class AuthController extends Zend_Controller_Action
      */
     protected function _getAuthAdapter($username, $password)
     {
-        // Get authentication type (e.g., internal, LDAP, etc) and 
+        // Get authentication type (e.g., internal, ldap) and 
         // appropriate authentication adapter.
         $configs = Ramp_RegistryFacade::getInstance();
         if ( $configs->usingInternalAuthentication() )
@@ -466,10 +470,13 @@ class AuthController extends Zend_Controller_Action
         }
         else
         {
-            // TODO: Handle other types of authentication, such as LDAP.
             // For now, assume internal authentication using users table.
             throw new Exception("rampAuthenticationType must be 'internal' " .
                                 "in application.ini.");
+
+            // LDAP Authentication (including Active Directory, OpenLDAP, etc)
+            return $this->_getLDAPAuthAdapter($username, $password);
+
         }
     }
 
@@ -502,7 +509,8 @@ class AuthController extends Zend_Controller_Action
         $authAdapter->setIdentity($username);
         $authAdapter->setCredential($password);  //encrypts it also
 
-        // If the username is not a valid, active username, login fails.
+        // If the username is not a valid, active username, getting the 
+        // adapter fails.
         if ( $authAdapter->notAValidIdentity() )
         {
             return null;
@@ -517,6 +525,24 @@ class AuthController extends Zend_Controller_Action
         }
 
         return $authAdapter;
+    }
+
+    /**
+     * Sets up an authentication adapter for LDAP authentication.
+     *
+     * Modified from Zend Auth Adapter Ldap reference manual page
+     *      (Zend 1.11) as of January 2014.
+     *
+     * @param   $username   username returned from the login form
+     * @param   $password   password returned from the login form
+     * @return  the adapter
+     */ 
+    protected function _getLDAPAuthAdapter($username, $password)
+    {
+        $ldapOptions = Zend_Registry::get('ldap');
+
+        return new Zend_Auth_Adapter_Ldap($ldapOptions, $username,
+                                          $password);
     }
 
     /**
