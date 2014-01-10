@@ -44,11 +44,23 @@ class AuthController extends Zend_Controller_Action
 
 
     protected $_submittedButton;
+    protected $_logger = null;
 
     public function init()
     {
         // Initialize action controller here
+
         $this->_submittedButton = $this->_getParam(self::SUBMIT_BUTTON, '');
+
+        $registry = Ramp_RegistryFacade::getInstance();
+        $logfilePath = $registry->getLogfilePath();
+        if ( ! empty($logfilePath) )
+        {
+            $this->_logger = new Zend_Log();
+            $this->_logger->addWriter(new Zend_Log_Writer_Stream($logfilePath));
+            $this->_logger->addFilter(
+                            new Zend_Log_Filter_Priority(Zend_Log::INFO));
+        }
     }
 
     public function indexAction()
@@ -415,6 +427,8 @@ class AuthController extends Zend_Controller_Action
      * identity.
      * Modified from Zend Framework in Action by
      *      Allen, Lo, and Brown, 2009, p. 134
+     * Logging adapted from Zend Auth Adapter Ldap reference manual page
+     *      (Zend 1.11) as of January 2014.
      *
      * @param   $username   username returned from the login form
      * @param   $password   password returned from the login form
@@ -436,10 +450,13 @@ class AuthController extends Zend_Controller_Action
             $userInfo = $userTable->getUserInfo($username);
             if ( $userInfo->{self::ACTIVE} == self::IS_ACTIVE )
             {
+                // Save persistent identity info with session; set timeout.
                 $this->_saveUserSessionInfo($auth, $userInfo);
-
-                // Set session timeout.
                 Application_Model_SessionTimer::startSessionTimer();
+
+                // Log messages or successful user login.
+                // $this->_logLogin($username, $result);
+
                 return true;
             }
             else
@@ -448,6 +465,7 @@ class AuthController extends Zend_Controller_Action
             }
         }
 
+        // $this->_logLogin($username, $result);
         return false;
     }
 
@@ -563,6 +581,39 @@ class AuthController extends Zend_Controller_Action
 
         // Store user-specific information for session.
         $auth->getStorage()->write($data);
+    }
+
+    /**
+     * Logs successful authentication or authentication error messages.
+     *
+     * Logging adapted from Zend Auth Adapter Ldap reference manual page
+     *      (Zend 1.11) as of January 2014.
+     * @param   $username    username returned from the login form
+     * @param   $auth_result result from authentication
+     */
+    protected function _logLogin($username, $auth_result)
+    {
+        // Log successful user login or authentication error messages.
+        if ( ! empty($this->_logger) )
+        {
+            $messages = $auth_result->getMessages();
+            if ( empty($messages) )
+            {
+                // Success!
+                $this->_logger->log("Login: $username", Zend_Log::INFO);
+            }
+            else
+            {
+                $this->_logger->log("Failed authentication: $username",
+                                    Zend_Log::INFO);
+                foreach ( $messages as $i => $message )
+                {
+                    $message = str_replace("\n", "\n  ", $message);
+                    $this->_logger->log("  Failed auth: $i: $message",
+                                        Zend_Log::INFO);
+                }
+            }
+        }
     }
 
     /**

@@ -21,6 +21,8 @@ class Ramp_RegistryFacade
 {
     const CONFIG_SETTINGS   = "rampConfigSettings";
 
+    const LOGFILE_PATH      = "logPath";
+
     const AUTH_TYPE         = "authenticationType";
     const INTERNAL_AUTH     = "internal";
 
@@ -80,6 +82,15 @@ class Ramp_RegistryFacade
             Zend_Registry::isRegistered(self::CONFIG_SETTINGS) ?
                 Zend_Registry::get(self::CONFIG_SETTINGS) :
                 array();
+    }
+
+    /**
+     * Gets the logfile path (if any).
+     */
+    public function getLogfilePath()
+    {
+        return isset($this->_configs[self::LOGFILE_PATH])
+            ? $this->_configs[self::LOGFILE_PATH] : null;
     }
 
     /**
