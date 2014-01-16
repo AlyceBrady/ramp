@@ -20,35 +20,41 @@ directory before reading section 2, "Addressing Security Concerns."
 If you just want to set up the Ramp or Smart demos and are willing to
 use the default database names, MySQL accounts, and Ramp/Smart usernames
 provided in the setup files, you can skim (or maybe even skip) the
-planning stages described in this section and go straight addressing
+planning stages described in this section and go straight to addressing
 security concerns (section 2) and running the appropriate demo setup
 file (beginning of section 3).
 
 ### 1a. Internal or External Authentication? ###
-[ Need to write something here, although currently only internal
-authentication is supported. ]
+At the moment, Ramp only supports internal authentication (_i.e.,_
+authentication against user accounts and passwords created within Ramp).
+Support for LDAP authentication, including Active Directory and
+OpenLDAP, is, however, being implemented.  Once that support is in
+place, you will need to decide whether you plan to create user
+accounts within Ramp and use them to authenticate Ramp users, or
+whether you plan to authenticate against an existing server, such
+as an Active Directory or OpenLDAP server.
 
 ### 1b. What databases to set up? ###
-The first planning step is to decide which database environments are to be
-setup.  For example, one might just set up Ramp and Smart demo
+The first significant planning step is to decide which database
+environments are to be
+set up.  For example, one might just set up Ramp and Smart demo
 databases to learn more about the application.  A Ramp/Smart
 developer, on the other hand, might create development and regression
 testing environments, while someone running Smart as a production
 system might create production, user testing, and regression testing
 environments.
 
-Identify a list of databases you plan to create.  Example databases
-would be:
+Example databases might be:
 
->   ramp_demo   (a demo of basic RAMP functions)  
->   smart_demo  (a demo of typical Smart activities and functions)  
+       ramp_demo   (a demo of basic RAMP functions)  
+       smart_demo  (a demo of typical Smart activities and functions)  
 
->   smart_dev   (a version of Smart for active developers)  
+       smart_dev   (a version of Smart for active developers)  
 
->   smart       (a production Smart environment)  
->   smart_user_tests      (a production variant containing test data)  
->   smart_automated_tests (a database created, recreated, and  
->                          populated by automated test cases)  
+       smart       (a production Smart environment)  
+       smart_user_tests      (a production variant containing test data)  
+       smart_automated_tests (a database created, recreated, and  
+                              populated by automated test cases)  
 
 The "Creating Databases and Setting MySQL Account Permissions"
 section below provides information on actually creating Ramp/Smart

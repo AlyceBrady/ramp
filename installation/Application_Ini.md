@@ -47,9 +47,9 @@ In a UNIX or Linux environment, you can create the file easily:
 
         cat ramp_basics.ini ramp_defaults.ini rampDemo.ini >application.ini
 
-To create an `application.ini` file
-to supply configuration information for the Ramp Demo, the Smart Demo,
-and production, testing, and staging environments for Smart, include
+To create an `application.ini` file to supply configuration information
+for the Ramp Demo, the Smart Demo, and development, production,
+testing, or staging environments for Smart, include
 the contents of `ramp_basics.ini`, `ramp_defaults.ini`, `rampDemo.ini`,
 `smart_defaults.ini`, `smartDemo.ini`, and `smartApplicationTemplate.ini`.
 
