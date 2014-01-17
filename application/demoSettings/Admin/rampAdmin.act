@@ -6,7 +6,7 @@ activity[] = "AddUser"
 activity[] = "ResetPassword"
 activity[] = "FreeLock"
 activity[] = "Break"
-activity[] = "Smart View of Users"
+activity[] = "View Users"
 activity[] = "Auths"
 activity[] = "Break"
 activity[] = "Locks"
@@ -27,12 +27,12 @@ type = "separator"
 
 type = "controllerAction"
 title = "Add New User"
-description = "View or modify list of users"
+description = "Add a new user"
 controller = "admin-table"
 action = "add"
 parameter = '_setting = Admin/ramp_auth_users'
 
-[ Smart View of Users ]
+[ View Users ]
 
 type = "setting"
 source = "Admin/ramp_auth_users"
