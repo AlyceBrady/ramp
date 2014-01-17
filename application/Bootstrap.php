@@ -70,9 +70,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $autoloader = Zend_Loader_Autoloader::getInstance();
         $autoloader->registerNamespace('Ramp_');
 
-        $objFront = Zend_Controller_Front::getInstance();
-        $objFront->registerPlugin(new Ramp_Controller_Plugin_ACL(), 1);
-        return $objFront;
+        $frontController = Zend_Controller_Front::getInstance();
+        $frontController->registerPlugin(new Ramp_Controller_Plugin_ACL(), 1);
+        return $frontController;
     }
 
     /**
@@ -189,14 +189,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     }
 
     /**
-     * Builds a URI out of the controller/action/keyword/param (or 
+     * Builds a URI (relative to the base URI) out of the
+     * controller/action/keyword/param (or 
      * controller/action/param_key_val_pairs).
      */
     protected function _build_uri($controller, $action, $params,
                                   $keyword = null )
     {
-        $uri = DIRECTORY_SEPARATOR . $controller .
-               DIRECTORY_SEPARATOR . $action;
+        $uri = $controller .  DIRECTORY_SEPARATOR . $action;
         if ( is_array($params) )
         {
             foreach ( $params as $key => $val )

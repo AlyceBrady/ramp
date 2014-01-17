@@ -35,20 +35,23 @@ else
     {
         if($page->pages == null)
         {
-            echo '<li><a href="' . $page->uri . '">' . $page->label .
+            $uri = $this->baseUrl($page->uri);
+            echo '<li><a href="' . $uri . '">' . $page->label .
                  '</a></li>';
         }
         else
         {
+            $uri = $this->baseUrl($page->uri);
             echo '<li class="dropdown">' .
                  '<a class="dropdown-toggle" data-toggle="dropdown" ' .
                  'href="#">' . $page->label . '</a>';
             echo '<ul class="dropdown-menu" role="menu">';
-            echo '<li><a href="' . $page->uri . '">' . $page->label .
+            echo '<li><a href="' . $uri . '">' . $page->label .
                  '</a><hr /></li>';
             foreach($page->pages as $child)
             {
-                echo '<li class="child"><a href="' . $child->uri . '">' .
+                $uri = $this->baseUrl($child->uri);
+                echo '<li class="child"><a href="' . $uri . '">' .
                      $child->label . '</a></li>';
             }
             echo '</ul></li>';
