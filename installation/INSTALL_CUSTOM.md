@@ -1,28 +1,58 @@
 
-# RAMP/SMART Database Installation Instructions #
+# Installing a Customized RAMP/SMART Application #
 
-(under construction!)
+(under construction!  So far, this document is mostly a previous
+version of much of the regular INSTALL document.)
 
-This file contains installation instructions for setting up MySQL accounts
-and demonstration, development, test, and production databases for Ramp
-(Record and Activity Management Program) and Smart (Software for Managing
-Academic Records and Transcripts).
+[ [Planning](#planning) | [Addressing Security Concerns](#security) |
+[Configuration](#configuration) ]
+
+This document covers creating and configuring a customized Ramp/Smart
+application.  It assumes that you have already installed the Ramp/Smart
+software along with the AMP software services on which it depends, as
+described in the [Ramp/Smart Installation Guide][install].
+
+As described in the [Ramp/Smart Installation Guide][install],
+installing and configuring Ramp/Smart consists of three steps:
+
+1. __Planning:__ The first step is to decide which application you will set up
+and then plan your customizations.
+
+2. __Addressing Security Concerns:__ You should check or change permissions on
+files that contain passwords and confidential data.
+
+3. __Configuration:__ This step includes configuring the database
+(setting up MySQL accounts and defining the tables the application
+will use) and setting up a configuration file that defines parameters
+used by Ramp/Smart.  If you plan to install one of the three
+pre-defined applications, this step consists primarily of editing
+a script provided in the appropriate subdirectory to change the
+MySQL account names and passwords, running the MySQL script from
+the appropriate directory, and creating a configuration file from
+templates and editing it to refer to your own specific accounts and
+passwords.  If you are creating a customized application, you will
+first need to define the database schemas for your tables and create
+activity files and table settings for your application.
+
+The [Ramp/Smart Installation Guide][install] covers these three
+steps for two demo programs and for a pre-defined, default development
+environment.  Even if you plan to create a customized Ramp or Smart
+application, as covered in this document, you may wish to set up
+one of the three pre-defined applications first, to test your
+software installation and to become familiar with some of the basic
+functionality of Ramp or Smart.
 
 
-## 1. Getting Ready ##
+<h2 id='planning'> 1. Planning </h2>
 
 This section is meant to guide you through some planning stages in
 preparation for creating one or more Ramp/Smart databases.  Do not,
 however,  make changes to your MySQL database, the files in this
 directory, or your `application.ini` file in the `application/configs`
-directory before reading section 2, "Addressing Security Concerns."
+directory before reading the [Addressing Security
+Concerns](#security) section.
 
-If you just want to set up the Ramp or Smart demos and are willing to
-use the default database names, MySQL accounts, and Ramp/Smart usernames
-provided in the setup files, you can skim (or maybe even skip) the
-planning stages described in this section and go straight to addressing
-security concerns (section 2) and running the appropriate demo setup
-file (beginning of section 3).
+The planning phase addresses four key questions.
 
 ### 1a. Internal or External Authentication? ###
 At the moment, Ramp only supports internal authentication (_i.e.,_
@@ -118,7 +148,7 @@ section below provides information on actually creating Ramp/Smart
 roles.
 
 
-## 2. Addressing Security Concerns ##
+<h2 id="security"> 2. Addressing Security Concerns </h2>
 
 To protect the security of the Ramp/Smart database, the database
 administrator responsible for creating and maintaining the database
@@ -170,9 +200,14 @@ used by Ramp.
   serve to protect those passwords from plain-text transmission.
 
 
-## 3. Setting Up Ramp/Smart ##
+<h2 id='configuration'> 3. Configuration </h2>
 
 ### Setting Up "As-Is" Demos ###
+
+[This "As-Is" sub-section will soon disappear, as it has been
+superceded by similar (improved) information in the [Ramp/Smart
+Installation Guide][install].]
+
 Very little configuration is necessary if you just want to set up
 the Ramp or Smart demos and are willing to use the database names,
 MySQL accounts, and Ramp/Smart usernames in the example setup files

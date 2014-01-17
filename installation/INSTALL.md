@@ -1,4 +1,4 @@
-# Ramp/Smart Installation #
+# Ramp/Smart Installation Guide #
 
 [ [Dependencies](#dependencies) | [Installation and
 Configuration](#installation) |
@@ -160,10 +160,10 @@ first need to define the database schemas for your tables and create
 activity files and table settings for your application.
 
 The rest of this document covers these three steps for the pre-defined
-demos and default development environment.  [TODO: Another document to be
-constructed out of what has been [INSTALL_DB.md] [installdb] will] guide
-you through these steps for customized Smart environments or new
-Ramp-based applications.
+demos and default development environment.  The [Installing a Customized
+Ramp/Smart Application][customInstall] document [under construction!] 
+will guide you through these steps for customized Smart environments
+or new Ramp-based applications.
 
 <h2 id='pre-defined'> Installing Pre-Defined Demos or Development
 Environment </h2>
@@ -171,15 +171,17 @@ Environment </h2>
 [ [Planning](#planning) | [Addressing Security Concerns](#security) |
 [Configuration](#configuration) ]
 
-<h3 id='planning'> Planning </h3>
+<h3 id='planning'> 1. Planning </h3>
 
 Installing Ramp/Smart generally requires some planning first, although
 if you are installing only pre-defined applications (demos or the default
-development environment) there is not much planning to do.  There are
-some changes you can, and should, make to the provided scripts that
-generate the pre-defined applications, but you should read this section
-and the next, "Addressing Security Concerns", before making any of those
-changes.
+development environment) much of the planning has been done for
+you.  There are some changes you can, and should, make to the
+provided scripts that generate the pre-defined applications, but
+you should read this section and the next, "Addressing Security
+Concerns", before making any of those changes.
+
+The planning phase addresses four key questions.
 
 #### 1a. Internal or External Authentication?
 The pre-defined demos and development environment use internal
@@ -351,7 +353,7 @@ the scripts that create the users and databases used by Ramp.
   the web server.  The best way to achieve this could be, for
   example, to have the `application.ini` owned by the database
   administrator but part of the same group as the httpd web server
-  (or vice versa).  (The [Customizing application.ini][custom] file
+  (or vice versa).  (The [Customizing application.ini][applIni] file
   has additional information on creating and customizing an
   `application.ini` file.)
 
@@ -438,9 +440,20 @@ usernames in the setup files provided with them.
     accounts have their account and password information in
     `application.ini`, not the DBA accounts.)
 
-  - Set up virtual hosts for your web server.  The instructions provided
+  - Set up virtual hosts or subdirectories for different Ramp
+    environments.  The instructions for setting up vhosts provided
     here are very general, since the specifics differ from system to
     system.
+
+    If you do not want to (or cannot) set up virtual hosts on your
+    server, you can create sub-directories for various Ramp/Smart
+    environments.  For example, if you have installed Ramp/Smart in a
+    directory called `smart` under your server's document root, you
+    can create subdirectories (such as `rampdemo`) under the `public`
+    directory and then access them with URLs such as
+    `.../smart/rampdemo/`.  
+
+    ##### Vhosts
 
     * On some systems, you may need to first enable virtual hosting.
       Depending on the system, this might be done, for example,
@@ -465,34 +478,38 @@ usernames in the setup files provided with them.
 
     * Reload or restart the Apache server.
 
-    * Unless the new server name is being served by DNS, you will need to
-      make changes on the client machines to see the new virtual hosts.
+    * Unless the new virtual host is being served by DNS (and,
+      therefore, publically accessible), you will need to
+      make changes on the client machines to see it.
       For example, this might be a matter of editing `/etc/hosts` on the
       client machines and adding lines that resolve the virtual server names
       from the appropriate machine.  For example,
 
             123.45.0.67     rampdemo
 
-<hr />
+    ##### Environment Subdirectories
 
-### Setting up Ramp on Your Server ###
-[TODO: The following section is still under construction...]
+    * Make a subdirectory (such as `rampdemo`) under the `public`
+      directory for each Ramp/Smart application you have installed.
 
-[__Notes that need to be updated__]  
-If the server should be accessible to a limited, pre-defined set
-of machines, edit `/etc/hosts` files on those machines to resolve the
-virtual hostnames to the machine servicing Ramp.  If Ramp should
-be visible beyond that, you probably need to register the server name.
-(If you can’t, or don’t want, to get `vhosts` to work, you may be able
-to get the same results with `.htaccess`.  Uncomment the last line and
-specify the correct `APPLICATION_ENV` (production, development, testing,
-rampdemo, smartdemo, etc.).  Without `vhosts`, though, it’s not
-as easy to have multiple Ramp/Smart database environments running on
-one server.)
+    * Copy the `index.php` and `.htaccess` files from `public` to your
+      new subdirectories.  Edit the `index.php` files in your
+      subdirectories to change the setting of the `APPICATION_PATH` from
+      `'/../application'` to `'/../../application'`.  Edit the
+      `.htaccess` files in the subdirectories to uncomment the line that
+      sets the `APPLICATION_ENV` environment variable to set it to the
+      appropriate section name in your `application.ini` file (_e.g.,_
+      `rampdemo`, `smartdemo`, `smart_development`, or
+      `smart_regressiontesting`).
+
+    * Each subdirectory needs to have the same `css` and `tb_assets`
+      directories that the `public` directory has.  You can achieve this
+      by creating symbolic links, aliases, or copies of the `css` and
+      `tb_assets` directories in each subdirectory.
 
 [readme]: /document/index/document/..%252F..%252README.md
-[installdb]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_DB.md
-[custom]:  /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
+[customInstall]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_CUSTOM.md
+[applIni]:  /document/index/document/rampDocs%252FApplication_Ini.md
 [git]: http://git-scm.com/book/en/Getting-Started-Installing-Git
 [git-setup]: https://help.github.com/articles/set-up-git#platform-all
 [apache]: http://httpd.apache.org/
