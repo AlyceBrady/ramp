@@ -89,6 +89,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         // Determine what menu to use.
         $menu = new Zend_Navigation();
         $menuFilename = $this->_determineMenu();
+        $initActivity = $this->_determineInitActivity();
         $actKeyParam = Ramp_Controller_KeyParameters::
                                     getKeyParamKeyword(self::ACT_CONTROLLER);
         if ( ! empty($menuFilename) )
@@ -106,8 +107,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                     // No url info; use the initial activity as the action.
                     $controller = self::ACT_CONTROLLER;
                     $action = self::ACT_DEFAULT_ACTION;
-                    $configs = Ramp_RegistryFacade::getInstance();
-                    $activity = $configs->getDefaultInitialActivity();
+                    $activity = $initActivity;
                     $uri = $this->_build_uri($controller, $action,
                                 urlencode($activity), $actKeyParam);
                     $children = $this->_readActivityListFile($activity);
@@ -166,6 +166,26 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         // No, so return the default menu.
         $configs = Ramp_RegistryFacade::getInstance();
         return $configs->getDefaultMenu();
+    }
+
+    /**
+     * Determines the initial activity to use, which is role-dependent
+     * if this is an authenticated user whose role has its own
+     * initial activity or the defined default menu otherwise.
+     */
+    protected function _determineInitActivity()
+    {
+        // Is this an auth. user whose role dictates a specific activity?
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        {
+            $user = $auth->getIdentity();
+            return $user->initialActivity;
+        }
+
+        // No, so return the default initial activity.
+        $configs = Ramp_RegistryFacade::getInstance();
+        return $configs->getDefaultInitialActivity();
     }
 
     /**

@@ -575,9 +575,10 @@ class AuthController extends Zend_Controller_Action
         // Store user-specific information for session.
         $data = $userData;
 
-        // Determine appropriate menu for this user's role.
+        // Determine appropriate menu & initial activity for this user's role.
         $configs = Ramp_RegistryFacade::getInstance();
         $data->menuFilename = $configs->getMenu($userData->role);
+        $data->initialActivity = $configs->getInitialActivity($userData->role);
 
         // Store user-specific information for session.
         $auth->getStorage()->write($data);

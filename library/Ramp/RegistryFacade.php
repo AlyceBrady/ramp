@@ -284,6 +284,27 @@ class Ramp_RegistryFacade
     }
 
     /**
+     * Gets the appropriate initial activity for the given role (or the
+     * default initial activity if no role-specific activity has
+     * been defined for the given role).
+     *
+     * @param $role  the user's role
+     */
+    public function getInitialActivity($role)
+    {
+        if ( ! empty($this->_configs[self::INIT_ACT_LIST]) &&
+             ! empty($this->_configs[self::INIT_ACT_LIST][$role]) )
+        {
+            $act = $this->_configs[self::INIT_ACT_LIST][$role];
+            if ( $act != null )
+            {
+                return $act;
+            }
+        }
+        return $this->getDefaultInitialActivity();
+    }
+
+    /**
      * Returns the given activity name if that file exists, an extended 
      * version of the activity name (built up from the base activity
      * directory and the given file name) if that file exists, or null.

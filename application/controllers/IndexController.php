@@ -34,8 +34,19 @@ class IndexController extends Zend_Controller_Action
         $this->_configInfo = Ramp_RegistryFacade::getInstance();
 
         // Get the initial activity.
-        $this->_initialActivity =
-                $this->_configInfo->getDefaultInitialActivity();
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() && is_object($auth->getIdentity()) )
+        {
+            // Authenticated user; use stored initial activity.
+            $user = $auth->getIdentity();
+            $this->_initialActivity = $user->initialActivity;
+        }
+        else
+        {
+            // Not an authenticated user; use the default initial activity.
+            $this->_initialActivity =
+                    $this->_configInfo->getDefaultInitialActivity();
+        }
 
 // $this->_getAuthDebuggingInfo();
 
