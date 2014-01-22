@@ -107,7 +107,7 @@ description = "When and where module offerings meet"
 [Class Lists]
 
 type = "setting"
-source = "Smart/Staff/ModuleEnrollment"
+source = "Smart/Student/ClassList"
 title = "Class Enrollments"
 description = "Read-only: For class lists, specify a combination of
 term, module, section, and/or instructor (Make this a report?)"

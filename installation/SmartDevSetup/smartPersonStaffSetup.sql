@@ -7,13 +7,68 @@
 
 USE `smart_dev`;
 
+-- Drop triggers, functions, and procedures referring to tables defined
+-- in this file.
+
 DROP TRIGGER IF EXISTS prefName_insert;
 DROP TRIGGER IF EXISTS prefName_update;
 
--- Before dropping Person, need to drop table(s) that depend on it.
+-- Before dropping Person table, need to drop table(s) that depend on it.
 SOURCE dropSmartPersonStaffDependencies.sql
 
+-- Drop other tables defined in this file.
+
+DROP TABLE IF EXISTS AddressTypes;
+DROP TABLE IF EXISTS JobFunctionCodes;
+DROP TABLE IF EXISTS ContractStatusCodes;
+
 DROP TABLE IF EXISTS Person;
+DROP TABLE IF EXISTS Address;
+DROP TABLE IF EXISTS Staff;
+DROP TABLE IF EXISTS StaffContract;
+
+CREATE TABLE AddressTypes (
+    addressType VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO AddressTypes (addressType) VALUES
+('PermanentHome')
+, ('CurrentMailing')
+, ('Billing')
+, ('PersonalEmail')
+, ('WorkEmail')
+, ('Phone')
+;
+
+CREATE TABLE JobFunctionCodes (
+    functionCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO JobFunctionCodes (functionCode) VALUES
+('Other')
+, ('Academic')
+, ('Administrative')
+, ('Service')
+;
+
+CREATE TABLE ContractStatusCodes (
+    pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    statusCode VARCHAR ( 20 ),
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO ContractStatusCodes (statusCode) VALUES
+(NULL)
+, ('Full-time')
+, ('Part-time')
+, ('On Leave')
+, ('Ended')
+;
 
 CREATE TABLE Person (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -91,13 +146,10 @@ VALUES
 , (23, 'Edmund', 'Bertram', NULL, 'M', 'UK', 'eb@mansfieldpark.com', 'F')
 ;
 
-DROP TABLE IF EXISTS Address;
-
 CREATE TABLE Address (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     personID INT NOT NULL,
-    addressType ENUM('PermanentHome', 'CurrentMailing', 'Billing',
-        'PersonalEmail', 'WorkEmail', 'Phone') NOT NULL,
+    addressType VARCHAR ( 20 ) NOT NULL,
     address1 VARCHAR ( 40 ) NOT NULL,
     address2 VARCHAR ( 40 ),
     address3 VARCHAR ( 40 ),
@@ -112,8 +164,6 @@ CREATE TABLE Address (
 
 -- Table(s) that depend on Staff have already been dropped by
 -- dropSmartPersonStaffDependencies.sql, sourced above.
-
-DROP TABLE IF EXISTS Staff;
 
 CREATE TABLE Staff (
     staffID INT NOT NULL PRIMARY KEY,
@@ -138,17 +188,14 @@ VALUES
 , (27, '1', 'HR')
 ;
 
-DROP TABLE IF EXISTS StaffContract;
-
 CREATE TABLE StaffContract (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     staffID INT NOT NULL,
     school VARCHAR (30),
     department VARCHAR (30),
-    jobFunction ENUM('Teaching', 'Administrative', 'Service', 'Other')
-        NOT NULL DEFAULT 'Other',
+    jobFunction VARCHAR ( 20 ) NOT NULL DEFAULT 'Other',
     jobTitle VARCHAR ( 40 ) NOT NULL,
-    status ENUM('', 'Full-time', 'Part-time', 'On Leave', 'Ended'),
+    status VARCHAR ( 20 ) DEFAULT NULL,
     startDate DATE NOT NULL,
     endDate DATE NULL,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

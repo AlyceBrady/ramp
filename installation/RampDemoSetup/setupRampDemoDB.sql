@@ -1,9 +1,27 @@
--- Data for simple RAMP Demo tables
+-- Define the RAMP Demo table schemas and populate with sample data.
 
 --
--- This file contains SQL code to create sample tables ('albums' and 'places')
--- that have corresponding table settings in the settings/demo directory.
+-- This file contains SQL code to create administrative tables used by
+-- Ramp and sample Ramp tables ('albums' and 'places') that have corresponding
+-- table settings in the settings/demo directory.
 --
+
+--
+-- Create Database: `ramp_demo`
+--
+
+DROP DATABASE IF EXISTS `ramp_demo`;
+CREATE DATABASE `ramp_demo`;
+
+-- Define what "guest" users (those who are not logged in) are
+-- authorized to do, create a RAMP administrator role, and define what
+-- administrative users with that role may do.
+
+SOURCE createRampDemoUsersAuths.sql;
+
+-- Create and populate the built-in tables used for record locking.
+
+SOURCE createRampDemoLocks.sql;
 
 --
 -- Table: `albums`

@@ -2,8 +2,8 @@
 -- RAMP: Record and Activity Management Program
 -- SMART: Software for Managing Academic Records and Transcripts
 --
--- Create a RAMP/SMART developer database and its Users and Authorizations
--- tables.  Define a single user, a database administrator, who can
+-- Create Users and Authorizations tables for a RAMP/SMART
+-- database.  Define a single user, a database administrator, who can
 -- create other users and define what they are authorized to do.
 -- To make setting up new development environments easier, define
 -- additional generic users with different access permissions as well.
@@ -17,13 +17,6 @@
 
 -- You must run MySQL as root (or some other user that has permission
 -- to create databases) to execute the commands found in this file.
-
---
--- Create Database: `smart_dev`
---
-
-DROP DATABASE IF EXISTS `smart_dev`;
-CREATE DATABASE `smart_dev`;
 
 USE `smart_dev`;
 
@@ -118,10 +111,10 @@ CREATE TABLE `ramp_auth_auths` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role` varchar(100) NOT NULL,
   `resource_type` enum('Activity','Document','Report','Table',
-        'Admin-Table') NOT NULL,
+                       'Admin-Table') NOT NULL,
   `resource_name` varchar(100) NOT NULL,
-  `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords')
-        NOT NULL DEFAULT 'View'
+  `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords',
+                'AllButDelete') NOT NULL DEFAULT 'View'
 );
 
 
@@ -131,9 +124,7 @@ LOCK TABLES `ramp_auth_auths` WRITE;
 INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
 ('smart_dba','Activity','Admin','All')
-, ('smart_dba','Table','ramp_auth_users','View')
-, ('smart_dba','Table','ramp_auth_users','AddRecords')
-, ('smart_dba','Table','ramp_auth_users','ModifyRecords')
+, ('smart_dba','Table','ramp_auth_users','AllButDelete')
 , ('smart_dba','Admin-Table','ramp_auth_users','ALL')
 , ('smart_dba','Table','ramp_auth_auths','All')
 , ('smart_dba','Table','ramp_lock_relations','All')
@@ -153,13 +144,23 @@ INSERT INTO `ramp_auth_auths`
 , ('guest','Table','AcadProgram','View')
 , ('guest','Table','Modules','View')
 , ('guest','Table','ModuleOfferings','View')
+, ('guest','Table','ModuleType','View')
+, ('guest','Table','AddressTypes','View')
+, ('guest','Table','JobFunctionCodes','View')
+, ('guest','Table','ContractStatusCodes','View')
+, ('guest','Table','AcadProgramTypes','View')
+, ('guest','Table','AdvisorTypes','View')
+, ('guest','Table','StudentProgramStatusCodes','View')
+, ('guest','Table','ClassLevelCodes','View')
+, ('guest','Table','StudentLeaveTypes','View')
+, ('guest','Table','AnnotationOffices','View')
+, ('guest','Table','AnnotationTypes','View')
+, ('guest','Table','StudentModStatusCodes','View')
+, ('guest','Table','TermStandingCodes','View')
+, ('guest','Table','TestCodes','View')
 , ('hr_or_reg','Activity','Smart/Staff','All')
-, ('hr_or_reg','Table','Person','View')
-, ('hr_or_reg','Table','Person','AddRecords')
-, ('hr_or_reg','Table','Person','ModifyRecords')
-, ('hr_staff','Table','Staff','View')
-, ('hr_staff','Table','Staff','AddRecords')
-, ('hr_staff','Table','Staff','ModifyRecords')
+, ('hr_or_reg','Table','Person','AllButDelete')
+, ('hr_staff','Table','Staff','AllButDelete')
 , ('hr_staff','Table','StaffContract','All')
 , ('hr_staff','Report','StaffContract','View')
 , ('hr_staff','Table','Advising','View')
@@ -171,9 +172,7 @@ INSERT INTO `ramp_auth_auths`
 , ('regist_staff','Table','ModuleAssignments','All')
 , ('regist_staff','Table','ModuleSchedule','All')
 , ('regist_staff','Activity','Smart/Student','All')
-, ('regist_staff','Table','Student','View')
-, ('regist_staff','Table','Student','AddRecords')
-, ('regist_staff','Table','Student','ModifyRecords')
+, ('regist_staff','Table','Student','AllButDelete')
 , ('regist_staff','Table','Advising','All')
 , ('regist_staff','Table','StudentAcadProgram','All')
 , ('regist_staff','Table','Enrollment','All')

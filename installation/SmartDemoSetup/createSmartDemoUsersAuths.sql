@@ -2,8 +2,8 @@
 -- RAMP: Record and Activity Management Program
 -- SMART: Software for Managing Academic Records and Transcripts
 --
--- Create a SMART demo database and its Users and Authorizations
--- tables.  Define a single user, a database administrator, who could
+-- Create Users and Authorizations tables for a SMART Demo
+-- database.  Define a single user, a database administrator, who can
 -- create other users and define what they are authorized to do.
 -- (This is mostly for illustration purposes, since there might not
 -- be any need to define users for the SMART demo database; the
@@ -21,13 +21,6 @@
 
 -- You must run MySQL as root (or some other user that has permission
 -- to create databases) to execute the commands found in this file.
-
---
--- Create Database: `smart_demo`
---
-
-DROP DATABASE IF EXISTS `smart_demo`;
-CREATE DATABASE `smart_demo`;
 
 USE `smart_demo`;
 
@@ -113,10 +106,10 @@ CREATE TABLE `ramp_auth_auths` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `role` varchar(100) NOT NULL,
   `resource_type` enum('Activity','Document','Report','Table',
-        'Admin-Table') NOT NULL,
+                       'Admin-Table') NOT NULL,
   `resource_name` varchar(100) NOT NULL,
-  `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords')
-        NOT NULL DEFAULT 'View'
+  `action` enum('All','View','AddRecords','ModifyRecords','DeleteRecords',
+                'AllButDelete') NOT NULL DEFAULT 'View'
 );
 
 

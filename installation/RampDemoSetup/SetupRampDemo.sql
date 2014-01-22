@@ -13,16 +13,6 @@
 
 SOURCE createRampDemoMysqlAccts.sql;
 
--- Define what "guest" users (those who are not logged in) are
--- authorized to do, create a RAMP administrator role, and define what
--- administrative users with that role may do.
+-- Create the Ramp demo database and populate with sample data.
 
-SOURCE createRampDemoUsersAuths.sql;
-
--- Create and populate the built-in tables used for record locking.
-
-SOURCE createRampDemoLocks.sql;
-
--- Create and populate two sample tables for in the demo database.
-
-SOURCE populateRampDemoData.sql;
+SOURCE setupRampDemoDB.sql;

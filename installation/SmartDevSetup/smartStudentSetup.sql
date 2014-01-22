@@ -5,10 +5,163 @@
 
 USE `smart_dev`;
 
+-- Drop triggers, functions, and procedures referring to tables defined
+-- in this file.
+
+DROP TRIGGER IF EXISTS SAPstatusAndDateCheck_insert;
+DROP TRIGGER IF EXISTS SAPstatusAndDateCheck_update;
+
+DROP TRIGGER IF EXISTS EnrollmentStatus_Insert;
+DROP TRIGGER IF EXISTS EnrollmentStatus_Update;
+
+DROP FUNCTION IF EXISTS TermCensusDate;
+DROP FUNCTION IF EXISTS ModOfferingEndDate;
+DROP PROCEDURE IF EXISTS CancelStudentReg;
+
 -- Before dropping Student, need to drop table(s) that depend on it.
 SOURCE dropSmartStudentDependencies.sql
 
+-- Drop other tables defined in this file.
+
+DROP TABLE IF EXISTS AdvisorTypes;
+DROP TABLE IF EXISTS StudentProgramStatusCodes;
+DROP TABLE IF EXISTS ClassLevelCodes;
+DROP TABLE IF EXISTS StudentLeaveTypes;
+DROP TABLE IF EXISTS AnnotationOffices;
+DROP TABLE IF EXISTS AnnotationTypes;
+DROP TABLE IF EXISTS StudentModStatusCodes;
+DROP TABLE IF EXISTS TermStandingCodes;
+DROP TABLE IF EXISTS TestCodes;
+
 DROP TABLE IF EXISTS Student;
+DROP TABLE IF EXISTS StudentAcadProgram;
+DROP TABLE IF EXISTS StudentLeaves;
+DROP TABLE IF EXISTS StudentAnnotations;
+DROP TABLE IF EXISTS TestScores;
+
+CREATE TABLE AdvisorTypes (
+    advisorType VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO AdvisorTypes (advisorType) VALUES
+('Primary')
+, ('Secondary')
+, ('Coach')
+;
+
+CREATE TABLE StudentProgramStatusCodes (
+    pgmStatusCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO StudentProgramStatusCodes (pgmStatusCode) VALUES
+('Preparatory')
+, ('Active')
+, ('Withdrawn')
+, ('Ended')
+, ('Completed')
+;
+
+CREATE TABLE ClassLevelCodes (
+    classLevelCode VARCHAR ( 10 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO ClassLevelCodes (classLevelCode) VALUES
+('1st Yr')
+, ('2nd Yr')
+, ('3rd Yr')
+, ('4th Yr')
+, ('5th Yr')
+, ('Longterm')
+;
+
+CREATE TABLE StudentLeaveTypes (
+    studentLeaveCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO StudentLeaveTypes (studentLeaveCode) VALUES
+('Withdrawn')
+, ('Medical Leave')
+, ('Study Away')
+, ('Suspended')
+, ('Expelled')
+, ('Dismissed')
+;
+
+CREATE TABLE AnnotationOffices (
+    officeCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO AnnotationOffices (officeCode) VALUES
+('Dean')
+, ('Registrar')
+, ('Advisor')
+, ('Vice Chancellor')
+;
+
+CREATE TABLE AnnotationTypes (
+    annotationCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO AnnotationTypes (annotationCode) VALUES
+('Disciplinary')
+, ('Policy Exception')
+, ('Achievement')
+, ('Suspended')
+, ('Expelled')
+, ('Dismissed')
+;
+
+CREATE TABLE StudentModStatusCodes (
+    modStatusCode VARCHAR ( 10 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO StudentModStatusCodes (modStatusCode) VALUES
+('Enrolled')
+, ('Canceled')
+, ('Dropped')
+, ('Withdrawn')
+, ('Completed')
+;
+
+CREATE Table TermStandingCodes (
+    termStandingCode VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO TermStandingCodes (termStandingCode) VALUES
+('GOOD')
+, ("DEAN'S LIST")
+, ('PROBATION')
+, ('FINAL PROBATION')
+, ('OTHER')
+;
+
+CREATE Table TestCodes (
+    testType VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO TestCodes (testType) VALUES
+('WAEC')
+, ('AP')
+, ('OTHER')
+;
 
 CREATE TABLE Student (
     studentID INT NOT NULL PRIMARY KEY,
@@ -44,12 +197,20 @@ VALUES
 , (23, DEFAULT, DEFAULT, 'Hicks 2323', 'English')
 ;
 
-DROP TABLE IF EXISTS Advising;
+CREATE TABLE FinancialHold (
+    studentID INT NOT NULL,
+    startDate DATE NOT NULL,
+    endDate DATE,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (studentID, startDate),
+    FOREIGN KEY (studentID) REFERENCES Student (studentID)
+);
 
 CREATE TABLE Advising (
     studentID INT NOT NULL,
     advisorID INT NOT NULL,
-    advisorType ENUM('Primary', 'Coach', 'Posse', 'K Guide') NOT NULL,
+    advisorType VARCHAR ( 20 ) NOT NULL,
     startDate DATE NOT NULL,
     endDate DATE,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -79,28 +240,21 @@ VALUES
 , (23, 1, 'Primary', '2011-01-01', DEFAULT)
 ;
 
-DROP TRIGGER IF EXISTS SAPstatusAndDateCheck_insert;
-DROP TRIGGER IF EXISTS SAPstatusAndDateCheck_update;
-DROP TABLE IF EXISTS StudentAcadProgram;
-
 CREATE TABLE StudentAcadProgram (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
     programID INT NOT NULL,
     title VARCHAR ( 30 ) NOT NULL,
-    type ENUM('Coursework', 'B.A.', 'B.S.', 'M.Sc.', 'Ph.D.', 'Major', 'Minor')
-        NOT NULL DEFAULT 'Coursework',
+    type VARCHAR ( 15 ) NOT NULL DEFAULT 'Coursework',
     -- requirementSet INT NOT NULL,
     parentProgramID INT NULL,
-    status ENUM('Preparatory', 'Active', 'Withdrawn', 'Ended',
-        'Completed') NOT NULL,
+    status VARCHAR ( 20 ) NOT NULL,
     prepStartDate DATE NOT NULL,
     startDate DATE NOT NULL,
     anticipatedCompletionDate DATE,
     completionDate DATE,
     endDate DATE,
-    classLevel ENUM('1st Yr', '2nd Yr', '3rd Yr', '4th Yr', '5th Year',
-        'Longterm') NOT NULL,
+    classLevel VARCHAR ( 10 ) NOT NULL,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (parentProgramID) REFERENCES StudentAcadProgram (pk_id)
@@ -225,13 +379,10 @@ VALUES
 # have other sub-programs, such as additional major(s), minor(s).
 # */
 
-DROP TABLE IF EXISTS StudentLeaves;
-
 CREATE TABLE StudentLeaves (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
-    type ENUM('Withdrawn', 'Medical Leave', 'Study Away',
-        'Suspended', 'Expelled', 'Dismissed') NOT NULL,
+    type VARCHAR ( 20 ) NOT NULL,
     comment VARCHAR ( 100 ) NOT NULL,
     startDate DATE NOT NULL,
     anticipatedEndDate DATE,
@@ -241,31 +392,22 @@ CREATE TABLE StudentLeaves (
         ON UPDATE CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS StudentAnnotations;
-
 CREATE TABLE StudentAnnotations (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
-    office ENUM('Dean', 'Registrar', 'Advisor',
-        'Vice Chancellor') NOT NULL,
-    annotationType ENUM('Disciplinary', 'Policy Exception', 'Achievement',
-        'Suspended', 'Expelled', 'Dismissed') NOT NULL,
+    office VARCHAR ( 20 ) NOT NULL,
+    annotationType VARCHAR ( 20 ) NOT NULL,
     annotation VARCHAR ( 100 ) NOT NULL,
     date DATE NOT NULL,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP
 );
 
-DROP TRIGGER IF EXISTS EnrollmentStatus_Insert;
-DROP TRIGGER IF EXISTS EnrollmentStatus_Update;
-DROP TABLE IF EXISTS Enrollment;
-
 CREATE TABLE Enrollment (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
     modOfferingID INT NOT NULL,
-    status ENUM('Enrolled', 'Canceled', 'Dropped', 'Withdrawn', 'Completed')
-        NOT NULL DEFAULT 'Enrolled',
+    status VARCHAR ( 10 ) NOT NULL DEFAULT 'Enrolled',
     registDate DATE,
     endDate DATE,
     midtermGrade VARCHAR ( 3 ),
@@ -279,11 +421,8 @@ CREATE TABLE Enrollment (
     INDEX (modOfferingID)
 );
 
-DROP FUNCTION IF EXISTS TermCensusDate;
-DROP FUNCTION IF EXISTS ModOfferingEndDate;
-DROP PROCEDURE IF EXISTS CancelStudentReg;
-
 DELIMITER //
+
 CREATE FUNCTION TermCensusDate(inOffering INT)
 RETURNS DATE DETERMINISTIC
 COMMENT "Returns the census date for the module offering's term"
@@ -299,7 +438,7 @@ END; //
 
 CREATE FUNCTION ModOfferingEndDate(inOffering INT)
 RETURNS DATE DETERMINISTIC
-COMMENT 'Returns the end date for the offering specified by the tri-part key'
+COMMENT 'Returns the end date for the specified offering'
 BEGIN
 DECLARE
     modOffEndDate  DATE;
@@ -421,15 +560,11 @@ VALUES
 #   Status for course 35 for student 12 (E. Bennet) should be 'Completed'
 # */
 
-
-DROP TABLE IF EXISTS TermStanding;
-
 CREATE TABLE TermStanding (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
     term VARCHAR( 10 ) NOT NULL,
-    standing ENUM('GOOD', "DEAN'S LIST", 'PROBATION', 'FINAL PROBATION',
-        'OTHER') NOT NULL DEFAULT 'GOOD',
+    standing VARCHAR ( 20 ) NOT NULL DEFAULT 'GOOD',
     creditsAttempted DOUBLE,
     creditsEarned DOUBLE,
     termGPA DECIMAL(6,3),
@@ -454,14 +589,12 @@ VALUES
 , (11, '2012Q1', DEFAULT, 3.8, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
 ;
 
-DROP TABLE IF EXISTS TestScores;
-
 CREATE TABLE TestScores (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     studentID INT NOT NULL,
     date_taken DATE,
     title VARCHAR ( 30 ) NOT NULL,
-    category VARCHAR ( 6 ),
+    category VARCHAR ( 6 ) NOT NULL,
     testing_agency VARCHAR ( 50 ),
     score DOUBLE NOT NULL,
     percentile INT,

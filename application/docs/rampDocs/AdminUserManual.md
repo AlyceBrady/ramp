@@ -117,6 +117,15 @@ whichever script(s) are run, the GRANTS commands that grant
 appropriate user privileges to the DBAs should be edited to refer to
 the actual DBA accounts.
 
+Note 2: If you are doing development (whether with the default development
+application or a customized one), you may find yourself wanting to
+re-initialize your database from time to time.  You will generally
+not, however, need to recreate the MySQL dba or web-based access
+accounts.  Therefore, you may wish to comment out the call to the
+`create[...]MysqlAccts.sql` in your setup script
+(`SmartDevSetup/SetupSmartDevEnv.sql` or a script you created yourself)
+after running it the first time.
+
 #### Backing Up the Ramp Database ####
 
 Need to write this section.  Would also be nice to provide a RampAdmin

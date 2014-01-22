@@ -9,13 +9,29 @@ USE `smart_dev`;
 -- dropping AcadProgram will require dropping some Requirements tables
 -- first.
 
+DROP TABLE IF EXISTS AcadProgramTypes;
 DROP TABLE IF EXISTS AcadProgram;
+
+CREATE TABLE AcadProgramTypes (
+    type VARCHAR ( 15 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO AcadProgramTypes (type) VALUES
+('Coursework')
+, ('B.A.')
+, ('B.Sc.')
+, ('M.Sc.')
+, ('Ph.D.')
+, ('Major')
+, ('Minor')
+;
 
 CREATE TABLE AcadProgram (
     programID INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     title VARCHAR ( 30 ) NOT NULL,
-    type ENUM('Coursework', 'B.A.', 'B.S.', 'M.Sc.', 'Ph.D.', 'Major', 'Minor')
-        NOT NULL DEFAULT 'Coursework',
+    type VARCHAR ( 15 ) NOT NULL DEFAULT 'Coursework',
     school VARCHAR ( 30 ) NOT NULL,
     division VARCHAR ( 30 ),
     department VARCHAR ( 30 ),

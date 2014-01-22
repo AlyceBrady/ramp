@@ -54,7 +54,7 @@ description = "Staff, Room, and Time assignments for module offerings"
 [Teaching History]
 
 type = "setting"
-source = "Smart/Staff/ModuleEnrollment"
+source = "Smart/Student/ClassList"
 title = "Module Enrollments"
 description = "Read-only: For class lists, specify a combination of
 term, module, section, and/or instructor"

@@ -10,27 +10,7 @@
 
 SOURCE createSmartDevMysqlAccts.sql;
 
--- Define what "guest" users (those who are not logged in) are
--- authorized to do, create a SMART administrator role, and define what
--- administrative users with that role may do.
--- To make development easier, create several test users ("hr", "reg",
--- and "developer") and define what those users may do.
+-- Create the Ramp/Smart developer database and populate with sample data.
 
-SOURCE createSmartDevUsersAuths.sql;
-
--- Create and populate the built-in tables used for record locking.
-
-SOURCE createSmartDevLocks.sql;
-
--- Create and populate the Ramp/Smart developer database.
-
-SOURCE populateSmartDevData.sql;
-
--- Grant the MySQL accounts created in createSmartDevMysqlAccts.sql
--- the ability to execute functions and procedures that allow the
--- database to do some of its own consistency maintenance.
---
---      IS THIS NECESSARY?
-
--- SOURCE grant_func_proc_privs.sql;
+SOURCE setupSmartDevDB.sql;
 

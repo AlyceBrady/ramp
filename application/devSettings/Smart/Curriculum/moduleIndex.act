@@ -52,7 +52,7 @@ inactive = true
 [Class Lists]
 
 type = "setting"
-source = "Smart/Staff/ModuleEnrollment"
+source = "Smart/Student/ClassList"
 title = "Class Enrollments"
 description = "Class lists
 (must be logged in as _hr_ or _reg_)"

@@ -5,10 +5,35 @@
 
 USE `smart_dev`;
 
+-- Drop triggers, functions, and procedures referring to tables defined
+-- in this file.
+
+DROP TRIGGER IF EXISTS CancelStudentReg_Update;
+
 -- Before dropping Modules, need to drop table(s) that depend on it.
 SOURCE dropTermModuleDependencies.sql
 
+-- Drop other tables defined in this file.
+
+DROP TABLE IF EXISTS ModuleType;
+
 DROP TABLE IF EXISTS Modules;
+DROP TABLE IF EXISTS Attributes;
+DROP TABLE IF EXISTS ModuleAttributes;
+
+CREATE TABLE ModuleType (
+    type VARCHAR ( 20 ) NOT NULL PRIMARY KEY ,
+    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO ModuleType (type) VALUES
+('Institutional')
+, ('Study Abroad')
+, ('External Course')
+, ('Test Equiv.')
+, ('Other')
+;
 
 CREATE TABLE Modules (
     moduleID INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -20,8 +45,7 @@ CREATE TABLE Modules (
     description TEXT,
     credits DOUBLE NOT NULL DEFAULT 3.0,
     capacity INT,
-    type ENUM('Institutional', 'Study Abroad', 'External Course',
-        'Test Equiv.', 'Other') NOT NULL DEFAULT 'Institutional',
+    type VARCHAR ( 20 ) NOT NULL DEFAULT 'Institutional',
     startDate DATE NOT NULL,
     endDate DATE,
     updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -99,8 +123,6 @@ VALUES
 -- Table(s) that depend on ModuleOfferings have already been dropped by
 -- dropTermModuleDependencies.sql, sourced above.
 
-DROP TABLE IF EXISTS ModuleOfferings;
-
 CREATE TABLE ModuleOfferings (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     term VARCHAR ( 10 ) NOT NULL,
@@ -114,8 +136,7 @@ CREATE TABLE ModuleOfferings (
     credits DOUBLE NOT NULL DEFAULT 3.0,
     capacity INT,
     status ENUM('Offered', 'Canceled') NOT NULL DEFAULT 'Offered',
-    type ENUM('Institutional', 'External Course', 'Test Equiv.',
-        'Other') NOT NULL DEFAULT 'Institutional',
+    type VARCHAR ( 20 ) NOT NULL DEFAULT 'Institutional',
     startDate DATE,
     endDate DATE,
     studentsAtCensusDate INT,
@@ -128,16 +149,6 @@ CREATE TABLE ModuleOfferings (
     INDEX (term),
     INDEX (moduleID)
 );
-
-DELIMITER |
-CREATE TRIGGER CancelStudentReg_Update AFTER UPDATE ON ModuleOfferings
-  FOR EACH ROW BEGIN
-    IF NEW.status = 'Cancelled' AND NEW.status <> OLD.status THEN
-            CALL CancelStudentReg(NEW.pk_id);
-    END IF;
-  END;
-|
-DELIMITER ;
 
 # /*
 # Initialize modCode, modNumber, shortTitle, longTitle, description, credits,
@@ -157,6 +168,16 @@ DELIMITER ;
 # /*
 # Need manual triggers to set studentsAtCensusDate and studentsAtCompletion.
 # */
+
+DELIMITER |
+CREATE TRIGGER CancelStudentReg_Update AFTER UPDATE ON ModuleOfferings
+  FOR EACH ROW BEGIN
+    IF NEW.status = 'Cancelled' AND NEW.status <> OLD.status THEN
+            CALL CancelStudentReg(NEW.pk_id);
+    END IF;
+  END;
+|
+DELIMITER ;
 
 # /*
 # Populating Offerings:
@@ -222,8 +243,6 @@ VALUES
 
 # /* Module attributes used for requirements */
 
-DROP TABLE IF EXISTS Attributes;
-
 CREATE TABLE Attributes (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     category VARCHAR ( 20 ),
@@ -232,8 +251,6 @@ CREATE TABLE Attributes (
         ON UPDATE CURRENT_TIMESTAMP,
     INDEX (category)
 );
-
-DROP TABLE IF EXISTS ModuleAttributes;
 
 CREATE TABLE ModuleAttributes (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -249,8 +266,6 @@ CREATE TABLE ModuleAttributes (
 #           category:  Department  values: Math, CS, Psych, ...
 # */
 #
-
-DROP TABLE IF EXISTS ModuleAssignments;
 
 CREATE TABLE ModuleAssignments (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
