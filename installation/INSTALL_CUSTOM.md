@@ -255,6 +255,54 @@ administration and for web-based Ramp/Smart interaction with the
 database, defining the right database permissions for the MySQL
 accounts, and setting up Ramp/Smart users.
 
+[Notes from setting up Njala & USL prototypes:  I copied from SmartDev
+wherever possible.
+  - I created application.ini first (using ramp_basics,
+    smart_defaults, smartApplicationTemplate, deleting production,
+    testing, etc, renaming smart_development to sl_prototypes, created
+    a new njala_prototype section, moved db.params, applicationShortName,
+    and menu/activities/settings directory to njala section and finally
+    copied njala section to usl_prototype.
+    For USL, I added roles for exams operator, senior exams officer,
+    student & academic affairs, financial office (exams_op, sr_exams_off,
+    st_acad_aff, finance).
+  - Then I made new installation/USL_Setup directory and copied
+    SmartDevSetup/* to it.
+    * I edited create..MysqlAccts and commented out the line to
+      create a DBA account since I will use an existing one.  Edited
+      GRANT lines in 2a to use existing DBA account.  Also commented
+      out access account to use an existing one and edited GRANT
+      lines in 2b to reflect that.  Deleted creation of automated
+      tests since the prototypes won't do regression testing.
+    * I edited create..UsersAuths to change name of database.  For USL,
+      I also added new users: exop (exams op), sreo (Sr exams officer),
+      and saa (student & acad affairs), fo (finance officer).
+    * USL: I edited smartPersonStaffSetup.sql to add details for
+      new sample users (exop, sreo, saa, fo).
+NOTE: Need to make schema mods before knowing what data changes to
+make to ramp_auth_auths.
+    SCHEMA CHANGES:
+      QUESTION: why aren't studentID and programID foreign keys in
+          StudentAcadProgram???
+    * Terms:  YYYY-YY N, e.g., 2012-13 1
+    * Made schema changes to:  FinancialHold (new table),
+      Colleges, Departments, AcadProgram,
+      StudentAcadProgram, Enrollment, UnverifiedGrades/VerifiedGrades
+              (new tables),
+=>      NEED to add functions to calculate grade (and letter grade?),
+                update triggers for enrollment status
+            add academic holds?  (e.g., advising, "authorized",
+            "registered" (difference between registered & enrolled?))
+    * Changed createSmartDevLocks and createSmartDevUserAuths to update
+      locks and auths to reflect schema changes.
+    * Updateed the drop scripts
+    SETTINGS CHANGES:
+    * For any new tables, can start with a simple setting that shows all
+      columns by default, then build an appropriate setting from there.
+    * Make col heading for Student.studentID be Registry #?
+    * Make col heading for ModuleOfferings.section be Shift?
+]
+
 
 ### 3a. Creating MySQL Accounts and Granting MySQL Privileges ###
 * If you have not already decided on the name(s) of the database(s)
