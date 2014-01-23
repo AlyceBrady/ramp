@@ -15,7 +15,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
 
         $sourceTable =
                 new Application_Model_DbTable_ValidValuesSource($tableName);
-        $validVals = $sourceTable->getValidValues('term');
+        $validVals = array_keys($sourceTable->getValidValues('term'));
 
         $this->assertSame(12, count($validVals));
         $this->assertSame('2008-09 Sem 1', $validVals[0]);
@@ -30,7 +30,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
 
         $sourceTable =
                 new Application_Model_DbTable_ValidValuesSource($tableName);
-        $validVals = $sourceTable->getValidValues('term');
+        $validVals = array_keys($sourceTable->getValidValues('term'));
 
         $this->assertSame(12, count($validVals));
         $this->assertSame('2008-09 Sem 1', $validVals[0]);
@@ -45,7 +45,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
 
         $sourceTable =
                 new Application_Model_DbTable_ValidValuesSource($tableName);
-        $validVals = $sourceTable->getValidValues('nonField');
+        $validVals = array_keys($sourceTable->getValidValues('nonField'));
 
         $this->assertSame(12, count($validVals));
         $this->assertSame('2008-09 Sem 1', $validVals[0]);

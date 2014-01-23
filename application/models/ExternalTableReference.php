@@ -22,9 +22,13 @@ class Application_Model_ExternalTableReference
 
     // Constants representing external table reference properties.
     const TITLE         = 'title';
+    const CONTROLLER    = 'controller';
     const VIEW_SEQ      = 'viewingSequence';
     const LOCAL         = 'localField';
     const EXTERNAL      = 'externalField';
+
+    const DEFAULT_CONTROLLER
+                        = Ramp_Controller_KeyParameters::DEFAULT_CONTROLLER;
 
     // Setting used to determine status.
     const SETTING   = Application_Model_TableViewSequence::MAIN_SETTING;
@@ -34,6 +38,9 @@ class Application_Model_ExternalTableReference
 
     /** @var string */
     protected $_title;       // table title
+
+    /** @var string */
+    protected $_controller;  // controller for this table (default: 'table')
 
     /** @var string */
     protected $_viewingSeq;  // name of table viewing sequence or setting
@@ -69,6 +76,17 @@ class Application_Model_ExternalTableReference
         }
         $this->_viewingSeq = $refInfo[self::VIEW_SEQ];
         unset($refInfo[self::VIEW_SEQ]);
+
+        // See if a controller has been specified.
+        if ( isset($refInfo[self::CONTROLLER]) )
+        {
+            $this->_controller = $refInfo[self::CONTROLLER];
+            unset($refInfo[self::CONTROLLER]);
+        }
+        else
+        {
+            $this->_controller = self::DEFAULT_CONTROLLER;
+        }
 
         // See if there is a title.
         if ( isset($refInfo[self::TITLE]) )
@@ -116,6 +134,16 @@ class Application_Model_ExternalTableReference
                    is_string($connection[self::LOCAL]) &&
                isset($connection[self::EXTERNAL]) &&
                    is_string($connection[self::EXTERNAL]);
+    }
+
+    /**
+     * Gets the name of the controller to use to access this
+     * external table reference.
+     *
+     */
+    public function getController()
+    {
+        return $this->_controller;
     }
 
     /**

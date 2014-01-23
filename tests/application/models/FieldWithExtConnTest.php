@@ -111,7 +111,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->isImported());
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertTrue($field->validValsDefinedInExtTable());
-        $validVals = $field->getValidVals();
+        $validVals = array_keys($field->getValidVals());
         $this->assertSame(12, count($validVals));
         $this->assertSame('2008-09 Sem 1', $validVals[0]);
         $this->assertFalse($field->isExternalTableLink());
@@ -135,7 +135,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->isImported());
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertTrue($field->validValsDefinedInExtTable());
-        $validVals = $field->getValidVals();
+        $validVals = array_keys($field->getValidVals());
     }
 
     public function testSelectFromInvalidTableSetting()
@@ -156,7 +156,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($field->isImported());
         $this->assertFalse($field->initFromAnotherTable());
         $this->assertTrue($field->validValsDefinedInExtTable());
-        $validVals = $field->getValidVals();
+        $validVals = array_keys($field->getValidVals());
     }
 
     public function testSelectFromTableFieldWithInvalidFormat()
@@ -167,7 +167,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
         $fieldName = 'term';
         $fieldSetting = array(
                 'label' => 'Term',
-                'selectFrom' => 'invalidTableFieldFormat');
+                'selectFrom' => 'invalid.Table.Field.Format');
 
         $field = new Application_Model_Field($fieldName, $fieldSetting,
                                              array());

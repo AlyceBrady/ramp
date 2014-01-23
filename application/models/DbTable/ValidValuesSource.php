@@ -62,9 +62,9 @@ class Application_Model_DbTable_ValidValuesSource extends Zend_Db_Table_Abstract
         {
             // Get the valid values from the database.
             $fieldName = self::_getFieldName($name);
-            $select = $this->select();
-            $select = $select->from($this->_name, $fieldName);
             try {
+                $select = $this->select();
+                $select = $select->from($this->_name, $fieldName);
                 $rows = $this->fetchAll($select);
                 foreach ( $rows as $row)
                 {
@@ -74,7 +74,7 @@ class Application_Model_DbTable_ValidValuesSource extends Zend_Db_Table_Abstract
             catch (Exception $e)
             {
                 throw new Exception("Error: '" . $this->_name . "' and '" .
-                    $this->_field . 
+                    $fieldName .
                     "' should be a valid table name and field name.");
             }
         }

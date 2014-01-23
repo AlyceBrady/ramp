@@ -113,6 +113,7 @@ INSERT INTO `ramp_auth_auths`
 , ('ramp_dba','Document','../..','All')
 , ('ramp_dba','Document','../../installation','All')
 , ('ramp_dba','Table','ramp_auth_users','View')
+, ('ramp_dba','Admin-Table','Person','View')
 , ('ramp_dba','Admin-Table','ramp_auth_users','View')
 , ('ramp_dba','Admin-Table','ramp_auth_users','Add')
 , ('ramp_dba','Table','ramp_auth_auths','All')

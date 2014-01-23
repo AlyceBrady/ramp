@@ -25,6 +25,8 @@ class Ramp_Controller_KeyParameters
     const TBL_CONTROLLER = 'table';
     const ADMIN_CONTROLLER = 'admin-table';
 
+    const DEFAULT_CONTROLLER = self::TBL_CONTROLLER;
+
     /* Key parameter names */
     const ACT_KEY_PARAM        = 'activity';  
     const DOC_KEY_PARAM        = 'document';

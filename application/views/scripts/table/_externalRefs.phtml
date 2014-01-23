@@ -36,6 +36,7 @@ foreach ( $extRefs as $extTable => $refObj ) :
     // Get the ADD setting to determine the "completeness" of the 
     // external record (all/some/no recommended fields filled in).
     $searchFields = $refObj->xlFieldValuePairs($formData);
+    $controller = $refObj->getController();
     $externalTable = $refObj->getViewingSeq()->getSetTableForAdding();
 
     $status = $externalTable->getStatusOfRecord($searchFields);
@@ -45,7 +46,7 @@ foreach ( $extRefs as $extTable => $refObj ) :
 
     // Create a link to the external table.
     $setting = urlencode($refObj->getViewingSeqName());
-    $urlParams = array('controller' => 'table', 'action' => 'search') +
+    $urlParams = array('controller' => $controller, 'action' => 'search') +
                  array(TableController::SETTING_NAME => $setting) +
                  $searchFields;
 
