@@ -256,7 +256,7 @@ CREATE TABLE ModuleAttributes (
     pk_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     moduleID INT NOT NULL,
     startDate DATE NOT NULL,
-    endDate DATE NULL DEFAULT NULL
+    endDate DATE DEFAULT NULL
 );
 
 # /*
