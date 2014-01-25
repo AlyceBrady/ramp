@@ -17,6 +17,7 @@ if ( ! empty($tabTitle) )
 $icon = $look['icon'];
 $pageTitle = $look['title'];
 $pageSubTitle = $look['subtitle'];
+$footer = $look['footer'];
 // Get the appropriate cascading stylesheet.
 $stylesheet = $look['rampStyleSheet'];
 
@@ -67,7 +68,7 @@ echo $this->doctype();
             <?php echo $this->layout()->content; ?>
         </div>
         <?php echo $this->authDebugging; ?>
-        <?php echo $this->partial("_footer.phtml"); ?>
+        <?php echo $this->partial("_footer.phtml", array('footer'=>$footer)); ?>
     </div>
 </body>
 

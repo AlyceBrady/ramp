@@ -1,6 +1,15 @@
-<div id="footer-wrapper">
-    <div id="footer">Kalamazoo College, 2013</div>
-</div>
+<?php
+
+/* Determine footer (if any) */
+$footer = empty($this->footer)
+                ? ""
+                : $this->footer . ", " . date("d M Y h:i a");
+
+echo "<div id='footer-wrapper'>\n";
+    echo "<div id='footer'>$footer</div>\n";
+echo "</div>\n";
+
+?>
 
 <!--
 <div id="footer-wrapper">

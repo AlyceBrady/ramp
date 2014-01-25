@@ -46,6 +46,7 @@ class Ramp_RegistryFacade
     const TITLE             = "title";
     const SUBTITLE          = "subtitle";
     const SHORT_NAME        = "applicationShortName";
+    const FOOTER            = "footer";
     const ICON              = "icon";
     const CSS               = "css";
 
@@ -155,6 +156,7 @@ class Ramp_RegistryFacade
      *      'title'
      *      'subtitle'
      *      'shortName'
+     *      'footer'
      *      'icon'
      *      'rampStyleSheet'
      */
@@ -167,6 +169,8 @@ class Ramp_RegistryFacade
             ? $this->_configs[self::SUBTITLE] : null;
         $lookAndFeel['shortName'] = isset($this->_configs[self::SHORT_NAME])
             ? $this->_configs[self::SHORT_NAME] : null;
+        $lookAndFeel['footer'] = isset($this->_configs[self::FOOTER])
+            ? $this->_configs[self::FOOTER] : null;
         $lookAndFeel['icon'] = isset($this->_configs[self::ICON])
             ? $this->_configs[self::ICON] : null;
         $lookAndFeel['rampStyleSheet'] = isset($this->_configs[self::CSS])

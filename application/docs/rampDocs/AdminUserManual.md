@@ -1,18 +1,30 @@
 # RAMP Administrator User Manual #
 
 [ [Introduction](#intro) |
-  [Database Administration](#dba) |
+  [Database Administration](#sys_dba) |
   [Ramp Administration](#rdba) |
-  [Creating Activity Files][activities] |
-  [Creating Table Settings][settings] ]
+  [Application Development](#devel) ]
 
-<div id="intro"></div>
+<h2 id="intro">Introduction</h2>
 
-[VERY EARLY, VERY DRAFTY NOTES]
+Ramp (Record and Activity Management Program) is a program that
+supports the easy creation of simple activity files (lists of
+activities) and table settings (database views), which together
+create a web-based application.  It treats activity files and table
+settings generically, which means that it could be used for a variety
+of different applications.  One application that has been developed
+on top of Ramp is Smart (Software for Managing Academic Records and
+Transcripts).
+
+This document covers administrative tasks that apply to any Ramp
+application (including Smart), such as installing the
+application, creating user accounts, doing backups, and ..., 
 
 There are different types of administrative roles associated with
-Ramp, and an early task is to identify who will be playing which
-roles. Depending on the size and structure of the organization,
+Ramp, including [System Administration](#sysadmin), [Database
+Administration](#dba), [Ramp User Administration](#ramp_dba), and
+[Application Development](#development).
+Depending on the size and structure of the organization,
 there may be overlapping responsibilities, or there may not.
 For example, the database administrator (DBA) might also be the
 Ramp user administrator, or there might be people authorized to
@@ -23,58 +35,65 @@ table settings, but the people who would best understand what
 activity files and table settings would be useful are likely to be
 domain experts rather than database experts.
 
-> ##### System Administration #####
-> System administration (sysadmin) responsibilities include looking after the
-> health and welfare of the server on which Ramp runs, including the web
-> server, MySQL, and PHP software.
-> The sysadmin role overlaps with the database
-> administrator role when it comes to implementing backups and restores,
-> and coordinating
-> upgrades to MySQL and Ramp.
-> System administration is a critical role
-> that requires
-> hardware and operating system level expertise.
+<h3 id="sysadmin">System Administration</h3>
+System administration (sysadmin) responsibilities include installing and
+looking after the health and welfare of the server on which Ramp
+runs, including the web server, MySQL, PHP, and Ramp software.  The
+sysadmin role overlaps with the database administrator role when
+it comes to implementing backups and restores, and coordinating
+upgrades to MySQL and Ramp.  System administration is a critical
+role that requires hardware and operating system level expertise.
 
-> ##### Database Administration #####
-> Database administrators (DBAs) are the people who can access the MySQL
-> database directly, can create databases and tables, alter the
-> structure of tables by adding or removing columns, etc.  DBAs are
-> also responsible for backing up the database, restoring the database
-> if necessary, staging software updates for users to test, performing
-> software upgrades, etc.  This is a critical role that requires MySQL
-> database expertise and, preferably, database design skills. Since it
-> is so critical, there should be at least two people with DBA
-> privileges.  If one person serves as the primary DBA, the secondary
-> DBA should possess at least enough skills to do backups and a database
-> restore in the case of an emergency.
+<h3 id="dba">Database Administration</h3>
+Database administrators (DBAs) are the people who can access the MySQL
+database directly, can create databases and tables, alter the
+structure of tables by adding or removing columns, etc.  DBAs are
+also responsible for backing up the database, restoring the database
+if necessary, staging software updates for users to test, performing
+software upgrades, etc.  This is a critical role that requires MySQL
+database expertise and, preferably, database design skills. Since it
+is so critical, there should be at least two people with DBA
+privileges.  If one person serves as the primary DBA, the secondary
+DBA should possess at least enough skills to do backups and a database
+restore in the case of an emergency.
 
-> ##### Ramp User Administration #####
-> The Ramp Administrator is responsible for creating Ramp user accounts,
-> adding roles and authorizations, and removing "orphaned" locks.
+<h3 id="ramp_dba">Ramp User Administration</h3>
+The Ramp Administrator is responsible for creating Ramp user accounts,
+resetting passwords, adding roles and authorizations, and removing "orphaned" locks.
 
-> ##### Activity File and Table Setting Development #####
-> Although it is possible to run the Ramp and Smart demos, and even an
-> uncustomized version of the Smart application, without defining any
-> new activity files or table settings, to get the most benefit from
-> Smart will require creating and modifying such files to suit the needs
-> of the given context.  This may be the responsibility
-> of the database administrator, but domain experts who
-> understand the structure of the data and the needs of the users
-> accessing that data might also be involved in developing activity
-> files, menus, and table settings.  (This is a management and policy
-> decision.)
-> The development and maintenance of user documents also falls under
-> this category.
+<h3 id="development">Ramp Application Development</h3>
+##### Activity File and Table Setting Development #####
+Although it is possible to run the Ramp and Smart demos, and even an
+uncustomized version of the Smart application, without defining any
+new activity files or table settings, to get the most benefit from
+Smart will require creating and modifying such files to suit the needs
+of the given context.  This may be the responsibility
+of the database administrator, but domain experts who
+understand the structure of the data and the needs of the users
+accessing that data might also be involved in developing activity
+files, menus, and table settings.  (This is a management and policy
+decision.)
+The development and maintenance of user documents also falls under
+this category.
 
-> A related question that may come up later in the system implementation is:
-> who is responsible for generating the style sheets and (maybe, in the
-> future) the SQL queries for reports: the DBA, the Ramp Admin,
-> Activity/Table Setting developers, or users with a certain amount of
-> experience?  Who has permissions to put them in place?  Does each one
-> require a new authorization rule (or set of rules) written by the Ramp
-> Admin?
+Defining a new Ramp application or customizing a Smart application
+involves designing the structure of the database tables, identifying
+appropriate authorization roles for the users, and developing activity
+files and tables settings that match the defined tables structures and
+authorizations.
 
-<h3 id="dba"> System and Database Administration </h3>
+Also, updating the Authorizations and Lock Relations tables.
+
+NOTES:  TODO:
+A related question that may come up later in the system implementation is:
+who is responsible for generating the style sheets and (maybe, in the
+future) the SQL queries for reports: the DBA, the Ramp Admin,
+Activity/Table Setting developers, or users with a certain amount of
+experience?  Who has permissions to put them in place?  Does each one
+require a new authorization rule (or set of rules) written by the Ramp
+Admin?
+
+<h2 id="sys_dba"> System and Database Administration </h2>
 
 Ramp is a software application that provides a way to interact with an
 existing database or a database under development.  This document
@@ -97,6 +116,8 @@ Instead, this section will focus on
     new release
 
 #### Installing Ramp/Smart ####
+
+[VERY EARLY, VERY DRAFTY NOTES]
 
 Two steps: installing the software (including addressing any security
 concerns, setting up appropriate vhost(s)) and setting up the initial
@@ -152,7 +173,7 @@ to go into production, would be good to include script that tars up
 the version being replaced -- code & settings, including application.ini
 -- and saves it along with a snapshot of the database at that moment.
 
-<h3 id="rdba"> Ramp Administration </h3>
+<h2 id="rdba"> Ramp Administration </h2>
 
 #### Creating Ramp/Smart user accounts, Changing Passwords ####
 
@@ -181,8 +202,9 @@ setting)).  Need to explain how to create new authorization rules.
 
 #### Removing Orphaned Locks ####
 
-<h3 id="customization"> Customizing Ramp/Smart Activities and Table
-Settings </h3>
+<h2 id="devel"> Developing Ramp Applications </h2>
+<h2 id="devel"> Customizing Ramp/Smart Activities, Table
+Settings, and `application.ini` </h2>
 
 Provide links to the documents on [Creating Activity Files][activities]
 and [Creating Table Settings and Sequences][settings].  Anyone working
