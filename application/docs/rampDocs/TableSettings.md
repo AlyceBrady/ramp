@@ -408,6 +408,14 @@ example  above.  The general syntax is:
         tableConnection.AliasName.aliasFor = "OtherTable"
         tableConnection.AliasName.connection = "Tbl.col = AliasName.its_col"
 
+It is also possible to use more complex expressions for a table
+connection, although this requires knowledge of MySQL expression syntax.
+For example, a connection could be set up to import a person's
+address only if the address has the type 'Permanent' and has a `NULL`
+`endDate` field:
+        tableConnection.Address = "Person.id = Address.personID AND
+            Address.type = 'Permanent' AND isNull(Address.endDate)"
+
 <div id="selectUsing"></div>
 The table connection depends on the right data being provided when the
 dependent table entry is created.  For example,  when adding an advisor
