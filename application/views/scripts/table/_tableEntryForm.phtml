@@ -69,6 +69,10 @@ $extSearchParams = array('controller' => 'table', 'action' => 'search');
                 "\" target=\"_blank\" class='lookup'><i";
         echo "   class='icon-search' title='Select'></i></a>\n";
     endif;
+    $footnote = $field->getFieldFootnote();
+    if ( ! empty($footnote) ) :
+        echo "(" . $field->getFieldFootnote() . ")\n";
+    endif;
     echo "</div>\n";
     echo "</div>\n";
 endforeach; ?>
