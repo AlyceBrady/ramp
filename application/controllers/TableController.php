@@ -1236,7 +1236,11 @@ class TableController extends Zend_Controller_Action
 
         // Get the lock (if possible).
         $locksTable = new Application_Model_DbTable_Locks();
-        if ( ! $locksTable->acquireLock($lockInfo) )
+        if ( $locksTable->acquireLock($lockInfo) )
+        {
+            $this->view->amHoldingLock = true;
+        }
+        else
         {
             // Notify user that lock is unavailable.
             $params = array(Application_Model_DbTable_Locks::USER =>
@@ -1268,6 +1272,7 @@ class TableController extends Zend_Controller_Action
         // Release the lock.
         $locksTable = new Application_Model_DbTable_Locks();
         $locksTable->releaseLock($lockInfo);
+        $this->view->amHoldingLock = false;
     }
 
     /**

@@ -63,7 +63,11 @@ echo $this->doctype();
         <?php echo $this->partial("_header.phtml",
             array('title'=>$pageTitle,
                   'subtitle'=>$pageSubTitle)); ?>
-        <?php echo $this->navigation()->menu()->setPartial("_menu.phtml"); ?>
+        <?php
+        if ( ! isset($this->amHoldingLock) || ! $this->amHoldingLock ) :
+            echo $this->navigation()->menu()->setPartial("_menu.phtml");
+        endif;
+        ?>
         <div id="content" class="row">
             <?php echo $this->layout()->content; ?>
         </div>
