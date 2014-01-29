@@ -18,7 +18,7 @@
  */
 class Ramp_Controller_KeyParameters
 {
-    /* Controller names of controllers whose keyword is not '_setting' */
+    /* Controller names */
     const ACT_CONTROLLER = 'activity';
     const DOC_CONTROLLER = 'document';
     const REP_CONTROLLER = 'report';

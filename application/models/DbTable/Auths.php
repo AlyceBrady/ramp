@@ -50,7 +50,7 @@ class Application_Model_DbTable_Auths extends Zend_Db_Table_Abstract
 
         // Build the full set of access rules from the rules in the database.
         $this->_accessRules = array();
-        $actionCategories = Ramp_Acl::createCategoryConverter();
+        $actionCategories = Ramp_Acl::getActionCategoryXL();
         foreach ( $rawAccessRules as $rule )
         {
             // All rules must include a role, resource type, and resource name.

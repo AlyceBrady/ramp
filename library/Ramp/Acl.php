@@ -67,11 +67,11 @@ class Ramp_Acl extends Zend_Acl
      * list of actions associated with each category.
      * (Static (Class) function.)
      */
-    public static function createCategoryConverter()
+    public static function getActionCategoryXL()
     {
 	// Since the table access rules in the database are by
 	// category rather than by individual actions, need to
-        // create a "category converter" that associates categories
+        // create a "category translator" that associates categories
         // with lists of actions.  The 'index' action is part of the
         // VIEW category because it always forwards to either a search
         // or view action.
@@ -130,8 +130,8 @@ class Ramp_Acl extends Zend_Acl
 
 	// Table access resources specify resources by categories of
 	// actions rather than by individual actions.  Create a
-	// "category converter" to use in converting categories to actions.
-        $this->_tableCategories = self::createCategoryConverter();
+	// "category translator" to use in translating categories to actions.
+        $this->_tableCategories = self::getActionCategoryXL();
 
 
         /* ADDING ROLES */
@@ -321,7 +321,7 @@ class Ramp_Acl extends Zend_Acl
 
         // BUILT-IN TABLES:
         // Get a list of all Table controller actions.
-        $actions = self::createCategoryConverter();
+        $actions = self::getActionCategoryXL();
         foreach ( $actions[self::ALL] as $action )
         {
             $resourceName = "table::$action::" . self::USERS_TABLE;

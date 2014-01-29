@@ -1287,14 +1287,24 @@ class TableController extends Zend_Controller_Action
     {
         // Get the locking table and key field name.
         $lockRelationsTable = new Application_Model_DbTable_LockRelations();
-        $lookupInfo =
-                $lockRelationsTable->getLockInfo($setTable->getDbTableName());
+        $tableName = $setTable->getDbTableName();
+        $lookupInfo = $lockRelationsTable->getLockInfo($tableName);
         $keyToLookup =
             $lookupInfo[Application_Model_DbTable_LockRelations::LOCKING_KEY_NAME];
 
         // Get the key used for locking
         $recordToLock = $setTable->getTableEntry($matchingFields);
-        $lockingKey = $recordToLock[$keyToLookup];
+        if ( isset($recordToLock[$keyToLookup]) )
+        {
+            $lockingKey = $recordToLock[$keyToLookup];
+        }
+        else
+        {
+            throw new Exception("Lock Relations Table error: " .
+                                "expected key ($keyToLookup) " .
+                                "is not a field in $tableName");
+
+        }
 
         // Get the user information.
         $auth = Zend_Auth::getInstance();

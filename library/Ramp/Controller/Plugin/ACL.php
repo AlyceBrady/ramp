@@ -104,9 +104,14 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         $error_details = "";
 
         // Start with controller and action.
+        // Treat reports as (special types of) tables for authorization.
         $resources = array();
         $controller = $request->getControllerName();
         $action = $request->getActionName();
+        if ( $controller == Ramp_Controller_KeyParameters::REP_CONTROLLER )
+        {
+            $controller = Ramp_Controller_KeyParameters::TBL_CONTROLLER;
+        }
         $prefix = $controller . Ramp_Acl::DELIM . $action;
 
         // Add activity, document, or table/report details.
