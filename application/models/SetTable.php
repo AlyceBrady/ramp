@@ -796,7 +796,13 @@ class Application_Model_SetTable
             }
             foreach ( $extTblConnections as $ext => $local )
             {
-                $extTblFields[$local] = $this->getFieldObject($local);
+                $localFieldObj = $this->getFieldObject($local);
+                if ( $localFieldObj == null )
+                {
+                    throw new Exception("Error: $local is not a field " .
+                        "in this setting (" . $this->_settingName . ").");
+                }
+                $extTblFields[$local] = $localFieldObj;
             }
         }
         return $this->_visibleFields + $this->getPrimaryKeys() + $extTblFields;
@@ -1504,6 +1510,11 @@ class Application_Model_SetTable
             foreach ( $locFields as $searchField )
             {
                 $field = $this->getFieldObject($searchField);
+                if ( $field == null )
+                {
+                    throw new Exception("Error: $searchField is not a field " .
+                        "in this setting (" . $this->_settingName . ").");
+                }
                 if ( ! $field->valueNecessaryForAdd() )
                 {
                     $this->_error_msgs[] = "$searchField is required for " .
