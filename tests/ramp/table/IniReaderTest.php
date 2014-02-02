@@ -14,7 +14,7 @@ class models_RampIniReaderTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_iniReader = new Application_Model_RampIniReader();
+        $this->_iniReader = new Ramp_Table_Config_IniReader();
     }
 
     public function testImportSettingsFromFile()

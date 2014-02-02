@@ -11,7 +11,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
     {
         $testName = 'MyField';
 
-        $field = new Application_Model_Field($testName);
+        $field = new Ramp_Table_Field($testName);
 
         // Test all methods that don't have unmet preconditions.
         $this->assertSame($testName, $field->getDbFieldName());
@@ -31,7 +31,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
                 'label' => 'Label',
                 'footnote' => 'Footnote');
 
-        $field = new Application_Model_Field($testName, $fieldSetting);
+        $field = new Ramp_Table_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
         $this->assertSame($testName, $field->getDbFieldName());
@@ -55,7 +55,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
                 'readOnly' => false,
                 'recommended' => true);
 
-        $field = new Application_Model_Field($testName, $fieldSetting);
+        $field = new Ramp_Table_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
         $this->assertSame($testName, $field->getDbFieldName());
@@ -81,7 +81,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
                 'recommended' => false,
                 'discouraged' => true);
 
-        $field = new Application_Model_Field($testName, $fieldSetting);
+        $field = new Ramp_Table_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
         $this->assertSame($testName, $field->getDbFieldName());
@@ -103,7 +103,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
                 'recommended' => true,
                 'discouraged' => true);
 
-        $field = new Application_Model_Field($testName, $fieldSetting);
+        $field = new Ramp_Table_Field($testName, $fieldSetting);
 
         // Discouraged and Recommended will not be true because the field
         // is not in the table
@@ -119,7 +119,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
         $testName = 'MyField';
 
         $showColsByDefault = 'true';
-        $field = new Application_Model_Field($testName, array(),
+        $field = new Ramp_Table_Field($testName, array(),
                                              array(), $showColsByDefault);
         $this->assertTrue($field->isVisible());
         $this->assertSame("MyField", $field->getLabel());
@@ -136,7 +136,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
                 'hide' => true);
 
         $showColsByDefault = 'true';
-        $field = new Application_Model_Field($testName, $fieldSetting,
+        $field = new Ramp_Table_Field($testName, $fieldSetting,
                                              array(), $showColsByDefault);
         $this->assertFalse($field->isVisible());
         $this->assertSame("Label", $field->getLabel());
@@ -150,7 +150,7 @@ class models_BasicFieldWithNoDBAccessTest extends PHPUnit_Framework_TestCase
         $testName = 'MyField';
         $fieldSetting = array('hide' => false);
 
-        $field = new Application_Model_Field($testName, $fieldSetting);
+        $field = new Ramp_Table_Field($testName, $fieldSetting);
 
         // Test all methods that don't have unmet preconditions.
         $this->assertTrue($field->isVisible());

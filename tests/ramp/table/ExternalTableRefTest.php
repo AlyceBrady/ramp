@@ -39,7 +39,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception',
                                     'without a viewingSequence property');
-        $spec = new Application_Model_ExternalTableReference(null);
+        $spec = new Ramp_Table_ExternalTableReference(null);
         return $spec;
     }
 
@@ -47,14 +47,14 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception',
                                     'without a viewingSequence property');
-        $spec = new Application_Model_ExternalTableReference(array());
+        $spec = new Ramp_Table_ExternalTableReference(array());
         return $spec;
     }
 
     public function testValidExternalRefWithSingleMatchingField()
     {
         $refInfo = array("viewingSequence" => "Users") + $this->_match1;
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
         $this->assertSame('Users', $ref->getViewingSeqName());
         $this->assertSame('Users', $ref->getTitle());
         $this->assertSame($this->_connection1,
@@ -67,7 +67,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
     public function testExpectedValidViewingSeq()
     {
         $refInfo = array("viewingSequence" => "Users") + $this->_match1;
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
         $setTable = $ref->getViewingSeq()->getSetTableForViewing();
         $this->assertSame('ramp_auth_users', $setTable->getDbTableName());
         $this->assertTrue(array_key_exists('id', $setTable->getFields()));
@@ -79,7 +79,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $refInfo = array("title" => "Title",
                          "viewingSequence" => "Users",
                          "match1" => $this->_match1);
-        $ref = new Application_Model_ExternalTableReference($refInfo,
+        $ref = new Ramp_Table_ExternalTableReference($refInfo,
                                                             'DetailedView');
         $this->assertSame('Users', $ref->getViewingSeqName());
         $this->assertSame('Title', $ref->getTitle());
@@ -95,7 +95,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $refInfo = array("viewingSequence" => "Users",
                          "match1" => $this->_match1,
                          "match2" => $this->_match2);
-        $ref = new Application_Model_ExternalTableReference($refInfo,
+        $ref = new Ramp_Table_ExternalTableReference($refInfo,
                                                             'DetailedView');
         $this->assertSame('Users', $ref->getViewingSeqName());
         $this->assertSame('Users', $ref->getTitle());
@@ -112,7 +112,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
                         'not a valid external reference connector');
         $refInfo = array("viewingSequence" => "Users",
                          "localField" => "album_id");
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
     }
 
     public function testUnmatchedExternalField()
@@ -121,7 +121,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
                         'not a valid external reference connector');
         $refInfo = array("viewingSequence" => "Users",
                          "externalField" => "id");
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
     }
 
     public function testInvalidTableConnection()
@@ -131,13 +131,13 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $refInfo = array("viewingSequence" => "Users",
                          "localField" => "album_id",
                          "extField" => "should_be_externalField");
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
     }
 
     public function testTableRefHasNoConnectionInfo()
     {
         $refInfo = array("viewingSequence" => "Users");
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
         $this->assertSame('Users', $ref->getViewingSeqName());
         $this->assertSame(array(), $ref->getConnectionExpressions());
     }
@@ -149,7 +149,7 @@ class models_ExternalTableRefTest extends PHPUnit_Framework_TestCase
         $refInfo = array("viewingSequence" => "Users",
                          "match1" => $this->_match1,
                          "match2" => $this->_match2);
-        $ref = new Application_Model_ExternalTableReference($refInfo);
+        $ref = new Ramp_Table_ExternalTableReference($refInfo);
         $this->assertSame($this->_trans2,
                           $ref->xlFieldValuePairs($this->_data2));
         $this->assertTrue(false);

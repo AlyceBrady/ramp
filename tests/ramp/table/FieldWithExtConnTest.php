@@ -19,7 +19,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'First Name',
                 'importedFrom' => 'ramp_auth_users');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -41,7 +41,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'importedFrom' => 'ramp_auth_users',
                 'importedField' => 'first_name');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -62,7 +62,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'First Name',
                 'importedFrom' => null);
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -84,7 +84,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'First Name',
                 'initFrom' => null);
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -103,7 +103,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Term',
                 'selectFrom' => 'ramp_valsTableTesting.term');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -127,7 +127,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Term',
                 'selectFrom' => 'ramp_valsTableTesting.nonField');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -148,7 +148,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Term',
                 'selectFrom' => 'someTable.someField');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -169,7 +169,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Term',
                 'selectFrom' => 'invalid.Table.Field.Format');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -189,7 +189,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Term',
                 'selectFrom' => null);
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -209,7 +209,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'Artist',
                 'selectUsing' => $settingFile);
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -233,7 +233,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'First Name',
                 'selectUsing' => 'otherTable');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());
@@ -255,7 +255,7 @@ class models_FieldWithExtConnTest extends PHPUnit_Framework_TestCase
                 'label' => 'First Name',
                 'selectUsing' => null);
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              array());
 
         $this->assertFalse($field->isInTable());

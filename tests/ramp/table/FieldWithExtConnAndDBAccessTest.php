@@ -16,14 +16,14 @@ class models_FieldWithExtConnAndDBAccessTest extends PHPUnit_Framework_TestCase
     public function testSimpleInitField()
     {
         $tableName = 'ramp_initTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $fieldName = 'fname';
         $fieldSetting = array(
                 'label' => 'First Name',
                 'initFrom' => 'ramp_auth_users');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              $metaInfo);
 
         $this->assertTrue($field->isInTable());
@@ -39,7 +39,7 @@ class models_FieldWithExtConnAndDBAccessTest extends PHPUnit_Framework_TestCase
     public function testInitFieldAsDifferentName()
     {
         $tableName = 'ramp_initTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $fieldName = 'fname';
         $fieldSetting = array(
@@ -47,7 +47,7 @@ class models_FieldWithExtConnAndDBAccessTest extends PHPUnit_Framework_TestCase
                 'initFrom' => 'ramp_auth_users',
                 'initFromField' => 'first_name');
 
-        $field = new Application_Model_Field($fieldName, $fieldSetting,
+        $field = new Ramp_Table_Field($fieldName, $fieldSetting,
                                              $metaInfo);
 
         $this->assertTrue($field->isInTable());

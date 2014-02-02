@@ -18,7 +18,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         // Test constructing a table setting from an invalid file.
         // Error actually comes from Ramp_Ini_Reader.
         $filename = TestSettings::NON_FILE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getKeyVal
@@ -39,7 +39,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         // getSettingProps: setting name is same as constructor (there 
         //      are no sections with settings
         $filename = TestSettings::BASIC_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
         $expectedSetting = $this->_settingTests->getBasicSetting();
         $this->assertSame($expectedSetting['tableName'],
                           $gateway->getTopLevelTableName());
@@ -58,7 +58,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         // _getSequenceProps: Explicit top-level sequence settings
         // _getSettingProps: Several sections with valid setting props
         $filename = TestSettings::FILE_SHOWING_COLS_BY_DEFAULT;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
         $expectedSetting = $this->_settingTests->getBasicSetting();
         $this->assertNull($gateway->getTopLevelTableName());
     } 
@@ -85,7 +85,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
                 $this->_settingTests->getSeqSettingsInMultSettingsFile();
         $multSettingsTopLevel =
                 $this->_settingTests->getTopLevelSettingsInMultSettingsFile();
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
         $this->assertSame($multSettingsTopLevel['tableName'],
                           $gateway->getTopLevelTableName());
         $this->assertSame($sequenceSettings, $gateway->getSequenceProps());
@@ -106,7 +106,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         //      sequence keyword (TTF)
         //  NOTE: Not an error.  (Property is ignored.)
         $filename = TestSettings::MISLEADING_SEQ_PROP;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getSequenceProps
@@ -120,7 +120,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         //      nothing to do with sequences)
         //  NOTE: Not an error here.  Section treated as a table setting.
         $filename = TestSettings::MISLEADING_SEQ_SEC;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getSequenceProps
@@ -135,7 +135,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         // override the top-level information with the information read
         // in later.)
         $filename = TestSettings::FILE_W_INVAL_MULT_SEQ;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getSettingProps
@@ -145,7 +145,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'two sets of table settings properties');
         $filename = TestSettings::BAD_MULT_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getSettingProps
@@ -155,7 +155,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'no table setting properties');
         $filename = TestSettings::NO_TABLE_PROPS_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // constr -> _importProps -> _getSettingProps
@@ -165,7 +165,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'sequence or setting property');
         $filename = TestSettings::BAD_TOP_LEVEL_PROP;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
     }
 
     // getSettingProps
@@ -175,7 +175,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         // Test constructing a sequence with multiple settings and 
         // getting an externally-defined setting.
         $filename = TestSettings::MULT_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
         $sequenceSettings =
                 $this->_settingTests->getSeqSettingsInMultSettingsFile();
         $externalSetting = $sequenceSettings['searchResultsSetting'];
@@ -193,7 +193,7 @@ class models_TVSGatewayTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'too many lists of sequence properties');
         $filename = TestSettings::FILE_W_EXTRA_SEQUENCE;
-        $gateway = new Application_Model_TVSGateway($filename);
+        $gateway = new Ramp_Table_TVSGateway($filename);
         $otherFilename = TestSettings::MULT_SETTINGS_FILE;
         $propsReadIn = $gateway->getSettingProps($otherFilename);
     }

@@ -39,44 +39,44 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
 
         $settingFileName = $this->_basic_setTable_name =
                                         TestSettings::BASIC_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_basic_setTable =
-                    new Application_Model_SetTable($settingFileName, $gateway);
+                    new Ramp_Table_SetTable($settingFileName, $gateway);
 
         $settingFileName = TestSettings::BASIC_2_SETTINGS_FILE;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_variant_setTable =
-                    new Application_Model_SetTable($settingFileName, $gateway);
+                    new Ramp_Table_SetTable($settingFileName, $gateway);
 
         $settingFileName = TestSettings::MULT_SETTINGS_FILE;
         $settingName = 'ModifyingView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_setTableWithImports =
-                    new Application_Model_SetTable($settingName, $gateway);
+                    new Ramp_Table_SetTable($settingName, $gateway);
 
         $settingFileName = TestSettings::FILE_WITH_EXTERNAL_INIT;
         $settingName = 'ModifyingView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_setTableWithInitAndExtRef =
-                    new Application_Model_SetTable($settingName, $gateway);
+                    new Ramp_Table_SetTable($settingName, $gateway);
 
         $settingFileName = TestSettings::FILE_WITH_EXTERNAL_INIT;
         $settingName = 'DetailedView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_setTableWithBadInitAndExtRef =
-                    new Application_Model_SetTable($settingName, $gateway);
+                    new Ramp_Table_SetTable($settingName, $gateway);
 
         $settingFileName = TestSettings::MULT_SETTINGS_FILE;
         $settingName = 'DetailedView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_settingForPartialTable =
-                    new Application_Model_SetTable($settingName, $gateway);
+                    new Ramp_Table_SetTable($settingName, $gateway);
 
         $settingFileName = TestSettings::FILE_WITH_EXTERNAL_FILES;
         $settingName = 'TestSetting';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
         $this->_setTableWithDependentTables =
-                    new Application_Model_SetTable($settingName, $gateway);
+                    new Ramp_Table_SetTable($settingName, $gateway);
 
     }
 
@@ -88,8 +88,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
                                     'setting must include a key');
         $settingFileName = TestSettings::NO_TABLE_SETTINGS_FILE;
         $settingName = 'TableSetting';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingName, $gateway);
     }
 
     public function testSettingWithInheritedTableName()
@@ -129,8 +129,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'does not have the required format');
         $settingFileName = self::BAD_TC_ATTRIBUTE;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
     }
 
     public function testInitReferenceWithSingleMatchField()
@@ -241,8 +241,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     "there is no 'tableConnection' clause");
         $settingFileName = self::IMPORT_W_NO_TC;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
     }
 
     public function testInvalidInitBecauseNoInitRefsForTable()
@@ -348,8 +348,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $settingFileName = TestSettings::FILE_SHOWING_COLS_BY_DEFAULT;
         $settingName = 'DetailedView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingName, $gateway);
 
         // Setting has 8 local fields (1 is primary) and 2 imported 
         // fields.  No fields are explicitly hidden.
@@ -360,8 +360,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $settingFileName = TestSettings::FILE_SHOWING_COLS_BY_DEFAULT;
         $settingName = 'ModifyingView';
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingName, $gateway);
 
         // Setting has 8 local fields (1 is primary) and 1 imported 
         // fields.  No fields are explicitly hidden.
@@ -393,7 +393,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
 
     public function testGetTableEntriesMultRowsWithAnyVal()
     {
-        $data = array("id" => Application_Model_SetTable::ANY_VAL,
+        $data = array("id" => Ramp_Table_SetTable::ANY_VAL,
                       'artist' => 'The Beatles');
         $entries = $this->_basic_setTable->getTableEntries($data);
         $this->assertSame(2, count($entries));
@@ -404,7 +404,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $data = array('id' => 1,
                       'artist' => 'The Beatles');
         $entries = $this->_basic_setTable->getTableEntries($data, array(), 
-                                        Application_Model_SetTable::ANY);
+                                        Ramp_Table_SetTable::ANY);
         $this->assertSame(3, count($entries));
     }
 
@@ -413,7 +413,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $data = array("artist" => "The Beatles");
         $entries = $this->_basic_setTable->getTableEntries($data, null,
-                                        Application_Model_SetTable::EXCLUDE);
+                                        Ramp_Table_SetTable::EXCLUDE);
         $this->assertSame(5, count($entries));
     }
      */
@@ -446,8 +446,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     public function testGetTableEntriesIncludingImportedFieldsWithAliases()
     {
         $settingFileName = self::TC_WITH_ALIAS;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
 
         $data = array('userid' => 1);
         $entries = $table->getTableEntries($data);
@@ -470,8 +470,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', 'is not a table');
         $data = array('addr_id' => 1);
         $settingFileName = self::BAD_TC_TBL;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
         $entries = $table->getTableEntries($data);
         $this->assertSame('Brown', $entries[0]['last_name']);
     }
@@ -480,8 +480,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $data = array('addr_id' => 1);
         $settingFileName = self::BAD_TC_FORMAT_1;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
         $entries = $table->getTableEntries($data);
         $this->assertSame('Brown', $entries[0]['last_name']);
     }
@@ -491,8 +491,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', 'Invalid data request');
         $data = array('addr_id' => 1);
         $settingFileName = self::BAD_TC_FORMAT_2;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
         $entries = $table->getTableEntries($data);
         $this->assertSame('Brown', $entries[0]['last_name']);
     }
@@ -502,8 +502,8 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', 'Invalid data request');
         $data = array('addr_id' => 1);
         $settingFileName = self::BAD_TC_FORMAT_3;
-        $gateway = new Application_Model_TVSGateway($settingFileName);
-        $table = new Application_Model_SetTable($settingFileName, $gateway);
+        $gateway = new Ramp_Table_TVSGateway($settingFileName);
+        $table = new Ramp_Table_SetTable($settingFileName, $gateway);
         $entries = $table->getTableEntries($data);
         $this->assertSame('Brown', $entries[0]['last_name']);
     }
@@ -536,21 +536,21 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     {
         $keys = array('id' => '1');
         $status = $this->_basic_setTable->getStatusOfRecord($keys);
-        $this->assertSame(Application_Model_SetTable::GOOD, $status);
+        $this->assertSame(Ramp_Table_SetTable::GOOD, $status);
     }
 
     public function testGetStatusForSinglePartialRecord()
     {
         $keys = array('addr_id' => '1');
         $status = $this->_settingForPartialTable->getStatusOfRecord($keys);
-        $this->assertSame(Application_Model_SetTable::PARTIAL, $status);
+        $this->assertSame(Ramp_Table_SetTable::PARTIAL, $status);
     }
 
     public function testGetStatusForNoRecord()
     {
         $keys = array('id' => '1000');
         $status = $this->_basic_setTable->getStatusOfRecord($keys);
-        $this->assertSame(Application_Model_SetTable::BLANK, $status);
+        $this->assertSame(Ramp_Table_SetTable::BLANK, $status);
     }
 
     public function testGetStatusBasedOnBadKeys()
@@ -558,7 +558,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception', 'not a field in this setting');
         $keys = array('nonKey' => '1000');
         $status = $this->_basic_setTable->getStatusOfRecord($keys);
-        $this->assertSame(Application_Model_SetTable::BLANK, $status);
+        $this->assertSame(Ramp_Table_SetTable::BLANK, $status);
     }
 
     public function testKeyInfoFromNonKeyData()

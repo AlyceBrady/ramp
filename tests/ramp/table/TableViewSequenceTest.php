@@ -48,7 +48,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         // Test constructing a sequence from an invalid file.
         $this->setExpectedException('Exception', 'Missing settings file');
-        $sequence = new Application_Model_TableViewSequence(self::NON_FILE);
+        $sequence = new Ramp_Table_TableViewSequence(self::NON_FILE);
     }
 
     // _initSettingsUsedInSequence: no sequence, no setting
@@ -57,7 +57,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'sequence or one table setting');
         $sequence =
-            new Application_Model_TableViewSequence(self::EMPTY_SEQ_SETTING);
+            new Ramp_Table_TableViewSequence(self::EMPTY_SEQ_SETTING);
     }
 
     // _initSettingsUsedInSequence: misleading sequence prop, not setting
@@ -67,7 +67,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         //      called "sequence").
         //  NOTE: Not an error.  (Property is ignored.)
         $filename = TestSettings::MISLEADING_SEQ_PROP;
-        $sequence = new Application_Model_TableViewSequence($filename);
+        $sequence = new Ramp_Table_TableViewSequence($filename);
     }
 
     // _initSettingsUsedInSequence: sequence is empty array; mult tables read
@@ -75,7 +75,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception',
                                     'sequence or one table setting');
-        $sequence = new Application_Model_TableViewSequence(self::NO_SEQ);
+        $sequence = new Ramp_Table_TableViewSequence(self::NO_SEQ);
     }
 
     // _initSettingsUsedInSequence: misleading seq section; mult tables read
@@ -86,13 +86,13 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Exception',
                                     'sequence or one table setting');
         $filename = TestSettings::MISLEADING_SEQ_SEC;
-        $sequence = new Application_Model_TableViewSequence($filename);
+        $sequence = new Ramp_Table_TableViewSequence($filename);
     }
 
     // _initSettingsUsedInSequence: sequence is empty array; one table read
     public function testSimpleImpliedSequence()
     {
-        $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
+        $sequence = new Ramp_Table_TableViewSequence(self::BASIC_FILE);
 
         $expectedSetting = $this->_settingTests->getBasicSetting();
         $this->assertSame($expectedSetting['tableName'],
@@ -113,7 +113,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testSeqWithAllSettingsExplicitlySpecified()
     {
         $sequence =
-            new Application_Model_TableViewSequence(self::MULT_SETTINGS);
+            new Ramp_Table_TableViewSequence(self::MULT_SETTINGS);
 
         $multSettingsTopLevel =
                 $this->_settingTests->getTopLevelSettingsInMultSettingsFile();
@@ -135,7 +135,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testSeqWithNoTopLevelTableName()
     {
         $sequence =
-            new Application_Model_TableViewSequence(self::NO_SEQ_TBL_NAME);
+            new Ramp_Table_TableViewSequence(self::NO_SEQ_TBL_NAME);
         $this->assertNull($sequence->getSeqLevelTableName());
     }
 
@@ -143,7 +143,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         // All should use SearchResult setting
         $sequence =
-            new Application_Model_TableViewSequence(self::SEARCH_RES_ONLY);
+            new Ramp_Table_TableViewSequence(self::SEARCH_RES_ONLY);
 
         $setting = $sequence->getSetTableForSearchResults();
         $this->assertSame($this->_searchRes, $setting->getSettingName());
@@ -160,7 +160,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         // All should use SearchSpec, including SearchResult setting
         $sequence =
-            new Application_Model_TableViewSequence(self::SEARCH_SPEC_ONLY);
+            new Ramp_Table_TableViewSequence(self::SEARCH_SPEC_ONLY);
 
         $setting = $sequence->getSetTableForSearching();
         $this->assertSame($this->_searchSpec, $setting->getSettingName());
@@ -177,7 +177,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         // All should use Tabular.
         $sequence =
-            new Application_Model_TableViewSequence(self::TABULAR_ONLY);
+            new Ramp_Table_TableViewSequence(self::TABULAR_ONLY);
 
         $setting = $sequence->getSetTableForTabularView();
         $this->assertSame($this->_tabular, $setting->getSettingName());
@@ -194,7 +194,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         // All should use Split View.
         $sequence =
-            new Application_Model_TableViewSequence(self::SPLIT_VIEW_ONLY);
+            new Ramp_Table_TableViewSequence(self::SPLIT_VIEW_ONLY);
 
         $setting = $sequence->getSetTableForSplitView();
         $this->assertSame($this->_tabular, $setting->getSettingName());
@@ -213,7 +213,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
         // SearchResult should be as specified;
         // all others should use Add setting
         $sequence =
-            new Application_Model_TableViewSequence(self::ADD_AND_SEARCH_RES);
+            new Ramp_Table_TableViewSequence(self::ADD_AND_SEARCH_RES);
 
         $setting = $sequence->getSetTableForSearchResults();
         $this->assertSame($this->_searchRes, $setting->getSettingName());
@@ -231,7 +231,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testSeqWithEditAndAddSpecified()
     {
         // All settings except Add should use Edit setting.
-        $sequence = new Application_Model_TableViewSequence(self::ADD_AND_EDIT);
+        $sequence = new Ramp_Table_TableViewSequence(self::ADD_AND_EDIT);
 
         $setting = $sequence->getSetTableForAdding();
         $this->assertSame($this->_add, $setting->getSettingName());
@@ -249,7 +249,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testSeqWithMainSettingSpecified()
     {
         // All should use Main setting
-        $sequence = new Application_Model_TableViewSequence(self::MAIN_ONLY);
+        $sequence = new Ramp_Table_TableViewSequence(self::MAIN_ONLY);
 
         $setting = $sequence->getSetTableForViewing();
         $this->assertSame($this->_main, $setting->getSettingName());
@@ -265,14 +265,14 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testInitialActionIsSearch()
     {
         $sequence =
-            new Application_Model_TableViewSequence(self::SEARCH_SPEC_ONLY);
+            new Ramp_Table_TableViewSequence(self::SEARCH_SPEC_ONLY);
         $this->assertSame('search', $sequence->getInitialAction());
     }
 
     public function testInitialActionIsDisplayAll()
     {
         $sequence =
-            new Application_Model_TableViewSequence(self::MULT_SETTINGS);
+            new Ramp_Table_TableViewSequence(self::MULT_SETTINGS);
         $this->assertSame('list-view', $sequence->getInitialAction());
     }
 
@@ -281,7 +281,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception',
                                 'set table for empty setting property:');
-        $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
+        $sequence = new Ramp_Table_TableViewSequence(self::BASIC_FILE);
         $setTable = $sequence->_getSetTable(null);
     }
 
@@ -289,14 +289,14 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception',
                                 'set table for empty setting property:');
-        $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
+        $sequence = new Ramp_Table_TableViewSequence(self::BASIC_FILE);
         $setTable = $sequence->_getSetTable("");
     }
 
     public function testGetSetTableForUnknownSettingName()
     {
         $this->setExpectedException('Exception', 'unknown setting property');
-        $sequence = new Application_Model_TableViewSequence(self::BASIC_FILE);
+        $sequence = new Ramp_Table_TableViewSequence(self::BASIC_FILE);
         $setTable = $sequence->_getSetTable('invalidSetting');
     }
      */
@@ -304,7 +304,7 @@ class models_TableViewSequenceTest extends PHPUnit_Framework_TestCase
     public function testGetSetTableWhenAlreadyFound()
     {
         $sequence =
-            new Application_Model_TableViewSequence(self::SEARCH_SPEC_ONLY);
+            new Ramp_Table_TableViewSequence(self::SEARCH_SPEC_ONLY);
         $setTable = $sequence->getSetTableForViewing();
     }
 

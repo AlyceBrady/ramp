@@ -12,12 +12,12 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     public function testRecommendedField()
     {
         // 'last_name' is not required, but recommended
-        $table = new Application_Model_DbTable_Table('ramp_auth_users');
+        $table = new Ramp_Table_DbTable_Table('ramp_auth_users');
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'last_name';
         $fieldSetting = array('recommended' => true);
 
-        $field = new Application_Model_Field($whichField, $fieldSetting,
+        $field = new Ramp_Table_Field($whichField, $fieldSetting,
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());
@@ -31,12 +31,12 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
 
     public function testDiscouragedField()
     {
-        $table = new Application_Model_DbTable_Table('ramp_auth_users');
+        $table = new Ramp_Table_DbTable_Table('ramp_auth_users');
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'last_name';
         $fieldSetting = array('discouraged' => true);
 
-        $field = new Application_Model_Field($whichField, $fieldSetting,
+        $field = new Ramp_Table_Field($whichField, $fieldSetting,
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());
@@ -48,14 +48,14 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
 
     public function testDiscouragedAndRecommended()
     {
-        $table = new Application_Model_DbTable_Table('ramp_auth_users');
+        $table = new Ramp_Table_DbTable_Table('ramp_auth_users');
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'last_name';
         $fieldSetting = array(
                 'recommended' => true,
                 'discouraged' => true);
 
-        $field = new Application_Model_Field($whichField, $fieldSetting,
+        $field = new Ramp_Table_Field($whichField, $fieldSetting,
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());
@@ -68,11 +68,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // 'id' is required and primary key (and auto-incremented)
         $tableName = 'ramp_auth_users';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'id';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
         $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
@@ -88,11 +88,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // 'gender' is required but not primary key; has a default
         $tableName = 'ramp_enumTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'gender';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
         $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
@@ -108,11 +108,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // 'status' is required but has no default
         $tableName = 'ramp_enumTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'status';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
         $this->assertTrue($field->isInTable());
         $this->assertTrue($field->isInDB());
@@ -128,11 +128,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // Test isEnum, enum data type & values, and default.
         $tableName = 'ramp_enumTesting';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'gender';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());
@@ -150,11 +150,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // Non-enum type (varchar); length specified
         $tableName = 'ramp_tabletest1';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'name';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());
@@ -170,11 +170,11 @@ class models_BasicFieldWithDBAccessTest extends PHPUnit_Framework_TestCase
     {
         // Non-enum type (int); length not specified
         $tableName = 'ramp_tabletest1';
-        $table = new Application_Model_DbTable_Table($tableName);
+        $table = new Ramp_Table_DbTable_Table($tableName);
         $metaInfo = $table->info(Zend_Db_Table_Abstract::METADATA);
         $whichField = 'id';
 
-        $field = new Application_Model_Field($whichField, array(),
+        $field = new Ramp_Table_Field($whichField, array(),
                                              $metaInfo[$whichField]);
 
         $this->assertTrue($field->isInTable());

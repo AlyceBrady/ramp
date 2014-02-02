@@ -14,7 +14,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
         $tableName = "ramp_valsTableTesting";
 
         $sourceTable =
-                new Application_Model_DbTable_ValidValuesSource($tableName);
+                new Ramp_Table_DbTable_ValidValuesSource($tableName);
         $validVals = array_keys($sourceTable->getValidValues('term'));
 
         $this->assertSame(12, count($validVals));
@@ -29,7 +29,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
         $tableName = "someTable";
 
         $sourceTable =
-                new Application_Model_DbTable_ValidValuesSource($tableName);
+                new Ramp_Table_DbTable_ValidValuesSource($tableName);
         $validVals = array_keys($sourceTable->getValidValues('term'));
 
         $this->assertSame(12, count($validVals));
@@ -44,7 +44,7 @@ class models_DbTableValidValuesSourceTest extends PHPUnit_Framework_TestCase
         $tableName = "ramp_valsTableTesting";
 
         $sourceTable =
-                new Application_Model_DbTable_ValidValuesSource($tableName);
+                new Ramp_Table_DbTable_ValidValuesSource($tableName);
         $validVals = array_keys($sourceTable->getValidValues('nonField'));
 
         $this->assertSame(12, count($validVals));

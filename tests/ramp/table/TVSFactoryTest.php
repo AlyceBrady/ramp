@@ -9,7 +9,7 @@ class models_TVSFactoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_factory = Application_Model_TVSFactory::getInstance();
+        $this->_factory = Ramp_Table_TVSFactory::getInstance();
     }
 
     public function testGetValidSettingFile()
