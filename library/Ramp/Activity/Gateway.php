@@ -237,8 +237,8 @@ class Ramp_Activity_Gateway
      * @param string $actList name of activity list
      * @param array $spec     an array containing activity specification 
      *                        properties (valid or invalid)
-     * @return mixedType      a string for a specification reference or an
-     *                        Application_Model_ActivitySpec object for a 
+     * @return mixedType      a string for a specification reference or a
+     *                        Ramp_Activity_Specification object for a 
      *                        full specification
      * @throws Exception      if the activity is not valid
      */

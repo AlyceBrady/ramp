@@ -20,8 +20,8 @@
  */
 class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
 {
-    const ACTIVE            = Application_Model_DbTable_Users::ACTIVE;
-    const IS_ACTIVE         = Application_Model_DbTable_Users::IS_ACTIVE;
+    const ACTIVE            = Ramp_Auth_DbTable_Users::ACTIVE;
+    const IS_ACTIVE         = Ramp_Auth_DbTable_Users::IS_ACTIVE;
 
     protected $_notValidIdentity = false;   // Assume this is a valid identity
     protected $_pw_not_set_yet = false;     // Assume there is a password
@@ -43,7 +43,7 @@ class Ramp_Auth_Adapter_DbTable extends Zend_Auth_Adapter_DbTable
     public function setCredential($credential)
     {
         // Determine the default password if there is one.
-        $userTable = new Application_Model_DbTable_Users();
+        $userTable = new Ramp_Auth_DbTable_Users();
         $defaultPassword = $userTable->getDefaultPassword();
 
         // Store the GIVEN credential while determining the salt.

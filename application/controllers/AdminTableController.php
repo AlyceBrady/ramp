@@ -27,19 +27,19 @@ class AdminTableController extends TableController
      * Creates a form with the given parameters.  (Abstracted into a 
      * method so that it can be redefined in subclasses.)
      *
-     * @param Application_Model_TableSetting $setTable the table setting
+     * @param Ramp_Table_SetTable $setTable     the table setting
      * @param string $formType     specifies type of form (VIEW, ADD, 
      *                                  EDIT, or SEARCH)
      * @param string $makeSmall    make buttons smaller
      * @param bool   $formSuffix   a suffix to make form name unique on page
      *                             e.g., a row number
      */
-    protected function _getForm(Application_Model_SetTable $setTable,
+    protected function _getForm(Ramp_Table_SetTable $setTable,
                                 $formType = self::VIEW, $makeSmall = false,
                                 $formSuffix = null)
     {
-        return new Application_Form_UserTableEntry($setTable, $formType,
-                                                   $makeSmall, $formSuffix);
+        return new Ramp_Form_Auth_UserTableEntry($setTable, $formType,
+                                                 $makeSmall, $formSuffix);
     }
 
 }

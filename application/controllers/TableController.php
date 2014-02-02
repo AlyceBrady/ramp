@@ -34,8 +34,8 @@ class TableController extends Zend_Controller_Action
     const SETTING_NAME          = '_setting';
     const SEARCH_TYPE           = '_search';
     // const BLOCK_ENTRY_CHOICE    = '_blockEntry';
-    const ANY                   = Application_Model_SetTable::ANY;
-    const ALL                   = Application_Model_SetTable::ALL;
+    const ANY                   = Ramp_Table_SetTable::ANY;
+    const ALL                   = Ramp_Table_SetTable::ALL;
 
     /* labels for forms and buttons */
     const VIEW                  = 'View';       // used by Form
@@ -57,17 +57,17 @@ class TableController extends Zend_Controller_Action
     const SAVE                  = "Save Changes";
 
     /* values for processing search requests */
-    const SEARCH_VALS       = Application_Form_TableRecordEntry::FIELD_VALUES;
+    const SEARCH_VALS       = Ramp_Form_Table_TableRecordEntry::FIELD_VALUES;
 
     // Constant representing an unspecified enum value for a search.
-    const ANY_VAL               = Application_Model_SetTable::ANY_VAL;
+    const ANY_VAL               = Ramp_Table_SetTable::ANY_VAL;
 
     // Constants to index the "same" and "different" fields for split views.
     const SAME                  = "same";
     const DIFFERENT             = "different";
 
     // Constant representing a block entry property in the set table.
-    const BLOCK_ENTRY           = Application_Model_SetTable::BLOCK_ENTRY;
+    const BLOCK_ENTRY           = Ramp_Table_SetTable::BLOCK_ENTRY;
 
     // Constant to use as a suffix on shared data elements.
     const SHARED_DATA           = ".shared";
@@ -132,7 +132,7 @@ class TableController extends Zend_Controller_Action
         if ( $this->_actionName != "check-syntax" )
         {
             $this->_tblViewingSeq = 
-                Application_Model_TVSFactory::getSequenceOrSetting($seqName);
+                Ramp_Table_TVSFactory::getSequenceOrSetting($seqName);
         }
 
 // $this->_debugging = true;
@@ -730,7 +730,7 @@ class TableController extends Zend_Controller_Action
     /**
      * Initializes basic view renderer information from the set table.
      *
-     * @param Application_Model_SetTable  table: setting & db info
+     * @param Ramp_Table_SetTable  table: setting & db info
      */
     protected function _initViewTableInfo($setTable)
     {
@@ -761,7 +761,7 @@ class TableController extends Zend_Controller_Action
      * Builds an error message if there are fields specified in the 
      * table setting that do not exist in the database.
      *
-     * @param Application_Model_SetTable  table: setting & db info
+     * @param Ramp_Table_SetTable  table: setting & db info
      * @return string       error message (or empty string if no error)
      */
     protected function _getExtraneousFieldsErrorMsg($setTable)
@@ -786,18 +786,18 @@ class TableController extends Zend_Controller_Action
      * Creates a form with the given parameters.  (Abstracted into a 
      * method so that it can be redefined in subclasses.)
      *
-     * @param Application_Model_TableSetting $setTable the table setting
+     * @param Ramp_Table_TableSetting $setTable the table setting
      * @param string $formType     specifies type of form (VIEW, ADD, 
      *                                  EDIT, or SEARCH)
      * @param string $makeSmall    make buttons smaller
      * @param bool   $formSuffix   a suffix to make form name unique on page
      *                             e.g., a row number
      */
-    protected function _getForm(Application_Model_SetTable $setTable,
+    protected function _getForm(Ramp_Table_SetTable $setTable,
                                 $formType = self::VIEW, $makeSmall = false,
                                 $formSuffix = null)
     {
-        return new Application_Form_TableRecordEntry($setTable, $formType,
+        return new Ramp_Form_Table_TableRecordEntry($setTable, $formType,
                                                      $makeSmall, $formSuffix);
     }
 
@@ -1141,13 +1141,13 @@ class TableController extends Zend_Controller_Action
     {
         return isset($comparators[$field]) &&
                in_array($comparators[$field],
-                       Application_Form_TableRecordEntry::unaryComparators());
+                       Ramp_Form_Table_TableRecordEntry::unaryComparators());
     }
 
     /**
      * Fill in initial values based on information in setting.
      *
-     * @param Application_Model_SetTable  table: setting & db info
+     * @param Ramp_Table_SetTable  table: setting & db info
      * @param array $data   Column-value pairs representing provided data
      */
     protected function _fillInitValues($setTable, array $data)
@@ -1188,7 +1188,7 @@ class TableController extends Zend_Controller_Action
     /**
      * Gets the record with the initializing information.
      *
-     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param Ramp_Table_SetTable $setTable    setting & db info
      * @param string $sourceTblName  name of table with initializing info
      * @param array $userData        fields with user-supplied data
      */
@@ -1226,7 +1226,7 @@ class TableController extends Zend_Controller_Action
     /**
      * Acquires the lock for the given record in the specified table.
      *
-     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param Ramp_Table_SetTable $setTable    setting & db info
      * @param array $matchingFields  fields and values to search/select for
      */
     protected function _acquireLock($setTable, $matchingFields)
@@ -1235,7 +1235,7 @@ class TableController extends Zend_Controller_Action
         $lockInfo = $this->_getLockInfo($setTable, $matchingFields);
 
         // Get the lock (if possible).
-        $locksTable = new Application_Model_DbTable_Locks();
+        $locksTable = new Ramp_Lock_DbTable_Locks();
         if ( $locksTable->acquireLock($lockInfo) )
         {
             $this->view->amHoldingLock = true;
@@ -1243,7 +1243,7 @@ class TableController extends Zend_Controller_Action
         else
         {
             // Notify user that lock is unavailable.
-            $params = array(Application_Model_DbTable_Locks::USER =>
+            $params = array(Ramp_Lock_DbTable_Locks::USER =>
                             urlencode($user));
             $this->_helper->redirector('unavailable-lock', 'lock', null,
                                        $params);
@@ -1256,7 +1256,7 @@ class TableController extends Zend_Controller_Action
      * the lock information unless the optional $lockInfo parameter is
      * provided.
      *
-     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param Ramp_Table_SetTable $setTable    setting & db info
      * @param array $matchingFields  fields and values to search/select for
      * @param $lockInfo  the information to use to lock (if already known)
      */
@@ -1270,7 +1270,7 @@ class TableController extends Zend_Controller_Action
         }
 
         // Release the lock.
-        $locksTable = new Application_Model_DbTable_Locks();
+        $locksTable = new Ramp_Lock_DbTable_Locks();
         $locksTable->releaseLock($lockInfo);
         $this->view->amHoldingLock = false;
     }
@@ -1280,17 +1280,17 @@ class TableController extends Zend_Controller_Action
      * based on the given set table, the matching fields, and the Lock 
      * Relations table.
      *
-     * @param Application_Model_SetTable $setTable    setting & db info
+     * @param Ramp_Table_SetTable $setTable    setting & db info
      * @param array $matchingFields  fields and values to search/select for
      */
     protected function _getLockInfo($setTable, $matchingFields)
     {
         // Get the locking table and key field name.
-        $lockRelationsTable = new Application_Model_DbTable_LockRelations();
+        $lockRelationsTable = new Ramp_Lock_DbTable_LockRelations();
         $tableName = $setTable->getDbTableName();
         $lookupInfo = $lockRelationsTable->getLockInfo($tableName);
         $keyToLookup =
-            $lookupInfo[Application_Model_DbTable_LockRelations::LOCKING_KEY_NAME];
+            $lookupInfo[Ramp_Lock_DbTable_LockRelations::LOCKING_KEY_NAME];
 
         // Get the key used for locking
         $recordToLock = $setTable->getTableEntry($matchingFields);
@@ -1320,10 +1320,10 @@ class TableController extends Zend_Controller_Action
 
         // Construct $lockInfo object.
         $lockInfo = array();
-        $lockInfo[Application_Model_DbTable_Locks::LOCK_TABLE] =
-            $lookupInfo[Application_Model_DbTable_LockRelations::LOCK_TABLE];
-        $lockInfo[Application_Model_DbTable_Locks::LOCKING_KEY] = $lockingKey;
-        $lockInfo[Application_Model_DbTable_Locks::USER] = $user;
+        $lockInfo[Ramp_Lock_DbTable_Locks::LOCK_TABLE] =
+            $lookupInfo[Ramp_Lock_DbTable_LockRelations::LOCK_TABLE];
+        $lockInfo[Ramp_Lock_DbTable_Locks::LOCKING_KEY] = $lockingKey;
+        $lockInfo[Ramp_Lock_DbTable_Locks::USER] = $user;
 
         return $lockInfo;
 

@@ -19,11 +19,11 @@ class AuthController extends Zend_Controller_Action
 {
 
     /* Keywords related to accessing the Users table and related form. */
-    const USERS_TABLE       = Application_Model_DbTable_Users::TABLE_NAME;
-    const USERNAME          = Application_Model_DbTable_Users::USERNAME;
-    const PASSWORD          = Application_Model_DbTable_Users::PASSWORD;
-    const ACTIVE            = Application_Model_DbTable_Users::ACTIVE;
-    const IS_ACTIVE         = Application_Model_DbTable_Users::IS_ACTIVE;
+    const USERS_TABLE       = Ramp_Auth_DbTable_Users::TABLE_NAME;
+    const USERNAME          = Ramp_Auth_DbTable_Users::USERNAME;
+    const PASSWORD          = Ramp_Auth_DbTable_Users::PASSWORD;
+    const ACTIVE            = Ramp_Auth_DbTable_Users::ACTIVE;
+    const IS_ACTIVE         = Ramp_Auth_DbTable_Users::IS_ACTIVE;
 
     /* Form keywords related to initializing a password. */
     const NEW_PW            = 'new_password';
@@ -76,7 +76,7 @@ class AuthController extends Zend_Controller_Action
     public function loginAction()
     {
         // Instantiate the form that asks the user to log in.
-        $form = new Application_Form_LoginForm();
+        $form = new Ramp_Form_Auth_LoginForm();
 
         // Initialize the error message to be empty.
         $this->view->formResponse = '';
@@ -158,7 +158,7 @@ class AuthController extends Zend_Controller_Action
                         urldecode($this->_getParam(self::USERNAME));
 
         // Instantiate the form that prompts user for new password.
-        $form = new Application_Form_SetPasswordForm();
+        $form = new Ramp_Form_Auth_SetPasswordForm();
         $form->populate(array(self::USERNAME => $username));
         $this->view->formResponse = "";
 
@@ -227,7 +227,7 @@ class AuthController extends Zend_Controller_Action
         $this->view->username = $username = $auth->getIdentity()->username;
 
         // Instantiate the form that prompts user for new password.
-        $form = new Application_Form_ChangePasswordForm();
+        $form = new Ramp_Form_Auth_ChangePasswordForm();
         $form->populate(array(self::USERNAME => $username));
         $this->view->formResponse = "";
 
@@ -284,7 +284,7 @@ class AuthController extends Zend_Controller_Action
     public function resetPasswordAction()
     {
         // Instantiate the form that asks whose password to reset.
-        $form = new Application_Form_ResetPasswordForm();
+        $form = new Ramp_Form_Auth_ResetPasswordForm();
 
         // Initialize the messages to be empty.
         $this->view->formResponse = '';
@@ -304,7 +304,7 @@ class AuthController extends Zend_Controller_Action
             if ($form->isValid($formData))
             {
                 $username = $formData[self::USERNAME];
-                $userTable = new Application_Model_DbTable_Users();
+                $userTable = new Ramp_Auth_DbTable_Users();
                 if ( $userTable->resetPassword($username) )
                 {
                     $this->view->msg = 'Password for ' . $username .
@@ -337,7 +337,7 @@ class AuthController extends Zend_Controller_Action
 
         // Get the Access Control List containing defined roles and 
         // resources.
-        $userInfo = new Application_Model_DbTable_Users();
+        $userInfo = new Ramp_Auth_DbTable_Users();
         $roles = $userInfo->getRoles();
 
         // Check the access rules to validate whether each role and 
@@ -364,7 +364,7 @@ class AuthController extends Zend_Controller_Action
 
         // Get the Access Control List containing defined roles and 
         // resources.
-        $authInfo = new Application_Model_DbTable_Auths();
+        $authInfo = new Ramp_Auth_DbTable_Auths();
         $accessRules = $authInfo->getAccessRules();
 
         // Check the access rules to validate whether each role and 
@@ -446,13 +446,13 @@ class AuthController extends Zend_Controller_Action
         if ( $result->isValid() )
         {
             // Get user information to save as persistent identity.
-            $userTable = new Application_Model_DbTable_Users();
+            $userTable = new Ramp_Auth_DbTable_Users();
             $userInfo = $userTable->getUserInfo($username);
             if ( $userInfo->{self::ACTIVE} == self::IS_ACTIVE )
             {
                 // Save persistent identity info with session; set timeout.
                 $this->_saveUserSessionInfo($auth, $userInfo);
-                Application_Model_SessionTimer::startSessionTimer();
+                Ramp_Auth_SessionTimer::startSessionTimer();
 
                 // Log messages or successful user login.
                 // $this->_logLogin($username, $result);
@@ -662,7 +662,7 @@ class AuthController extends Zend_Controller_Action
         if ( $new_password == $confirmed_password )
         {
             // Encrypt and save the new password.
-            $userTable = new Application_Model_DbTable_Users();
+            $userTable = new Ramp_Auth_DbTable_Users();
             $userTable->setPassword($username, $new_password);
             return $new_password;
         }

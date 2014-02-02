@@ -25,13 +25,13 @@
 
 // Establish status codes.
 $statusCodes = array(
-        // Application_Model_SetTable::UNKNOWN => 'icon-question-sign',
-        Application_Model_SetTable::BLANK =>
+        // Ramp_Table_SetTable::UNKNOWN => 'icon-question-sign',
+        Ramp_Table_SetTable::BLANK =>
             array('icon' => 'icon-minus', 'text' => 'Empty'),
-        Application_Model_SetTable::PARTIAL =>
+        Ramp_Table_SetTable::PARTIAL =>
             array('icon' => 'icon-adjust',
                   'text' => 'Missing recommended fields'),
-        Application_Model_SetTable::GOOD =>
+        Ramp_Table_SetTable::GOOD =>
             array('icon' => 'icon-ok',
                   'text' => 'Has all recommended fields')
               /* Other possibilities: 'icon-ok', 'icon-ok-sign' */

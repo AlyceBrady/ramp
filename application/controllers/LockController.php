@@ -23,8 +23,8 @@ class LockController extends Zend_Controller_Action
     const RELEASE_LOCK  = 'Free Lock';
     const DONE          = 'Done';
     const CANCEL        = 'Cancel';
-    const USER          = Application_Model_DbTable_Locks::USER;
-    const LOCKS         = Application_Form_FreeLock::LOCKS;
+    const USER          = Ramp_Lock_DbTable_Locks::USER;
+    const LOCKS         = Ramp_Form_Lock_FreeLock::LOCKS;
 
     public function init()
     {
@@ -46,7 +46,7 @@ class LockController extends Zend_Controller_Action
     {
         // User should have been passed as a parameter.
         $user =
-            urldecode($this->_getParam(Application_Model_DbTable_Locks::USER,
+            urldecode($this->_getParam(Ramp_Lock_DbTable_Locks::USER,
                                        ""));
         $byWhom = empty($user) ? "" : " by $user";
         $this->view->errorMsg = "This record is already locked$byWhom.";
@@ -71,7 +71,7 @@ class LockController extends Zend_Controller_Action
         if ( ! $this->getRequest()->isPost() )
         {
             // Start Phase 1: Choose the user holding the errant lock(s).
-            $form = new Application_Form_ChooseLockUser();
+            $form = new Ramp_Form_Lock_ChooseLockUser();
 
             // Render the correct form.
             $this->view->form = $form;
@@ -80,12 +80,12 @@ class LockController extends Zend_Controller_Action
         elseif ( $submittedButton == self::FIND_LOCKS )
         {
             // Process Phase 1:  Get the chosen user.
-            $form = new Application_Form_ChooseLockUser();
+            $form = new Ramp_Form_Lock_ChooseLockUser();
             $formData = $this->getRequest()->getPost();
             $user = $formData[self::USER];
 
             // Start Phase 2: Choose the lock to release.
-            $form = new Application_Form_FreeLock($user);
+            $form = new Ramp_Form_Lock_FreeLock($user);
             $this->view->buttonList = array(self::RELEASE_LOCK, self::CANCEL);
 
             // Render the correct form.
@@ -97,7 +97,7 @@ class LockController extends Zend_Controller_Action
             $formData = $this->getRequest()->getPost();
             $lockInfo = $formData[self::LOCKS];
             $components = explode('.', $lockInfo);
-            $lockTable = new Application_Model_DbTable_Locks();
+            $lockTable = new Ramp_Lock_DbTable_Locks();
             $lockTable->freeLock($components[0], $components[1]);
             $this->view->msg = 'Lock should now be released.';
             $this->view->buttonList = array(self::DONE);

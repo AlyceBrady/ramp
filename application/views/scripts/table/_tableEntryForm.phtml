@@ -35,11 +35,11 @@ $isSearch = isset($this->search) && $this->search;
 
 // Key information from form.
 $formType = $form->getFormType();
-$isModifyingForm = $formType == Application_Form_TableRecordEntry::ADD ||
-                   $formType == Application_Form_TableRecordEntry::EDIT;
+$isModifyingForm = $formType == Ramp_Form_Table_TableRecordEntry::ADD ||
+                   $formType == Ramp_Form_Table_TableRecordEntry::EDIT;
 $fieldElts = $form->getFieldElements();
 $searchOpElts = $form->getComparatorElements();
-$suffix = Application_Form_TableRecordEntry::SEARCH_COMP_SUFFIX;
+$suffix = Ramp_Form_Table_TableRecordEntry::SEARCH_COMP_SUFFIX;
 
 // How to set up field lookup link if field value comes from external table.
 $extSearchParams = array('controller' => 'table', 'action' => 'search');

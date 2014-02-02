@@ -126,7 +126,7 @@ class Ramp_Acl extends Zend_Acl
     {
         // Some authorization resources and rules come from the 
         // Authentication/Authorization database.
-        $this->_authInfo = new Application_Model_DbTable_Auths();
+        $this->_authInfo = new Ramp_Auth_DbTable_Auths();
 
 	// Table access resources specify resources by categories of
 	// actions rather than by individual actions.  Create a
@@ -263,7 +263,7 @@ class Ramp_Acl extends Zend_Acl
         // from Registry and Database.
         $configInfo = Ramp_RegistryFacade::getInstance();
         $regRules = $configInfo->getAclRules();
-        $dbAuthInfo = new Application_Model_DbTable_Auths();
+        $dbAuthInfo = new Ramp_Auth_DbTable_Auths();
         $dbRules = $dbAuthInfo->getAccessRules();
         return array_merge($regRules, $dbRules);
         /*

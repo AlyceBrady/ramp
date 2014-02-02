@@ -86,7 +86,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
         }
 
         // Authorized!  Reset session timer and return.
-        Application_Model_SessionTimer::startSessionTimer();
+        Ramp_Auth_SessionTimer::startSessionTimer();
         return;
 
     }
@@ -126,7 +126,7 @@ class Ramp_Controller_Plugin_ACL extends Zend_Controller_Plugin_Abstract
             try
             {
                 $tblViewingSeq =
-                    Application_Model_TVSFactory::getSequenceOrSetting($param);
+                    Ramp_Table_TVSFactory::getSequenceOrSetting($param);
                 $setTable = $tblViewingSeq->getSetTableForAction($action);
                 $mainTable = $setTable->getDbTableName();
                 $resources[] = $prefix . Ramp_Acl::DELIM . $mainTable;

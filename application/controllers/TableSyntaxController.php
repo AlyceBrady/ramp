@@ -26,7 +26,7 @@ class TableSyntaxController extends Zend_Controller_Action
     const CANCEL        = 'Cancel';
     const DONE          = 'Done';
 
-    const FILENAME = Application_Form_GetSettingName::SETTING_NAME;
+    const FILENAME = Ramp_Form_Table_GetSettingName::SETTING_NAME;
 
     protected $_submittedButton;
 
@@ -47,7 +47,7 @@ class TableSyntaxController extends Zend_Controller_Action
     public function indexAction()
     {
         // Instantiate the form that asks for a sequence setting file.
-        $form = new Application_Form_GetSettingName();
+        $form = new Ramp_Form_Table_GetSettingName();
         $this->view->form = $form;
 
         // Initialize the error message to be empty.
@@ -71,7 +71,7 @@ class TableSyntaxController extends Zend_Controller_Action
 
                 $this->view->form = null;
                 $this->view->messages =
-                    Application_Model_TableViewSequence::checkSyntax($file);
+                    Ramp_Table_TableViewSequence::checkSyntax($file);
                 $this->view->messages[] = "";
 
                 $this->view->buttonList = array(self::CHECK_ANOTHER,
