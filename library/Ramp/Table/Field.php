@@ -45,6 +45,7 @@ class Ramp_Table_Field
     const READ_ONLY     = 'readOnly';
     const RECOMMENDED   = 'recommended';
     const DISCOURAGED   = 'discouraged';
+    const EXPR          = 'expression';
     const INIT_TBL      = 'initFrom';
     const INIT_FIELD    = 'initFromField';
     const IMPORTED      = 'importedFrom';
@@ -87,7 +88,10 @@ class Ramp_Table_Field
                                       // left alone (informational)
 
     /** @var bool */
-    protected $_inDB;           // Is the field in the database table?
+    protected $_inTable;        // Is the field in the database table?
+
+    /** @var string */
+    protected $_expression;     // expression
 
     /** @var string */
     protected $_initTable;      // name of setting to use to initialize field
@@ -176,6 +180,13 @@ class Ramp_Table_Field
                               $settingInfo[self::RECOMMENDED];
         $this->_discouraged = isset($settingInfo[self::DISCOURAGED]) &&
                               $settingInfo[self::DISCOURAGED];
+        if ( isset($settingInfo[self::EXPR]) )
+        {
+            $this->_expression = '(' . $settingInfo[self::EXPR] . ')';
+            $this->_readOnly = true;
+        }
+        else
+            { $this->_expression = null; }
         $this->_initTable = isset($settingInfo[self::INIT_TBL]) ?
                             $settingInfo[self::INIT_TBL] :
                             null;
@@ -277,6 +288,26 @@ class Ramp_Table_Field
     public function isInTable()
     {
         return $this->_inTable;
+    }
+
+    /**
+     * Is this an expression rather than a field?
+     *
+     * @return bool
+     */
+    public function isExpression()
+    {
+        return $this->_expression !== null;
+    }
+
+    /**
+     * Get the expression from which this 'field' should be set.
+     *
+     * @return string  the expression to evaluate
+     */
+    public function getExpression()
+    {
+        return $this->_expression;
     }
 
     /**

@@ -4,6 +4,7 @@
   [Table Properties](#tableProps) |
   [Field Properties](#fieldProps) |
   [Viewing Sequences](#viewing_sequences) |
+  [Expressions as Fields](#expressions) |
   [Importing Data](#import) |
   [Initializing From Other Tables](#initFrom) |
   [External References](#external) ] |
@@ -320,6 +321,25 @@ A more realistic example is in
 <h2 id="advanced">
 Advanced Table and Field Features
 </h2>
+
+<h3 id="expressions">
+Expressions as fields:
+</h3>
+
+Usually fields in a table setting refer to actual fields or columns in
+the corresponding database field, but it is also possible to create a
+"field" that refers to an SQL expression instead, as in the example
+below.
+
+        field.numChildren.label = "Number of Children"
+        field.numChildren.expression = "COUNT(Children.name)"
+
+Expressions may include standard functions, such as `COUNT`,
+user-defined functions, or any legal SQL expression.
+If the expression refers to a field in another table, as in this
+example, then you need to provide a `tableConnection` for that table
+just as if you were importing the field (see [the next
+section](#import)).
 
 <h3 id="import">
 Importing data from other tables:

@@ -64,10 +64,10 @@ GRANT ALL ON `smart_automated_tests`.* TO 'smartdevdba'@'localhost';
 --     (ramp_auth_auths); that table might, for example, only allow
 --     read-only access to a demo database for non-admin users.
 
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON `smart_dev`.*
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, EXECUTE ON `smart_dev`.*
     TO 'smartdev'@'localhost';
 
-GRANT DROP, CREATE, SELECT, INSERT, UPDATE, DELETE, TRIGGER
+GRANT DROP, CREATE, SELECT, INSERT, UPDATE, DELETE, TRIGGER, EXECUTE
     ON `smart_automated_tests`.* TO 'smartdev'@'localhost';
 
 

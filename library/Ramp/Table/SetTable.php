@@ -87,6 +87,9 @@ class Ramp_Table_SetTable
     protected $_inTable = array();  // all fields in local database table
 
     /** @var array */
+    protected $_expressions = array();  // all 'fields' that are expressions
+
+    /** @var array */
     protected $_sourceTables = array(); // table names (not aliases)
 
     /** @var array */
@@ -472,7 +475,7 @@ class Ramp_Table_SetTable
                                           $metaInfo, $this->_showColsByDefault);
 
             // Add field (or its table) to appropriate field lists.
-            if ( $field->isinDb() )
+            if ( $field->isinDb() || $field->isExpression() )
                 { $this->_categorizeField($colName, $field); }
             else
                 { $this->_undefinedFieldNames[] = $colName; }
@@ -493,7 +496,11 @@ class Ramp_Table_SetTable
     {
         if ( $field->isInTable() )
             { $this->_inTable[$name] = $field; }
-        else  // imported
+        else if ( $field->isExpression() )
+        {
+            $this->_expressions[$name] = $field;
+        }
+        else if ( $field->isVisible() )  // imported, visible fields
         {
             $table = $field->getImportTable();
             if ( ! isset($this->_importAliases[$table]) )
@@ -509,6 +516,11 @@ class Ramp_Table_SetTable
             }
             $this->_importAliases[$table][$name] = $field->resolveAlias();
             $this->_allImportFields[$name] = $field;
+        }
+        else
+        {
+            // Ignore invisible imported fields.
+            return;
         }
 
         if ( $field->isExternalTableLink() )
@@ -582,12 +594,17 @@ class Ramp_Table_SetTable
     protected function _setVisibilityOfField($fieldName, $visible)
     {
         // Make a clone of the field with the correct visibility, and 
-        // put the clone in the inTable, allImportFields, and/or 
+        // put the clone in the inTable, expressions, allImportFields, and/or 
         // keys lists, as appropriate.
         if ( isset($this->_inTable[$fieldName]) )
         {
             $clone = clone $this->_inTable[$fieldName];
             $this->_inTable[$fieldName] = $clone;
+        }
+        else if ( isset($this->_expressions[$fieldName]) )
+        {
+            $clone = clone $this->_expressions[$fieldName];
+            $this->_expressions[$fieldName] = $clone;
         }
         else if ( isset($this->_allImportFields[$fieldName]) )
         {
@@ -727,7 +744,7 @@ class Ramp_Table_SetTable
      */
     public function getFields()
     {
-        return $this->_inTable + $this->_allImportFields;
+        return $this->_inTable + $this->_expressions + $this->_allImportFields;
     }
 
     /**
@@ -770,6 +787,51 @@ class Ramp_Table_SetTable
     }
 
     /**
+     * Gets field information for all "local" (non-imported) fields
+     * (see getLocalRelevantFields for details), and, for all "fields"
+     * that actually represent expressions, replace the field names
+     * with the expression.
+     *
+     * @return array    array of Ramp_Table_Field objects
+     */
+    public function getLocalSelectObjects()
+    {
+        $result = array();
+        $localFieldsAndExprs = $this->getLocalRelevantFields();
+        foreach ( $localFieldsAndExprs as $fieldName => $field )
+        {
+            if ( $field->isExpression() )
+            {
+                $result[$fieldName] = new Zend_Db_Expr($field->getExpression());
+            }
+            else
+            {
+                $result[] = $fieldName;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Gets field information (labels, footnotes, meta information 
+     * from the database, etc.) for all "local" fields (those not
+     * imported from another table) that are relevant to a table or 
+     * record display, including primary keys and other, non-hidden 
+     * fields.
+     * If the table setting specifies to show all fields by default, 
+     * then even fields that were not included in the table setting 
+     * will be included.  In that case, the field names from the 
+     * database will be used as field labels/headings.
+     *
+     * @return array    array of Ramp_Table_Field objects
+     */
+    public function getLocalRelevantFields()
+    {
+        return array_diff_key($this->getRelevantFields(),
+                              $this->_allImportFields);
+    }
+
+    /**
      * Gets field information (labels, footnotes, meta information 
      * from the database, etc.) for all fields relevant to a table or 
      * record display, including visible fields, primary keys, and
@@ -804,25 +866,6 @@ class Ramp_Table_SetTable
             }
         }
         return $this->_visibleFields + $this->getPrimaryKeys() + $extTblFields;
-    }
-
-    /**
-     * Gets field information (labels, footnotes, meta information 
-     * from the database, etc.) for all "local" fields (those not
-     * imported from another table) that are relevant to a table or 
-     * record display, including primary keys and other, non-hidden 
-     * fields.
-     * If the table setting specifies to show all fields by default, 
-     * then even fields that were not included in the table setting 
-     * will be included.  In that case, the field names from the 
-     * database will be used as field labels/headings.
-     *
-     * @return array    array of Ramp_Table_Field objects
-     */
-    public function getLocalRelevantFields()
-    {
-        return array_diff_key($this->getRelevantFields(),
-                              $this->_allImportFields);
     }
 
     /**
@@ -944,6 +987,8 @@ class Ramp_Table_SetTable
     {
         if ( isset($this->_inTable[$fieldName]) )
             { return $this->_inTable[$fieldName]; }
+        elseif ( isset($this->_expressions[$fieldName]) )
+            { return $this->_expressions[$fieldName]; }
         elseif ( isset($this->_allImportFields[$fieldName]) )
             { return $this->_allImportFields[$fieldName]; }
         else
@@ -985,7 +1030,7 @@ class Ramp_Table_SetTable
         $db = $this->_dbModel->getAdapter();
         $select = $db->select()
                         ->from($this->_dbTableName,
-                               array_keys($this->getLocalRelevantFields()));
+                               $this->getLocalSelectObjects());
         foreach ( $this->_joinExpressions as $localName => $expression )
         {
             // Joined table and/or fields might have aliases; resolve these.
@@ -1012,7 +1057,8 @@ class Ramp_Table_SetTable
             $fields = $this->_importAliases[$localName];
             foreach ( $fields as $importedField )
             {
-                if ( ! in_array($importedField, $cols) )
+                if ( isset($this->_visible[$importedField]) &&
+                     ! in_array($importedField, $cols) )
                 {
                     throw new Exception("Error: $importedField is not a " .
                         "valid field in table $realName.");
@@ -1025,6 +1071,10 @@ class Ramp_Table_SetTable
         $whereMethod = ($searchType == self::ANY) ? "orwhere" : "where";
         foreach ( $data as $fieldName => $value )
         {
+            // Skip expressions.
+            if ( isset($this->_expressions[$fieldName]) )
+                { continue; }
+
             // Create "condition with placeholder" => $vaue pair.
             $fieldObj = $this->getFieldObject($fieldName);
             if ( $fieldObj == null )
@@ -1064,12 +1114,15 @@ class Ramp_Table_SetTable
         try
         {
             $rows = $db->query($select)->fetchAll();
+// throw new Exception("fetched data: " . print_r($rows, true));
             return $rows;
         }
         catch (Exception $e)
         {
             throw new Exception("Error: Invalid data request using table " .
-                                "setting " . $this->_settingName . ".");
+                "setting " . $this->_settingName . "."
+. "<br/>query was: " . $select->__toString()
+            );
         }
     }
 

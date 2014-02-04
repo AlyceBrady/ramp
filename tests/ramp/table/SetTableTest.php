@@ -17,7 +17,7 @@ class models_SetTableTest extends PHPUnit_Framework_TestCase
     const BAD_TC_TBL = 'settingTests/badTableConnectionTable';
     const BAD_TC_ATTRIBUTE = "settingTests/badTableConnectionAttribute";
     const IMPORT_W_NO_TC = "settingTests/badImportWithNoConnectionClause";
-    const TC_WITH_ALIAS = "settingTests/tableConnectionWithAlias";
+    const TC_WITH_ALIAS = "settingTests/TableConnectionWithAlias";
 
     protected $_settingTests;
     protected $_basic_setTable_name;

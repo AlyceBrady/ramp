@@ -62,5 +62,6 @@ GRANT ALL ON `smart_demo`.* TO 'smartdemodba'@'localhost';
 --     just grant SELECT privileges to the database, e.g.,
 --         GRANT SELECT ON `smart_demo`.* TO 'smartdemo'@'localhost';
 
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON `smart_demo`.* TO 'smartdemo'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, EXECUTE
+    ON `smart_demo`.* TO 'smartdemo'@'localhost';
 
