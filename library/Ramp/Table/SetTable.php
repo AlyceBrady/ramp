@@ -25,6 +25,7 @@ class Ramp_Table_SetTable
     const DESCRIPTION           = 'tableDescription';  // unused?
     const TABLE_FOOTNOTE        = 'tableFootnote';
     const CONNECTED_TBL         = 'tableConnection';
+    const SORT_ORDER            = 'tableSortOrder';
     const INIT_TBL_REF          = 'initTableRef';
     const EXTERNAL_TBL          = 'externalTableRef';
     const SHOW_COLS_BY_DEFAULT  = 'tableShowColsByDefault';
@@ -79,6 +80,9 @@ class Ramp_Table_SetTable
 
     /** @var string */
     protected $_tableFootnote;      // table footnote
+
+    /** @var string */
+    protected $_sortOrder;          // sort order
 
     /** @var bool */
     protected $_showColsByDefault;  // show all fields unless hidden?
@@ -148,7 +152,8 @@ class Ramp_Table_SetTable
     public static function validTableProps()
     {
         return array(self::TABLE_NAME, self::TITLE, self::DESCRIPTION,
-                     self::TABLE_FOOTNOTE, self::CONNECTED_TBL,
+                     self::TABLE_FOOTNOTE, self::SORT_ORDER,
+                     self::CONNECTED_TBL,
                      self::INIT_TBL_REF, self::EXTERNAL_TBL,
                      self::SHOW_COLS_BY_DEFAULT, self::FIELDS,
                      self::BLOCK_ENTRY,
@@ -247,6 +252,9 @@ class Ramp_Table_SetTable
                             "";
         $this->_tableFootnote = isset($settingInfo[self::TABLE_FOOTNOTE]) ?
                             $settingInfo[self::TABLE_FOOTNOTE] :
+                            "";
+        $this->_sortOrder = isset($settingInfo[self::SORT_ORDER]) ?
+                            $settingInfo[self::SORT_ORDER] :
                             "";
         $this->_showColsByDefault =
                     isset($settingInfo[self::SHOW_COLS_BY_DEFAULT]) ?
@@ -348,46 +356,6 @@ class Ramp_Table_SetTable
             $this->_sourceTables[$table] = $realTable;
         }
     }
-
-    /**
-     * UNUSED:  The formatting requirements were too restrictive;
-     * any legal conditional expression could be valid.
-     *
-     * Checks that the given expression is correctly formatted:
-     *    LocalTbl.localField = ExtTable.extField
-     * and adds the expression for the given table to the list of
-     * join expressions as an association.
-     *
-     * @throws Exception if the join expression is badly formatted
-    protected function _addJoinExpression($table, $expression)
-    {
-        $components = explode('=', $expression);
-        if ( count($components) == 2 )
-        {
-            $goodFormat = true;
-            foreach ( $components as $component )
-            {
-                $innerComponents = explode('.', trim($component));
-                if ( count($innerComponents) != 2 )
-                {
-                    $goodFormat = false;
-                }
-            }
-            if ( $goodFormat )
-            {
-                $this->_joinExpressions[$table][self::CONNECTION] = $expression;
-                return;
-            }
-        }
-
-        throw new Exception("Table connection for " . $table .
-            " does not have the required format: \n     " .
-                self::CONNECTED_TBL . "." . $table . "[.connection] =" .
-                "\"LocalTbl.localField = ExtTable.extField\"" .
-                " " . $expression
-                );
-    }
-     */
 
     /**
      * Initializes references to an external table.
@@ -722,6 +690,17 @@ class Ramp_Table_SetTable
     }
 
     /**
+     * Gets the sort order from the table setting.  If no 
+     * sort order was provided, returns an empty string.
+     *
+     * return string    sort order
+     */
+    public function getSortOrder()
+    {
+        return $this->_sortOrder;
+    }
+
+    /**
      * Gets the names of any fields that were specified in the table 
      * setting but do not exist in the database.
      *
@@ -1031,6 +1010,10 @@ class Ramp_Table_SetTable
         $select = $db->select()
                         ->from($this->_dbTableName,
                                $this->getLocalSelectObjects());
+        if ( ! empty($this->_sortOrder) )
+        {
+            $select->order(array_map("trim", explode(',', $this->_sortOrder)));
+        }
         foreach ( $this->_joinExpressions as $localName => $expression )
         {
             // Joined table and/or fields might have aliases; resolve these.
@@ -1121,7 +1104,7 @@ class Ramp_Table_SetTable
         {
             throw new Exception("Error: Invalid data request using table " .
                 "setting " . $this->_settingName . "."
-. "<br/>query was: " . $select->__toString()
+                . "<br/><br/>SQL Query was:<br/>" . $select->__toString()
             );
         }
     }
@@ -1449,6 +1432,8 @@ class Ramp_Table_SetTable
             ($this->_description ? $this->_description : $absent);
         $this->_error_msgs[] = "tableFootnote: " .
             ($this->_tableFootnote ? $this->_tableFootnote : $absent);
+        $this->_error_msgs[] = "sort order: " .
+            ($this->_sortOrder ? $this->_sortOrder : $absent);
         $this->_error_msgs[] = "showColsByDefault: " .
             ($this->_showColsByDefault ? "true" : "false");
 
