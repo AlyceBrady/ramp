@@ -5,7 +5,7 @@
 --
 
 
-USE `smart_dev`;
+USE `smart_demo`;
 
 DROP TRIGGER IF EXISTS prefName_insert;
 DROP TRIGGER IF EXISTS prefName_update;

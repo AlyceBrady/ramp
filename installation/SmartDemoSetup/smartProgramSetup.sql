@@ -3,7 +3,7 @@
 --
 
 
-USE `smart_dev`;
+USE `smart_demo`;
 
 -- NOTE: Once the Requirements table & its relatives have been set up,
 -- dropping AcadProgram will require dropping some Requirements tables

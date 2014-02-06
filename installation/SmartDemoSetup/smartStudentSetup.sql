@@ -3,7 +3,7 @@
 --
 
 
-USE `smart_dev`;
+USE `smart_demo`;
 
 -- Before dropping Student, need to drop table(s) that depend on it.
 SOURCE dropSmartStudentDependencies.sql
