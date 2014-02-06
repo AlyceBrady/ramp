@@ -239,6 +239,7 @@ class Ramp_Form_Table_TableRecordEntry extends Zend_Form
 
     /**
      * Returns true if the given field is read-only.
+     * Expression fields are always read-only.
      * Everything is read-only for viewing and deletion pages.
      * Nothing is read-only for searches.
      * Imported fields are read-only when adding new records.
@@ -247,7 +248,8 @@ class Ramp_Form_Table_TableRecordEntry extends Zend_Form
      */
     public function fieldIsReadOnly($field)
     {
-        return $this->_formType == self::VIEW ||
+        return $field->isExpression() ||
+               $this->_formType == self::VIEW ||
                $this->_formType == self::DEL ||
                ( $field->isImported() && $this->_formType != self::SEARCH ) ||
                ( $this->_formType == self::ADD && 
