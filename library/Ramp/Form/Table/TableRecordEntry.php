@@ -325,8 +325,7 @@ class Ramp_Form_Table_TableRecordEntry extends Zend_Form
         $ddName = "$name" . self::SEARCH_COMP_SUFFIX;
         $comparatorElement = new Zend_Form_Element_Select($ddName);
         $comparatorOptions = self::validComparators();
-        $comparatorElement->setLabel($label)
-                          ->setMultiOptions($comparatorOptions);
+        $comparatorElement->setMultiOptions($comparatorOptions);
         $comparatorElement = $this->_buildDecorators($comparatorElement);
         $comparatorElement->class = self::COMPARATOR_CLASS_INFO;
 
