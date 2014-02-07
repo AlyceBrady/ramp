@@ -37,9 +37,16 @@ foreach ( $extRefs as $extTable => $refObj ) :
     // external record (all/some/no recommended fields filled in).
     $searchFields = $refObj->xlFieldValuePairs($formData);
     $controller = $refObj->getController();
-    $externalTable = $refObj->getViewingSeq()->getSetTableForAdding();
+    try {
+        $externalTable = $refObj->getViewingSeq()->getSetTableForAdding();
+        $status = $externalTable->getStatusOfRecord($searchFields);
+    }
+    catch(Exception $e)
+    {
+        throw new Exception("Reference to $extTable at bottom of page: " .
+            $e->getMessage());
+    }
 
-    $status = $externalTable->getStatusOfRecord($searchFields);
     echo "<li>";
     echo $this->partial("table/_externalRef.phtml",
                     array('table' => $extTable, 'status' => $status));
