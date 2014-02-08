@@ -74,6 +74,22 @@ class Ramp_Lock_DbTable_Locks extends Zend_Db_Table_Abstract
     }
 
     /**
+     * Releases any locks held by the given user.
+     */
+    public function releaseLocksHeldBy($user)
+    {
+        // Lock the locks table to acquire the lock on $db_table.
+        $this->getAdapter()->beginTransaction();
+
+        // Get the lock information, if it exists.
+        $where = array((self::USER . ' = ?') => $user);
+        $numRows = $this->delete($where);
+
+        $this->getAdapter()->commit();
+        return;
+    }
+
+    /**
      * Releases a lock administratively, regardless of who the user is.
      */
     public function freeLock($lock_table, $lock_key)

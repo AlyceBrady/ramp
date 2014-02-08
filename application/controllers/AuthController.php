@@ -75,6 +75,13 @@ class AuthController extends Zend_Controller_Action
      */ 
     public function loginAction()
     {
+        // Is the user already logged in?  Go directly to destination.
+        $auth = Zend_Auth::getInstance();
+        if ( $auth->hasIdentity() )
+        {
+            $this->_goToAttemptedDestOrHome();
+        }
+
         // Instantiate the form that asks the user to log in.
         $form = new Ramp_Form_Auth_LoginForm();
 
@@ -98,6 +105,10 @@ class AuthController extends Zend_Controller_Action
                 $password = $formData[self::PASSWORD];
                 if ( $this->_authenticate($username, $password) )
                 {
+                    // Release any stale locks previously held by this user.
+                    $locksTable = new Ramp_Lock_DbTable_Locks();
+                    $locksTable->releaseLocksHeldBy($username);
+
                     // If user was attempting to go somewhere, go there.
                     // Otherwise, go to Home page.
                     $this->_goToAttemptedDestOrHome();
