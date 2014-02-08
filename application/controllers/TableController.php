@@ -199,15 +199,18 @@ class TableController extends Zend_Controller_Action
         $matchAbbrev = $this->_matchAbbrevs[$buttonLabel];
         $rows = $setTable->getTableEntries($data, $comparators, $matchAbbrev);
         $numResults = count($rows);
+        /*
         if ( $numResults == 1 )
         {
-            // One match found.
+            // One match found -- show individual record.
             $keyInfo = $setTable->getKeyInfo($rows[0]);
             $this->_goTo('record-view', $keyInfo);
         }
         elseif ( $numResults > 1 )
+         */
+        if ( $numResults > 0 )
         {
-            // Multiple matches found.
+            // Show results as a list.
             $this->_goTo($this->_displayAllView, $data, $comparators,
                          $matchAbbrev);
         }

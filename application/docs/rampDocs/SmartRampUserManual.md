@@ -215,6 +215,9 @@ have values, a half-filled icon (<i class='icon-adjust'></i>) indicates
 that some, but not all, recommended fields have values, while a dashed
 line icon (<i class='icon-minus'></i>) indicates that no recommended
 fields have values.
+[Note:  Only the List View has the three icons at the right of each
+record, even though the illustrations in this document also show them in
+Table and Split Views.]
 
 Two of the buttons on a List page bring up other views of the same
 records.  The "Tabular Display" button brings up a table view that has
@@ -257,7 +260,7 @@ of records displayed as a simple table.
 Viewing and Editing Records
 </h3>
 
-From a list, table, or split-view display, you can "zoom in" on a
+From a list display, you can "zoom in" on a
 particular record by clicking on the magnifying glass
 (<i class='icon-search'></i>) at the end of the record row.  The record
 view format is similar to the format of a search page, except that it
@@ -313,6 +316,16 @@ The buttons on the right side of the screen allow you to save your
 changes, reset the values in all the fields to the values they had when
 you came to the page, cancel your editing and go back to the Record View, or
 delete this record entirely.
+
+Some tables support a special "Edit Records in a Block" button if the
+[table setting](#settings) for the table supports block editing.  A block
+editing page is similar to a split-view entry, except that some of the
+fields in the lower half of the screen will be text fields or drop-down
+menus for editing multiple records at a time.  An example
+where this would be useful would be entering the grades for all the
+students in a given class.
+
+<img src="/images/RampUserManual/BlockEdit.png" width="600px" />
 
 <h4 id="add">
 Adding New Records

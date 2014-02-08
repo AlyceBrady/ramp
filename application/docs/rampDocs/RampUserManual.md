@@ -29,6 +29,22 @@ The program -- the underlying engine for populating tables, displaying
 tables in several different formats, and updating data -- remains
 the same.
 
+In particular, for any database
+table for which a table setting has been defined, Ramp supports:
+
+ * A search mechanism for finding records based on values in fields,
+
+ * A table view for viewing a set of table records with column headings,
+
+ * A list view for viewing table records (often just a defined
+   subset of columns, useful for selecting a single record from
+   a search that yielded multiple results),
+
+ * A single-record view for viewing records in their entirety,
+   modifying them, or adding new records to the table. Single-record
+   views may also contain links to other, related tables or
+   records if the relationships are defined in the table setting.
+
 Although Ramp can be used to manage records and activities tied to many
 types of applications, most of the examples in this document will come
 from a _Ramp_ demo or from _Smart_, an academic records system that
@@ -193,6 +209,9 @@ have values, a half-filled icon (<i class='icon-adjust'></i>) indicates
 that some, but not all, recommended fields have values, while a dashed
 line icon (<i class='icon-minus'></i>) indicates that no recommended
 fields have values.
+[Note:  Only the List View has the three icons at the right of each
+record, even though the illustrations in this document also show them in
+Table and Split Views.]
 
 Two of the buttons on a List page bring up other views of the same
 records.  The "Tabular Display" button brings up a table view that has
@@ -235,7 +254,7 @@ of records displayed as a simple table.
 Viewing and Editing Records
 </h3>
 
-From a list, table, or split-view display, you can "zoom in" on a
+From a list display, you can "zoom in" on a
 particular record by clicking on the magnifying glass
 (<i class='icon-search'></i>) at the end of the record row.  The record
 view format is similar to the format of a search page, except that it
@@ -291,6 +310,16 @@ The buttons on the right side of the screen allow you to save your
 changes, reset the values in all the fields to the values they had when
 you came to the page, cancel your editing and go back to the Record View, or
 delete this record entirely.
+
+Some tables support a special "Edit Records in a Block" button if the
+[table setting](#settings) for the table supports block editing.  A block
+editing page is similar to a split-view entry, except that some of the
+fields in the lower half of the screen will be text fields or drop-down
+menus for editing multiple records at a time.  An example
+where this would be useful would be entering the grades for all the
+students in a given class.
+
+<img src="/images/RampUserManual/BlockEdit.png" width="600px" />
 
 <h4 id="add">
 Adding New Records
