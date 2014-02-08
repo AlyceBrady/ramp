@@ -393,16 +393,9 @@ class TableController extends Zend_Controller_Action
         // Let the view renderer know the table, buttons, and data form to use.
         $this->_initViewTableInfo($setTable);
         $buttonList = array(self::EDIT, self::ADD, self::CLONE_BUTTON);
-        /*
-        if ( $this->_tblViewingSeq->allowsBlockEntry() )
-        {
-            $buttonList[] = self::BLOCK_ENTRY_PREFIX .
-                            $this->_tblViewingSeq->getBlockEntryFields() .
-                            self::BLOCK_ENTRY_SUFFIX;
-        }
-         */
         $this->view->buttonList = array_merge($buttonList, 
-                    array(self::SEARCH, self::DEL_BUTTON, self::DISPLAY_ALL));
+                    array(self::SEARCH, self::DEL_BUTTON));
+                // array(self::SEARCH, self::DEL_BUTTON, self::DISPLAY_ALL));
         $this->view->dataEntryForm = $form = $this->_getForm($setTable);
 
         // Is this the initial display or a callback from a button action?
@@ -1012,12 +1005,15 @@ class TableController extends Zend_Controller_Action
     {
         $this->_initViewTableInfo($setTable);
 
+        /*  This does not make sense for large data sets.  Can display 
+         *  all by doing a search and not filling in any fields.
         // Let view renderer know whether this is a subset of the table.
         $this->view->displayingSubset = ! empty($this->_fieldsToMatch);
         if ( $this->view->displayingSubset )
         {
             $this->view->buttonList[] = self::DISPLAY_ALL;
         }
+         */
 
         // List items will get filled-in status based on ADD setting.
         $this->view->addSetting =
