@@ -49,6 +49,7 @@ class Ramp_Table_TableViewSequence
     const EDIT_RECORD       = Ramp_Acl::EDIT_RECORD;
     const ADD_RECORD        = Ramp_Acl::ADD_RECORD;
     const BLOCK_ADD         = Ramp_Acl::BLOCK_ADD;
+    const BLOCK_EDIT        = Ramp_Acl::BLOCK_EDIT;
     const DELETE_RECORD     = Ramp_Acl::DELETE_RECORD;
 
     /** @var string */
@@ -287,6 +288,8 @@ class Ramp_Table_TableViewSequence
             case self::VIEW_RECORD:
                     return $this->getSetTableForViewing(); break;
             case self::EDIT_RECORD:
+                    return $this->getSetTableForModifying(); break;
+            case self::BLOCK_EDIT:
                     return $this->getSetTableForModifying(); break;
             case self::ADD_RECORD:
                     return $this->getSetTableForAdding(); break;

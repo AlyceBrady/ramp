@@ -34,7 +34,7 @@ $visibleFieldInfo = $table->getVisibleFields();
 <thead>
 <tr>
     <?php
-    foreach($visibleFieldInfo as $fieldName => $field) :
+    foreach ( $visibleFieldInfo as $fieldName => $field ) :
         $footnote = $this->escape( $field->getFieldFootnote());
         if ( ! empty($footnote) )
         {
@@ -49,8 +49,10 @@ $visibleFieldInfo = $table->getVisibleFields();
         echo $this->partial("_cleanIfSinglePar.phtml",
                 array('content'=>$colHeading)) . "</th>\n";
     endforeach;
+    if ( $this->includeActions ) :
+        echo "<th colspan='3' class='noprint center'> Actions </th>\n";
+    endif;
     ?>
-    <th colspan='3' class='noprint center'> Actions </th>
 </tr>
 </thead>
 

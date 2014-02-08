@@ -43,12 +43,14 @@ class TableController extends Zend_Controller_Action
     const MATCH_ALL             = "Search On All Fields";
     const MATCH_ANY             = "Match Against Any Field";
     const DISPLAY_ALL           = "Display All Entries";
+    const LIST_VIEW             = "List Display";
     const TABLE                 = "Tabular Display";
     const SPLIT_VIEW            = "Split View Display";
     const ADD                   = "Add New Entry";
     const CLONE_BUTTON          = "Clone This Entry";
     const BLOCK_ENTRY_PREFIX    = "Add ";
     const BLOCK_ENTRY_SUFFIX    = " in a Block";
+    const BLOCK_EDIT_LABEL      = "Edit Records in a Block";
     const EDIT                  = "Edit Entry";
     const DEL_BUTTON            = "Delete Entry";
     const RESET_BUTTON          = "Reset Fields";
@@ -279,13 +281,14 @@ class TableController extends Zend_Controller_Action
              $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data set to use.
-            $this->view->buttonList = array(self::ADD, self::TABLE,
-                                            self::SPLIT_VIEW, self::SEARCH);
+            $this->view->buttonList =
+                    $this->_multiRecordButtonSet(self::LIST_VIEW, $setTable);
             $this->_multiRecordInitDisplay($setTable);
         }
         elseif ( $this->_submittedButton == self::TABLE ||
                  $this->_submittedButton == self::SPLIT_VIEW  ||
-                 $this->_submittedButton == self::ADD )
+                 $this->_submittedButton == self::ADD ||
+                 $this->_blockAdd($this->_submittedButton) )
         {
             // Go to a different view with the same data set.
             $action = $this->_getButtonAction($this->_submittedButton);
@@ -311,12 +314,14 @@ class TableController extends Zend_Controller_Action
              $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data set to use.
-            $this->view->buttonList = array(self::ADD, self::SPLIT_VIEW,
-                                            self::SEARCH);
+            $this->view->buttonList =
+                    $this->_multiRecordButtonSet(self::TABLE, $setTable);
             $this->_multiRecordInitDisplay($setTable);
         }
-        elseif ( $this->_submittedButton == self::SPLIT_VIEW ||
-                 $this->_submittedButton == self::ADD )
+        elseif ( $this->_submittedButton == self::LIST_VIEW ||
+                 $this->_submittedButton == self::SPLIT_VIEW  ||
+                 $this->_submittedButton == self::ADD ||
+                 $this->_blockAdd($this->_submittedButton) )
         {
             // Go to a different view with the same data set.
             $action = $this->_getButtonAction($this->_submittedButton);
@@ -341,15 +346,8 @@ class TableController extends Zend_Controller_Action
              $this->_illegalCallback($setTable) )
         {
             // Let view renderer know the table and data sets to use.
-            $buttonList = array(self::ADD);
-            if ( $setTable->supportsBlockEntry() )
-            {
-                $buttonList[] = self::BLOCK_ENTRY_PREFIX .
-                                $setTable->getBlockEntryLabel() .
-                                self::BLOCK_ENTRY_SUFFIX;
-            }
-            $this->view->buttonList = array_merge($buttonList, 
-                                            array(self::TABLE, self::SEARCH));
+            $this->view->buttonList =
+                    $this->_multiRecordButtonSet(self::SPLIT_VIEW, $setTable);
             $this->_multiRecordInitDisplayWithoutData($setTable);
 
             // Get full data set and split into shared/different fields.
@@ -357,17 +355,18 @@ class TableController extends Zend_Controller_Action
                                                       $this->_matchComparators,
                                                       $this->_searchType);
             $dataSplit = $this->_getSplitData($setTable, $fullDataSet);
-            $shared = $dataSplit[self::SAME];
-            $different = $dataSplit[self::DIFFERENT];
+            $sharedData = $dataSplit[self::SAME];
+            $differentFields = $dataSplit[self::DIFFERENT];
 
             // Create settings and data sets for split views.
             $sharedViewSetting = $this->_createSharedView($setTable,
-                                                    $shared, $different);
+                                                $sharedData, $differentFields);
 
             $differentViewSetting = $this->_createDifferentView($setTable,
-                                                        $fullDataSet, $shared);
+                                                $fullDataSet, $sharedData);
         }
-        elseif ( $this->_submittedButton == self::TABLE  ||
+        elseif ( $this->_submittedButton == self::LIST_VIEW ||
+                 $this->_submittedButton == self::TABLE  ||
                  $this->_submittedButton == self::ADD ||
                  $this->_blockAdd($this->_submittedButton) )
         {
@@ -486,6 +485,102 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Supports block editing of table records.
+     */
+    public function blockEditAction()
+    {
+        $setTable = $this->_tblViewingSeq->getSetTableForModifying();
+        $blockEditFields = $setTable->getBlockEditFields();
+
+        // Get full data set and split into shared/different fields.
+        $fullDataSet = $setTable->getTableEntries($this->_fieldsToMatch,
+                                                  $this->_matchComparators,
+                                                  $this->_searchType);
+        $dataSplit = $this->_getSplitData($setTable, $fullDataSet);
+        $sharedData = $dataSplit[self::SAME];
+        $differentFields = $dataSplit[self::DIFFERENT];
+
+        // Make sure fields to edit are in $differentViewSetting.
+        $sharedData = array_diff_key($sharedData, $blockEditFields);
+        $differentFields = array_merge($differentFields, $blockEditFields);
+
+        // Create setting for shared view.
+        $sharedViewSetting = $this->_createSharedView($setTable,
+                                                $sharedData, $differentFields);
+
+        // Is this the initial display or a callback from a button action?
+        //    (Or an illegal callback that could allow password corruption?)
+        if ( $this->_thisIsInitialDisplay() )
+        {
+            // Let view renderer know the table and data sets to use.
+            $this->view->buttonList = array(self::SAVE, self::RESET_BUTTON,
+                                            self::CANCEL);
+            $this->_multiRecordInitDisplayWithoutData($setTable);
+
+            // Create setting for viewing different values.
+            $differentViewSetting = $this->_createDifferentView($setTable,
+                                                    $fullDataSet, $sharedData);
+
+            // Create forms for block editing.
+            $this->view->entryForms = array();
+            $i = 0;
+            foreach ( $fullDataSet as $row )
+            {
+                $adjustedRow = array();
+                $suffix = "_" . $i++;
+                foreach ( $row as $fieldName => $fieldVal )
+                {
+                    $adjustedRow[$fieldName . $suffix] = $fieldVal;
+                }
+                $this->view->entryForms[] = $form =
+                    $this->_getForm($differentViewSetting, self::EDIT,
+                                    true, $suffix);
+                $form->populate($adjustedRow);
+            }
+        }
+        elseif ( $this->_submittedButton == self::SAVE )
+        {
+            $updateSetting = $setTable->createSubsetWithOnly($blockEditFields);
+            $keyFields = $updateSetting->getPrimaryKeys();
+
+            // Find any relevant shared field values to include.
+            $localFields = $sharedViewSetting->getLocalRelevantFields();
+            $relevantSharedData =
+                            array_intersect_key($sharedData, $localFields);
+            $this->view->stuff[] = $relevantSharedData;
+
+            // Extract the new data from the posted data (field names 
+            // are encoded to make each row's field names unique).
+            $formData = $this->getRequest()->getPost();
+            unset($formData[self::SUBMIT_BUTTON]);
+            $rawDiffData = array_diff_key($formData,
+                                    $sharedViewSetting->getRelevantFields());
+            for ( $i = 0; $i < count($fullDataSet); $i++ )
+            {
+                $record = $relevantSharedData;
+                foreach ( $differentFields as $fieldName => $field )
+                {
+                    $adjustedFieldName = $fieldName . "_" . $i;
+                    if ( isset($rawDiffData[$adjustedFieldName]) )
+                    {
+                        $record[$fieldName] = $rawDiffData[$adjustedFieldName];
+                    }
+                }
+                $keyData = array_intersect_key($record, $keyFields);
+                $this->_acquireLock($updateSetting, $keyData);
+                $updateSetting->updateTableEntry($record);
+                $this->_releaseLock($updateSetting, $keyData);
+            }
+            $this->_goTo('split-view', $this->_fieldsToMatch);
+
+        }
+        else  // Cancel
+        {
+            $this->_goTo('split-view', $this->_fieldsToMatch);
+        }
+    }
+
+    /**
      * Controls the Table add action, presenting a new page in which
      * to add a new entry to the table.
      */
@@ -573,12 +668,12 @@ class TableController extends Zend_Controller_Action
                                                   $this->_searchType);
         $dataSplit = $this->_getSplitData($setTable, $fullDataSet);
         $sharedData = $dataSplit[self::SAME];
-        $differentData = $dataSplit[self::DIFFERENT];
+        $differentFields = $dataSplit[self::DIFFERENT];
 
         // Get settings for shared and entry data (needed for initial 
         // display and callbacks).
         $sharedViewSetting = $this->_createSharedView($setTable, $sharedData,
-                                                      $differentData);
+                                                      $differentFields);
         $entryField = $setTable->getBlockEntryField();
         $entrySetting = $this->view->entrySetting = 
                             $setTable->createSingleFieldSubset($entryField);
@@ -669,7 +764,7 @@ class TableController extends Zend_Controller_Action
     */
 
         elseif ( $this->_submittedButton == self::CANCEL )
-            { $this->_goTo('block-view', $this->_fieldsToMatch); }
+            { $this->_goTo('split-view', $this->_fieldsToMatch); }
         else
             { $this->_goTo($this->_getButtonAction($this->_submittedButton)); }
 
@@ -798,7 +893,7 @@ class TableController extends Zend_Controller_Action
                                 $formSuffix = null)
     {
         return new Ramp_Form_Table_TableRecordEntry($setTable, $formType,
-                                                     $makeSmall, $formSuffix);
+                                                    $makeSmall, $formSuffix);
     }
 
     /**
@@ -861,6 +956,39 @@ class TableController extends Zend_Controller_Action
     }
 
     /**
+     * Create the set of buttons for a list, tablular, or split view.
+     *
+     * @param $self_view  indicates which view is asking for the button list
+     * @param $setTable   the current table setting
+     */
+    protected function _multiRecordButtonSet($self_view, $setTable)
+    {
+        $buttonList = array();
+        $buttonList[] = self::ADD;
+        if ( $setTable->supportsBlockEntry() )
+            {   $buttonList[] = $this->_makeBlockEntryButton($setTable);    }
+        if ( $setTable->supportsBlockEdit() )
+            {   $buttonList[] = self::BLOCK_EDIT_LABEL;    }
+        if ( $self_view != self::LIST_VIEW )
+            {   $buttonList[] = self::LIST_VIEW; }
+        if ( $self_view != self::TABLE )
+            {   $buttonList[] = self::TABLE; }
+        if ( $self_view != self::SPLIT_VIEW )
+            {   $buttonList[] = self::SPLIT_VIEW; }
+        $buttonList[] = self::SEARCH;
+        return $buttonList;
+    }
+
+    /**
+     * Creates a button to support block data entry.
+     */
+    protected function _makeBlockEntryButton($setTable)
+    {
+        return self::BLOCK_ENTRY_PREFIX .  $setTable->getBlockEntryLabel() .
+               self::BLOCK_ENTRY_SUFFIX;
+    }
+
+    /**
      * Set up initial display (except for buttonList) for actions
      * involving multiple records.
      */
@@ -909,7 +1037,7 @@ class TableController extends Zend_Controller_Action
         // Determine which fields go in "same" array, and which go in 
         // "different".  (Empty fields are not considered "same".)
         $data = array(self::SAME => array(), self::DIFFERENT => array());
-        $allVisibleFields = $setTable->getVisibleFields();
+        $allVisibleFields = $setTable->getFields();
         foreach ( $allVisibleFields as $fieldName => $field )
         {
             $whichArray = $this->_allRowsMatch($fullDataSet, $fieldName)
@@ -951,12 +1079,12 @@ class TableController extends Zend_Controller_Action
      * returns the table setting created for the shared view.
      */
     protected function _createSharedView($origSetTable, $sharedData,
-                                         $differentData)
+                                         $differentFields)
     {
         // Get settings for shared and entry data (needed for initial 
         // display and callbacks).
         $sharedViewSetting = $this->view->sharedViewSetting =
-            $origSetTable->createSubsetWithout(array_keys($differentData));
+            $origSetTable->createSubsetWithout(array_keys($differentFields));
         $this->view->sharedDataEntryForm = $this->_getForm($sharedViewSetting,
                                                            self::VIEW, true);
         $this->view->sharedDataEntryForm->populate($sharedData);
@@ -966,8 +1094,8 @@ class TableController extends Zend_Controller_Action
 
     /**
      * Creates a "different" (or summary) view of the data values that 
-     * vary for the records being displayed in a split screen or
-     * block add; returns the table setting created for the new view.
+     * vary for the records being displayed in a split screen, block
+     * add, or block edit; returns the table setting created for the new view.
      */
     protected function _createDifferentView($origSetTable, $fullDataSet,
                                             $sharedData)
@@ -1013,9 +1141,11 @@ class TableController extends Zend_Controller_Action
         $commonMapping = array(
             self::SEARCH => 'search',
             self::DISPLAY_ALL => $this->_displayAllView,
+            self::LIST_VIEW => $this->_displayAllView,
+            self::TABLE => 'table-view', self::SPLIT_VIEW => 'split-view',
             self::ADD => 'add', self::EDIT => 'record-edit',
-            self::DEL_BUTTON => 'delete', self::TABLE => 'table-view',
-            self::SPLIT_VIEW => 'split-view');
+            self::BLOCK_EDIT_LABEL => 'block-edit',
+            self::DEL_BUTTON => 'delete');
 
         return isset($commonMapping[$buttonLabel])
                     ? $commonMapping[$buttonLabel]

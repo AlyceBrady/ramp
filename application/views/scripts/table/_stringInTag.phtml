@@ -26,7 +26,7 @@
 $tag = $this->escape($this->tag);
 
 if ( strlen($this->value) > 0 ) :
-    echo "<$tag;>";
+    echo "<$tag>";
     echo $this->escape($this->value);
     echo "</$tag>";
 endif;

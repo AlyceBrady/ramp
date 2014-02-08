@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp_Views
+ * @copyright  Copyright (c) 2012-2014 Alyce Brady
+ *             (http://www.cs.kzoo.edu/~abrady)
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
+
+/* This helper script expects an array containing the set table
+ * object and a Zend_Form object containing field elements.
+ *
+ * Attribution: the structure of rendering label, element, and errors 
+ * separately, to allow the insertion of href links, came from:
+ * http://monzee.wordpress.com/2009/02/23/decorators-are-hard-lets-go-shopping/
+ *
+ * Updated for Twitter-Bootstrap, Ashton Galloway, March 2013
+ * Updated from _tableRecordEntry.phtml to print records horizontally,
+ *      Alyce  Brady, February 2014.
+ */
+
+// Expected parameters.
+$table = $this->table;
+$form = $this->form;
+$fields = $table->getFields();
+
+// Key information from form.
+$fieldElts = $form->getFieldElements();
+
+?>
+
+<?php
+foreach ( $fieldElts as $name => $elt ) :
+    $recordIndicator = substr(strrchr($name, '_'), 1);
+    $fieldName = substr($name, 0, strlen($name) - strlen($recordIndicator) - 1);
+    $field = $fields[$fieldName];
+    $colHeading = $this->escape($field->getLabel());
+    $title = $this->escape( $field->getFieldFootnote());
+    $title = $title ? "$colHeading: $title" : $colHeading;
+    echo "<td title = '$title' class='edit'>\n";
+    // Primary key must be rendered as an element!
+    if ( $field->isVisible() || $field->isPrimaryKey() ) :
+        if ( $field->isReadOnly() || $field->isImported() ||
+             $field->isExpression() ) :
+            echo $elt->getValue() . "\n";
+        else :
+            echo $elt->renderElem() . "\n";
+        endif;
+    endif;
+    echo "</td>\n";
+endforeach;
+?>
+

@@ -235,18 +235,29 @@ div#activityPage .disabled, div#activityPage .disabledComment {
 /* Styles used by record display/modify pages */
 
 #record-block.edit input.discouraged, #record-block.add input.discouraged,
-#record-block.edit select.discouraged, #record-block.add select.discouraged {
+#record-block.edit select.discouraged, #record-block.add select.discouraged,
+#block-edit.row input.discouraged,
+#block-edit.row select.discouraged,
+#block-edit.row textarea.discouraged
+{
         background-color:   #DDDDDD;
 }
 
 #record-block.edit input.required, #record-block.add input.required,
-#record-block.edit select.required, #record-block.add select.required {
+#record-block.edit select.required, #record-block.add select.required,
+#block-edit.row input.required,
+#block-edit.row select.required,
+#block-edit.row textarea.required
+{
         background-color:   #FF6;
 }
 
 #record-block.edit input.recommended, #record-block.add input.recommended,
 #record-block.edit select.recommended, #record-block.add select.recommended,
-#record-block.edit textarea.recommended, #record-block.add textarea.recommended
+#record-block.edit textarea.recommended, #record-block.add textarea.recommended,
+#block-edit.row input.recommended,
+#block-edit.row select.recommended,
+#block-edit.row textarea.recommended
 {
         background-color:   #FFC;
 }

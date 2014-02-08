@@ -108,7 +108,7 @@ $titleBar['firstButtonIsPrimary'] = true;
     <!-- Display column headers -->
 
     <?php echo $this->partial("table/_colHeadingDisplay.phtml",
-                                array('table' => $differentTable));
+            array('table' => $differentTable, 'includeActions' => false));
     ?>
 
     <!-- Display records -->
@@ -117,7 +117,8 @@ $titleBar['firstButtonIsPrimary'] = true;
                                 array('table' => $differentTable,
                                       'addSetting' => $this->addSetting,
                                       'tableValues' => $differentValues,
-                                      'baseParams' => $this->baseParams));
+                                      'baseParams' => $this->baseParams,
+                                      'includeActions' => false));
 
     ?>
 

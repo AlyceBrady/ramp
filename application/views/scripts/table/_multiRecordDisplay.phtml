@@ -62,8 +62,9 @@ foreach($tableValues as $recordValues) :
         echo "<td title='$title'>";
         echo $this->escape($recordValues[$fieldName]) . "</td>";
     endforeach;
-    ?>
 
+    if ( $this->includeActions ) :
+    ?>
     <!-- Display select/delete links -->
     <td class='completionStatus'>
         <?php
@@ -85,6 +86,9 @@ foreach($tableValues as $recordValues) :
                             class='icon-search' title='Select'></i></a>
     <!-- Other possibilities: 'icon-zoom-in', 'icon-list', 'icon-list-alt' -->
     </td>
+    <?php
+    endif;
+    ?>
     </tr>
 
 <?php endforeach; ?>

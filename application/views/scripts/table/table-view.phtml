@@ -60,7 +60,7 @@ $titleBar['firstButtonIsPrimary'] = false;
 <!-- Display column headers -->
 
 <?php echo $this->partial("table/_colHeadingDisplay.phtml",
-                            array('table' => $table));
+                    array('table' => $table, 'includeActions' => true));
 ?>
 
 <!-- Display records -->
@@ -69,7 +69,8 @@ $titleBar['firstButtonIsPrimary'] = false;
                             array('table' => $table,
                                   'addSetting' => $this->addSetting,
                                   'tableValues' => $tableValues,
-                                  'baseParams' => $this->baseParams));
+                                  'baseParams' => $this->baseParams,
+                                  'includeActions' => true));
 ?>
 
 </table>

@@ -45,8 +45,9 @@ class Ramp_Acl extends Zend_Acl
     const EDIT_RECORD       = 'record-edit';
     const ADD_RECORD        = 'add';
     const BLOCK_ADD         = 'block-add';
+    const BLOCK_EDIT        = 'block-edit';
     const DELETE_RECORD     = 'delete';
-    const ENTER_BLOCK_DATA  = 'block-entry';
+    // const ENTER_BLOCK_DATA  = 'block-entry';
 
     // ACL categories for Table actions.
     const VIEW = 'View';
@@ -79,7 +80,7 @@ class Ramp_Acl extends Zend_Acl
                              self::VIEW_LIST_RESULTS, self::VIEW_TABLE_FORMAT,
                              self::VIEW_SPLIT_FORMAT, self::VIEW_RECORD);
         $addActions = array(self::ADD_RECORD, self::BLOCK_ADD);
-        $modifyActions = array(self::EDIT_RECORD);
+        $modifyActions = array(self::EDIT_RECORD, self::BLOCK_EDIT);
         $allButDeleteActions = array_merge($viewActions, $addActions,
                                            $modifyActions);
         $deleteActions = array(self::DELETE_RECORD);

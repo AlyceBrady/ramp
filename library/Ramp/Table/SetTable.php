@@ -30,6 +30,7 @@ class Ramp_Table_SetTable
     const EXTERNAL_TBL          = 'externalTableRef';
     const SHOW_COLS_BY_DEFAULT  = 'tableShowColsByDefault';
     const BLOCK_ENTRY           = 'blockEntry';
+    const BLOCK_EDIT            = 'blockEdit';
     const FIELDS                = 'field';
     // const TABLE_QUERY_CONSTRAINT= 'tableQueryConstraint';
 
@@ -37,7 +38,7 @@ class Ramp_Table_SetTable
     const CONNECTION            = 'connection';
     const ALIAS                 = 'aliasFor';
     const BLOCK_ENTRY_LABEL     = 'label';
-    const BLOCK_ENTRY_FIELD     = 'field';
+    const BLOCK_FIELD           = 'field';
     const BLOCK_ENTRY_COUNT     = 'count';
 
     // Constants representing search values and search operators.
@@ -139,6 +140,9 @@ class Ramp_Table_SetTable
     /** @var string */
     protected $_blockEntryField;    // field used for block entry (if allowed)
 
+    /** @var string */
+    protected $_blockEditFields;    // fields used for block edit (if allowed)
+
     /** @var boolean */
     protected $_recordErrors;        // whether to record errors rather than
                                      // throw exceptions
@@ -156,7 +160,7 @@ class Ramp_Table_SetTable
                      self::CONNECTED_TBL,
                      self::INIT_TBL_REF, self::EXTERNAL_TBL,
                      self::SHOW_COLS_BY_DEFAULT, self::FIELDS,
-                     self::BLOCK_ENTRY,
+                     self::BLOCK_ENTRY, self::BLOCK_EDIT
                     );
     }
 
@@ -285,6 +289,12 @@ class Ramp_Table_SetTable
                             array();
         $this->_blockEntryField = $this->_initBlockEntry($blockEntry);
 
+        // Initialize block edit information (if supported).
+        $blockEdit = isset($settingInfo[self::BLOCK_EDIT]) ?
+                            $settingInfo[self::BLOCK_EDIT] :
+                            array();
+        $this->_blockEditFields = $this->_initBlockEdit($blockEdit);
+
         // Create Field objects for all fields in database, providing 
         // table setting information when provided.  Add fields to 
         // appropriate field-information attributes.
@@ -390,32 +400,70 @@ class Ramp_Table_SetTable
     }
 
     /**
-     * Initializes references to an external table.
-     * @see Ramp_Table_ExternalTableReference
+     * Initializes sub-properties for block entry.
      *
-     * @return array of Ramp_Table_ExternalTableReference objects
-     * @throws Exception if reference information is badly formatted
+     * @return array of block entry sub-properties
+     * @throws Exception if a necessary sub-property is missing
      */
-    protected function _initBlockEntry($blockEntryInfo)
+    protected function _initBlockEntry($blockInfo)
     {
         // If block entry information was provided, check that the 
         // required sub-properties were also.
-        if ( ! empty($blockEntryInfo) && is_array($blockEntryInfo) )
+        if ( empty($blockInfo) )
         {
-            if ( isset($blockEntryInfo[self::BLOCK_ENTRY_FIELD]) &&
-                 is_string($blockEntryInfo[self::BLOCK_ENTRY_FIELD]) )
+            return array();
+        }
+        if ( is_array($blockInfo) && isset($blockInfo[self::BLOCK_FIELD]) &&
+             is_string($blockInfo[self::BLOCK_FIELD]) )
+        {
+            return $blockInfo;
+        }
+        else
+        {
+            throw new Exception("'" . self::BLOCK_ENTRY . "' property " .
+                "does not have the required '" .  self::BLOCK_FIELD .
+                "' sub-property.");
+        }
+    }
+
+    /**
+     * Initializes sub-properties for block edit properties.
+     *
+     * @return array of block edit sub-properties
+     * @throws Exception if a necessary sub-property is missing
+     */
+    protected function _initBlockEdit($blockInfo)
+    {
+        // If block edit information was provided, check that one or 
+        // more fields were also.
+        if ( empty($blockInfo) )
+        {
+            return array();
+        }
+        if ( is_array($blockInfo) && isset($blockInfo[self::BLOCK_FIELD]) &&
+             ( is_array($blockInfo[self::BLOCK_FIELD]) ||
+               is_string($blockInfo[self::BLOCK_FIELD]) ) )
+        {
+            if ( is_array($blockInfo[self::BLOCK_FIELD]) )
             {
-                return $blockEntryInfo;
+                $fields = array();
+                foreach ( $blockInfo[self::BLOCK_FIELD] as $key => $value )
+                {
+                    $fields[$value] = $value;
+                }
+                return $fields;
             }
             else
             {
-                throw new Exception("'" . self::BLOCK_ENTRY . "' property " .
-                    "does not have the required '" .  self::BLOCK_ENTRY_FIELD .
-                    "' sub-property.");
+                return array($blockInfo => $blockInfo);
             }
         }
-
-        return array();
+        else
+        {
+            throw new Exception("'" . self::BLOCK_EDIT . "' property " .
+                "does not have the correct, required '" .  self::BLOCK_FIELD .
+                "' sub-property.");
+        }
     }
 
     /**
@@ -531,6 +579,35 @@ class Ramp_Table_SetTable
             }
         }
         $subset->_setVisibilityOfField($fieldToKeep, true);
+
+        return $subset;
+    }
+
+    /**
+     * Creates another set table that constitutes a "visual subset" of 
+     * this setting; all attributes are the same except that all except
+     * the given fields are hidden.
+     *
+     * @param array  $fieldsToNotHide   the fields to keep visible
+     */
+    public function createSubsetWithOnly($fieldsToNotHide)
+    {
+        $subset = clone $this;
+
+        // Hide every field except the given ones.
+        foreach ( $this->getVisibleFields() as $fieldName => $field )
+        {
+            // Make visible or invisible, depending on whether this is a
+            // field to keep (or make) visible.
+            if ( isset($fieldsToNotHide[$fieldName]) )
+            {
+                $subset->_setVisibilityOfField($fieldName, true);
+            }
+            else
+            {
+                $subset->_setVisibilityOfField($fieldName, false);
+            }
+        }
 
         return $subset;
     }
@@ -914,20 +991,20 @@ class Ramp_Table_SetTable
     /**
      * Gets the field for which block entry is supported.
      *
-     * Precondition:  isBlockEntrySupported() returns true
+     * Precondition:  supportsBlockEntry() returns true
      *
      * @return string   field name
      */
     public function getBlockEntryField()
     {
-        return $this->_blockEntryField[self::BLOCK_ENTRY_FIELD];
+        return $this->_blockEntryField[self::BLOCK_FIELD];
     }
 
     /**
      * Gets the label describing the field for which block entry is 
      * supported.
      *
-     * Precondition:  isBlockEntrySupported() returns true
+     * Precondition:  supportsBlockEntry() returns true
      *
      * @return string   the label
      */
@@ -942,7 +1019,7 @@ class Ramp_Table_SetTable
      * Gets the number of entry fields to include on the page (default 
      * is 10, if this is not provided).
      *
-     * Precondition:  isBlockEntrySupported() returns true
+     * Precondition:  supportsBlockEntry() returns true
      *
      * @return int   the count
      */
@@ -952,6 +1029,28 @@ class Ramp_Table_SetTable
         return isset($this->_blockEntryField[self::BLOCK_ENTRY_COUNT])
                 ? +($this->_blockEntryField[self::BLOCK_ENTRY_COUNT])
                 : 10;
+    }
+
+    /**
+     * Determines whether this set table supports block editing.
+     *
+     * @return bool   true if block editing is supported
+     */
+    public function supportsBlockEdit()
+    {
+        return ! empty($this->_blockEditFields);
+    }
+
+    /**
+     * Gets the fields for which block editing is supported.
+     *
+     * Precondition:  supportsBlockEdit() returns true
+     *
+     * @return array   field names
+     */
+    public function getBlockEditFields()
+    {
+        return $this->_blockEditFields;
     }
 
     /**
@@ -1444,8 +1543,8 @@ class Ramp_Table_SetTable
             { $msg .= ": not allowed"; }
         else
         {
-            $fieldName = $blockEntryField[self::BLOCK_ENTRY_FIELD];
-            $msg .= "." . self::BLOCK_ENTRY_FIELD . ":  $fieldName ";
+            $fieldName = $blockEntryField[self::BLOCK_FIELD];
+            $msg .= "." . self::BLOCK_FIELD . ":  $fieldName ";
             $msg .= in_array($fieldName, array_keys($this->_inTable))
                         ? $present
                         : "is not a local field";
@@ -1458,6 +1557,30 @@ class Ramp_Table_SetTable
             $this->_error_msgs[] = self::BLOCK_ENTRY . " has one or more " .
                 "undefined sub-properties.";
         }
+
+        // Check block edit information.
+        $msg = "blockEdit";
+        $blockEditField = $this->_blockEditField;
+        if ( empty($blockEditField) )
+            { $msg .= ": not allowed"; }
+        else
+        {
+            $fieldName = $blockEditField[self::BLOCK_FIELD];
+            $msg .= "." . self::BLOCK_FIELD . ":  $fieldName ";
+            $msg .= in_array($fieldName, array_keys($this->_inTable))
+                        ? $present
+                        : "is not a local field";
+        }
+        /*
+        $this->_error_msgs[] = $msg;
+        if ( count($blockEditField) > 2 ||
+             ( count($blockEditField) == 2 &&
+             ! isset($blockEditField[self::BLOCK_ENTRY_LABEL]) ) )
+        {
+            $this->_error_msgs[] = self::BLOCK_ENTRY . " has one or more " .
+                "undefined sub-properties.";
+        }
+         */
 
         // Check for extraneous settings.
         $this->_checkExtraneousSettings();
