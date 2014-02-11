@@ -307,8 +307,8 @@ div#documentPage #footer {
         vertical-align: top;
     }
 
-    .loggedInAs, div#menu-bar li, th.tableActions, td.select, td.delete,
-    td.completionStatus, .hidden, .noprint {
+    .loggedInAs, div#menu-bar li, #TableActions, th.tableActions,
+    td.select, td.delete, td.completionStatus, .hidden, .noprint {
         display: none;
     }
 
