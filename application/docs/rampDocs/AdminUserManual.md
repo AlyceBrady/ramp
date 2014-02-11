@@ -84,6 +84,9 @@ authorizations.
 
 Also, updating the Authorizations and Lock Relations tables.
 
+If you create a new role, you may need to add the first rule using that
+role to the db manually (mysql command line or phpMyAdmin).
+
 NOTES:  TODO:
 A related question that may come up later in the system implementation is:
 who is responsible for generating the style sheets and (maybe, in the

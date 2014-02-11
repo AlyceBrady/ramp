@@ -7,6 +7,7 @@ activity[] = "About Smart"
 activity[] = "horizRule"
 activity[] = "Ramp User Man"
 activity[] = "Smart User Man"
+activity[] = "HR User Man"
 activity[] = "horizRule"
 activity[] = "Admin User Man"
 activity[] = "Act Spec Doc"
@@ -46,6 +47,13 @@ type = "document"
 title = "Smart User Manual"
 description = "How to Use Smart to Maintain an Academic Records Database"
 source = "rampDocs/SmartUserManual.md"
+
+[HR User Man]
+
+type = "document"
+title = "HR User Manual"
+description = "How to Use Smart to Maintain HR Records"
+source = "rampDocs/HRUserManual.md"
 
 [Admin User Man]
 
