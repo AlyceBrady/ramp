@@ -42,7 +42,7 @@ general-purpose activities supported by Ramp).
 ### RELEASE INFORMATION ###
 
 RAMP/SMART Release 0.9.  
-Released on December 16, 2013.
+Released on February 11, 2014.
 
 ### SYSTEM REQUIREMENTS ###
 
