@@ -13,8 +13,8 @@ using the Zend Framework.
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.5.6.  
-Released on December 16, 2013.
+RAMP/SMART Release 0.9.  
+Released on February 11, 2014.
 
 
 ### LICENSE ###
