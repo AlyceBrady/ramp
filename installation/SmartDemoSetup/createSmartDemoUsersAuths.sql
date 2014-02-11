@@ -123,7 +123,7 @@ INSERT INTO `ramp_auth_auths`
 , ('smart_dba','Table','ramp_auth_users','Modify')
 , ('smart_dba','Admin-Table','Person','View')
 , ('smart_dba','Admin-Table','ramp_auth_users','View')
-, ('smart_dba','Admin-Table','ramp_auth_users','Add')
+, ('smart_dba','Admin-Table','ramp_auth_users','AddRecords')
 , ('smart_dba','Table','ramp_auth_auths','All')
 , ('smart_dba','Table','ramp_lock_relations','All')
 , ('smart_dba','Table','ramp_lock_locks','View')

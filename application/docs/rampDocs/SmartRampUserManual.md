@@ -190,9 +190,8 @@ offerings before 2010 (the Start Date is before 1 January, 2010).
 Lists and Tables
 </h3>
 
-The results of a search are either displayed as a list of matching
-records, as in the example below, or, if there was only one match, as a
-single record (see [the next section](#records)).  The list does not
+The results of a search are displayed as a list of matching
+records, as in the example below.  The list does not
 include column headings, but if you hover the cursor over a column the
 column heading will appear as a hover note ("tooltip"), sometimes with a
 brief explanation.  For example, hovering the cursor over the date column
