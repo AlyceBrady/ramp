@@ -68,9 +68,11 @@ class Ramp_Auth_DbTable_Auths extends Zend_Db_Table_Abstract
                 if ( ! isset($rule->action) ||
                      ! isset($actionCategories[$rule->action]) )
                 {
+                    $ruleDesc = $rule->role . "::" . $rule->resource_type .
+                                "::" . $rule->resource_name;
                     throw new Exception("Access control list table contains " .
                                         "a missing or invalid action (rule " .
-                                        $rule->id . ").");
+                                        $rule->id . ": $ruleDesc).");
                 }
 
                 // That action may represent a group of related actions.
