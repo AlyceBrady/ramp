@@ -516,7 +516,7 @@ class Ramp_Table_SetTable
         {
             $this->_expressions[$name] = $field;
         }
-        else if ( $field->isVisible() )  // imported, visible fields
+        else // if ( $field->isVisible() )  // imported, visible fields
         {
             $table = $field->getImportTable();
             if ( ! isset($this->_importAliases[$table]) )
@@ -533,11 +533,13 @@ class Ramp_Table_SetTable
             $this->_importAliases[$table][$name] = $field->resolveAlias();
             $this->_allImportFields[$name] = $field;
         }
+        /*
         else
         {
             // Ignore invisible imported fields.
             return;
         }
+         */
 
         if ( $field->isExternalTableLink() )
         {
@@ -1307,7 +1309,7 @@ class Ramp_Table_SetTable
     public function getCloneableFields(array $searchFields)
     {
         $foundData = $this->getTableEntry($searchFields);
-        $foundData = $this->removeImports($foundData);
+        $foundData = $this->removeImportsAndExpressions($foundData);
         return $this->filterPrimaryKeyInfo($foundData, false);
     }
 
@@ -1318,9 +1320,10 @@ class Ramp_Table_SetTable
      * @param array $data  Column-value pairs of local and/or imported fields
      * @return array       Column-value pairs of local fields
      */
-    public function removeImports(array $data)
+    public function removeImportsAndExpressions(array $data)
     {
-        return array_diff_key($data, $this->_allImportFields);
+        $retArray = array_diff_key($data, $this->_allImportFields);
+        return array_diff_key($retArray, $this->_expressions);
     }
 
     /**
@@ -1346,7 +1349,8 @@ class Ramp_Table_SetTable
             }
         }
 
-        return $this->_dbModel->insert($this->removeImports($data));
+        $filtered = $this->removeImportsAndExpressions($data);
+        return $this->_dbModel->insert($filtered);
     }
 
     /**
@@ -1364,7 +1368,8 @@ class Ramp_Table_SetTable
         $where = $this->_constructUniquelyIdentifyingWhere($data);
 
         // Update the table.  (Will update 0 rows if no changes made.)
-        $count = $this->_dbModel->update($this->removeImports($data), $where);
+        $filtered = $this->removeImportsAndExpressions($data);
+        $count = $this->_dbModel->update($filtered, $where);
         if ( $count > 1 )
         {
             throw new Exception("Error: Updated $count rows!");

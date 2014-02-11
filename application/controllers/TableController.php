@@ -613,7 +613,8 @@ class TableController extends Zend_Controller_Action
                 if ( $addValues != null )
                 {
                     $meaningfulData = $this->_getFilledFields($addValues);
-                    $meaningfulData = $setTable->removeImports($meaningfulData);
+                    $meaningfulData =
+                       $setTable->removeImportsAndExpressions($meaningfulData);
 
                     // Update the database and redisplay the record.
                     $setTable->addTableEntry($meaningfulData);
