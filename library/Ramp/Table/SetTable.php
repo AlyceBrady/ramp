@@ -628,7 +628,7 @@ class Ramp_Table_SetTable
         // Hide each provided field.
         foreach ( $fieldsToHide as $fieldName )
         {
-            $subset->_setVisibilityOfField($fieldName, $false);  // Hide
+            $subset->_setVisibilityOfField($fieldName, false);  // Hide
         }
 
         return $subset;
@@ -678,7 +678,7 @@ class Ramp_Table_SetTable
             unset($this->_visibleFields[$fieldName]);
         }
 
-        return this;
+        return $this;
     }
 
     /**

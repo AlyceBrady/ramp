@@ -446,7 +446,7 @@ class Ramp_Table_Field
     {
         $extTableSetting = Ramp_Table_TVSFactory::getSequenceOrSetting(
                                     $this->_connectTbl);
-        return $extTableSetting->getSetTableForSearching($setting)->getTitle();
+        return $extTableSetting->getSetTableForSearching()->getTitle();
     }
 
     /**

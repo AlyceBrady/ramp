@@ -1037,7 +1037,7 @@ class TableController extends Zend_Controller_Action
         // Determine which fields go in "same" array, and which go in 
         // "different".  (Empty fields are not considered "same".)
         $data = array(self::SAME => array(), self::DIFFERENT => array());
-        $allVisibleFields = $setTable->getFields();
+        $allVisibleFields = $setTable->getVisibleFields();
         foreach ( $allVisibleFields as $fieldName => $field )
         {
             $whichArray = $this->_allRowsMatch($fullDataSet, $fieldName)
