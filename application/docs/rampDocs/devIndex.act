@@ -10,6 +10,7 @@ activity[] = "Ramp User Man"
 activity[] = "Smart Ramp User Man"
 activity[] = "Smart User Man"
 activity[] = "HR User Man"
+activity[] = "Admiss User Man"
 activity[] = "horizRule"
 activity[] = "Admin User Man"
 activity[] = "Act Spec Doc"
@@ -35,7 +36,7 @@ type = "document"
 title = "About Smart"
 description = "About Smart: Software for Managing Academic Records and
 Transcripts"
-source = "rampDocs/smartAbout.md"
+source = "smartDocs/smartAbout.md"
 
 [Ramp User Man]
 
@@ -51,21 +52,28 @@ type = "document"
 title = "Smart/Ramp User Manual"
 description = "Version of the Ramp User Manual written entirely in terms
 of Smart (i.e., for Smart users)"
-source = "rampDocs/SmartRampUserManual.md"
+source = "smartDocs/SmartRampUserManual.md"
 
 [HR User Man]
 
 type = "document"
 title = "HR User Manual"
 description = "How to use Smart to Maintain Human Resources Data"
-source = "rampDocs/HRUserManual.md"
+source = "smartDocs/HRUserManual.md"
+
+[Admiss User Man]
+
+type = "document"
+title = "Admiss. User Manual"
+description = "How to use Smart to Maintain Admissions Data"
+source = "smartDocs/AdmissUserManual.md"
 
 [Smart User Man]
 
 type = "document"
 title = "Smart User Manual"
 description = "PLACE-HOLDER: How to Use Smart to Maintain an Academic Records Database"
-source = "rampDocs/SmartUserManual.md"
+source = "smartDocs/SmartUserManual.md"
 
 [Admin User Man]
 

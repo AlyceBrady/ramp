@@ -178,9 +178,104 @@ the version being replaced -- code & settings, including application.ini
 
 <h2 id="rdba"> Ramp Administration </h2>
 
+#### Understanding the Ramp/Smart File System Structure
+
+Need to create a pretty picture for this, but for now...  The Ramp/Smart
+directory has a number of important subdirectories and file.  Some of
+the most important are:
+
+    ramp/
+     |
+     |--application/
+     |   |
+     |   |--configs/application.ini
+     |   |
+     |   |--docs/
+     |   |   |
+     |   |   |--rampDocs/       general documentation (admin, settings, etc)
+     |   |   |
+     |   |   |--smartDocs/      Smart documentation
+     |   |
+     |   |--NjalaSettings/      (menus, activity pages & table settings)
+     |   |   |
+     |   |   |--Admin/          settings for administrative functions
+     |   |   |
+     |   |   |--Smart/
+     |   |       |
+     |   |       |--Core/        settings for schools, depts, etc.
+     |   |       |
+     |   |       |--Curriculum/  settings for programs, courses, offerings
+     |   |       |
+     |   |       |--Person/      settings for Person, Addresses, etc
+     |   |       |
+     |   |       |--Staff/       settings for HR tables
+     |   |       |
+     |   |       |--Student/     settings for Admiss & Student Services tables
+     |   |       |
+     |   |       |--Valid.../    settings for Valid Code tables
+     |   |
+     |   |--controllers: directory with code for controllers
+     |   |
+     |   |--library/Ramp:  dir & subdirs with lots of Ramp code
+     |   |
+     |   |--library/Zend:  dir & subdirs with all Zend Framework code
+     |
+     |--installation/
+
 #### Creating Ramp/Smart user accounts, Changing Passwords ####
 
   Notes:
+
+  - New staff and students should be added to Smart by various sub-units
+    within the Secretariat.  When new staff should also be Smart
+    _users_, then the Ramp administrator must add the person to the
+    Smart users table.  (This should be done AFTER HR has created the
+    Person/Staff record for the new staff member.)  To add a new user,
+    choose the "Add New User" item under the Admin menu.  The Smart
+    username is the name they will use to log in to the Smart system.
+    If the staff member has a Njala email account (e.g., pmoseray) then
+    that is a good choice as it will be easy for the person to remember.
+    If not, you may want to follow the same convention (and maybe even
+    set up a Njala email account for them at the same time).
+
+    You can make the new user Active if they will start using the system
+    right away, or Inactive if you are setting up an account that will
+    not be used for a month or two.  Once you set an account to Active,
+    the user should change their password right away (see next bullet).
+
+    You will also need to choose an appropriate role for the new staff
+    member.  The pull-down menu of roles has all the roles that are
+    available, but avoid roles beginning with an underscore ('_').
+    Those roles are for use in the inheritance hierarchy only
+    (to greatly reduce duplication of rules) but are not meant to be
+    "visible" roles to be given to actual staff members.  The
+    roles you are most likely to use are:
+
+        fin_stu_mod:  Finance people who apply/release Student holds
+        fin_mgmt:     Finance management who may view select Student info
+        hr_mod:       Amy and anyone else who might enter/edit HR info
+        hr_view:      HR managers or people who need to view HR info
+        curric_mod:   whoever will enter program/course data
+        admiss_mod:   Musu and anyone else who might enter/edit Applicant info
+        admiss_view:  AA managers or people who need to view Applicant info
+        sec_ss_staff: Theresa & other Secretariat staff with modify privileges
+        sec_ss_mgmt:  Secretariat senior staff who may view all Student info
+        campus_ss_staff: Campus registry staff with modify privileges
+                         on students and course assignments
+        campus_ss_mgmt:  Campus Reg. senior staff who may view info
+        acad_aff_mgmt:   Dr. Johnson or anyone who can view all AA/SS/Reg info
+        registrar:       Registrar, VC, or anyone who can view ALL data
+
+        smart_dba:    Ramp/Smart administrators (ICT staff)
+        developer:    You should probably not give this to anyone (it
+                      conveys privileges to add and modify all data).
+                      Your usual activities should fall under the
+                      smart_dba role, and for advanced functions
+                      (like changing the database schema) you will
+                      need to go directly into mysql or phpMyAdmin.
+
+    Note that anyone can view Curriculum (Program/Course) information,
+    even without logging in at all, so there is no `curric_view` role.
 
   - New users (including DBAs when accounts first created) are given a
   default password.  This causes RAMP to redirect the user to a Set

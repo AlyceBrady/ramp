@@ -47,7 +47,7 @@ various activities and for viewing and updating database tables.  Ramp,
 in turn, uses MySQL, PHP, and the Zend Framework.
 
 See the [Ramp User Manual][ruserman] for instructions on setting and changing
-passwords, navigating using activity files, accessing data records and
+passwords, navigating and using activity files, accessing data records and
 other basic functionality.
 
 

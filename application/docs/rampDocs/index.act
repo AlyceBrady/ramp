@@ -31,7 +31,7 @@ type = "document"
 title = "About Smart"
 description = "About Smart: Software for Managing Academic Records and
 Transcripts"
-source = "rampDocs/smartAbout.md"
+source = "smartDocs/smartAbout.md"
 
 [Ramp User Man]
 
@@ -46,14 +46,14 @@ source = "rampDocs/RampUserManual.md"
 type = "document"
 title = "Smart User Manual"
 description = "How to Use Smart to Maintain an Academic Records Database"
-source = "rampDocs/SmartUserManual.md"
+source = "smartDocs/SmartUserManual.md"
 
 [HR User Man]
 
 type = "document"
 title = "HR User Manual"
 description = "How to Use Smart to Maintain HR Records"
-source = "rampDocs/HRUserManual.md"
+source = "smartDocs/HRUserManual.md"
 
 [Admin User Man]
 
