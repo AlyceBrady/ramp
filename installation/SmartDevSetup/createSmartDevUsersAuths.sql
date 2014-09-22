@@ -125,7 +125,7 @@ INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
 ('smart_dba','Activity','Admin','All')
 , ('smart_dba','Table','ramp_auth_users','View')
-, ('smart_dba','Table','ramp_auth_users','Modify')
+, ('smart_dba','Table','ramp_auth_users','ModifyRecords')
 , ('smart_dba','Admin-Table','Person','View')
 , ('smart_dba','Admin-Table','ramp_auth_users','ALL')
 , ('smart_dba','Table','ramp_auth_auths','All')
