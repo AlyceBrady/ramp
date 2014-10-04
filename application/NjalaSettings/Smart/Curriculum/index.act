@@ -32,8 +32,8 @@ description = "Academic Programs (Courses of Study)"
 
 type = "setting"
 source = "Smart/Curriculum/ProgPlanOfStudy"
-title = "Program Plans of Study"
-description = "Academic Programs (Courses of Study)"
+title = "Program Course Outlines"
+description = "Required courses for various academic programs"
 
 [Admission Reqs]
 
