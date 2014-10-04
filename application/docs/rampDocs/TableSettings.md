@@ -162,7 +162,7 @@ to specify that a field is "recommended" (or, alternatively,
 `true`.  When editing or adding a new record, Ramp will display required
 and recommended fields with different background colors, to draw
 attention to them.  While the database will prevent the insertion of any
-record required fields missing, it is possible to add records with
+record with required fields missing, it is possible to add records with
 recommended fields missing (if, for example, the data is not known
 when the record is created). Ramp will, however, indicate that such
 a record is "incomplete" in a list or table view by displaying an
@@ -177,6 +177,12 @@ default (such as a current timestamp).  Such fields can be protected
 by hiding them, but sometimes it is desirable to provide
 the ability to set such a field manually in certain cases, even if it is
 discouraged generally.
+
+It is important that recommended or discouraged fields not be hidden
+(in an [inherited section](#inheritance), for example), or you will see
+odd error messages in list and table views along with the icons
+indicating complete or incomplete records (<i class='icon-ok'></i>
+or <i class='icon-adjust'></i>).
 
 <h4 id="select">
 Initializing a field from a table of legal values:
@@ -271,7 +277,8 @@ is set from the provided one.  If neither is provided, or if there
 are any other settings missing, Ramp uses the now-defined main
 setting as the default.
 
-#### Reducing duplicated information: ####
+<h4 id="inheritance">
+Reducing duplicated information:</h4>
 NOTE:  It is possible to use inheritance among sections in an `ini` file
 to avoid repeating similar information for different table settings in a
 viewing sequence.  The only potential problem is that an additional

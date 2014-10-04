@@ -19,7 +19,7 @@ comment = "### Core Tables ###"
 [Terms Table]
 
 type = "setting"
-source = "Smart/Term/Terms"
+source = "Smart/Core/Terms"
 title = "Terms"
 description = "View or modify list of Terms"
 
