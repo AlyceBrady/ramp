@@ -8,7 +8,12 @@
 -- web-based database access via RAMP.  Grant those MySQL accounts
 -- appropriate permissions to the RAMP/SMART developer database.
 
-SOURCE createSmartMysqlAccts.sql;
+-- FUTURE: Create Mysql accounts for a Production environment with
+-- additional Test and Staged Next Version environments.
+-- SOURCE createDraftProductionMysqlAccts.sql;
+--
+-- For now, SQL and application.ini assume use of smartdev mysql account
+-- for web access (created by ../SmartDevSetup/createSmartDevMysqlAccts.sql).
 
 -- Create the Ramp/Smart database and populate with sample data.
 

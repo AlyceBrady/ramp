@@ -70,12 +70,10 @@ LOCK TABLES `ramp_auth_users` WRITE;
 INSERT INTO `ramp_auth_users` (username, active, role, domainID)
 VALUES
 ('abrady', 'TRUE', 'developer', 1)
-, ('songu', 'TRUE', 'smart_dba', 2)
-, ('pmoseray', 'TRUE', 'smart_dba', 3)
-, ('sharvey', 'TRUE', 'developer', 4)
-, ('ikamara', 'TRUE', 'developer', 5)
--- , ('tnjohn', 'TRUE', 'smart_dba',  24)
--- , ('akamara', 'FALSE', 'regist_staff', 17)
+-- , ('dba1', 'TRUE', 'smart_dba', 2)
+-- , ('dba2', 'TRUE', 'smart_dba', 3)
+-- , ('developer2', 'TRUE', 'developer', 4)
+-- , ('developer3', 'TRUE', 'developer', 5)
 ;
 UNLOCK TABLES;
 
