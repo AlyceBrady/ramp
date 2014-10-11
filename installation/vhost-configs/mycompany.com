@@ -10,25 +10,24 @@
 # or in Ramp's space if you create a directory such as ".../ramp/log".
 #
 # You can name your server whatever seems appropriate for your context;
-# the example below illustrates running the Ramp Demo in a university setting.
-# The APPLICATION_ENV variable for each server should match the name
+# the example below illustrates running a Ramp sub-application.
+# The APPLICATION_ENV variable for the server should match the name
 # of a section in your application/configs/application.ini file.  For
 # example, the rampdemo APPLICATION_ENV for a Ramp Demo server would
 # match the rampdemo section in the rampDemo.ini file in the
 # application/configs directory, while a smart_production APPLICATION_ENV
 # would match the smart_production section in the
 # smartApplicationTemplate.ini file.  If you do not set an
-# APPLICATION_ENV variable, its value will default to 'production'.
-#
+# APPLICATION_ENV variable, its value will default to 'rampdemo'.
 #
 
-# Production environment does not need SetEnv APPLICATION_ENV production
 <VirtualHost *:80>
       ServerName mycompany.com
-      ServerAlias www.smart.mycompany.com
+      ServerAlias www.rampsubappl.mycompany.com
       DocumentRoot /var/www/ramp/public
       ErrorLog /var/log/ramp/error.log
       CustomLog /var/log/ramp/access.log combined
+      SetEnv APPLICATION_ENV production
       <Directory "/var/www/ramp/public">
           Options MultiViews SymlinksIfOwnerMatch
           AllowOverride All
