@@ -15,7 +15,7 @@ type = "separator"
 [Albums Table]
 
 type = "setting"
-source = "rampDemo/AlbumsExample"
+source = "AlbumsExample"
 title = "Albums Table"
 description = "A list of Albums, providing a very simple table
 for demonstration purposes."
@@ -23,7 +23,7 @@ for demonstration purposes."
 [Places Table]
 
 type = "setting"
-source = "rampDemo/places"
+source = "places"
 title = "Places Table"
 description = "A list of Places (e.g., for a Travel Review page)
 taken from the extended example from _Zend Framework in Action_
@@ -32,7 +32,7 @@ by Allen, Lo, and Brown; Manning Publications, 2009."
 [Reviewers Table]
 
 type = "setting"
-source = "rampDemo/reviewers"
+source = "reviewers"
 title = "Reviewers Table"
 description = "A list of Reviewers based on the 'users' table in
 _Zend Framework in Action_."
@@ -40,14 +40,14 @@ _Zend Framework in Action_."
 [Reviews Table]
 
 type = "setting"
-source = "rampDemo/reviews"
+source = "reviews"
 title = "Reviews Table"
 description = "A list of Reviews taken from _Zend Framework in Action_."
 
 [Places Report]
 
 type = "report"
-source = "rampDemo/PlacesReport"
+source = "PlacesReport"
 title = "Places Report"
 description = "A report of Places (e.g., for a Travel Review page)
 taken from the extended example from _Zend Framework in Action_
