@@ -22,7 +22,7 @@ displayed below the title, like a subtitle, not below the table)
 and "footnotes" for columns (displayed as a temporary hovering note
 when the cursor hovers over a field name).  An example of a fairly
 straight-forward table setting is below.  (This setting can also
-be found in `demoSettings/rampDemo/AlbumsExample.ini`.)
+be found in `demoSettings/AlbumsExample.ini`.)
 
 > <h4 id="simpleExample"> Simple Table Setting Example: </h4>
 
