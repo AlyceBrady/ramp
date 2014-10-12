@@ -509,7 +509,7 @@ usernames in the setup files provided with them.
 
 [readme]: /document/index/document/..%252F..%252README.md
 [customInstall]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_CUSTOM.md
-[applIni]:  /document/index/document/rampDocs%252FApplication_Ini.md
+[applIni]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
 [git]: http://git-scm.com/book/en/Getting-Started-Installing-Git
 [git-setup]: https://help.github.com/articles/set-up-git#platform-all
 [apache]: http://httpd.apache.org/
