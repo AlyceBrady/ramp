@@ -513,6 +513,6 @@ Will this get documented here or in the Ramp Admin User Manual?
 
 <!-- Topic for the future:  Procedures and/or Workflows -->
 
-[activities]: /document/index/document/rampDocs%252FActivityLists.md
-[settings]: /document/index/document/rampDocs%252FTableSettings.md
+[activities]: /document/index/document/ActivityLists.md
+[settings]: /document/index/document/TableSettings.md
 

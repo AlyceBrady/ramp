@@ -100,16 +100,15 @@ CREATE TABLE `ramp_auth_auths` (
 LOCK TABLES `ramp_auth_auths` WRITE;
 INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
-('guest','Activity','../docs/rampDocs','All')
-, ('guest','Activity','rampDemo','All')
+('guest','Activity','../docs','All')
+, ('guest','Activity','.','All')
 , ('guest','Document','.','All')
-, ('guest','Document','rampDocs','All')
 , ('guest','Table','albums','View')
 , ('guest','Report','places','View')
 , ('guest','Table','places','View')
 , ('guest','Table','reviews','View')
 , ('guest','Table','reviewers','View')
-, ('ramp_dba','Activity','Admin','All')
+, ('ramp_dba','Activity','../adminSettings','All')
 , ('ramp_dba','Document','../..','All')
 , ('ramp_dba','Document','../../installation','All')
 , ('ramp_dba','Table','ramp_auth_users','View')
