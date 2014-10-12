@@ -30,19 +30,19 @@ title = "Add New User"
 description = "Add a new user"
 controller = "admin-table"
 action = "add"
-parameter = '_setting = Admin/ramp_auth_users'
+parameter = '_setting = ../adminSettings/ramp_auth_users'
 
 [ View Users ]
 
 type = "setting"
-source = "Admin/ramp_auth_users"
+source = "../adminSettings/ramp_auth_users"
 title = "Manage Users List"
 description = "View or modify list of users"
 
 [ Auths ]
 
 type = "setting"
-source = "Admin/ramp_auth_auths"
+source = "../adminSettings/ramp_auth_auths"
 title = "Manage Auths"
 description = "View or modify list of access control rules"
 
@@ -85,14 +85,14 @@ parameter = ""
 [ LockRelations ]
 
 type = "setting"
-source = "Admin/ramp_lock_relations"
+source = "../adminSettings/ramp_lock_relations"
 title = "Manage Lock Relations"
 description = "View or modify list of lock relations"
 
 [ Locks ]
 
 type = "setting"
-source = "Admin/ramp_lock_locks"
+source = "../adminSettings/ramp_lock_locks"
 title = "View Locks"
 description = "View list of locks (must use Release Lock to modify)"
 
