@@ -1,7 +1,6 @@
 # RAMP: Record and Activity Management Program #
-# SMART: Software for Managing Academic Records and Transcripts #
 
-Welcome to the (temporarily) combined RAMP and SMART Projects.
+Welcome to the RAMP Project.
 
 #### RAMP ####
 
@@ -22,21 +21,6 @@ created as ini configuration files, making it relatively easy to create
 a Ramp-based application to interact with any new set of tables.
 
 For more information about Ramp, see [About RAMP] [aboutRamp].
-
-#### SMART ####
-
-Smart is a Ramp-based program that provides a set of activity files and
-table settings appropriate for managing academic records, including
-curriculum records (_e.g._, programs available, course modules, and
-course module schedules) and student records (_e.g._, enrolled
-program, course module history, test scores).
-
-For more information about Smart, see [About SMART] [aboutSmart].
-
-In time, the plan is to separate Ramp and Smart into separate
-projects, and to expand Smart to include customized activities
-specific to the academic records domain (as opposed to the more
-general-purpose activities supported by Ramp).
 
 
 ### RELEASE INFORMATION ###
@@ -93,7 +77,7 @@ Please see [INSTALL.md] [install].  (Under construction...)
 
 <h3 id="LICENSE"> LICENSE INFORMATION </h3>
 
-The source files for Ramp/Smart are released under a BSD 2-Clause license.
+The source files for Ramp are released under a BSD 2-Clause license.
 You can find a copy of this license in [LICENSE.md] [license].
 
 [TODO: Need to choose the correct CC license for documentation.  Do
@@ -115,8 +99,8 @@ Bootstrap license as [LICENSE-bootstrap-2.3.2] [tb-license].
 
 ### ACKNOWLEDGEMENTS ###
 
-The Ramp/Smart team would like to thank all the contributors to the
-Ramp/Smart project and the institutional supporters who have provided
+The Ramp team would like to thank all the contributors to the
+Ramp project and the institutional supporters who have provided
 time, expertise, and money.
 
 Institutional supporters include:
@@ -149,7 +133,6 @@ Individual contributors include:
 
 [license-section]: #LICENSE
 [aboutRamp]: /document/index/document/rampDocs%252FrampAbout.md
-[aboutSmart]: /document/index/document/rampDocs%252FsmartAbout.md
 [install]: /document/index/document/..%252F..%252Finstallation%252FINSTALL.md
 [license]:  /document/index/document/..%252F..%252FLICENSE.md
 [apache]:  http://httpd.apache.org/
