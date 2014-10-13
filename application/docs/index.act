@@ -2,7 +2,6 @@
 
 activityListHeading = "Choose a document:"
 
-activity[] = "About Ramp"
 activity[] = "README"
 activity[] = "horizRule"
 activity[] = "Ramp User Man"
@@ -18,12 +17,12 @@ activity[] = "Developer User Man"
 
 type = "separator"
 
-[About Ramp]
+[README]
 
-type = "document"
+type = "url"
 title = "About Ramp"
 description = "About Ramp: Records and Activity Management Program"
-source = "rampAbout.md"
+source = "/README.md"
 
 [Ramp User Man]
 
@@ -53,14 +52,6 @@ type = "document"
 title = "Creating Table Settings"
 description = "How to write Table Settings files"
 source = "TableSettings.md"
-
-[README]
-
-type = "document"
-title = "README"
-description = "The top-level README file; should it duplicate aboutRamp?
-Or point to it and to the installation 'documentation'?"
-source = "../../README.md"
 
 [Developer User Man]
 

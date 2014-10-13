@@ -8,25 +8,24 @@ Ramp is a program that supports domain expert access to a relational
 database.  Whereas a program like phpMyAdmin is aimed at database
 administrators who need to update and maintain a database, Ramp is aimed
 at the store owner, librarian, registrar, or other professional who
-needs to access and update the data in a structured set of tables.
+needs to populate, view, and update data in a structured set of tables.
 
 Ramp's software treats the tables in a database generically, but
 provides reasonably light-weight methods for customizing the user's
 interaction with those tables to give the appearance of an
 application-specific program.  The two primary mechanisms for this
-customization are activity lists, which provide a customized interface
-to the structure of the tables, and table settings, which provide
-customized views of tables.  Activity files and table settings are
-created as ini configuration files, making it relatively easy to create
-a Ramp-based application to interact with any new set of tables.
-
-For more information about Ramp, see [About RAMP] [aboutRamp].
+customization are activity lists, which generate formatted pages
+of grouped activities with descriptions, and table settings, which
+provide customized views of tables.  Activity files and table
+settings are created as `ini` configuration files, making it
+relatively easy to create a Ramp-based application to interact with
+any new set of tables.
 
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.9.  
-Released on February 11, 2014.
+RAMP/SMART Release 0.9.2.
+Released on October 12, 2014.
 
 ### SYSTEM REQUIREMENTS ###
 
@@ -132,7 +131,6 @@ Individual contributors include:
 >   Riley Wetzel  
 
 [license-section]: #LICENSE
-[aboutRamp]: /document/index/document/rampDocs%252FrampAbout.md
 [install]: /INSTALL.md
 [license]:  /LICENSE.md
 [apache]:  http://httpd.apache.org/
