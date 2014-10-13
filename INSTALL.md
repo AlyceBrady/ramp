@@ -507,8 +507,8 @@ usernames in the setup files provided with them.
       by creating symbolic links, aliases, or copies of the `css` and
       `tb_assets` directories in each subdirectory.
 
-[readme]: /document/index/document/..%252F..%252README.md
-[customInstall]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_CUSTOM.md
+[readme]: /README.md
+[customInstall]: /INSTALL_CUSTOM.md
 [applIni]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
 [git]: http://git-scm.com/book/en/Getting-Started-Installing-Git
 [git-setup]: https://help.github.com/articles/set-up-git#platform-all

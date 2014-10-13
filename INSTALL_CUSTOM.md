@@ -215,7 +215,7 @@ provided with the demos.
 
   -  In the `application/configs` directory, build an `application.ini`
      using the sample components provided in that directory, as
-     described in the [Customizing application.ini][custom_build]
+     described in the [Customizing application.ini][custom]
      document.
   - If you have not already done so, copy the appropriate
     `create[...]MysqlAccountsTemplate.sql` to `create[...]MysqlAccounts.sql`
@@ -717,6 +717,5 @@ second table, ramp_auth_auths, defines role-based access control
 rules to the activities and tables the comprise the Ramp application.
 
 
-[install]: /document/index/document/..%252F..%252Finstallation%252FINSTALL.md
+[install]: /INSTALL.md
 [custom]:  /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md
-[custom_build]: /document/index/document/..%252F..%252Finstallation%252FApplication_Ini.md#build
