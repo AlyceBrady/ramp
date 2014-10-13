@@ -22,7 +22,7 @@ type = "separator"
 type = "url"
 title = "About Ramp"
 description = "About Ramp: Records and Activity Management Program"
-source = "/README.md"
+url = "/README.md"
 
 [Ramp User Man]
 
