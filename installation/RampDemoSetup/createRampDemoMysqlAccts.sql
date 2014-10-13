@@ -13,7 +13,7 @@
 -- particularly the section on "Addressing Security Concerns,"
 -- BEFORE using this file or executing these SQL instructions.
 
--- AT THE VERY LEAST, change the rampdemodba and rampdemo passwords
+-- AT THE VERY LEAST, change the rampdba and rampdemo passwords
 -- in this file and change the permissions on the file to be readable
 -- only by the owner.
 
@@ -28,18 +28,18 @@
 
 -- 1a. CREATE DBA ACCOUNT(S):
 
-CREATE USER 'rampdemodba'@'localhost' IDENTIFIED BY 'rampdbapw';
+CREATE USER 'rampdba'@'localhost' IDENTIFIED BY 'need_password';
 
 -- 1b. CREATE WEB-BASED RAMP/SMART ACCESS ACCOUNT:
 
-CREATE USER 'rampdemo'@'localhost' IDENTIFIED BY 'rampdemo_passwd';
+CREATE USER 'rampdemo'@'localhost' IDENTIFIED BY 'need_password';
 
 
 
 -- 2a. SET UP PRIVILEGES FOR DBA ACCOUNT(S):
 --     Grant permissions for MySQL access by the database administrator.
 
-GRANT ALL ON `ramp_demo`.* TO 'rampdemodba'@'localhost';
+GRANT ALL ON `ramp_demo`.* TO 'rampdba'@'localhost';
 
 -- 2b. SET UP PRIVILEGES FOR WEB-BASED RAMP/SMART ACCESS ACCOUNT:
 --     Grant RAMP software permission to view, add, edit, and delete
