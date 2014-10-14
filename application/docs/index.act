@@ -20,9 +20,11 @@ type = "separator"
 [README]
 
 type = "url"
+type = "document"
 title = "About Ramp"
 description = "About Ramp: Records and Activity Management Program"
-url = "/README.md"
+; url = "/README.md"
+source = "../../README.md"
 
 [Ramp User Man]
 

@@ -131,20 +131,20 @@ Individual contributors include:
 >   Riley Wetzel  
 
 [license-section]: #LICENSE
-[install]: /INSTALL.md
-[license]:  /LICENSE.md
+[install]: ..%252F..%252FINSTALL.md
+[license]:  ..%252F..%252FLICENSE.md
 [apache]:  http://httpd.apache.org/
 [mysql]:  http://dev.mysql.com/downloads/
 [php]: http://php.net/
 [zf1]: http://www.zend.com/community/downloads
-[zf-license]: /LICENSE-ZF1.txt
+[zf-license]: ..%252F..%252FLICENSE-ZF1.txt
 [zf-license-online]: http://framework.zend.com/license/new-bsd
 [zf2]: http://framework.zend.com/
 [md]:  http://michelf.ca/projects/php-markdown/
-[md-license]: /License-php-markdown-lib.md
+[md-license]: ..%252F..%252FLicense-php-markdown-lib.md
 [tb]: http://getbootstrap.com/2.3.2/index.html
-[tb-license]: /LICENSE-bootstrap-2.3.2
+[tb-license]: ..%252F..%252FLICENSE-bootstrap-2.3.2
 [tbz]: https://github.com/andreaswarnaar/twitter-bootstrap-zf1
-[tbz-license]: /README-twitter-bootstrap-zf1.md
+[tbz-license]: ..%252F..%252FREADME-twitter-bootstrap-zf1.md
 [glyphicons]: http://glyphicons.com/
 
