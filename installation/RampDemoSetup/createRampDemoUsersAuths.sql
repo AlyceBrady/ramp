@@ -100,8 +100,8 @@ CREATE TABLE `ramp_auth_auths` (
 LOCK TABLES `ramp_auth_auths` WRITE;
 INSERT INTO `ramp_auth_auths`
 (`role`, `resource_type`, `resource_name`, `action`) VALUES
-('guest','Activity','../docs','All')
-, ('guest','Activity','.','All')
+('guest','Activity','.','All')
+, ('guest','Activity','../docs','All')
 , ('guest','Document','.','All')
 , ('guest','Document','../..','All')
 , ('guest','Table','albums','View')
