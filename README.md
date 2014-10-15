@@ -69,10 +69,10 @@ infrastructure on which Ramp depends, including specific Apache modules.
 
 ### INSTALLATION ###
 
-1. Download or clone this repository under your server's Document Root or
-your personal web page area.
+1. Download or clone this repository under the Document Root for
+   your server or your personal web page area.
 
-1. Set up a virtual host for the Ramp Demo.
+1. Set up a virtual host for the Ramp Demo (if possible).
 
     > If you have the appropriate powers on your server, create a virtual host
     for this repository.  (Zend, and therefore RAMP, works better under its
@@ -122,16 +122,29 @@ password:
         cat ramp_basics.ini ramp_defaults.ini >application.ini
         cat custom_properties.ini ramp_demo.ini >>application.ini
 
-1. If you're running a browser on the same machine as your server, you
-   can bring up the Ramp Demo using the virtual host name as the URL
-   (e.g., `rampdemo/`).  If not, unless the new virtual host is
-   being served by DNS (and, therefore, publicly accessible), you
-   will need to make changes on the client machines to see it.  For
-   example, this might be a matter of editing `/etc/hosts` on the
-   client machines and adding lines that resolve the virtual server
-   names from the appropriate machine.  For example,
+1. If you are using git, add the following files and directories 
+   to your `.gitignore` file in the top directory of this Ramp
+   instance (the directory above application, installation, and public).
+
+    installation/installDB/createMysqlAccts.sql
+    application/configs/custom_properties.ini
+    application/configs/application.ini
+
+1. If you are running a browser on the same machine as your server, you
+   can bring up the Ramp Demo using the virtual host ServerName
+   as the URL (e.g., `rampdemo/`).  If not, unless the new virtual
+   host is being served by DNS (and, therefore, publicly accessible),
+   you will need to make changes on the client machines to see it.
+   For example, this might be a matter of editing `/etc/hosts` on
+   the client machines and adding lines that resolve the virtual
+   server names from the appropriate machine.  For example,
 
             123.45.0.67     rampdemo
+
+    If you are not using virtual hosts, you can get to the Ramp Demo
+    as a subdirectory under your server name, e.g.
+
+        /my.servername.com/ramp/public/
 
 
 Please see [INSTALL.md] [install] for more detailed information.
