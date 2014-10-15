@@ -1,0 +1,50 @@
+RAMP needs to have an application.ini file in the application/configs
+directory, but one is not provided in the RAMP repository.  Instead, one
+should be built as part of the installation process.  Several files
+that serve as the basic building blocks for an application.ini file are
+provided in the repository:
+    ramp_basics.ini     defines some very basic properties
+    ramp_defaults.ini   defines default values for properties common to
+                            most or all RAMP applications
+
+    template_custom_properties.ini  a template for customizing basic and
+                                        default properties
+
+    ramp_demo.ini
+
+To create an application.ini file for the RAMP Demo application, make a
+copy of template_custom_properties.ini (called custom_properties.ini,
+for example).  Edit it to customize the username and password that the
+RAMP Demo will use to access the database.  Customize any other
+properties as appropriate (you may need to copy them from ramp_basics or
+ramp_defaults first).
+
+Then build your application.ini from the following files:
+    ramp_basics.ini
+    ramp_defaults.ini
+    custom_properties.ini
+    ramp_demo.ini
+For example, on Unix/Linux/MacOS:
+    cat ramp_basics.ini ramp_defaults.ini  >application.ini
+    cat custom_properties.ini ramp_demo.ini >>application.ini
+
+To create an application.ini file for a new RAMP application, copy and
+modify one of the other template files, whichever is appropriate, in
+addition to copying and customizing template_custom_properties.ini.
+    template_custom_properties.ini    a template for customizing basic and
+                                          default properties
+    template_rampAppl_production.ini  a template for production and
+                                          test/staging environments
+    template_rampAppl_devel.ini       a template for development and
+                                          regression testing environments
+
+Then build your application.ini from the following files:
+    ramp_basics.ini
+    ramp_defaults.ini
+    custom_properties.ini
+    your application's production or development file
+
+If you are using git and for security reasons you do not want to add and
+commit files with your database passwords, you may wish to add
+custom_properties.ini and application.ini to your .gitignore file.
+

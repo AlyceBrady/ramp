@@ -1,7 +1,6 @@
 # RAMP: Record and Activity Management Program #
-# SMART: Software for Managing Academic Records and Transcripts #
 
-Welcome to the (temporarily) combined RAMP and SMART Projects.
+Welcome to the RAMP Project.
 
 #### RAMP ####
 
@@ -9,40 +8,24 @@ Ramp is a program that supports domain expert access to a relational
 database.  Whereas a program like phpMyAdmin is aimed at database
 administrators who need to update and maintain a database, Ramp is aimed
 at the store owner, librarian, registrar, or other professional who
-needs to access and update the data in a structured set of tables.
+needs to populate, view, and update data in a structured set of tables.
 
 Ramp's software treats the tables in a database generically, but
 provides reasonably light-weight methods for customizing the user's
 interaction with those tables to give the appearance of an
 application-specific program.  The two primary mechanisms for this
-customization are activity lists, which provide a customized interface
-to the structure of the tables, and table settings, which provide
-customized views of tables.  Activity files and table settings are
-created as ini configuration files, making it relatively easy to create
-a Ramp-based application to interact with any new set of tables.
-
-For more information about Ramp, see [About RAMP] [aboutRamp].
-
-#### SMART ####
-
-Smart is a Ramp-based program that provides a set of activity files and
-table settings appropriate for managing academic records, including
-curriculum records (_e.g._, programs available, course modules, and
-course module schedules) and student records (_e.g._, enrolled
-program, course module history, test scores).
-
-For more information about Smart, see [About SMART] [aboutSmart].
-
-In time, the plan is to separate Ramp and Smart into separate
-projects, and to expand Smart to include customized activities
-specific to the academic records domain (as opposed to the more
-general-purpose activities supported by Ramp).
+customization are activity lists, which generate formatted pages
+of grouped activities with descriptions, and table settings, which
+provide customized views of tables.  Activity files and table
+settings are created as `ini` configuration files, making it
+relatively easy to create a Ramp-based application to interact with
+any new set of tables.
 
 
 ### RELEASE INFORMATION ###
 
-RAMP/SMART Release 0.9.  
-Released on February 11, 2014.
+RAMP/SMART Release 0.9.2.
+Released on October 12, 2014.
 
 ### SYSTEM REQUIREMENTS ###
 
@@ -93,7 +76,7 @@ Please see [INSTALL.md] [install].  (Under construction...)
 
 <h3 id="LICENSE"> LICENSE INFORMATION </h3>
 
-The source files for Ramp/Smart are released under a BSD 2-Clause license.
+The source files for Ramp are released under a BSD 2-Clause license.
 You can find a copy of this license in [LICENSE.md] [license].
 
 [TODO: Need to choose the correct CC license for documentation.  Do
@@ -115,8 +98,8 @@ Bootstrap license as [LICENSE-bootstrap-2.3.2] [tb-license].
 
 ### ACKNOWLEDGEMENTS ###
 
-The Ramp/Smart team would like to thank all the contributors to the
-Ramp/Smart project and the institutional supporters who have provided
+The Ramp team would like to thank all the contributors to the
+Ramp project and the institutional supporters who have provided
 time, expertise, and money.
 
 Institutional supporters include:
@@ -148,22 +131,20 @@ Individual contributors include:
 >   Riley Wetzel  
 
 [license-section]: #LICENSE
-[aboutRamp]: /document/index/document/rampDocs%252FrampAbout.md
-[aboutSmart]: /document/index/document/rampDocs%252FsmartAbout.md
-[install]: /document/index/document/..%252F..%252Finstallation%252FINSTALL.md
-[license]:  /document/index/document/..%252F..%252FLICENSE.md
+[install]: ..%252F..%252FINSTALL.md
+[license]:  ..%252F..%252FLICENSE.md
 [apache]:  http://httpd.apache.org/
 [mysql]:  http://dev.mysql.com/downloads/
 [php]: http://php.net/
 [zf1]: http://www.zend.com/community/downloads
-[zf-license]: /document/index/document/..%252F..%252FLICENSE-ZF1.txt
+[zf-license]: ..%252F..%252FLICENSE-ZF1.txt
 [zf-license-online]: http://framework.zend.com/license/new-bsd
 [zf2]: http://framework.zend.com/
 [md]:  http://michelf.ca/projects/php-markdown/
-[md-license]: /document/index/document/..%252F..%252FLicense-php-markdown-lib.md
+[md-license]: ..%252F..%252FLicense-php-markdown-lib.md
 [tb]: http://getbootstrap.com/2.3.2/index.html
-[tb-license]: /document/index/document/..%252F..%252FLICENSE-bootstrap-2.3.2
+[tb-license]: ..%252F..%252FLICENSE-bootstrap-2.3.2
 [tbz]: https://github.com/andreaswarnaar/twitter-bootstrap-zf1
-[tbz-license]: /document/index/document/..%252F..%252FREADME-twitter-bootstrap-zf1.md
+[tbz-license]: ..%252F..%252FREADME-twitter-bootstrap-zf1.md
 [glyphicons]: http://glyphicons.com/
 

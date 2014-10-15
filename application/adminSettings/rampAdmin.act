@@ -1,0 +1,116 @@
+; Smart Activities related to "ramp_auth_users" and "ramp_auth_auths" tables
+
+activityListHeading = "Choose an activity:"
+
+activity[] = "AddUser"
+activity[] = "ResetPassword"
+activity[] = "FreeLock"
+activity[] = "Break"
+activity[] = "View Users"
+activity[] = "Auths"
+activity[] = "Break"
+activity[] = "Locks"
+activity[] = "LockRelations"
+activity[] = "Break"
+activity[] = "CheckSyntax"
+activity[] = "Break"
+activity[] = "ValidateUserRoles"
+activity[] = "ValidateACL"
+activity[] = "ViewACL"
+
+
+[Break]
+
+type = "separator"
+
+[ AddUser ]
+
+type = "controllerAction"
+title = "Add New User"
+description = "Add a new user"
+controller = "admin-table"
+action = "add"
+parameter = '_setting = ../adminSettings/ramp_auth_users'
+
+[ View Users ]
+
+type = "setting"
+source = "../adminSettings/ramp_auth_users"
+title = "Manage Users List"
+description = "View or modify list of users"
+
+[ Auths ]
+
+type = "setting"
+source = "../adminSettings/ramp_auth_auths"
+title = "Manage Auths"
+description = "View or modify list of access control rules"
+
+[ ValidateUserRoles ]
+
+type = "controllerAction"
+title = "Validate User Roles"
+description = "Validate roles being used in the Users Table"
+controller = "auth"
+action = "validate-roles"
+parameter = ""
+
+[ ValidateACL ]
+
+type = "controllerAction"
+title = "Validate Auth Rules"
+description = "Validate the access control (authorization) rules"
+controller = "auth"
+action = "validate-acl-rules"
+parameter = ""
+
+[ ViewACL ]
+
+type = "controllerAction"
+title = "View ACL Info"
+description = "View ACL roles, resources, and rules"
+controller = "auth"
+action = "view-acl-info"
+parameter = ""
+
+[ ResetPassword ]
+
+type = "controllerAction"
+title = "Reset User Password"
+description = "Reset a user's password"
+controller = "auth"
+action = "reset-password"
+parameter = ""
+
+[ LockRelations ]
+
+type = "setting"
+source = "../adminSettings/ramp_lock_relations"
+title = "Manage Lock Relations"
+description = "View or modify list of lock relations"
+
+[ Locks ]
+
+type = "setting"
+source = "../adminSettings/ramp_lock_locks"
+title = "View Locks"
+description = "View list of locks (must use Release Lock to modify)"
+
+[ FreeLock ]
+
+type = "controllerAction"
+title = "Release Lock"
+description = "Release an orphaned or abandoned lock"
+controller = "lock"
+action = "free-lock"
+parameter = ""
+
+[ CheckSyntax ]
+
+type = "controllerAction"
+title = "Check Setting Syntax"
+description = "Check the syntax for a sequence or setting file"
+controller = "table-syntax"
+action = "index"
+parameter = ""
+
