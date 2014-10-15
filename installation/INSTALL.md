@@ -451,7 +451,12 @@ usernames in the setup files provided with them.
     directory called `smart` under your server's document root, you
     can create subdirectories (such as `rampdemo`) under the `public`
     directory and then access them with URLs such as
-    `.../smart/rampdemo/`.  
+    `.../smart/rampdemo/`.
+    A few things will not work with this setup, however.
+    The images within the RAMP User Manual will only work if they
+    are in the server's (or virtual host's) document root directory,
+    and the same is true for the links from the RAMP README file
+    to the license files for RAMP and its dependent software.
 
     ##### Vhosts
 
@@ -479,7 +484,7 @@ usernames in the setup files provided with them.
     * Reload or restart the Apache server.
 
     * Unless the new virtual host is being served by DNS (and,
-      therefore, publically accessible), you will need to
+      therefore, publicly accessible), you will need to
       make changes on the client machines to see it.
       For example, this might be a matter of editing `/etc/hosts` on the
       client machines and adding lines that resolve the virtual server names
@@ -502,10 +507,11 @@ usernames in the setup files provided with them.
       `rampdemo`, `smartdemo`, `smart_development`, or
       `smart_regressiontesting`).
 
-    * Each subdirectory needs to have the same `css` and `tb_assets`
+    * Each subdirectory needs to have the same `css`, `images`, and
+      `tb_assets`
       directories that the `public` directory has.  You can achieve this
-      by creating symbolic links, aliases, or copies of the `css` and
-      `tb_assets` directories in each subdirectory.
+      by creating symbolic links, aliases, or copies of the `css`,
+      `images`, and `tb_assets` directories in each subdirectory.
 
 [readme]: /document/index/document/..%252F..%252README.md
 [customInstall]: /document/index/document/..%252F..%252Finstallation%252FINSTALL_CUSTOM.md
