@@ -1,0 +1,3 @@
+# environment specific configuration
+application/configs/application.ini
+application/configs/custom_properties.ini
