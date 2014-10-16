@@ -19,7 +19,7 @@ type = "separator"
 
 [README]
 
-type = "url"
+; type = "url"
 type = "document"
 title = "About Ramp"
 description = "About Ramp: Records and Activity Management Program"
