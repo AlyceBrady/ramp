@@ -1,5 +1,21 @@
 <?php
 
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp
+ * @copyright  Copyright (c) 2013 Alyce Brady
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
+ */
 class Ramp_Auth_DbTable_Auths extends Zend_Db_Table_Abstract
 {
     const DELIM          = Ramp_Acl::DELIM;

@@ -656,7 +656,19 @@ Block."  If the count is not provided, Ramp will default to providing
 > situations similar to this example.  The "common data" section of the
 > split view must provide all but one field necessary for new records in
 > the table.  Thus, if a table has four required fields, the split view
-> must represent a search that defines three of those field, while the
+> must represent a search that defines three of those fields, while the
 > `blockEntry.field` property must identify the fourth.
+
+------------
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img
+alt="Creative Commons License" style="border-width:0"
+src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /><span
+xmlns:dct="http://purl.org/dc/terms/"
+href="http://purl.org/dc/dcmitype/Text" property="dct:title"
+rel="dct:type">RAMP Documentation</span> is licensed under a <a
+rel="license"
+href="http://creativecommons.org/licenses/by/4.0/">Creative Commons
+Attribution 4.0 International License</a>.
 
 [md]:  http://daringfireball.net/projects/markdown/

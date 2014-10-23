@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * This class is a slightly modified version of the
+ * Zend_Controller_Plugin_ErrorHandler class in the Zend Framework.
+ * That class has the following license:
+ *
+ * Zend Framework License:
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * Derived from code in:
+ * @category   Zend
+ * @package    Zend_Controller
+ * @subpackage Plugins
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+
 class ErrorController extends Zend_Controller_Action
 {
 

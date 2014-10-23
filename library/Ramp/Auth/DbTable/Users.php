@@ -1,6 +1,20 @@
 <?php
 
-/*
+/**
+ * RAMP: Records and Activity Management Program
+ *
+ * LICENSE
+ *
+ * This source file is subject to the BSD-2-Clause license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.cs.kzoo.edu/ramp/LICENSE.txt
+ *
+ * @category   Ramp
+ * @package    Ramp
+ * @copyright  Copyright (c) 2012 Chris Cain
+ * @license    http://www.cs.kzoo.edu/ramp/LICENSE.txt   Simplified BSD License
+ *
  * Written by Chris Cain, with additions by Justin Leatherwood,
  * November 2012.
  * Further additions by Alyce Brady, November 2013.
