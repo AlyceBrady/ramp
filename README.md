@@ -81,21 +81,21 @@ infrastructure on which Ramp depends, including specific Apache modules.
     and then restarting the web server.  For example, on a Debian or Ubuntu
     system you would do the following using `sudo`:
 
-    > Copy `rampdemo.conf` to `/etc/apache2/sites-available`.  
-      Edit the `rampdemo.conf` copy in the `sites-available` directory
+    - Copy `installation/rampdemo.conf` to `/etc/apache2/sites-available`.  
+    - Edit the `rampdemo.conf` copy in the `sites-available` directory
          to set an appropriate ServerAdmin, ServerName and DocumentRoot.  
-      Enable the site:  `a2ensite rampdemo`.  
-      Restart the apache server (e.g., `service apache2 reload`).  
+    - Enable the site:  `a2ensite rampdemo`.  
+    - Restart the apache server (_e.g._, `service apache2 reload`).  
 
 1.  Set up the `ramp_demo` database:
 
-    > Go to the `installation/RampDemoSetup` subdirectory.  
-      Copy createRampDemoMysqlAccts.sql (e.g., to createMysqlAccts.sql)
-      and make sure the file is readable only to you.  Edit it and change
-      the DBA and Ramp Demo usernames and passwords (or _at least_ the
-      passwords) to provide the most basic security.  
-      Go into `mysql` as root and read in the new file and
-      `setupRampDemoDB.sql`:
+    - Go to the `installation/RampDemoSetup` subdirectory.  
+    - Copy createRampDemoMysqlAccts.sql (_e.g._, to createMysqlAccts.sql)
+        and make sure the file is readable only to you.  Edit it and change
+        the DBA and Ramp Demo usernames and passwords (or _at least_ the
+        passwords) to provide the most basic security.  
+    - Go into `mysql` as root and read in the new file and
+        `setupRampDemoDB.sql`:
 
             SOURCE createMysqlAccts.sql;
             SOURCE setupRampDemoDB.sql;
@@ -104,8 +104,8 @@ infrastructure on which Ramp depends, including specific Apache modules.
 1.  Create a customized configuration file with the correct username and
 password:
 
-    > Go to the `configs` subdirectory.  
-      Copy template_custom_properties.ini to `custom_properties.ini` and
+    - Go to the `configs` subdirectory.  
+    - Copy template_custom_properties.ini to `custom_properties.ini` and
       make sure
       the file is readable only to you and the `www-data` group (or whatever
       group your web server is part of).  Edit `custom_properties.ini` and
@@ -113,7 +113,7 @@ password:
       set in the `createMysqlAccts.sql` file above.  You may wish to
       customize other properties as well (see the `README` file in the
       `configs` directory for more details).  
-      Create an `application.ini` file that contains the following "building
+    - Create an `application.ini` file that contains the following "building
       block" files in the specified order:
         `ramp_basics.ini`, `ramp_defaults.ini`, and `custom_properties.ini`
         `ramp_demo.ini`.
@@ -132,7 +132,7 @@ password:
 
 1.  If you are running a browser on the same machine as your server, you
     can bring up the Ramp Demo using the virtual host ServerName
-    as the URL (e.g., `rampdemo/`).  If not, unless the new virtual
+    as the URL (_e.g._, `rampdemo/`).  If not, unless the new virtual
     host is being served by DNS (and, therefore, publicly accessible),
      you will need to make changes on the client machines to see it.
     For example, this might be a matter of editing `/etc/hosts` on
@@ -144,7 +144,7 @@ password:
     Having done this, you should be able to get to the demo by just
     typing `rampdemo` as the URL in your browser.
     If you are not using virtual hosts, you can get to the Ramp Demo
-    as a subdirectory under your server name, e.g.
+    as a subdirectory under your server name, _e.g._,
 
             /my.servername.com/ramp/public/
 
