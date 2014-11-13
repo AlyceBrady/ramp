@@ -104,6 +104,8 @@ The valid field properties are:
   * `readOnly`
   * `recommended`
   * `discouraged`
+  * `suppressIfSame`
+  * `displayInRow`
   * `selectFrom`
   * `importedFrom` and `importedField`
      ([Importing data](#import) is an advanced feature described below.)
@@ -183,6 +185,49 @@ It is important that recommended or discouraged fields not be hidden
 odd error messages in list and table views along with the icons
 indicating complete or incomplete records (<i class='icon-ok'></i>
 or <i class='icon-adjust'></i>).
+
+#### Influencing the Display: ####
+
+In list, table, and split view displays, it is sometimes useful to visually
+group records into blocks with common fields.  For example, a list of
+schools and departments that have been sorted by school would have a
+series of rows with the first school name and its departments,
+followed by a list of rows with the second school name and its
+departments, _etc_.  By default, the school name is repeated in every
+row whether it changes or not, but one can set the `suppressIfSame`
+property to `true`, which will cause the school name to be displayed
+only when it changes.  (The default is `false`.)
+The difference can be seen in the table below.
+
+ >  <table>
+      <tr><th colspan=2><code>school.suppressIfSame = false</code></th>
+      <th width='15%'></th>
+      <th colspan=2><code>school.suppressIfSame = true</code></th></tr>
+      <tr><td>School 1</td><td>Dept 1</td><td></td>
+        <td>School 1</td><td>Dept 1</td></tr>
+      <tr><td>School 1</td><td>Dept 2</td><td></td>
+        <td></td><td>Dept 2</td></tr>
+      <tr><td>School 1</td><td>Dept 3</td><td></td>
+        <td></td><td>Dept 3</td></tr>
+      <tr><td>School 2</td><td>Dept 4</td><td></td>
+        <td>School 2</td><td>Dept 4</td></tr>
+      <tr><td>School 2</td><td>Dept 5</td><td></td>
+        <td></td><td>Dept 5</td></tr>
+      <tr><td>School 2</td><td>Dept 6</td><td></td>
+        <td></td><td>Dept 6</td></tr>
+    </table>
+
+A split view display divides the fields into two sections; those fields
+whose value is the same for all records being displayed appear once in
+the top section of the page, while fields whose values are different in
+different records appear in a table below.  There may be some fields,
+though, that one might wish to appear in the table section of the page
+even if the value happens to be the same for all records being
+displayed.  One can set the `displayInRow` property for such fields to
+`true` to force them to be displayed in each row of the table section
+rather than with the repeated summary information at the top of the
+page.
+
 
 <h4 id="select">
 Initializing a field from a table of legal values:

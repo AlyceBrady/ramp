@@ -52,6 +52,8 @@ class Ramp_Table_Field
     const ALIAS         = 'importedField';
     const LEGAL_VALUES  = 'selectFrom';
     const LINK_TO_TBL   = 'selectUsing';
+    const DISPLAY_IN_ROW = 'displayInRow';
+    const SUPPRESS_IF_SAME   = 'suppressIfSame';
 
     // Constants representing db metadata properties.
     const NULLABLE      = 'NULLABLE';
@@ -114,6 +116,14 @@ class Ramp_Table_Field
 
     /** @var string */
     protected $_connectTbl;     // name of table to which this field is a link
+
+    /** @var bool */
+    protected $_suppressIfSame = false; // report display: don't repeat field
+                                        // value unless diff. from prev. row
+
+    /** @var bool */
+    protected $_alwaysDisplayInRow = false;   // report display: never treat as
+                                        // shared value in split views
 
     /** @var array */
     protected $_metaInfo;       // meta-information provided by database
@@ -205,6 +215,10 @@ class Ramp_Table_Field
         $this->_legalValsSource = isset($settingInfo[self::LEGAL_VALUES]) ?
                             $settingInfo[self::LEGAL_VALUES] :
                             null;
+        $this->_suppressIfSame = isset($settingInfo[self::SUPPRESS_IF_SAME]) &&
+                              $settingInfo[self::SUPPRESS_IF_SAME];
+        $this->_alwaysDisplayInRow = isset($settingInfo[self::DISPLAY_IN_ROW])
+                              && $settingInfo[self::DISPLAY_IN_ROW];
         $this->_inTable = ! empty($metaInfo);
 
         return $this;
@@ -608,6 +622,29 @@ class Ramp_Table_Field
                && $this->getDefault() == null
                && ! $this->isAutoIncremented()
                && ! $this->initFromAnotherTable();
+    }
+
+    /**
+     * In reports, should this field be suppressed if its value is the
+     * same as in the previous row?
+     *
+     * @return bool
+     */
+    public function suppressIfSame()
+    {
+        return $this->_suppressIfSame;
+    }
+
+    /**
+     * In reports, should this field always be repeated, even if its 
+     * value is the same as that in all other rows?  (Relevant to split 
+     * views.)
+     *
+     * @return bool
+     */
+    public function alwaysDisplayInRow()
+    {
+        return $this->_alwaysDisplayInRow;
     }
 
 }

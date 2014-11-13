@@ -34,6 +34,18 @@ $deleteParams = $commonParams + array('action'=>'delete');
 
 ?>
 
+<!-- Setup -->
+
+<?php
+foreach($visibleFieldInfo as $fieldName => $field) :
+    $colHeading = $this->escape($field->getLabel());
+    $title = $this->escape( $field->getFieldFootnote());
+    $title = $title ? "$colHeading: $title" : $colHeading;
+    $titles[$fieldName] = $title;
+    $prevRecord[$fieldName] = '';
+endforeach;
+?>
+
 <!-- Display records -->
 
 <tbody>
@@ -56,11 +68,14 @@ foreach($tableValues as $recordValues) :
     <!-- Display visible field values. -->
     <?php
     foreach($visibleFieldInfo as $fieldName => $field) :
-        $colHeading = $this->escape($field->getLabel());
-        $title = $this->escape( $field->getFieldFootnote());
-        $title = $title ? "$colHeading: $title" : $colHeading;
-        echo "<td title='$title'>";
-        echo $this->escape($recordValues[$fieldName]) . "</td>";
+        $fieldValue = $recordValues[$fieldName];
+        echo "<td title='" . $titles[$fieldName] . "'>";
+        if ( ! $field->suppressIfSame() ||
+             $fieldValue != $prevRecord[$fieldName] ) :
+            echo $this->escape($fieldValue);
+            $prevRecord[$fieldName] = $fieldValue;
+        endif;
+        echo "</td>";
     endforeach;
 
     if ( $this->includeActions ) :

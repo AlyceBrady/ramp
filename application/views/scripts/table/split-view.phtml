@@ -37,7 +37,7 @@ $titleAndMsgs['title'] = $title;
 // Determine instructions and messages specific to this page.
 $titleAndMsgs['instructions'] = "";
 $titleAndMsgs['msgs'] = $this->msgs;        // All msgs are set in controller
-$titleAndMsgs['msgs'][] = "Found " . count($differentValues) . " entries.";
+// $titleAndMsgs['msgs'][] = "Found " . count($differentValues) . " entries.";
 $titleAndMsgs['errormsgs'] = $this->errMsgs;
 $titleAndMsgs['errormsgs'][] = $this->undefinedFieldsErrorMsg;
 
@@ -77,7 +77,8 @@ echo $this->partial("table/_tableEntryForm.phtml",
 <!-- Display buttons in sidebar -->
 <div id="button-sidebar" class="span3">
 <?php echo $this->partial("table/_buttonList.phtml", $titleBar); ?>
-</div>  <!-- End of "button-sidebar" -->
+</div>
+<!-- End of "button-sidebar" -->
 
 <div id="different-values-view">
 
