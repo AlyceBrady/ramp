@@ -58,6 +58,7 @@ The valid table properties are:
   * `tableName`  This property is required!  (Or did I change this?)
   * `tableTitle`
   * `tableFootnote`
+  * `tableSortOrder`
   * `tableShowColsByDefault`
   * `tableConnection`
      ([Importing data](#import) is an advanced feature described below.)
@@ -88,11 +89,24 @@ The `tableTitle` and `tableFootnote` properties may include
 [Markdown][md] formatting to make some words italicized or bold, for
 example.
 
+The `tableSortOrder` property specifies that the data retrieved from the
+database should be sorted by the given field or fields.  For example, a
+table of students could be sorted by their graduation year and then by
+name by listing the relevant database fields in order, as in the
+following example:
+
+        tableSortOrder = "graduationYear, lastname, firstname"
+
 The `tableShowColsByDefault` property, when set to `true` (or `1`),
 specifies that all the fields in the table should be visible unless
 explicitly hidden.  When this property is set, even a field that is not
 referenced in the table setting will be displayed, whereas the usual
 behavior is to hide unreferenced fields.
+
+See the [Advanced Table and Field Features section](#advanced) below
+for information about importing or initializing fields from other
+tables, creating links or external references to other tables, and
+supporting block data entry.
 
 <h3 id="fieldProps"> Field Properties </h3>
 
@@ -107,8 +121,11 @@ The valid field properties are:
   * `suppressIfSame`
   * `displayInRow`
   * `selectFrom`
+  * `expression`
+     ([Using SQL expressions to populate fields](#expressions) is an
+     advanced feature described below.)
   * `importedFrom` and `importedField`
-     ([Importing data](#import) is an advanced feature described below.)
+     ([Importing data](#import) is another advanced feature described below.)
   * `selectUsing`  ([This property](#selectUsing) is also related to
      [importing data](#import).)
   * `initFrom` and `initFromField`
@@ -155,7 +172,11 @@ to hide specific columns.
 
 #### Read-Only, Required, Recommended, and Discouraged Fields: ####
 
-[TODO: `readOnly`]
+By default, Ramp assumes that users may modify any fields in a table that
+are not primary keys.  One may, however, explicitly set a field to be
+read-only by setting the `readOnly` property to `true`.  (Fields that
+are imported from another table or that are calculated with an SQL
+expression are also treated as read-only fields.)
 
 Fields are defined as "required" in the database itself, not in a table
 setting.  In addition to that functionality, Ramp allows an application
@@ -250,6 +271,10 @@ the example below.
 The syntax for the `selectFrom` property, as seen in this example, is:
 
         field.fieldNameInDb.selectFrom = "OtherDbTableName.dbColName"
+
+See the [Advanced Table and Field Features section](#advanced) below
+for information about the field properties used to import or initialize
+fields from other tables.
 
 <h3 id="viewing_sequences">
 Viewing Sequences
